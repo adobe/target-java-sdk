@@ -1,0 +1,3 @@
+rootProject.name = 'target-java-sdk'
+include 'java-sdk'
+include 'samples'

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+<head th:fragment="head (title)">
+    <title th:text="${title}">Fragments</title>
+    <link rel="icon" href="../../images/favicon.ico"/>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"
+          href="../../css/bootstrap.min.css"/>
+    <script th:inline="javascript">
+        window.targetGlobalSettings = {
+            overrideMboxEdgeServer: true,
+            serverState: /*[[${serverState}]]*/ {}
+        }
+    </script>
+    <script src="../../js/at_2.0.js"></script>
+</head>
+<body>
+<div class="container">
+    <nav th:fragment="navbar" class="navbar navbar-dark bg-primary">
+        <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" th:href="@{/}" href="messages.html" th:text="#{navbar.messages}">Messages</a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</body>
+</html>
