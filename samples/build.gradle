@@ -1,15 +1,16 @@
 plugins {
     id 'org.springframework.boot' version '2.0.5.RELEASE'
+    id 'io.spring.dependency-management' version "1.0.8.RELEASE"
 }
 
-apply plugin: 'io.spring.dependency-management'
-
 dependencies {
-    compile project(':java-sdk')
-    compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    compile 'org.springframework.boot:spring-boot-starter-web'
-    compile 'org.slf4j:slf4j-simple:2.0.0-alpha0'
-    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    implementation project(':java-sdk')
+    // implementation 'com.adobe.target:target-java-sdk:1.0.0' // test after publishing to local Maven repo
+    implementation 'com.adobe.experiencecloud.ecid:ecid-service:1.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.slf4j:slf4j-simple:2.0.0-alpha0'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 dependencyManagement {
