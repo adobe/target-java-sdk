@@ -1,6 +1,6 @@
 # Adobe Target Java SDK Samples
 
-This repository contains Spring Boot basedsamples for [Target Java SDK](https://git.corp.adobe.com/TnT/target-java-sdk).
+This repository contains Spring Boot basedsamples for [Target Java SDK](https://github.com/adobe/target-java-sdk).
 
 ##Initiating Client
 
