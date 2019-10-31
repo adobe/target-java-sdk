@@ -1,5 +1,9 @@
 allprojects {
     apply plugin: 'idea'
+
+    ext."signing.keyId" = System.getenv('GPG_KEY_ID')
+    ext."signing.password" = System.getenv('GPG_PASSPHRASE')
+    ext."signing.secretKeyRingFile" = System.getenv('GPG_KEY_RING')
 }
 
 subprojects {
