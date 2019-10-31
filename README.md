@@ -119,18 +119,14 @@ The original request URL should also be passed in the `address` field of the `Co
 
 Full Sample: Checkout `/mboxTargetOnly` endpoint in [TargetController](samples/src/main/java/com/adobe/target/sample/controller/TargetController.java)
 ## Maintaining Sessions
-By default, the Target Java SDK generates a new session ID for every Target call, which might not always be the desired 
-behavior. 
+By default, the Target Java SDK generates a new session ID for every Target call, which might not always be the desired behavior. 
  
- To ensure that Target properly tracks the user session, you should save the Target cookies after Target 
- content is retrieved. Target cookies are just key/value pairs that Target uses to maintain the session information. 
+ To ensure that Target properly tracks the user session, you should save the Target cookies after Target content is retrieved. Target cookies are just key/value pairs that Target uses to maintain the session information. 
  It can be retrieved using:
  ```java
 List<TargetCookie> cookies = targetDeliveryResponse.getCookies();
 ```
-In case the end client supports persistence (eg. browser), it can be sent to the end client. These Target cookies need
- to be set in subsequent requests for same user. The sdk will take care of expiring and refreshing the cookies, so they
- should be refreshed each time a response is received. You can retrieve names of all valid Target Cookies by 
+In case the end client supports persistence (eg. browser), it can be sent to the end client. These Target cookies need to be set in subsequent requests for the same user. The sdk will take care of expiring and refreshing the cookies, so they should be refreshed each time a response is received. You can retrieve names of all valid Target Cookies by 
  `CookieUtils.getTargetCookieNames()`
 
 In a sample `Spring Boot` application, this could look like this:
@@ -227,8 +223,7 @@ Full Sample: Checkout `/mboxTargetOnly` endpoint in [TargetController](samples/s
 
 ## Asynchronous Requests
 
-Aside from the fact that your end client will never flicker or reload, the main benefit of server-side integration is 
-that you can leverage the huge band-with and computing resources available on server-side by using parallelism. Target 
+Aside from the fact that your end client will never flicker or reload, the main benefit of server-side integration is that you can leverage the huge band-with and computing resources available on the server-side by using parallelism. Target 
 Java SDK supports asynchronous requests, using which you can bring down the effective target time to zero.
 
 In a sample `Spring` application it could look like this:
@@ -275,7 +270,7 @@ public class TargetRestController {
 assuming you have [created the client] as a spring bean and you have [utility methods] available.
 
 Target request is fired before `simulateIO` and by the time it is executed target result should also be ready. 
-Even if its not, you'll have significant savings in most cases.
+Even if it's not, you'll have significant savings in most cases.
 
 Full Sample: Full Sample: Checkout `/mboxTargetOnlyAsync` endpoint in [TargetRestController](samples/src/main/java/com/adobe/target/sample/controller/TargetRestController.java)
 
@@ -287,8 +282,7 @@ Although using the Target Java SDK for fetching content from Target can be power
 for user tracking outweighs using Target only. ECID allows leveraging all the cool features of the Adobe Experience Cloud,
 such as audience sharing, analytics integration, etc.  
 ECID has a client-side part `Visitor` (from visitor.js) which maintains it's own state. We'll need to keep this part
-updated with the stuff happening on server side. `visitor.js` creates a cookie named `AMCV_{organizationId}` which is 
-used by Target sdk for ECID integration. When Target response is returned you need to update `Visitor` instance on
+updated with the stuff happening on the server-side. `visitor.js` creates a cookie named `AMCV_{organizationId}` which is used by Target sdk for ECID integration. When Target response is returned you need to update `Visitor` instance on
 client-side with `visitorState` returned by Target Java Sdk.
 
 Here is the sample `client-side` code:
