@@ -6,7 +6,6 @@ plugins {
 dependencies {
     implementation project(':java-sdk')
     // implementation 'com.adobe.target:target-java-sdk:1.0.0' // test after publishing to local Maven repo
-    implementation 'com.adobe.experiencecloud.ecid:ecid-service:1.0.0'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.slf4j:slf4j-simple:2.0.0-alpha0'
