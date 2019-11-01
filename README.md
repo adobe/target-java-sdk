@@ -81,20 +81,17 @@ end client including browsers, mobiles, IOT devices or servers.
   * [ECID Integration](#ecid-integration)
   * [ECID with Customer IDs Integration](#ecid-with-customer-ids-integration)
   * [ECID and Analytics Integration](#ecid-and-analytics-integration)
-  * [ECID, Analytics and at.js Integration](#ecid--analytics-and-atjs-integration)
-  * [Advanced at.js integration via serverState](#advanced-atjs-integration-via-serverstate)
-  * [Shared ECID and Analytics Integration](#shared-ecid-and-analytics-integration)
+  * [at.js integration via serverState](#atjs-integration-via-serverstate)
   * [Custom rendering of Target offers](#custom-rendering-of-target-offers)
   * [Troubleshooting](#troubleshooting)
   * [Target Traces](#target-traces)
-  * [Target Java SDK API](#target-nodejs-sdk-api)
+  * [Target Java SDK API](#target-java-sdk-api)
       - [TargetClient.create](#targetclientcreate)
       - [TargetClient.getOffers](#targetclientgetoffers)
       - [TargetClient.sendNotifications](#targetclientsendnotifications)
-      - [TargetClient utility accessors](#targetclient-utility-accessors)
+      - [Target SDK utility accessors](#targetsdk-utility-accessors)
   * [Multiple API requests](#multiple-api-requests)
   * [Development](#development)
-  * [Additional code](#additional-code)
 
 ---
 
