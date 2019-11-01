@@ -1,0 +1,60 @@
+    <!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="icon" href="../images/favicon.ico"/>
+    <title>Target Only : GetOffer</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+</head>
+<body>
+<h2>Page makes mbox target only requests. It demos calls for both execute as well as prefetch.</h2>
+<br/>
+<h3><-------------------------Cookies-------------------------></h3>
+<pre id="cooks"></pre>
+<h3><-------------------------ServerState-------------------------></h3>
+<pre id="content"></pre>
+<script th:inline="javascript">
+
+    /*<![CDATA[*/
+    var product = /*[[${serverState}]]*/'default';
+    document.getElementById("content").innerHTML = JSON.stringify(product, null, 2);
+    document.getElementById("cooks").innerHTML = listCookies()
+
+    window.targetGlobalSettings = {
+        overrideMboxEdgeServer: true,
+        serverState: product
+    };
+
+    function listCookies() {
+        var theCookies = document.cookie.split(';');
+        var aString = '';
+        var cookNames = Object.seal(['mbox'])
+        for (var i = 1; i <= theCookies.length; i++) {
+            cook = theCookies[i - 1]
+            for (var j = 0; j < cookNames.length; j++) {
+                if (cook.trim().startsWith(cookNames[j])) {
+                    aString += cook + "\n";
+                }
+            }
+
+
+        }
+        return aString;
+    }
+
+    function makeAjaxRequest() {
+        $.ajax({
+            url: '/sendNotifications',
+            type: 'POST',
+            data: JSON.stringify(product.response.prefetch),
+            contentType: "application/json",
+            success: function(data){
+                console.log(data)
+                alert('Notification sent. Check console for logs')
+            }
+        });
+    }
+</script>
+<button id="send-notification-button" onclick="makeAjaxRequest()">Send Notification</button>
+</body>
+</html>

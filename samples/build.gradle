@@ -1,0 +1,19 @@
+plugins {
+    id 'org.springframework.boot' version '2.0.5.RELEASE'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+dependencies {
+    compile project(':java-sdk')
+    compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    compile 'org.springframework.boot:spring-boot-starter-web'
+    compile 'org.slf4j:slf4j-simple:2.0.0-alpha0'
+    testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:Finchley.SR2"
+    }
+}
