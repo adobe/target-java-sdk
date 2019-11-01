@@ -4,7 +4,7 @@ The Adobe Target Java SDK uses the [Target View Delivery API] to retrieve and de
 best practices. Furthermore, the Java SDK helps manage integrations with Experience Cloud solutions like Visitor API and Adobe 
 Analytics.
 
-Standalone Spring Boot based Target Java SDK sample is available at https://github.com/adobe/target-java-sdk-samples 
+Standalone Spring Boot based sample is available at https://github.com/adobe/target-java-sdk-samples 
 
 ## Getting started
 
