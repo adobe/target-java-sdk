@@ -4,6 +4,8 @@ The Adobe Target Java SDK uses the [Target View Delivery API] to retrieve and de
 best practices. Furthermore, the Java SDK helps manage integrations with Experience Cloud solutions like Visitor API and Adobe 
 Analytics.
 
+Standalone Spring Boot based Target Java SDK sample is available at https://github.com/adobe/target-java-sdk-samples 
+
 ## Getting started
 
 ### Prerequisites
@@ -15,14 +17,14 @@ Analytics.
 
 To get started with Target Java SDK, just add it as a dependency in `gradle` as:
 ```groovy
-compile 'com.adobe.target:java-sdk:1.0'
+compile 'com.adobe.target:target-java-sdk:1.0.0'
 ```
 or `maven` as:
 ```xml
 <dependency>
     <groupId>com.adobe.target</groupId>
-    <artifactId>java-sdk</artifactId>
-    <version>1.0</version>
+    <artifactId>target-java-sdk</artifactId>
+    <version>1.0.0 </version>
 </dependency>
 ```
 

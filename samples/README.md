@@ -2,7 +2,7 @@
 
 This repository contains Spring Boot basedsamples for [Target Java SDK](https://github.com/adobe/target-java-sdk).
 
-##Initiating Client
+## Initiating Client
 
 The `TargetClient` is instantiated as a Spring bean in [ClientSampleApplication](src/main/java/com/adobe/target/sample/ClientSampleApplication.java) class
 as follows:
