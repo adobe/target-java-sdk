@@ -203,13 +203,12 @@ public final class TargetDeliveryRequestBuilder {
     private void setVisitorValues() {
         String visitorCookie = requestCookies.get(VisitorProvider.getInstance().getVisitorCookieName());
 
-        if (isEmpty(visitorCookie)) {
-            return;
-        }
-
         createAndSetVisitor(visitorCookie);
         Map<String, AmcvEntry> visitorValues = visitor.getVisitorValues();
-        marketingCloudVisitorId = visitorValues.get(MARKETING_CLOUD_VISITOR_ID).getValue();
+        AmcvEntry entry = visitorValues.get(MARKETING_CLOUD_VISITOR_ID);
+        if (entry != null) {
+            marketingCloudVisitorId = entry.getValue();
+        }
     }
 
     private void setExperienceCloudValues() {
@@ -246,10 +245,14 @@ public final class TargetDeliveryRequestBuilder {
         }
 
         Map<String, AmcvEntry> visitorValues = visitor.getVisitorValues();
-        int locationHint = Integer.parseInt(visitorValues.get(LOCATION_HINT).getValue());
-        String blob = visitorValues.get(BLOB).getValue();
-        AudienceManager audienceManager = new AudienceManager().blob(blob).locationHint(locationHint);
-        experienceCloud.audienceManager(audienceManager);
+        AmcvEntry locationHintEntry = visitorValues.get(LOCATION_HINT);
+        AmcvEntry blobEntry = visitorValues.get(BLOB);
+        if (locationHintEntry != null && blobEntry != null) {
+            int locationHint = Integer.parseInt(locationHintEntry.getValue());
+            String blob = blobEntry.getValue();
+            AudienceManager audienceManager = new AudienceManager().blob(blob).locationHint(locationHint);
+            experienceCloud.audienceManager(audienceManager);
+        }
     }
 
     private void setSessionId(final Map<String, String> parsedCookies) {
