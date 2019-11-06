@@ -197,11 +197,11 @@ class TargetDeliveryRequestTest {
         assertEquals(context, targetDeliveryRequest.getDeliveryRequest().getContext());
         assertEquals(mboxNotifications, targetDeliveryRequest.getDeliveryRequest().getNotifications());
 
-        assertNull(targetDeliveryRequest.getDeliveryRequest().getExperienceCloud());
+        verifyAnalyticsValues(targetDeliveryRequest);
 
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         verifyServerStateAndNewCookie(targetDeliveryResponse, newSessionId);
-        assertTrue(targetDeliveryResponse.getVisitorState().isEmpty());
+        verifyVisitorState(targetDeliveryResponse, customerIds);
     }
 
     @Test
@@ -238,11 +238,11 @@ class TargetDeliveryRequestTest {
         assertEquals(context, targetDeliveryRequest.getDeliveryRequest().getContext());
         assertEquals(mboxNotifications, targetDeliveryRequest.getDeliveryRequest().getNotifications());
 
-        assertNull(targetDeliveryRequest.getDeliveryRequest().getExperienceCloud());
+        verifyAnalyticsValues(targetDeliveryRequest);
 
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         verifyServerStateAndNewCookie(targetDeliveryResponse, newSessionId);
-        assertTrue(targetDeliveryResponse.getVisitorState().isEmpty());
+        verifyVisitorState(targetDeliveryResponse, customerIds);
     }
 
 }
