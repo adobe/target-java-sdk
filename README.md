@@ -82,6 +82,7 @@ end client including browsers, mobiles, IOT devices or servers.
   * [Target Only](#target-only)
   * [Maintaining Sessions](#maintaining-sessions)
   * [Asynchronous Requests](#asynchronous-requests)
+  * [Proxy Configuration](#proxy-configuration)
   * [ECID Integration](#ecid-integration)
   * [ECID with Customer IDs Integration](#ecid-with-customer-ids-integration)
   * [ECID and Analytics Integration](#ecid-and-analytics-integration)
@@ -282,7 +283,7 @@ If the application running the SDK requires a proxy to access the internet, the 
 ClientConfig clientConfig = ClientConfig.builder()
 	.client("emeaprod4")
 	.organizationId("0DD934B85278256B0A490D44@AdobeOrg")
-	.proxy(new ClientProxyConfig(host,port))
+	.proxyConfig(new ClientProxyConfig(host,port))
 	.build();
 TargetClient targetClient = TargetClient.create(clientConfig);
 ```
@@ -293,7 +294,7 @@ Please note that this only works for simple username/password proxy authenticati
 ClientConfig clientConfig = ClientConfig.builder()
 	.client("emeaprod4")
 	.organizationId("0DD934B85278256B0A490D44@AdobeOrg")
-	.proxy(new ClientProxyConfig(host,port,username,password))
+	.proxyConfig(new ClientProxyConfig(host,port,username,password))
 	.build();
 TargetClient targetClient = TargetClient.create(clientConfig);
 ```

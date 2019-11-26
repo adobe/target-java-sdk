@@ -48,11 +48,11 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
         }
         
         if (clientConfig.isProxyEnabled()) {
-            ClientProxyConfig proxy = clientConfig.getProxy();
-            if(proxy.isAuthProxy()) {
-                unirestInstance.config().proxy(proxy.getHost(), proxy.getPort(), proxy.getUsername(), proxy.getPassword());
+            ClientProxyConfig proxyConfig = clientConfig.getProxyConfig();
+            if(proxyConfig.isAuthProxy()) {
+                unirestInstance.config().proxy(proxyConfig.getHost(), proxyConfig.getPort(), proxyConfig.getUsername(), proxyConfig.getPassword());
             } else {
-                unirestInstance.config().proxy(proxy.getHost(), proxy.getPort());
+                unirestInstance.config().proxy(proxyConfig.getHost(), proxyConfig.getPort());
             }
         }
     }
