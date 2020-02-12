@@ -34,6 +34,9 @@ public class ClientConfig {
     private boolean logRequestStatus;
     private HttpRequestInterceptor requestInterceptor;
     private ClientProxyConfig proxyConfig;
+    private String workspace;
+    private String environment;
+    private int localDecisioningPollingIntSecs;
 
     public String getClient() {
         return client;
@@ -94,6 +97,12 @@ public class ClientConfig {
         return new ClientConfigBuilder();
     }
 
+    public String getWorkspace() { return workspace; }
+
+    public String getEnvironment() { return environment; }
+
+    public int getLocalDecisioningPollingIntSecs() { return localDecisioningPollingIntSecs; }
+
     public static final class ClientConfigBuilder {
         private static final String CLUSTER_PREFIX = "mboxedge";
         private static final String DELIVERY_PATH_SUFFIX = "/rest/v1/delivery";
@@ -110,6 +119,9 @@ public class ClientConfig {
         private boolean logRequestStatus = false;
         private HttpRequestInterceptor requestInterceptor;
         private ClientProxyConfig proxyConfig;
+        private String workspace;
+        private String environment;
+        private int localDecisioningPollingIntSecs = 300;
 
         private ClientConfigBuilder() {
         }
@@ -178,6 +190,21 @@ public class ClientConfig {
         	return this;
         }
 
+        public ClientConfigBuilder workspace(String workspace) {
+            this.workspace = workspace;
+            return this;
+        }
+
+        public ClientConfigBuilder environment(String environment) {
+            this.environment = environment;
+            return this;
+        }
+
+        public ClientConfigBuilder localDecisioningPollingIntSecs(int pollingInterval) {
+            this.localDecisioningPollingIntSecs = pollingInterval;
+            return this;
+        }
+
         public ClientConfig build() {
             ClientConfig clientConfig = new ClientConfig();
             Objects.requireNonNull(client, "client id cannot be null");
@@ -197,6 +224,9 @@ public class ClientConfig {
             clientConfig.logRequests = this.logRequests;
             clientConfig.logRequestStatus = this.logRequestStatus;
             clientConfig.proxyConfig = this.proxyConfig;
+            clientConfig.workspace = this.workspace;
+            clientConfig.environment = this.environment;
+            clientConfig.localDecisioningPollingIntSecs = this.localDecisioningPollingIntSecs;
             return clientConfig;
         }
     }
