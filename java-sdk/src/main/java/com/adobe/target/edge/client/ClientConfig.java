@@ -33,6 +33,7 @@ public class ClientConfig {
     private boolean logRequests;
     private boolean logRequestStatus;
     private HttpRequestInterceptor requestInterceptor;
+    private ClientProxyConfig proxyConfig;
 
     public String getClient() {
         return client;
@@ -80,6 +81,14 @@ public class ClientConfig {
         }
         return defaultUrl;
     }
+    
+    public ClientProxyConfig getProxyConfig() {
+    	return proxyConfig;
+    }
+
+    public boolean isProxyEnabled() {
+    	return proxyConfig != null;
+    }
 
     public static ClientConfigBuilder builder() {
         return new ClientConfigBuilder();
@@ -100,6 +109,7 @@ public class ClientConfig {
         private boolean logRequests = false;
         private boolean logRequestStatus = false;
         private HttpRequestInterceptor requestInterceptor;
+        private ClientProxyConfig proxyConfig;
 
         private ClientConfigBuilder() {
         }
@@ -162,6 +172,11 @@ public class ClientConfig {
         public void requestInterceptor(HttpRequestInterceptor requestInterceptor) {
             this.requestInterceptor = requestInterceptor;
         }
+        
+        public ClientConfigBuilder proxyConfig(ClientProxyConfig proxyConfig) {
+        	this.proxyConfig = proxyConfig;
+        	return this;
+        }
 
         public ClientConfig build() {
             ClientConfig clientConfig = new ClientConfig();
@@ -181,6 +196,7 @@ public class ClientConfig {
             clientConfig.requestInterceptor = this.requestInterceptor;
             clientConfig.logRequests = this.logRequests;
             clientConfig.logRequestStatus = this.logRequestStatus;
+            clientConfig.proxyConfig = this.proxyConfig;
             return clientConfig;
         }
     }

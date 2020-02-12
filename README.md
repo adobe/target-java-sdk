@@ -82,6 +82,7 @@ end client including browsers, mobiles, IOT devices or servers.
   * [Target Only](#target-only)
   * [Maintaining Sessions](#maintaining-sessions)
   * [Asynchronous Requests](#asynchronous-requests)
+  * [Proxy Configuration](#proxy-configuration)
   * [ECID Integration](#ecid-integration)
   * [ECID with Customer IDs Integration](#ecid-with-customer-ids-integration)
   * [ECID and Analytics Integration](#ecid-and-analytics-integration)
@@ -274,6 +275,29 @@ Target request is fired before `simulateIO` and by the time it is executed targe
 Even if it's not, you'll have significant savings in most cases.
 
 Full Sample: Full Sample: Checkout `/mboxTargetOnlyAsync` endpoint in [TargetRestController](samples/src/main/java/com/adobe/target/sample/controller/TargetRestController.java)
+
+## Proxy Configuration
+
+If the application running the SDK requires a proxy to access the internet, the TargetClient will need to be configured with a proxy configuration as follows.
+```java
+ClientConfig clientConfig = ClientConfig.builder()
+	.client("emeaprod4")
+	.organizationId("0DD934B85278256B0A490D44@AdobeOrg")
+	.proxyConfig(new ClientProxyConfig(host,port))
+	.build();
+TargetClient targetClient = TargetClient.create(clientConfig);
+```
+
+If a proxy authentication is required, the credentials can be passed as parameters to the ClientProxyConfig constructor, as per the below example.
+Please note that this only works for simple username/password proxy authentication. 
+```java
+ClientConfig clientConfig = ClientConfig.builder()
+	.client("emeaprod4")
+	.organizationId("0DD934B85278256B0A490D44@AdobeOrg")
+	.proxyConfig(new ClientProxyConfig(host,port,username,password))
+	.build();
+TargetClient targetClient = TargetClient.create(clientConfig);
+```
 
 ---
 

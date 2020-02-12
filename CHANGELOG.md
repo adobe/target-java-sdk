@@ -1,7 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.0] - 2019-31-10
+## [1.1.0] - 2019-12-16
+### Added
+- Added support for proxy config. Thanks @hisham-hassan for contribution.
+
+
+## [1.0.1] - 2019-11-11
+### Fixed
+- Send supplemental data ID in a Target request even when there is no Visitor API cookie present 
+
+## [1.0.0] - 2019-10-31
 ### Added
 - Target View Delivery v1 API support, including Page Load and View prefetch
 - Full support for delivering all types of offers authored in Visual Experience Composer

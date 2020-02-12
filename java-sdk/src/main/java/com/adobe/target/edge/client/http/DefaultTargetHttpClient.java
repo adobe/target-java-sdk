@@ -12,8 +12,7 @@
 package com.adobe.target.edge.client.http;
 
 import com.adobe.target.edge.client.ClientConfig;
-import com.adobe.target.edge.client.TargetClient;
-import com.adobe.target.edge.client.service.TargetClientException;
+import com.adobe.target.edge.client.ClientProxyConfig;
 import kong.unirest.HttpResponse;
 import kong.unirest.ObjectMapper;
 import kong.unirest.Unirest;
@@ -46,6 +45,15 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
 
         if (clientConfig.getRequestInterceptor() != null) {
             unirestInstance.config().addInterceptor(clientConfig.getRequestInterceptor());
+        }
+        
+        if (clientConfig.isProxyEnabled()) {
+            ClientProxyConfig proxyConfig = clientConfig.getProxyConfig();
+            if(proxyConfig.isAuthProxy()) {
+                unirestInstance.config().proxy(proxyConfig.getHost(), proxyConfig.getPort(), proxyConfig.getUsername(), proxyConfig.getPassword());
+            } else {
+                unirestInstance.config().proxy(proxyConfig.getHost(), proxyConfig.getPort());
+            }
         }
     }
 
@@ -83,4 +91,7 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
         unirestInstance.shutDown();
     }
 
+    UnirestInstance getUnirestInstance() {
+    	return unirestInstance;
+    }
 }
