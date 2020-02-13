@@ -13,6 +13,10 @@ package com.adobe.target.edge.client;
 
 import com.adobe.target.edge.client.http.ResponseStatus;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
+import com.adobe.target.edge.client.local.DefaultRuleLoader;
+import com.adobe.target.edge.client.local.LocalDecisioningService;
+import com.adobe.target.edge.client.local.RuleLoader;
+import com.adobe.target.edge.client.model.ExecutionMode;
 import com.adobe.target.edge.client.service.TargetRequestException;
 import com.adobe.target.edge.client.service.TargetService;
 import com.adobe.target.edge.client.service.DefaultTargetService;
@@ -30,9 +34,14 @@ public class DefaultTargetClient implements TargetClient {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultTargetHttpClient.class);
     private final TargetService targetService;
+    private final RuleLoader ruleLoader;
+    private final LocalDecisioningService localService;
 
     DefaultTargetClient(ClientConfig clientConfig) {
         this.targetService = new DefaultTargetService(clientConfig);
+        this.ruleLoader = new DefaultRuleLoader();
+        this.ruleLoader.start(clientConfig);
+        this.localService = new LocalDecisioningService(clientConfig);
         VisitorProvider.init(clientConfig.getOrganizationId());
     }
 
@@ -40,7 +49,13 @@ public class DefaultTargetClient implements TargetClient {
     public TargetDeliveryResponse getOffers(TargetDeliveryRequest request) {
         try {
             Objects.requireNonNull(request, "ClientConfig instance cannot be null");
-            TargetDeliveryResponse targetDeliveryResponse = targetService.executeRequest(request);
+            TargetDeliveryResponse targetDeliveryResponse;
+            if (request.getExecutionMode() == ExecutionMode.LOCAL) {
+                targetDeliveryResponse = localService.executeRequest(request, this.ruleLoader.getLatestRules());
+            }
+            else {
+                targetDeliveryResponse = targetService.executeRequest(request);
+            }
             return targetDeliveryResponse;
         } catch (Exception e) {
             throw new TargetRequestException(e.getMessage(), e);
@@ -50,7 +65,15 @@ public class DefaultTargetClient implements TargetClient {
     @Override
     public CompletableFuture<TargetDeliveryResponse> getOffersAsync(TargetDeliveryRequest request) {
         try {
-            return targetService.executeRequestAsync(request);
+            Objects.requireNonNull(request, "ClientConfig instance cannot be null");
+            CompletableFuture<TargetDeliveryResponse> targetDeliveryResponse;
+            if (request.getExecutionMode() == ExecutionMode.LOCAL) {
+                targetDeliveryResponse = CompletableFuture.completedFuture(localService.executeRequest(request, this.ruleLoader.getLatestRules()));
+            }
+            else {
+                targetDeliveryResponse = targetService.executeRequestAsync(request);
+            }
+            return targetDeliveryResponse;
         } catch (Exception e) {
             throw new TargetRequestException(e.getMessage(), e);
         }
@@ -70,6 +93,7 @@ public class DefaultTargetClient implements TargetClient {
     public void close() {
         try {
             targetService.close();
+            ruleLoader.stop();
         } catch (Exception e) {
             logger.error("Could not close TargetClient: {}", e.getMessage());
         }

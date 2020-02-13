@@ -82,6 +82,7 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-core:2.9.8"
     implementation "com.fasterxml.jackson.core:jackson-databind:2.9.8"
     implementation "com.konghq:unirest-java:3.0.00"
+    implementation "io.github.jamsesso:json-logic-java:1.0.3"
 
     testImplementation "org.slf4j:slf4j-simple:2.0.0-alpha0"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:5.5.2"

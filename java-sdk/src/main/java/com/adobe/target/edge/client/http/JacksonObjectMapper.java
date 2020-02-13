@@ -60,4 +60,6 @@ public class JacksonObjectMapper implements kong.unirest.ObjectMapper {
         }
     }
 
+    public ObjectMapper getMapper() { return this.objectMapper; }
+
 }

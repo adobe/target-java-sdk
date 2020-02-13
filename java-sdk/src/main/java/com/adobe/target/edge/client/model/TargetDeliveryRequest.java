@@ -19,6 +19,7 @@ public class TargetDeliveryRequest {
     private String sessionId;
     private String locationHint;
     private Visitor visitor;
+    private ExecutionMode executionMode = ExecutionMode.REMOTE;
     private DeliveryRequest deliveryRequest = new DeliveryRequest();
 
     private TargetDeliveryRequest() {}
@@ -44,6 +45,11 @@ public class TargetDeliveryRequest {
         return this;
     }
 
+    TargetDeliveryRequest setExecutionMode(ExecutionMode executionMode) {
+        this.executionMode = executionMode;
+        return this;
+    }
+
     public String getSessionId() {
         return sessionId;
     }
@@ -60,6 +66,8 @@ public class TargetDeliveryRequest {
         return locationHint;
     }
 
+    public ExecutionMode getExecutionMode() { return executionMode; }
+
     public static TargetDeliveryRequestBuilder builder() {
         return new TargetDeliveryRequestBuilder();
     }
@@ -70,6 +78,7 @@ public class TargetDeliveryRequest {
                 "sessionId='" + sessionId + '\'' +
                 ", locationHint='" + locationHint + '\'' +
                 ", visitor=" + visitor +
+                ", executionMode=" + executionMode +
                 ", deliveryRequest=" + deliveryRequest +
                 '}';
     }

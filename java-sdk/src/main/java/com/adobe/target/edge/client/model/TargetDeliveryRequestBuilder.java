@@ -40,6 +40,7 @@ public final class TargetDeliveryRequestBuilder {
     private List<CustomerId> targetCustomerIds;
     private String trackingServer;
     private String trackingServerSecure;
+    private ExecutionMode executionMode;
     private Map<String, String> requestCookies = new HashMap<>();
     private DeliveryRequest request;
 
@@ -162,6 +163,11 @@ public final class TargetDeliveryRequestBuilder {
         return this;
     }
 
+    public TargetDeliveryRequestBuilder executionMode(ExecutionMode executionMode) {
+        this.executionMode = executionMode;
+        return this;
+    }
+
     public TargetDeliveryRequest build() {
         setTargetValues();
         setVisitorValues();
@@ -171,6 +177,7 @@ public final class TargetDeliveryRequestBuilder {
         targetDeliveryRequest.setLocationHint(locationHint);
         targetDeliveryRequest.setSessionId(sessionId);
         targetDeliveryRequest.setVisitor(visitor);
+        targetDeliveryRequest.setExecutionMode(executionMode);
         return targetDeliveryRequest;
     }
 

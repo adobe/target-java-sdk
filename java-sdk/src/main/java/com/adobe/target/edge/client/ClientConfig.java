@@ -34,8 +34,7 @@ public class ClientConfig {
     private boolean logRequestStatus;
     private HttpRequestInterceptor requestInterceptor;
     private ClientProxyConfig proxyConfig;
-    private String workspace;
-    private String environment;
+    private String localEnvironment;
     private int localDecisioningPollingIntSecs;
 
     public String getClient() {
@@ -97,9 +96,7 @@ public class ClientConfig {
         return new ClientConfigBuilder();
     }
 
-    public String getWorkspace() { return workspace; }
-
-    public String getEnvironment() { return environment; }
+    public String getLocalEnvironment() { return localEnvironment; }
 
     public int getLocalDecisioningPollingIntSecs() { return localDecisioningPollingIntSecs; }
 
@@ -119,8 +116,7 @@ public class ClientConfig {
         private boolean logRequestStatus = false;
         private HttpRequestInterceptor requestInterceptor;
         private ClientProxyConfig proxyConfig;
-        private String workspace;
-        private String environment;
+        private String localEnvironment;
         private int localDecisioningPollingIntSecs = 300;
 
         private ClientConfigBuilder() {
@@ -190,13 +186,8 @@ public class ClientConfig {
         	return this;
         }
 
-        public ClientConfigBuilder workspace(String workspace) {
-            this.workspace = workspace;
-            return this;
-        }
-
-        public ClientConfigBuilder environment(String environment) {
-            this.environment = environment;
+        public ClientConfigBuilder localEnvironment(String environment) {
+            this.localEnvironment = environment;
             return this;
         }
 
@@ -224,8 +215,7 @@ public class ClientConfig {
             clientConfig.logRequests = this.logRequests;
             clientConfig.logRequestStatus = this.logRequestStatus;
             clientConfig.proxyConfig = this.proxyConfig;
-            clientConfig.workspace = this.workspace;
-            clientConfig.environment = this.environment;
+            clientConfig.localEnvironment = this.localEnvironment;
             clientConfig.localDecisioningPollingIntSecs = this.localDecisioningPollingIntSecs;
             return clientConfig;
         }
