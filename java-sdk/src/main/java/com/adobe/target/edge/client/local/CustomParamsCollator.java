@@ -1,9 +1,6 @@
 package com.adobe.target.edge.client.local;
 
-import com.adobe.target.delivery.v1.model.ExecuteRequest;
-import com.adobe.target.delivery.v1.model.MboxRequest;
-import com.adobe.target.delivery.v1.model.PrefetchRequest;
-import com.adobe.target.delivery.v1.model.RequestDetails;
+import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 
 import java.util.*;
@@ -34,6 +31,22 @@ public class CustomParamsCollator implements ParamsCollator {
                     for (MboxRequest request : requests) {
                         if (mboxSet.contains(request.getName())) {
                             addAllParameters(custom, request);
+                        }
+                    }
+                }
+            }
+        }
+        @SuppressWarnings("unchecked")
+        List<String> views = (List<String>)meta.get("views");
+        if (views != null && views.size() > 0) {
+            Set<String> viewSet = new HashSet<>(views);
+            PrefetchRequest prequest = deliveryRequest.getDeliveryRequest().getPrefetch();
+            if (prequest != null) {
+                List<ViewRequest> viewrs = prequest.getViews();
+                if (viewrs != null) {
+                    for (ViewRequest viewr : viewrs) {
+                        if (viewSet.contains(viewr.getName())) {
+                            addAllParameters(custom, viewr);
                         }
                     }
                 }

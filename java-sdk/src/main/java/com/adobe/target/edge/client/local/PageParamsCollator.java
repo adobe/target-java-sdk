@@ -51,6 +51,22 @@ public class PageParamsCollator implements ParamsCollator {
                 }
             }
         }
+        @SuppressWarnings("unchecked")
+        List<String> views = (List<String>)meta.get("views");
+        if (views != null && views.size() > 0) {
+            Set<String> viewSet = new HashSet<>(views);
+            PrefetchRequest prequest = deliveryRequest.getDeliveryRequest().getPrefetch();
+            if (prequest != null) {
+                List<ViewRequest> viewrs = prequest.getViews();
+                if (viewrs != null) {
+                    for (ViewRequest viewr : viewrs) {
+                        if (viewSet.contains(viewr.getName())) {
+                            address = viewr.getAddress();
+                        }
+                    }
+                }
+            }
+        }
         if (address == null) {
             return page;
         }
