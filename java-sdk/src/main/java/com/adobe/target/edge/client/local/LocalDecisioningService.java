@@ -98,9 +98,9 @@ public class LocalDecisioningService {
         String vid = getOrCreateVisitorId(deliveryRequest, targetResponse);
         data.put("allocation", computeAllocation(vid, rule));
         addTimeParams(data);
-        data.put("user", new UserParamsCollator().collateParams(deliveryRequest));
-        data.put("page", new PageParamsCollator().collateParams(deliveryRequest));
-        data.put("mbox", new CustomParamsCollator().collateParams(deliveryRequest));
+        data.put("user", new UserParamsCollator().collateParams(deliveryRequest, rule.getMeta()));
+        data.put("page", new PageParamsCollator().collateParams(deliveryRequest, rule.getMeta()));
+        data.put("mbox", new CustomParamsCollator().collateParams(deliveryRequest, rule.getMeta()));
         logger.info("data="+data);
         try {
             ObjectMapper mapper = new ObjectMapper();

@@ -34,7 +34,7 @@ public class UserParamsCollator implements ParamsCollator {
                 put("Linux", "linux");
             }});
 
-    public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest) {
+    public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest, Map<String, Object> meta) {
         Map<String, Object> user = new HashMap<>();
         String userAgent = extractUserAgent(deliveryRequest);
         user.put("browserType", parseBrowserType(userAgent));
