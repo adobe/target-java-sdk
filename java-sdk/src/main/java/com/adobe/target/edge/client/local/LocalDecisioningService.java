@@ -7,6 +7,8 @@ import com.adobe.target.edge.client.model.LocalDecisioningRule;
 import com.adobe.target.edge.client.model.LocalDecisioningRuleSet;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
+import com.adobe.target.edge.client.service.TargetClientException;
+import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.jamsesso.jsonlogic.JsonLogic;
@@ -31,6 +33,18 @@ public class LocalDecisioningService {
     }
 
     public TargetDeliveryResponse executeRequest(TargetDeliveryRequest deliveryRequest, LocalDecisioningRuleSet ruleSet) {
+        String requestId = deliveryRequest.getDeliveryRequest().getRequestId();
+        if (requestId == null) {
+            requestId = UUID.randomUUID().toString();
+        }
+        if (ruleSet == null) {
+            DeliveryResponse deliveryResponse = new DeliveryResponse()
+                    .client(clientConfig.getClient())
+                    .requestId(requestId)
+                    .id(deliveryRequest.getDeliveryRequest().getId())
+                    .status(500);
+            return new TargetDeliveryResponse(deliveryRequest, deliveryResponse, 500, "Local-decisioning rules not available");
+        }
         Map<String, MboxRequest> executeMboxes = new HashMap<>();
         if (deliveryRequest.getDeliveryRequest().getExecute() != null) {
             executeMboxes.putAll(deliveryRequest.getDeliveryRequest().getExecute().getMboxes().stream().collect(Collectors.toMap(MboxRequest::getName, Function.identity())));
@@ -41,10 +55,6 @@ public class LocalDecisioningService {
         }
         PrefetchResponse prefetchResponse = new PrefetchResponse();
         ExecuteResponse executeResponse = new ExecuteResponse();
-        String requestId = deliveryRequest.getDeliveryRequest().getRequestId();
-        if (requestId == null) {
-            requestId = UUID.randomUUID().toString();
-        }
         DeliveryResponse deliveryResponse = new DeliveryResponse()
                 .client(clientConfig.getClient())
                 .requestId(requestId)
@@ -108,7 +118,12 @@ public class LocalDecisioningService {
             return ((Boolean) jsonLogic.apply(expression, data)) ? rule.getConsequence() : null;
         }
         catch (Exception e) {
-            logger.warn("Hit exception while evaluating local-decisioning rule", e);
+            String message = "Hit exception while evaluating local-decisioning rule";
+            logger.warn(message, e);
+            TargetExceptionHandler handler = this.clientConfig.getExceptionHandler();
+            if (handler != null) {
+                handler.handleException(new TargetClientException(message, e));
+            }
             return null;
         }
     }
@@ -137,10 +152,13 @@ public class LocalDecisioningService {
         long now = System.currentTimeMillis();
         data.put("current_timestamp", now);
         SimpleDateFormat dayFormat = new SimpleDateFormat("u");
+        dayFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         data.put("current_day", dayFormat.format(now));
         SimpleDateFormat hourFormat = new SimpleDateFormat("H");
+        hourFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         data.put("current_hour", hourFormat.format(now));
         SimpleDateFormat minuteFormat = new SimpleDateFormat("m");
+        minuteFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         data.put("current_minute", minuteFormat.format(now));
     }
 

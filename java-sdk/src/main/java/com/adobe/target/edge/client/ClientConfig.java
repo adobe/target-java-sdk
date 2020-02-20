@@ -11,6 +11,7 @@
  */
 package com.adobe.target.edge.client;
 
+import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import org.apache.http.HttpRequestInterceptor;
 
 import java.util.Objects;
@@ -34,6 +35,7 @@ public class ClientConfig {
     private boolean logRequestStatus;
     private HttpRequestInterceptor requestInterceptor;
     private ClientProxyConfig proxyConfig;
+    private TargetExceptionHandler exceptionHandler;
     private String localEnvironment;
     private int localDecisioningPollingIntSecs;
 
@@ -88,6 +90,8 @@ public class ClientConfig {
     	return proxyConfig;
     }
 
+    public TargetExceptionHandler getExceptionHandler() { return exceptionHandler; }
+
     public boolean isProxyEnabled() {
     	return proxyConfig != null;
     }
@@ -116,6 +120,7 @@ public class ClientConfig {
         private boolean logRequestStatus = false;
         private HttpRequestInterceptor requestInterceptor;
         private ClientProxyConfig proxyConfig;
+        private TargetExceptionHandler exceptionHandler;
         private String localEnvironment;
         private int localDecisioningPollingIntSecs = 300;
 
@@ -186,6 +191,11 @@ public class ClientConfig {
         	return this;
         }
 
+        public ClientConfigBuilder exceptionHandler(TargetExceptionHandler handler) {
+            this.exceptionHandler = handler;
+            return this;
+        }
+
         public ClientConfigBuilder localEnvironment(String environment) {
             this.localEnvironment = environment;
             return this;
@@ -215,6 +225,7 @@ public class ClientConfig {
             clientConfig.logRequests = this.logRequests;
             clientConfig.logRequestStatus = this.logRequestStatus;
             clientConfig.proxyConfig = this.proxyConfig;
+            clientConfig.exceptionHandler = this.exceptionHandler;
             clientConfig.localEnvironment = this.localEnvironment;
             clientConfig.localDecisioningPollingIntSecs = this.localDecisioningPollingIntSecs;
             return clientConfig;

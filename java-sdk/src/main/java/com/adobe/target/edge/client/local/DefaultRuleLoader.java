@@ -3,6 +3,8 @@ package com.adobe.target.edge.client.local;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.model.LocalDecisioningRuleSet;
+import com.adobe.target.edge.client.service.TargetClientException;
+import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import kong.unirest.GenericType;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestInstance;
@@ -16,10 +18,13 @@ public class DefaultRuleLoader implements RuleLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultRuleLoader.class);
 
+    private static final long MIN_POLLING_INTERVAL = 5 * 60 * 1000; // 5 minutes
+
     private LocalDecisioningRuleSet latestRules;
+    private ClientConfig clientConfig;
 
     private UnirestInstance unirestInstance = Unirest.spawnInstance();
-    private Timer timer = new Timer();
+    private Timer timer = new Timer(this.getClass().getCanonicalName());
     private boolean started = false;
 
     public DefaultRuleLoader() {}
@@ -31,16 +36,13 @@ public class DefaultRuleLoader implements RuleLoader {
 
     @Override
     public synchronized void start(final ClientConfig clientConfig) {
-
         if (clientConfig.getLocalEnvironment() == null) {
             return;
         }
-
         if (started) {
             return;
         }
         started = true;
-
         unirestInstance.config()
                 .socketTimeout(clientConfig.getSocketTimeout())
                 .connectTimeout(clientConfig.getConnectTimeout())
@@ -49,17 +51,33 @@ public class DefaultRuleLoader implements RuleLoader {
                 .enableCookieManagement(false)
                 .setObjectMapper(new JacksonObjectMapper())
                 .setDefaultHeader("Accept", "application/json");
-
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                DefaultRuleLoader.this.loadRules(clientConfig);
-            }
-        }, 0, clientConfig.getLocalDecisioningPollingIntSecs() * 1000);
+        this.clientConfig = clientConfig;
+        this.scheduleTimer(0);
     }
 
     public void stop() {
         this.timer.cancel();
+        this.started = false;
+    }
+
+    public void refresh() {
+        this.loadRules(this.clientConfig);
+        this.timer.cancel();
+        this.scheduleTimer(pollingInterval());
+    }
+
+    private void scheduleTimer(long delay) {
+        this.timer = new Timer(this.getClass().getCanonicalName());
+        this.timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                DefaultRuleLoader.this.loadRules(clientConfig);
+            }
+        }, delay, pollingInterval());
+    }
+
+    private long pollingInterval() {
+        return Math.max(MIN_POLLING_INTERVAL, clientConfig.getLocalDecisioningPollingIntSecs() * 1000);
     }
 
     private void loadRules(ClientConfig clientConfig) {
@@ -71,10 +89,20 @@ public class DefaultRuleLoader implements RuleLoader {
             logger.info("rulesList="+latestRules);
         }
         else if (ruleSet != null) {
-            logger.warn("Unknown rules version: " + ruleSet.getVersion());
+            String message = "Unknown rules version: " + ruleSet.getVersion();
+            logger.warn(message);
+            TargetExceptionHandler handler = clientConfig.getExceptionHandler();
+            if (handler != null) {
+                handler.handleException(new TargetClientException(message));
+            }
         }
         else {
-            logger.warn("Unable to parse rule set");
+            String message = "Unable to parse local-decisioning rule set";
+            logger.warn(message);
+            TargetExceptionHandler handler = clientConfig.getExceptionHandler();
+            if (handler != null) {
+                handler.handleException(new TargetClientException(message));
+            }
         }
     }
 
