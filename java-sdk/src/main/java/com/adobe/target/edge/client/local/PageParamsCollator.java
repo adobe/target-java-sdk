@@ -100,7 +100,6 @@ public class PageParamsCollator implements ParamsCollator {
     }
 
     private String extractTopLevel(String host) {
-        // TODO: implement properly
         if (host == null) {
             return "";
         }
@@ -119,7 +118,11 @@ public class PageParamsCollator implements ParamsCollator {
         if (host.toLowerCase().startsWith("www.")) {
             host = host.substring(4);
         }
-        return host;
+        String[] parts = host.split("\\.");
+        if (parts.length < 3) {
+            return "";
+        }
+        return parts[0];
     }
 
     private String strOrBlank(String str) {

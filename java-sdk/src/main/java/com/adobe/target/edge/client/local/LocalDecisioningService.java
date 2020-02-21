@@ -154,12 +154,9 @@ public class LocalDecisioningService {
         SimpleDateFormat dayFormat = new SimpleDateFormat("u");
         dayFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         data.put("current_day", dayFormat.format(now));
-        SimpleDateFormat hourFormat = new SimpleDateFormat("H");
-        hourFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        data.put("current_hour", hourFormat.format(now));
-        SimpleDateFormat minuteFormat = new SimpleDateFormat("m");
-        minuteFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        data.put("current_minute", minuteFormat.format(now));
+        SimpleDateFormat timeFormat = new SimpleDateFormat("HHmm");
+        timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        data.put("current_time", timeFormat.format(now));
     }
 
     private double computeAllocation(String vid, LocalDecisioningRule rule) {
