@@ -110,6 +110,7 @@ public class LocalDecisioningService {
         addTimeParams(data);
         data.put("user", new UserParamsCollator().collateParams(deliveryRequest, rule.getMeta()));
         data.put("page", new PageParamsCollator().collateParams(deliveryRequest, rule.getMeta()));
+        data.put("referring", new PageParamsCollator(true).collateParams(deliveryRequest, rule.getMeta()));
         data.put("mbox", new CustomParamsCollator().collateParams(deliveryRequest, rule.getMeta()));
         logger.info("data="+data);
         try {

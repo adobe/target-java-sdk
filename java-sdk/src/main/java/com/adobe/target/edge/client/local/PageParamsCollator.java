@@ -2,6 +2,7 @@ package com.adobe.target.edge.client.local;
 
 import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
+import com.adobe.target.edge.client.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +13,15 @@ import java.util.*;
 public class PageParamsCollator implements ParamsCollator {
 
     private static final Logger logger = LoggerFactory.getLogger(PageParamsCollator.class);
+
+    private boolean referring = false;
+
+    public PageParamsCollator() {
+    }
+
+    public PageParamsCollator(boolean referring) {
+        this.referring = referring;
+    }
 
     public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest, Map<String, Object> meta) {
         Map<String, Object> page = new HashMap<>();
@@ -71,7 +81,11 @@ public class PageParamsCollator implements ParamsCollator {
             return page;
         }
         try {
-            URL url = new URL(address.getUrl());
+            String urlToUse = this.referring ? address.getReferringUrl() : address.getUrl();
+            if (StringUtils.isEmpty(urlToUse)) {
+                return page;
+            }
+            URL url = new URL(urlToUse);
             page.put("url", url.toString());
             page.put("url_lc", url.toString().toLowerCase());
             String host = url.getHost();

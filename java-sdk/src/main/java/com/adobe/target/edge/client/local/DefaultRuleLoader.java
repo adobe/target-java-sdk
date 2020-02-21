@@ -107,7 +107,7 @@ public class DefaultRuleLoader implements RuleLoader {
     }
 
     private String getLocalDecisioningUrl(ClientConfig clientConfig) {
-        return "https://targetuploadtest.s3-us-west-2.amazonaws.com/" +
+        return "https://target-local-decisioning-test.s3-us-west-2.amazonaws.com/" +
                 clientConfig.getClient() + "/" +
                 clientConfig.getLocalEnvironment().toLowerCase() + "/" +
                 "rules.json";
