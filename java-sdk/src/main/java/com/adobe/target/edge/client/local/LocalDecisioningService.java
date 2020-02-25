@@ -72,10 +72,12 @@ public class LocalDecisioningService {
                 deliveryResponse, 200, "Local-decisioning response");
         List<LocalDecisioningRule> rules = ruleSet.getRules();
         if (rules != null) {
+            String visitorId = getOrCreateVisitorId(deliveryRequest, targetResponse);
             for (RequestDetails details : prefetchRequests) {
                 boolean handled = false;
                 for (LocalDecisioningRule rule : rules) {
-                    Map<String, Object> resultMap = executeRule(deliveryRequest, targetResponse, details, rule);
+                    Map<String, Object> resultMap = executeRule(deliveryRequest,
+                            targetResponse, details, visitorId, rule);
                     handled |= handleResult(resultMap, details, prefetchResponse, null);
                 }
                 if (!handled) {
@@ -86,7 +88,8 @@ public class LocalDecisioningService {
             for (RequestDetails details : executeRequests) {
                 boolean handled = false;
                 for (LocalDecisioningRule rule : rules) {
-                    Map<String, Object> resultMap = executeRule(deliveryRequest, targetResponse, details, rule);
+                    Map<String, Object> resultMap = executeRule(deliveryRequest,
+                            targetResponse, details, visitorId, rule);
                     handled |= handleResult(resultMap, details, null, executeResponse);
                 }
                 if (!handled) {
@@ -101,11 +104,11 @@ public class LocalDecisioningService {
     private Map<String, Object> executeRule(TargetDeliveryRequest deliveryRequest,
                                             TargetDeliveryResponse targetResponse,
                                             RequestDetails details,
+                                            String visitorId,
                                             LocalDecisioningRule rule) {
         Map<String, Object> condition = rule.getCondition();
         Map<String, Object> data = new HashMap<>();
-        String vid = getOrCreateVisitorId(deliveryRequest, targetResponse);
-        data.put("allocation", computeAllocation(vid, rule));
+        data.put("allocation", computeAllocation(visitorId, rule));
         addTimeParams(data);
         data.put("user", new UserParamsCollator().collateParams(deliveryRequest, details, rule.getMeta()));
         data.put("page", new PageParamsCollator().collateParams(deliveryRequest, details, rule.getMeta()));
