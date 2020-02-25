@@ -1,6 +1,7 @@
 package com.adobe.target.edge.client.local;
 
 import com.adobe.target.delivery.v1.model.Context;
+import com.adobe.target.delivery.v1.model.RequestDetails;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.utils.StringUtils;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ import static java.util.stream.Collectors.toList;
 
 public class UserParamsCollator implements ParamsCollator {
 
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(UserParamsCollator.class);
 
     private static final String UNKNOWN = "unknown";
@@ -55,7 +57,8 @@ public class UserParamsCollator implements ParamsCollator {
     private static final int COMPATIBILITY_TOKEN_START_LENGTH = COMPATIBILITY_TOKEN_START.length();
     private static final int COMPATIBILITY_TOKEN_END_LENGTH = COMPATIBILITY_TOKEN_END.length();
 
-    public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest, Map<String, Object> meta) {
+    public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest,
+                                             RequestDetails requestDetails, Map<String, Object> meta) {
         Map<String, Object> user = new HashMap<>();
         String userAgent = extractUserAgent(deliveryRequest);
         user.put("browserType", parseBrowserType(userAgent));

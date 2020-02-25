@@ -23,58 +23,35 @@ public class PageParamsCollator implements ParamsCollator {
         this.referring = referring;
     }
 
-    public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest, Map<String, Object> meta) {
+    public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest,
+                                             RequestDetails requestDetails, Map<String, Object> meta) {
         Map<String, Object> page = new HashMap<>();
         Context context = deliveryRequest.getDeliveryRequest().getContext();
         if (context == null) {
             return page;
         }
         Address address = context.getAddress();
-        @SuppressWarnings("unchecked")
-        List<String> mboxes = (List<String>)meta.get("mboxes");
-        if (mboxes != null && mboxes.size() > 0) {
-            Set<String> mboxSet = new HashSet<>(mboxes);
-            PrefetchRequest prequest = deliveryRequest.getDeliveryRequest().getPrefetch();
-            if (prequest != null) {
-                List<MboxRequest> requests = prequest.getMboxes();
-                if (requests != null) {
-                    for (MboxRequest request : requests) {
-                        if (mboxSet.contains(request.getName())) {
-                            if (request.getAddress() != null) {
-                                address = request.getAddress();
-                            }
-                        }
-                    }
-                }
+        if (requestDetails instanceof ViewRequest) {
+            @SuppressWarnings("unchecked")
+            List<String> views = (List<String>)meta.get("views");
+            if (views != null && views.size() > 0 && requestDetails.getAddress() != null) {
+                address = requestDetails.getAddress();
             }
-            ExecuteRequest erequest = deliveryRequest.getDeliveryRequest().getExecute();
-            if (erequest != null) {
-                List<MboxRequest> requests = erequest.getMboxes();
-                if (requests != null) {
-                    for (MboxRequest request : requests) {
-                        if (mboxSet.contains(request.getName())) {
-                            if (request.getAddress() != null) {
-                                address = request.getAddress();
-                            }
-                        }
-                    }
+        }
+        else if (requestDetails instanceof MboxRequest) {
+            @SuppressWarnings("unchecked")
+            List<String> mboxes = (List<String>)meta.get("mboxes");
+            if (mboxes != null && mboxes.size() > 0) {
+                Set<String> mboxSet = new HashSet<>(mboxes);
+                if (mboxSet.contains(((MboxRequest) requestDetails).getName()) &&
+                        requestDetails.getAddress() != null) {
+                    address = requestDetails.getAddress();
                 }
             }
         }
-        @SuppressWarnings("unchecked")
-        List<String> views = (List<String>)meta.get("views");
-        if (views != null && views.size() > 0) {
-            Set<String> viewSet = new HashSet<>(views);
-            PrefetchRequest prequest = deliveryRequest.getDeliveryRequest().getPrefetch();
-            if (prequest != null) {
-                List<ViewRequest> viewrs = prequest.getViews();
-                if (viewrs != null) {
-                    for (ViewRequest viewr : viewrs) {
-                        if (viewSet.contains(viewr.getName())) {
-                            address = viewr.getAddress();
-                        }
-                    }
-                }
+        else { // pageLoad
+            if (requestDetails.getAddress() != null) {
+                address = requestDetails.getAddress();
             }
         }
         if (address == null) {

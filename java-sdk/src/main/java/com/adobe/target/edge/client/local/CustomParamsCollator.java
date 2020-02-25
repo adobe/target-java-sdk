@@ -7,49 +7,30 @@ import java.util.*;
 
 public class CustomParamsCollator implements ParamsCollator {
 
-    public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest, Map<String, Object> meta) {
+    public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest,
+                                             RequestDetails requestDetails, Map<String, Object> meta) {
         Map<String, Object> custom = new HashMap<>();
-        @SuppressWarnings("unchecked")
-        List<String> mboxes = (List<String>)meta.get("mboxes");
-        if (mboxes != null && mboxes.size() > 0) {
-            Set<String> mboxSet = new HashSet<>(mboxes);
-            PrefetchRequest prequest = deliveryRequest.getDeliveryRequest().getPrefetch();
-            if (prequest != null) {
-                List<MboxRequest> requests = prequest.getMboxes();
-                if (requests != null) {
-                    for (MboxRequest request : requests) {
-                        if (mboxSet.contains(request.getName())) {
-                            addAllParameters(custom, request);
-                        }
-                    }
-                }
+        if (requestDetails instanceof ViewRequest) {
+            @SuppressWarnings("unchecked")
+            List<String> views = (List<String>)meta.get("views");
+            if (views != null && views.size() > 0 && requestDetails.getParameters() != null) {
+                addAllParameters(custom, requestDetails);
             }
-            ExecuteRequest erequest = deliveryRequest.getDeliveryRequest().getExecute();
-            if (erequest != null) {
-                List<MboxRequest> requests = erequest.getMboxes();
-                if (requests != null) {
-                    for (MboxRequest request : requests) {
-                        if (mboxSet.contains(request.getName())) {
-                            addAllParameters(custom, request);
-                        }
-                    }
+        }
+        else if (requestDetails instanceof MboxRequest) {
+            @SuppressWarnings("unchecked")
+            List<String> mboxes = (List<String>)meta.get("mboxes");
+            if (mboxes != null && mboxes.size() > 0) {
+                Set<String> mboxSet = new HashSet<>(mboxes);
+                if (mboxSet.contains(((MboxRequest) requestDetails).getName()) &&
+                        requestDetails.getParameters() != null) {
+                    addAllParameters(custom, requestDetails);
                 }
             }
         }
-        @SuppressWarnings("unchecked")
-        List<String> views = (List<String>)meta.get("views");
-        if (views != null && views.size() > 0) {
-            Set<String> viewSet = new HashSet<>(views);
-            PrefetchRequest prequest = deliveryRequest.getDeliveryRequest().getPrefetch();
-            if (prequest != null) {
-                List<ViewRequest> viewrs = prequest.getViews();
-                if (viewrs != null) {
-                    for (ViewRequest viewr : viewrs) {
-                        if (viewSet.contains(viewr.getName())) {
-                            addAllParameters(custom, viewr);
-                        }
-                    }
-                }
+        else { // pageLoad
+            if (requestDetails.getParameters() != null) {
+                addAllParameters(custom, requestDetails);
             }
         }
         return custom;

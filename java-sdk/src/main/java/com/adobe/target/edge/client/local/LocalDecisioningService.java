@@ -17,8 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class LocalDecisioningService {
 
@@ -32,8 +30,10 @@ public class LocalDecisioningService {
         this.jsonLogic = new JsonLogic();
     }
 
-    public TargetDeliveryResponse executeRequest(TargetDeliveryRequest deliveryRequest, LocalDecisioningRuleSet ruleSet) {
-        String requestId = deliveryRequest.getDeliveryRequest().getRequestId();
+    public TargetDeliveryResponse executeRequest(TargetDeliveryRequest deliveryRequest,
+                                                 LocalDecisioningRuleSet ruleSet) {
+        DeliveryRequest devRequest = deliveryRequest.getDeliveryRequest();
+        String requestId = devRequest.getRequestId();
         if (requestId == null) {
             requestId = UUID.randomUUID().toString();
         }
@@ -41,81 +41,81 @@ public class LocalDecisioningService {
             DeliveryResponse deliveryResponse = new DeliveryResponse()
                     .client(clientConfig.getClient())
                     .requestId(requestId)
-                    .id(deliveryRequest.getDeliveryRequest().getId())
+                    .id(devRequest.getId())
                     .status(500);
-            return new TargetDeliveryResponse(deliveryRequest, deliveryResponse, 500, "Local-decisioning rules not available");
+            return new TargetDeliveryResponse(deliveryRequest, deliveryResponse,
+                    500, "Local-decisioning rules not available");
         }
-        Map<String, MboxRequest> executeMboxes = new HashMap<>();
-        if (deliveryRequest.getDeliveryRequest().getExecute() != null) {
-            executeMboxes.putAll(deliveryRequest.getDeliveryRequest().getExecute().getMboxes().stream().collect(Collectors.toMap(MboxRequest::getName, Function.identity())));
-        }
-        Map<String, MboxRequest> prefetchMboxes = new HashMap<>();
+        List<RequestDetails> prefetchRequests = new ArrayList<>();
+        List<RequestDetails> executeRequests = new ArrayList<>();
         if (deliveryRequest.getDeliveryRequest().getPrefetch() != null) {
-            prefetchMboxes.putAll(deliveryRequest.getDeliveryRequest().getPrefetch().getMboxes().stream().collect(Collectors.toMap(MboxRequest::getName, Function.identity())));
+            prefetchRequests.addAll(new ArrayList<>(devRequest.getPrefetch().getMboxes()));
+            prefetchRequests.addAll(new ArrayList<>(devRequest.getPrefetch().getViews()));
+            if (devRequest.getPrefetch().getPageLoad() != null) {
+                prefetchRequests.add(devRequest.getPrefetch().getPageLoad());
+            }
+        }
+        if (deliveryRequest.getDeliveryRequest().getExecute() != null) {
+            executeRequests.addAll(new ArrayList<>(devRequest.getExecute().getMboxes()));
+            if (devRequest.getExecute().getPageLoad() != null) {
+                executeRequests.add(devRequest.getExecute().getPageLoad());
+            }
         }
         PrefetchResponse prefetchResponse = new PrefetchResponse();
         ExecuteResponse executeResponse = new ExecuteResponse();
         DeliveryResponse deliveryResponse = new DeliveryResponse()
                 .client(clientConfig.getClient())
                 .requestId(requestId)
-                .id(deliveryRequest.getDeliveryRequest().getId())
+                .id(devRequest.getId())
                 .status(200);
-        TargetDeliveryResponse targetResponse = new TargetDeliveryResponse(deliveryRequest, deliveryResponse, 200, "Local-decisioning response");
-        ObjectMapper mapper = new JacksonObjectMapper().getMapper();
+        TargetDeliveryResponse targetResponse = new TargetDeliveryResponse(deliveryRequest,
+                deliveryResponse, 200, "Local-decisioning response");
         List<LocalDecisioningRule> rules = ruleSet.getRules();
         if (rules != null) {
-            for (LocalDecisioningRule rule : rules) {
-                Map<String, Object> resultMap = executeRule(deliveryRequest, targetResponse, rule);
-                logger.info("resultMap=" + resultMap);
-                if (resultMap == null) {
-                    continue;
+            for (RequestDetails details : prefetchRequests) {
+                boolean handled = false;
+                for (LocalDecisioningRule rule : rules) {
+                    Map<String, Object> resultMap = executeRule(deliveryRequest, targetResponse, details, rule);
+                    handled |= handleResult(resultMap, details, prefetchResponse, null);
                 }
-                @SuppressWarnings("unchecked")
-                List<Map<String, Object>> mboxArray = (List<Map<String, Object>>) resultMap.get("mboxes");
-                if (mboxArray != null) {
-                    for (Map<String, Object> mboxMap : mboxArray) {
-                        String mbox = (String) mboxMap.get("name");
-                        List<Option> options = mapper.convertValue(mboxMap.get("options"), new TypeReference<List<Option>>() {
-                        });
-                        if (executeMboxes.containsKey(mbox)) {
-                            MboxRequest mboxRequest = executeMboxes.get(mbox);
-                            MboxResponse mboxResponse = new MboxResponse()
-                                    .name(mbox)
-                                    .index(mboxRequest.getIndex())
-                                    .options(options);
-                            executeResponse.addMboxesItem(mboxResponse);
-                            deliveryResponse.setExecute(executeResponse);
-                        }
-                        if (prefetchMboxes.containsKey(mbox)) {
-                            MboxRequest mboxRequest = prefetchMboxes.get(mbox);
-                            PrefetchMboxResponse prefetchMboxResponse = new PrefetchMboxResponse();
-                            prefetchMboxResponse.setName(mbox);
-                            prefetchMboxResponse.setIndex(mboxRequest.getIndex());
-                            prefetchMboxResponse.setOptions(options);
-                            prefetchResponse.addMboxesItem(prefetchMboxResponse);
-                            deliveryResponse.setPrefetch(prefetchResponse);
-                        }
-                    }
+                if (!handled) {
+                    unhandledResponse(details, prefetchResponse, null);
                 }
+                deliveryResponse.setPrefetch(prefetchResponse);
+            }
+            for (RequestDetails details : executeRequests) {
+                boolean handled = false;
+                for (LocalDecisioningRule rule : rules) {
+                    Map<String, Object> resultMap = executeRule(deliveryRequest, targetResponse, details, rule);
+                    handled |= handleResult(resultMap, details, null, executeResponse);
+                }
+                if (!handled) {
+                    unhandledResponse(details, null, executeResponse);
+                }
+                deliveryResponse.setExecute(executeResponse);
             }
         }
         return targetResponse;
     }
 
-    private Map<String, Object> executeRule(TargetDeliveryRequest deliveryRequest, TargetDeliveryResponse targetResponse, LocalDecisioningRule rule) {
+    private Map<String, Object> executeRule(TargetDeliveryRequest deliveryRequest,
+                                            TargetDeliveryResponse targetResponse,
+                                            RequestDetails details,
+                                            LocalDecisioningRule rule) {
         Map<String, Object> condition = rule.getCondition();
         Map<String, Object> data = new HashMap<>();
         String vid = getOrCreateVisitorId(deliveryRequest, targetResponse);
         data.put("allocation", computeAllocation(vid, rule));
         addTimeParams(data);
-        data.put("user", new UserParamsCollator().collateParams(deliveryRequest, rule.getMeta()));
-        data.put("page", new PageParamsCollator().collateParams(deliveryRequest, rule.getMeta()));
-        data.put("referring", new PageParamsCollator(true).collateParams(deliveryRequest, rule.getMeta()));
-        data.put("mbox", new CustomParamsCollator().collateParams(deliveryRequest, rule.getMeta()));
+        data.put("user", new UserParamsCollator().collateParams(deliveryRequest, details, rule.getMeta()));
+        data.put("page", new PageParamsCollator().collateParams(deliveryRequest, details, rule.getMeta()));
+        data.put("referring", new PageParamsCollator(true).collateParams(deliveryRequest, details, rule.getMeta()));
+        data.put("mbox", new CustomParamsCollator().collateParams(deliveryRequest, details, rule.getMeta()));
         logger.info("data="+data);
         try {
             ObjectMapper mapper = new ObjectMapper();
             String expression = mapper.writeValueAsString(condition);
+            logger.info("expression="+expression);
             return ((Boolean) jsonLogic.apply(expression, data)) ? rule.getConsequence() : null;
         }
         catch (Exception e) {
@@ -129,7 +129,121 @@ public class LocalDecisioningService {
         }
     }
 
-    private String getOrCreateVisitorId(TargetDeliveryRequest deliveryRequest, TargetDeliveryResponse targetResponse) {
+    private boolean handleResult(Map<String, Object> resultMap,
+                                 RequestDetails details,
+                                 PrefetchResponse prefetchResponse,
+                                 ExecuteResponse executeResponse) {
+        logger.info("resultMap=" + resultMap);
+        if (resultMap == null || resultMap.isEmpty()) {
+            return false;
+        }
+        ObjectMapper mapper = new JacksonObjectMapper().getMapper();
+        if (details instanceof ViewRequest) {
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> viewArray = (List<Map<String, Object>>) resultMap.get("views");
+            if (viewArray != null) {
+                List<View> views = mapper.convertValue(viewArray, new TypeReference<List<View>>() {
+                });
+                if (prefetchResponse != null) {
+                    prefetchResponse.setViews(views);
+                    return true;
+                }
+            }
+        }
+        else if (details instanceof MboxRequest) {
+            MboxRequest mboxRequest = (MboxRequest) details;
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> mboxArray = (List<Map<String, Object>>) resultMap.get("mboxes");
+            if (mboxArray != null) {
+                for (Map<String, Object> mboxMap : mboxArray) {
+                    String mbox = (String) mboxMap.get("name");
+                    if (mbox.equals(((MboxRequest) details).getName())) {
+                        List<Option> options = mapper.convertValue(mboxMap.get("options"),
+                                new TypeReference<List<Option>>() {
+                        });
+                        List<Metric> metrics = mapper.convertValue(mboxMap.get("metrics"),
+                                new TypeReference<List<Metric>>() {
+                        });
+                        if (prefetchResponse != null) {
+                            PrefetchMboxResponse prefetchMboxResponse = new PrefetchMboxResponse();
+                            prefetchMboxResponse.setName(mbox);
+                            prefetchMboxResponse.setIndex(mboxRequest.getIndex());
+                            prefetchMboxResponse.setOptions(options);
+                            prefetchMboxResponse.setMetrics(metrics);
+                            prefetchResponse.addMboxesItem(prefetchMboxResponse);
+                            return true;
+                        } else {
+                            MboxResponse mboxResponse = new MboxResponse();
+                            mboxResponse.setName(mbox);
+                            mboxResponse.setIndex(mboxRequest.getIndex());
+                            mboxResponse.setOptions(options);
+                            mboxResponse.setMetrics(metrics);
+                            executeResponse.addMboxesItem(mboxResponse);
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            PageLoadResponse pageLoadResponse = new PageLoadResponse();
+            @SuppressWarnings("unchecked")
+            Map<String, Object> pageLoad = (Map<String, Object>)resultMap.get("pageLoad");
+            if (pageLoad != null) {
+                List<Option> options = mapper.convertValue(pageLoad.get("options"),
+                        new TypeReference<List<Option>>() {
+                });
+                List<Metric> metrics = mapper.convertValue(pageLoad.get("metrics"),
+                        new TypeReference<List<Metric>>() {
+                });
+                pageLoadResponse.setOptions(options);
+                pageLoadResponse.setMetrics(metrics);
+            }
+            if (prefetchResponse != null) {
+                prefetchResponse.setPageLoad(pageLoadResponse);
+                return true;
+            }
+            else {
+                executeResponse.setPageLoad(pageLoadResponse);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void unhandledResponse(RequestDetails details,
+                                   PrefetchResponse prefetchResponse,
+                                   ExecuteResponse executeResponse) {
+        if (details instanceof ViewRequest) {
+            prefetchResponse.addViewsItem(new View());
+        }
+        else if (details instanceof MboxRequest) {
+            MboxRequest request = (MboxRequest)details;
+            if (prefetchResponse != null) {
+                PrefetchMboxResponse response = new PrefetchMboxResponse();
+                response.setIndex(request.getIndex());
+                response.setName(request.getName());
+                prefetchResponse.addMboxesItem(response);
+            }
+            else {
+                MboxResponse response = new MboxResponse();
+                response.setIndex(request.getIndex());
+                response.setName(request.getName());
+                executeResponse.addMboxesItem(response);
+            }
+        }
+        else {
+            if (prefetchResponse != null) {
+                prefetchResponse.setPageLoad(new PageLoadResponse());
+            }
+            else {
+                executeResponse.setPageLoad(new PageLoadResponse());
+            }
+        }
+    }
+
+    private String getOrCreateVisitorId(TargetDeliveryRequest deliveryRequest,
+                                        TargetDeliveryResponse targetResponse) {
         String vid = null;
         VisitorId visitorId = deliveryRequest.getDeliveryRequest().getId();
         if (visitorId != null) {
