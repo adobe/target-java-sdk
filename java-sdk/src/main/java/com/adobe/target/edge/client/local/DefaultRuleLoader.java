@@ -5,9 +5,7 @@ import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.model.LocalDecisioningRuleSet;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
-import kong.unirest.GenericType;
-import kong.unirest.Unirest;
-import kong.unirest.UnirestInstance;
+import kong.unirest.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +19,7 @@ public class DefaultRuleLoader implements RuleLoader {
     private static final long MIN_POLLING_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
     private LocalDecisioningRuleSet latestRules;
+    private String lastETag;
     private ClientConfig clientConfig;
 
     private UnirestInstance unirestInstance = Unirest.spawnInstance();
@@ -81,11 +80,29 @@ public class DefaultRuleLoader implements RuleLoader {
     }
 
     private void loadRules(ClientConfig clientConfig) {
-        LocalDecisioningRuleSet ruleSet = unirestInstance.get(getLocalDecisioningUrl(clientConfig))
-                .asObject(new GenericType<LocalDecisioningRuleSet>(){})
-                .getBody();
+        GetRequest getRequest = unirestInstance.get(getLocalDecisioningUrl(clientConfig));
+        if (this.lastETag != null) {
+            getRequest.header("If-None-Match", this.lastETag);
+        }
+        HttpResponse<LocalDecisioningRuleSet> response = getRequest
+                .asObject(new GenericType<LocalDecisioningRuleSet>(){});
+        if (response.getStatus() != 200) {
+            if (response.getStatus() == 304) {
+                // Not updated, skip
+                return;
+            }
+            String message = "Received invalid HTTP response while getting local-decisioning rule set: " + response.getStatus() + " : " + response.getStatusText();
+            logger.warn(message);
+            TargetExceptionHandler handler = clientConfig.getExceptionHandler();
+            if (handler != null) {
+                handler.handleException(new TargetClientException(message));
+            }
+            return;
+        }
+        LocalDecisioningRuleSet ruleSet = response.getBody();
         if (ruleSet != null && ruleSet.getVersion() != null && ruleSet.getVersion().startsWith("1.")) {
             this.latestRules = ruleSet;
+            this.lastETag = response.getHeaders().getFirst("ETag");
             logger.info("rulesList="+latestRules);
         }
         else if (ruleSet != null) {
