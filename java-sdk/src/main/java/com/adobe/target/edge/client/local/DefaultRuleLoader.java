@@ -103,7 +103,7 @@ public class DefaultRuleLoader implements RuleLoader {
         if (ruleSet != null && ruleSet.getVersion() != null && ruleSet.getVersion().startsWith("1.")) {
             this.latestRules = ruleSet;
             this.lastETag = response.getHeaders().getFirst("ETag");
-            logger.info("rulesList="+latestRules);
+            logger.debug("rulesList={}", latestRules);
         }
         else if (ruleSet != null) {
             String message = "Unknown rules version: " + ruleSet.getVersion();

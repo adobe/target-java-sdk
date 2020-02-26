@@ -9,6 +9,7 @@ import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
+import com.adobe.target.edge.client.service.TargetService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.jamsesso.jsonlogic.JsonLogic;
@@ -24,10 +25,16 @@ public class LocalDecisioningService {
 
     private final ClientConfig clientConfig;
     private final JsonLogic jsonLogic;
+    private final NotificationDeliveryService deliveryService;
 
-    public LocalDecisioningService(ClientConfig clientConfig) {
+    public LocalDecisioningService(ClientConfig clientConfig, TargetService targetService) {
         this.clientConfig = clientConfig;
         this.jsonLogic = new JsonLogic();
+        this.deliveryService = NotificationDeliveryManager.getInstance().getService(clientConfig, targetService);
+    }
+
+    public void stop() {
+        this.deliveryService.stop();
     }
 
     public TargetDeliveryResponse executeRequest(TargetDeliveryRequest deliveryRequest,
@@ -77,8 +84,8 @@ public class LocalDecisioningService {
                 boolean handled = false;
                 for (LocalDecisioningRule rule : rules) {
                     Map<String, Object> resultMap = executeRule(deliveryRequest,
-                            targetResponse, details, visitorId, rule);
-                    handled |= handleResult(resultMap, details, prefetchResponse, null);
+                            details, visitorId, rule);
+                    handled |= handleResult(resultMap, details, deliveryRequest, prefetchResponse, null);
                 }
                 if (!handled) {
                     unhandledResponse(details, prefetchResponse, null);
@@ -89,8 +96,8 @@ public class LocalDecisioningService {
                 boolean handled = false;
                 for (LocalDecisioningRule rule : rules) {
                     Map<String, Object> resultMap = executeRule(deliveryRequest,
-                            targetResponse, details, visitorId, rule);
-                    handled |= handleResult(resultMap, details, null, executeResponse);
+                            details, visitorId, rule);
+                    handled |= handleResult(resultMap, details, deliveryRequest, null, executeResponse);
                 }
                 if (!handled) {
                     unhandledResponse(details, null, executeResponse);
@@ -102,7 +109,6 @@ public class LocalDecisioningService {
     }
 
     private Map<String, Object> executeRule(TargetDeliveryRequest deliveryRequest,
-                                            TargetDeliveryResponse targetResponse,
                                             RequestDetails details,
                                             String visitorId,
                                             LocalDecisioningRule rule) {
@@ -114,11 +120,11 @@ public class LocalDecisioningService {
         data.put("page", new PageParamsCollator().collateParams(deliveryRequest, details, rule.getMeta()));
         data.put("referring", new PageParamsCollator(true).collateParams(deliveryRequest, details, rule.getMeta()));
         data.put("mbox", new CustomParamsCollator().collateParams(deliveryRequest, details, rule.getMeta()));
-        logger.info("data="+data);
+        logger.debug("data={}", data);
         try {
             ObjectMapper mapper = new ObjectMapper();
             String expression = mapper.writeValueAsString(condition);
-            logger.info("expression="+expression);
+            logger.debug("expression={}", expression);
             return ((Boolean) jsonLogic.apply(expression, data)) ? rule.getConsequence() : null;
         }
         catch (Exception e) {
@@ -134,9 +140,10 @@ public class LocalDecisioningService {
 
     private boolean handleResult(Map<String, Object> resultMap,
                                  RequestDetails details,
+                                 TargetDeliveryRequest deliveryRequest,
                                  PrefetchResponse prefetchResponse,
                                  ExecuteResponse executeResponse) {
-        logger.info("resultMap=" + resultMap);
+        logger.debug("resultMap={}", resultMap);
         if (resultMap == null || resultMap.isEmpty()) {
             return false;
         }
@@ -174,16 +181,17 @@ public class LocalDecisioningService {
                             prefetchMboxResponse.setOptions(options);
                             prefetchMboxResponse.setMetrics(metrics);
                             prefetchResponse.addMboxesItem(prefetchMboxResponse);
-                            return true;
-                        } else {
+                        }
+                        else if (executeResponse != null) {
                             MboxResponse mboxResponse = new MboxResponse();
                             mboxResponse.setName(mbox);
                             mboxResponse.setIndex(mboxRequest.getIndex());
                             mboxResponse.setOptions(options);
                             mboxResponse.setMetrics(metrics);
                             executeResponse.addMboxesItem(mboxResponse);
-                            return true;
+                            submitNotifications(deliveryRequest, details, metrics);
                         }
+                        return true;
                     }
                 }
             }
@@ -201,15 +209,17 @@ public class LocalDecisioningService {
                 });
                 pageLoadResponse.setOptions(options);
                 pageLoadResponse.setMetrics(metrics);
+                if (executeResponse != null) {
+                    submitNotifications(deliveryRequest, details, metrics);
+                }
             }
             if (prefetchResponse != null) {
                 prefetchResponse.setPageLoad(pageLoadResponse);
-                return true;
             }
-            else {
+            else if (executeResponse != null) {
                 executeResponse.setPageLoad(pageLoadResponse);
-                return true;
             }
+            return true;
         }
         return false;
     }
@@ -287,6 +297,40 @@ public class LocalDecisioningService {
         String input = client + "." + activityId + "." + vid;
         int output = MurmurHash.hash32(input);
         return ((Math.abs(output) % 10000) / 10000D) * 100D;
+    }
+
+    private void submitNotifications(TargetDeliveryRequest deliveryRequest,
+                                     RequestDetails details, List<Metric> metrics) {
+        for (Metric metric : metrics) {
+            Notification notification = new Notification();
+            notification.setId(UUID.randomUUID().toString());
+            notification.setImpressionId(UUID.randomUUID().toString());
+            notification.setType(metric.getType());
+            notification.setTimestamp(System.currentTimeMillis());
+            notification.setTokens(Collections.singletonList(metric.getEventToken()));
+            if (details instanceof ViewRequest) {
+                NotificationView view = new NotificationView();
+                view.setName(view.getName());
+                view.setKey(view.getKey());
+                view.setState(view.getState());
+                notification.setView(view);
+            }
+            else if (details instanceof MboxRequest) {
+                MboxRequest mboxRequest = (MboxRequest)details;
+                NotificationMbox mbox = new NotificationMbox();
+                mbox.setName(mboxRequest.getName());
+                notification.setMbox(mbox);
+            }
+            TargetDeliveryRequest notifRequest = TargetDeliveryRequest
+                    .builder()
+                    .requestId(UUID.randomUUID().toString())
+                    .id(deliveryRequest.getDeliveryRequest().getId())
+                    .experienceCloud(deliveryRequest.getDeliveryRequest().getExperienceCloud())
+                    .context(deliveryRequest.getDeliveryRequest().getContext())
+                    .notifications(Collections.singletonList(notification))
+                    .build();
+            this.deliveryService.sendNotification(notifRequest);
+        }
     }
 
 }

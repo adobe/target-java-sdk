@@ -41,7 +41,7 @@ public class DefaultTargetClient implements TargetClient {
         this.targetService = new DefaultTargetService(clientConfig);
         this.ruleLoader = new DefaultRuleLoader();
         this.ruleLoader.start(clientConfig);
-        this.localService = new LocalDecisioningService(clientConfig);
+        this.localService = new LocalDecisioningService(clientConfig, this.targetService);
         VisitorProvider.init(clientConfig.getOrganizationId());
     }
 
@@ -93,6 +93,7 @@ public class DefaultTargetClient implements TargetClient {
     public void close() {
         try {
             targetService.close();
+            localService.stop();
             ruleLoader.stop();
         } catch (Exception e) {
             logger.error("Could not close TargetClient: {}", e.getMessage());
