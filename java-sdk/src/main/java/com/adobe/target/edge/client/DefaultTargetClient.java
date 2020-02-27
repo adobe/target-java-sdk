@@ -13,9 +13,7 @@ package com.adobe.target.edge.client;
 
 import com.adobe.target.edge.client.http.ResponseStatus;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
-import com.adobe.target.edge.client.local.DefaultRuleLoader;
 import com.adobe.target.edge.client.local.LocalDecisioningService;
-import com.adobe.target.edge.client.local.RuleLoader;
 import com.adobe.target.edge.client.model.ExecutionMode;
 import com.adobe.target.edge.client.service.TargetRequestException;
 import com.adobe.target.edge.client.service.TargetService;
@@ -23,7 +21,6 @@ import com.adobe.target.edge.client.service.DefaultTargetService;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.service.VisitorProvider;
-import com.adobe.target.edge.client.utils.CookieUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,13 +31,10 @@ public class DefaultTargetClient implements TargetClient {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultTargetHttpClient.class);
     private final TargetService targetService;
-    private final RuleLoader ruleLoader;
     private final LocalDecisioningService localService;
 
     DefaultTargetClient(ClientConfig clientConfig) {
         this.targetService = new DefaultTargetService(clientConfig);
-        this.ruleLoader = new DefaultRuleLoader();
-        this.ruleLoader.start(clientConfig);
         this.localService = new LocalDecisioningService(clientConfig, this.targetService);
         VisitorProvider.init(clientConfig.getOrganizationId());
     }
@@ -51,7 +45,7 @@ public class DefaultTargetClient implements TargetClient {
             Objects.requireNonNull(request, "ClientConfig instance cannot be null");
             TargetDeliveryResponse targetDeliveryResponse;
             if (request.getExecutionMode() == ExecutionMode.LOCAL) {
-                targetDeliveryResponse = localService.executeRequest(request, this.ruleLoader.getLatestRules());
+                targetDeliveryResponse = localService.executeRequest(request);
             }
             else {
                 targetDeliveryResponse = targetService.executeRequest(request);
@@ -68,7 +62,7 @@ public class DefaultTargetClient implements TargetClient {
             Objects.requireNonNull(request, "ClientConfig instance cannot be null");
             CompletableFuture<TargetDeliveryResponse> targetDeliveryResponse;
             if (request.getExecutionMode() == ExecutionMode.LOCAL) {
-                targetDeliveryResponse = CompletableFuture.completedFuture(localService.executeRequest(request, this.ruleLoader.getLatestRules()));
+                targetDeliveryResponse = CompletableFuture.completedFuture(localService.executeRequest(request));
             }
             else {
                 targetDeliveryResponse = targetService.executeRequestAsync(request);
@@ -94,7 +88,6 @@ public class DefaultTargetClient implements TargetClient {
         try {
             targetService.close();
             localService.stop();
-            ruleLoader.stop();
         } catch (Exception e) {
             logger.error("Could not close TargetClient: {}", e.getMessage());
         }

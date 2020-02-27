@@ -25,25 +25,30 @@ public class LocalDecisioningService {
 
     private final ClientConfig clientConfig;
     private final JsonLogic jsonLogic;
+    private final RuleLoader ruleLoader;
     private final NotificationDeliveryService deliveryService;
 
     public LocalDecisioningService(ClientConfig clientConfig, TargetService targetService) {
         this.clientConfig = clientConfig;
         this.jsonLogic = new JsonLogic();
+        this.ruleLoader = RuleLoaderManager.getInstance().getLoader(clientConfig);
+        this.ruleLoader.start(clientConfig);
         this.deliveryService = NotificationDeliveryManager.getInstance().getService(clientConfig, targetService);
+        this.deliveryService.start(clientConfig);
     }
 
     public void stop() {
+        this.ruleLoader.stop();
         this.deliveryService.stop();
     }
 
-    public TargetDeliveryResponse executeRequest(TargetDeliveryRequest deliveryRequest,
-                                                 LocalDecisioningRuleSet ruleSet) {
+    public TargetDeliveryResponse executeRequest(TargetDeliveryRequest deliveryRequest) {
         DeliveryRequest devRequest = deliveryRequest.getDeliveryRequest();
         String requestId = devRequest.getRequestId();
         if (requestId == null) {
             requestId = UUID.randomUUID().toString();
         }
+        LocalDecisioningRuleSet ruleSet = this.ruleLoader.getLatestRules();
         if (ruleSet == null) {
             DeliveryResponse deliveryResponse = new DeliveryResponse()
                     .client(clientConfig.getClient())

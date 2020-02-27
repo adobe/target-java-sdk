@@ -16,10 +16,20 @@ public class NotificationDeliveryService {
     private static final Logger logger = LoggerFactory.getLogger(NotificationDeliveryService.class);
 
     private final TargetService targetService;
-    private final ThreadPoolExecutor executor;
+    private ThreadPoolExecutor executor;
 
-    public NotificationDeliveryService(ClientConfig clientConfig, TargetService targetService) {
+    public NotificationDeliveryService(TargetService targetService) {
         this.targetService = targetService;
+    }
+
+    public void sendNotification(final TargetDeliveryRequest deliveryRequest) {
+        this.executor.execute(() -> {
+            ResponseStatus status = NotificationDeliveryService.this.targetService.executeNotification(deliveryRequest);
+            logger.debug("Sent notification with status: {} {}: {} ", status.getStatus(), status.getMessage(), deliveryRequest.getDeliveryRequest());
+        });
+    }
+
+    public void start(ClientConfig clientConfig) {
         this.executor = new ThreadPoolExecutor(2,
                 50,
                 1,
@@ -35,15 +45,13 @@ public class NotificationDeliveryService {
                 });
     }
 
-    public void sendNotification(final TargetDeliveryRequest deliveryRequest) {
-        this.executor.execute(() -> {
-            ResponseStatus status = NotificationDeliveryService.this.targetService.executeNotification(deliveryRequest);
-            logger.debug("Sent notification with status: {} {}: {} ", status.getStatus(), status.getMessage(), deliveryRequest.getDeliveryRequest());
-        });
-    }
-
     public void stop() {
-        this.executor.shutdown();
+        try {
+            this.executor.awaitTermination(2, TimeUnit.SECONDS);
+        }
+        catch (InterruptedException e) {
+            logger.info("Caught InterruptedException while shutting down NotificationDeliveryService: " + e);
+        }
     }
 
 }

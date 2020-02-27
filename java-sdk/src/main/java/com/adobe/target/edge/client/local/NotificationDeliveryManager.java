@@ -27,7 +27,7 @@ public class NotificationDeliveryManager {
             if (service != null) {
                 return service;
             }
-            service = new NotificationDeliveryService(clientConfig, targetService);
+            service = new NotificationDeliveryService(targetService);
             serviceMap.put(serviceKey, service);
             return service;
         }
