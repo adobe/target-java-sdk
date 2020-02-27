@@ -42,6 +42,10 @@ public class LocalDecisioningService {
         this.deliveryService.stop();
     }
 
+    public void refreshRules() {
+        this.ruleLoader.refresh();
+    }
+
     public TargetDeliveryResponse executeRequest(TargetDeliveryRequest deliveryRequest) {
         DeliveryRequest devRequest = deliveryRequest.getDeliveryRequest();
         String requestId = devRequest.getRequestId();
@@ -110,6 +114,9 @@ public class LocalDecisioningService {
                 deliveryResponse.setExecute(executeResponse);
             }
         }
+        if (this.clientConfig.isLogRequests()) {
+            logger.debug(targetResponse.toString());
+        }
         return targetResponse;
     }
 
@@ -125,11 +132,11 @@ public class LocalDecisioningService {
         data.put("page", new PageParamsCollator().collateParams(deliveryRequest, details, rule.getMeta()));
         data.put("referring", new PageParamsCollator(true).collateParams(deliveryRequest, details, rule.getMeta()));
         data.put("mbox", new CustomParamsCollator().collateParams(deliveryRequest, details, rule.getMeta()));
-        logger.debug("data={}", data);
+        logger.trace("data={}", data);
         try {
             ObjectMapper mapper = new ObjectMapper();
             String expression = mapper.writeValueAsString(condition);
-            logger.debug("expression={}", expression);
+            logger.trace("expression={}", expression);
             return ((Boolean) jsonLogic.apply(expression, data)) ? rule.getConsequence() : null;
         }
         catch (Exception e) {
@@ -148,7 +155,7 @@ public class LocalDecisioningService {
                                  TargetDeliveryRequest deliveryRequest,
                                  PrefetchResponse prefetchResponse,
                                  ExecuteResponse executeResponse) {
-        logger.debug("resultMap={}", resultMap);
+        logger.trace("resultMap={}", resultMap);
         if (resultMap == null || resultMap.isEmpty()) {
             return false;
         }

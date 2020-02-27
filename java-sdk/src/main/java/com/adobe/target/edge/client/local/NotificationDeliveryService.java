@@ -1,7 +1,6 @@
 package com.adobe.target.edge.client.local;
 
 import com.adobe.target.edge.client.ClientConfig;
-import com.adobe.target.edge.client.http.ResponseStatus;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
@@ -23,10 +22,8 @@ public class NotificationDeliveryService {
     }
 
     public void sendNotification(final TargetDeliveryRequest deliveryRequest) {
-        this.executor.execute(() -> {
-            ResponseStatus status = NotificationDeliveryService.this.targetService.executeNotification(deliveryRequest);
-            logger.debug("Sent notification with status: {} {}: {} ", status.getStatus(), status.getMessage(), deliveryRequest.getDeliveryRequest());
-        });
+        this.executor.execute(() ->
+                NotificationDeliveryService.this.targetService.executeNotification(deliveryRequest));
     }
 
     public void start(ClientConfig clientConfig) {

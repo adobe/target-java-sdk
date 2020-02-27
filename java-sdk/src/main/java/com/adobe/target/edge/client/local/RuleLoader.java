@@ -9,6 +9,8 @@ public interface RuleLoader {
 
     void stop();
 
+    void refresh();
+
     LocalDecisioningRuleSet getLatestRules();
 
 }
