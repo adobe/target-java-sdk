@@ -12,16 +12,28 @@
 package com.adobe.target.edge.client.entities;
 
 import com.adobe.experiencecloud.ecid.visitor.CustomerState;
+import com.adobe.target.edge.client.ClientConfig;
+import com.adobe.target.edge.client.local.ParamsCollator;
+import com.adobe.target.edge.client.local.RuleLoader;
+import com.adobe.target.edge.client.model.LocalDecisioningRuleSet;
 import com.adobe.target.edge.client.model.TargetCookie;
+import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.utils.CookieUtils;
 import com.adobe.target.delivery.v1.model.*;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kong.unirest.*;
 import org.apache.http.HttpStatus;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.adobe.target.edge.client.entities.TargetDeliveryRequestTest.*;
@@ -221,5 +233,90 @@ class TargetTestDeliveryRequestUtils {
         };
         HttpResponse<DeliveryResponse> basicResponse = new BasicResponse(rawResponse, deliveryResponse);
         return basicResponse;
+    }
+
+    static RuleLoader getTestRuleLoader(final String ruleSet) {
+        return new RuleLoader() {
+            @Override
+            public void start(ClientConfig clientConfig) {
+            }
+
+            @Override
+            public void stop() {
+            }
+
+            @Override
+            public void refresh() {
+            }
+
+            @Override
+            public LocalDecisioningRuleSet getLatestRules() {
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+                mapper.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
+                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                mapper.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true);
+                try {
+                    return mapper.readValue(ruleSet, new TypeReference<LocalDecisioningRuleSet>() {});
+                }
+                catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+    }
+
+    static PrefetchRequest getMboxPrefetchLocalRequest() {
+        List<MboxRequest> mboxRequests = new ArrayList() {{
+            add(new MboxRequest().name("testoffer").index(1).parameters(getLocalParameters()));
+        }};
+        PrefetchRequest prefetchRequest = new PrefetchRequest();
+        prefetchRequest.setMboxes(mboxRequests);
+        return prefetchRequest;
+    }
+
+    static ExecuteRequest getMboxExecuteLocalRequest() {
+        List<MboxRequest> mboxRequests = new ArrayList() {{
+            add(new MboxRequest().name("testoffer2").index(1).parameters(getLocalParameters()));
+        }};
+        ExecuteRequest executeRequest = new ExecuteRequest();
+        executeRequest.setMboxes(mboxRequests);
+        return executeRequest;
+    }
+
+    static Context getLocalContext() {
+        Context context = new Context();
+        context.setChannel(ChannelType.WEB);
+        context.setAddress(getLocalAddress());
+        context.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:73.0) Gecko/20100101 Firefox/73.0");
+        return context;
+    }
+
+    static Address getLocalAddress() {
+        Address address = new Address();
+        address.setUrl("http://localhost:8080/foo.jpg?foo=1#ref1");
+        return address;
+    }
+
+    static Map<String, String> getLocalParameters() {
+        return new HashMap<String, String>() {{
+            put("foo", "bar");
+            put("baz", "buzbuz");
+        }};
+    }
+
+    static ParamsCollator getSpecificTimeCollator(final long now) {
+        return (deliveryRequest, requestDetails, meta) -> {
+            Map<String, Object> time = new HashMap<>();
+            time.put("current_timestamp", now);
+            Date nowDate = new Date(now);
+            SimpleDateFormat dayFormat = new SimpleDateFormat("u");
+            dayFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            time.put("current_day", dayFormat.format(nowDate));
+            SimpleDateFormat timeFormat = new SimpleDateFormat("HHmm");
+            timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            time.put("current_time", timeFormat.format(nowDate));
+            return time;
+        };
     }
 }

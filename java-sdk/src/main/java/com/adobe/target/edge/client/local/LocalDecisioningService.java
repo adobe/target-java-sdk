@@ -16,7 +16,6 @@ import io.github.jamsesso.jsonlogic.JsonLogic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class LocalDecisioningService {
@@ -27,6 +26,12 @@ public class LocalDecisioningService {
     private final JsonLogic jsonLogic;
     private final RuleLoader ruleLoader;
     private final NotificationDeliveryService deliveryService;
+
+    private final ParamsCollator timeCollator = new TimeParamsCollator();
+    private final ParamsCollator userCollator = new UserParamsCollator();
+    private final ParamsCollator pageCollator = new PageParamsCollator();
+    private final ParamsCollator prevPageCollator = new PageParamsCollator(true);
+    private final ParamsCollator customCollator = new CustomParamsCollator();
 
     public LocalDecisioningService(ClientConfig clientConfig, TargetService targetService) {
         this.clientConfig = clientConfig;
@@ -127,11 +132,11 @@ public class LocalDecisioningService {
         Map<String, Object> condition = rule.getCondition();
         Map<String, Object> data = new HashMap<>();
         data.put("allocation", computeAllocation(visitorId, rule));
-        addTimeParams(data);
-        data.put("user", new UserParamsCollator().collateParams(deliveryRequest, details, rule.getMeta()));
-        data.put("page", new PageParamsCollator().collateParams(deliveryRequest, details, rule.getMeta()));
-        data.put("referring", new PageParamsCollator(true).collateParams(deliveryRequest, details, rule.getMeta()));
-        data.put("mbox", new CustomParamsCollator().collateParams(deliveryRequest, details, rule.getMeta()));
+        data.putAll(timeCollator.collateParams(deliveryRequest, details, rule.getMeta()));
+        data.put("user", userCollator.collateParams(deliveryRequest, details, rule.getMeta()));
+        data.put("page", pageCollator.collateParams(deliveryRequest, details, rule.getMeta()));
+        data.put("referring", prevPageCollator.collateParams(deliveryRequest, details, rule.getMeta()));
+        data.put("mbox", customCollator.collateParams(deliveryRequest, details, rule.getMeta()));
         logger.trace("data={}", data);
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -286,17 +291,6 @@ public class LocalDecisioningService {
             targetResponse.getResponse().setId(visitorId);
         }
         return vid;
-    }
-
-    private void addTimeParams(Map<String, Object> data) {
-        long now = System.currentTimeMillis();
-        data.put("current_timestamp", now);
-        SimpleDateFormat dayFormat = new SimpleDateFormat("u");
-        dayFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        data.put("current_day", dayFormat.format(now));
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HHmm");
-        timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        data.put("current_time", timeFormat.format(now));
     }
 
     private double computeAllocation(String vid, LocalDecisioningRule rule) {
