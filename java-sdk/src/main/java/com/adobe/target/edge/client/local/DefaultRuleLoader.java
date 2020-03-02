@@ -42,7 +42,8 @@ public class DefaultRuleLoader implements RuleLoader {
             return;
         }
         started = true;
-        unirestInstance.config()
+        if (unirestInstance != null) {
+            unirestInstance.config()
                 .socketTimeout(clientConfig.getSocketTimeout())
                 .connectTimeout(clientConfig.getConnectTimeout())
                 .concurrency(clientConfig.getMaxConnectionsTotal(), clientConfig.getMaxConnectionsPerHost())
@@ -50,6 +51,7 @@ public class DefaultRuleLoader implements RuleLoader {
                 .enableCookieManagement(false)
                 .setObjectMapper(new JacksonObjectMapper())
                 .setDefaultHeader("Accept", "application/json");
+        }
         this.clientConfig = clientConfig;
         this.scheduleTimer(0);
     }
@@ -79,13 +81,28 @@ public class DefaultRuleLoader implements RuleLoader {
         return Math.max(MIN_POLLING_INTERVAL, clientConfig.getLocalDecisioningPollingIntSecs() * 1000);
     }
 
-    private void loadRules(ClientConfig clientConfig) {
+    // package-private For unit test mocking
+    HttpResponse<LocalDecisioningRuleSet> executeRequest(ClientConfig clientConfig) {
         GetRequest getRequest = unirestInstance.get(getLocalDecisioningUrl(clientConfig));
         if (this.lastETag != null) {
             getRequest.header("If-None-Match", this.lastETag);
         }
-        HttpResponse<LocalDecisioningRuleSet> response = getRequest
-                .asObject(new GenericType<LocalDecisioningRuleSet>(){});
+        return getRequest.asObject(new GenericType<LocalDecisioningRuleSet>(){});
+    }
+
+    // package-private For unit test mocking
+    void setLatestRules(LocalDecisioningRuleSet ruleSet) {
+        this.latestRules = ruleSet;
+    }
+
+    // package-private For unit test mocking
+    void setLatestETag(String etag) {
+        this.lastETag = etag;
+    }
+
+    // package-private For unit test mocking
+    void loadRules(ClientConfig clientConfig) {
+        HttpResponse<LocalDecisioningRuleSet> response = executeRequest(clientConfig);
         if (response.getStatus() != 200) {
             if (response.getStatus() == 304) {
                 // Not updated, skip
@@ -101,8 +118,8 @@ public class DefaultRuleLoader implements RuleLoader {
         }
         LocalDecisioningRuleSet ruleSet = response.getBody();
         if (ruleSet != null && ruleSet.getVersion() != null && ruleSet.getVersion().startsWith("1.")) {
-            this.latestRules = ruleSet;
-            this.lastETag = response.getHeaders().getFirst("ETag");
+            setLatestETag(response.getHeaders().getFirst("ETag"));
+            setLatestRules(ruleSet);
             logger.trace("rulesList={}", latestRules);
         }
         else if (ruleSet != null) {
