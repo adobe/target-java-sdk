@@ -48,6 +48,8 @@ class TargetDeliveryRequestLocalTest {
 
     private TargetClient targetJavaClient;
 
+    private LocalDecisioningService localService;
+
     @BeforeEach
     @SuppressWarnings("unchecked")
     void init() throws NoSuchFieldException {
@@ -62,7 +64,7 @@ class TargetDeliveryRequestLocalTest {
                 .build();
 
         DefaultTargetService targetService = new DefaultTargetService(clientConfig);
-        LocalDecisioningService localService = new LocalDecisioningService(clientConfig, targetService);
+        localService = new LocalDecisioningService(clientConfig, targetService);
 
         targetJavaClient = TargetClient.create(clientConfig);
 
@@ -105,6 +107,14 @@ class TargetDeliveryRequestLocalTest {
     }
 
     @Test
+    void testTargetDeliveryLocalRequestWrongBrowserVersion() {
+        TargetDeliveryRequest targetDeliveryRequest = localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873");
+        targetDeliveryRequest.getDeliveryRequest().getContext().setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:73.0) Gecko/20100101 Firefox/71.0");
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        verifyLocalServerState(targetDeliveryResponse, null, null, 0, null);
+    }
+
+    @Test
     void testTargetDeliveryLocalRequestMBoxAddress() {
         TargetDeliveryRequest targetDeliveryRequest = localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873");
         Address address = targetDeliveryRequest.getDeliveryRequest().getContext().getAddress();
@@ -112,6 +122,16 @@ class TargetDeliveryRequestLocalTest {
         targetDeliveryRequest.getDeliveryRequest().getExecute().getMboxes().get(0).setAddress(address);
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         verifyLocalServerState(targetDeliveryResponse, null, "IbG2Jz2xmHaqX7Ml/YRxRJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==", 2, null);
+    }
+
+    @Test
+    void testTargetDeliveryLocalRequestWrongTime() throws NoSuchFieldException {
+        TargetDeliveryRequest targetDeliveryRequest = localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873");
+        ParamsCollator specificTimeCollator = TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1583625037000L);
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("timeCollator"), specificTimeCollator);
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        verifyLocalServerState(targetDeliveryResponse, null, null, 0, null);
     }
 
     private TargetDeliveryRequest localDeliveryRequest(String visitorIdStr) {
