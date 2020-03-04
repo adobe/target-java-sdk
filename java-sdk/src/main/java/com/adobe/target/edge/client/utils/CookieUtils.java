@@ -154,7 +154,7 @@ public class CookieUtils {
                 targetCookie = new TargetCookie(CLUSTER_COOKIE_NAME, nodeDetails[0], (int) (maxAge / 1000));
             }
         }
-        return Optional.of(targetCookie);
+        return Optional.ofNullable(targetCookie);
     }
 
     public static Set<String> getTargetCookieNames() {

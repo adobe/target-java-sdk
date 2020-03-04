@@ -27,6 +27,28 @@ public interface TargetClient extends AutoCloseable {
 
     CompletableFuture<ResponseStatus> sendNotificationsAsync(TargetDeliveryRequest request);
 
+    /**
+     * Makes a getOffers() call and converts all returned JSON offers into Attributes.
+     *
+     * @param targetRequest optional TargetDeliveryRequest that can be used to set specific request items
+     *                      such as Visitor, Context, etc. If null, one will be generated. Request for
+     *                      given mbox will be added automatically.
+     * @param mboxes Name of mboxes to use to retrieve attributes.
+     * @return Attributes object
+     */
+    Attributes getAttributes(TargetDeliveryRequest targetRequest, String ...mboxes);
+
+    /**
+     * Makes an async getOffers() call and converts all returned JSON offers into Attributes.
+     *
+     * @param targetRequest optional TargetDeliveryRequest that can be used to set specific request items
+     *                      such as Visitor, Context, etc. If null, one will be generated. Request for
+     *                      given mbox will be added automatically.
+     * @param mboxes Name of mboxes to use to retrieve attributes.
+     * @return CompletableFuture<Attributes></Attributes> object
+     */
+    CompletableFuture<Attributes> getAttributesAsync(TargetDeliveryRequest targetRequest, String ...mboxes);
+
     static TargetClient create(ClientConfig config) {
         return new DefaultTargetClient(config);
     }

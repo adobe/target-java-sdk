@@ -11,10 +11,12 @@
  */
 package com.adobe.target.edge.client;
 
+import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.http.ResponseStatus;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.local.LocalDecisioningService;
 import com.adobe.target.edge.client.model.ExecutionMode;
+import com.adobe.target.edge.client.model.TargetAttributesResponse;
 import com.adobe.target.edge.client.service.TargetRequestException;
 import com.adobe.target.edge.client.service.TargetService;
 import com.adobe.target.edge.client.service.DefaultTargetService;
@@ -24,7 +26,10 @@ import com.adobe.target.edge.client.service.VisitorProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class DefaultTargetClient implements TargetClient {
@@ -84,6 +89,18 @@ public class DefaultTargetClient implements TargetClient {
     }
 
     @Override
+    public Attributes getAttributes(TargetDeliveryRequest targetRequest, String ...mboxes) {
+        TargetDeliveryResponse response = getOffers(addMBoxesToRequest(targetRequest, mboxes));
+        return new TargetAttributesResponse(response, mboxes);
+    }
+
+    @Override
+    public CompletableFuture<Attributes> getAttributesAsync(TargetDeliveryRequest targetRequest, String ...mboxes) {
+        CompletableFuture<TargetDeliveryResponse> completableResponse = getOffersAsync(addMBoxesToRequest(targetRequest, mboxes));
+        return completableResponse.thenApply(response -> new TargetAttributesResponse(response, mboxes));
+    }
+
+    @Override
     public void close() {
         try {
             targetService.close();
@@ -91,5 +108,40 @@ public class DefaultTargetClient implements TargetClient {
         } catch (Exception e) {
             logger.error("Could not close TargetClient: {}", e.getMessage());
         }
+    }
+
+    private static TargetDeliveryRequest addMBoxesToRequest(TargetDeliveryRequest targetRequest, String... mboxes) {
+        if (targetRequest == null || targetRequest.getDeliveryRequest() == null) {
+            targetRequest = TargetDeliveryRequest.builder().executionMode(ExecutionMode.LOCAL).build();
+        }
+        int idx = 0;
+        Set<String> existingMBoxNames = new HashSet<>();
+        DeliveryRequest deliveryRequest = targetRequest.getDeliveryRequest();
+        PrefetchRequest prefetchRequest = deliveryRequest.getPrefetch();
+        if (prefetchRequest != null && prefetchRequest.getMboxes() != null) {
+            for (MboxRequest mb : prefetchRequest.getMboxes()) {
+                existingMBoxNames.add(mb.getName());
+            }
+        }
+        ExecuteRequest executeRequest = deliveryRequest.getExecute();
+        if (executeRequest == null) {
+            executeRequest = new ExecuteRequest();
+            targetRequest.getDeliveryRequest().setExecute(executeRequest);
+        }
+        List<MboxRequest> existingMboxes = executeRequest.getMboxes();
+        if (existingMboxes != null) {
+            for (MboxRequest mb : existingMboxes) {
+                if (mb.getIndex() >= idx) {
+                    idx = mb.getIndex() + 1;
+                }
+                existingMBoxNames.add(mb.getName());
+            }
+        }
+        for (String mbox : mboxes) {
+            if (!existingMBoxNames.contains(mbox)) {
+                executeRequest.addMboxesItem(new MboxRequest().index(idx++).name(mbox));
+            }
+        }
+        return targetRequest;
     }
 }
