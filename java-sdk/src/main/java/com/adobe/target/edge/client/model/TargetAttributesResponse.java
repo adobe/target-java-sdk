@@ -7,19 +7,16 @@ import java.util.*;
 
 public class TargetAttributesResponse implements Attributes {
 
-    private TargetDeliveryResponse response;
-    private String[] mboxes;
+    private final TargetDeliveryResponse response;
+    private final Map<String, Map<String, Object>> content = new HashMap<>();
 
-    private Map<String, Object> content;
-
-    public TargetAttributesResponse(TargetDeliveryResponse response, String ...mboxes) {
+    public TargetAttributesResponse(TargetDeliveryResponse response) {
         this.response = response;
-        this.mboxes = mboxes;
     }
 
     @Override
-    public boolean getFeatureBoolean(String key) {
-        Map<String, Object> map = toMap();
+    public boolean getFeatureBoolean(String mbox, String key) {
+        Map<String, Object> map = toMap(mbox);
         if (map != null) {
             Object value = map.get(key);
             if (value instanceof Boolean) {
@@ -30,8 +27,8 @@ public class TargetAttributesResponse implements Attributes {
     }
 
     @Override
-    public String getFeatureString(String key) {
-        Map<String, Object> map = toMap();
+    public String getFeatureString(String mbox, String key) {
+        Map<String, Object> map = toMap(mbox);
         if (map != null) {
             Object value = map.get(key);
             if (value != null) {
@@ -42,8 +39,8 @@ public class TargetAttributesResponse implements Attributes {
     }
 
     @Override
-    public int getFeatureInteger(String key) {
-        Map<String, Object> map = toMap();
+    public int getFeatureInteger(String mbox, String key) {
+        Map<String, Object> map = toMap(mbox);
         if (map != null) {
             Object value = map.get(key);
             if (value instanceof Number) {
@@ -57,8 +54,8 @@ public class TargetAttributesResponse implements Attributes {
     }
 
     @Override
-    public double getFeatureDouble(String key) {
-        Map<String, Object> map = toMap();
+    public double getFeatureDouble(String mbox, String key) {
+        Map<String, Object> map = toMap(mbox);
         if (map != null) {
             Object value = map.get(key);
             if (value instanceof Number) {
@@ -77,42 +74,44 @@ public class TargetAttributesResponse implements Attributes {
     }
 
     @Override
-    public Map<String, Object> toMap() {
-        if (this.content != null) {
-            return content;
+    public Map<String, Object> toMap(String mbox) {
+        Map<String, Object> mboxContent = this.content.get("mbox");
+        if (mboxContent != null) {
+            return mboxContent;
         }
-        if (this.response == null || this.mboxes == null) {
+        if (this.response == null || mbox == null) {
             return null;
         }
-        Set<String> mboxNames = new HashSet<>(Arrays.asList(this.mboxes));
-        List<MboxResponse> allMboxes = new ArrayList<>();
-        DeliveryResponse response = this.response.getResponse();
-        PrefetchResponse prefetchResponse = response.getPrefetch();
-        if (prefetchResponse != null) {
-            List<PrefetchMboxResponse> prefectchMboxes = prefetchResponse.getMboxes();
-            allMboxes.addAll(prefectchMboxes);
-        }
-        ExecuteResponse executeResponse = response.getExecute();
-        if (executeResponse != null) {
-            List<MboxResponse> executeMboxes = executeResponse.getMboxes();
-            allMboxes.addAll(executeMboxes);
-        }
-        Map<String, Object> finalContent = new HashMap<>();
-        for (MboxResponse resp : allMboxes) {
-            if (resp.getName() == null || !mboxNames.contains(resp.getName())) {
-                continue;
+        synchronized (this.content) {
+            List<MboxResponse> allMboxes = new ArrayList<>();
+            DeliveryResponse response = this.response.getResponse();
+            PrefetchResponse prefetchResponse = response.getPrefetch();
+            if (prefetchResponse != null) {
+                List<PrefetchMboxResponse> prefectchMboxes = prefetchResponse.getMboxes();
+                allMboxes.addAll(prefectchMboxes);
             }
-            List<Option> options = resp.getOptions();
-            for (Option option : options) {
-                Object contentMap = option.getContent();
-                if (option.getType() == OptionType.JSON && contentMap instanceof Map) {
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> contentObj = (Map<String, Object>) contentMap;
-                    finalContent.putAll(contentObj);
+            ExecuteResponse executeResponse = response.getExecute();
+            if (executeResponse != null) {
+                List<MboxResponse> executeMboxes = executeResponse.getMboxes();
+                allMboxes.addAll(executeMboxes);
+            }
+            mboxContent = new HashMap<>();
+            for (MboxResponse resp : allMboxes) {
+                if (resp.getName() == null || !mbox.equals(resp.getName())) {
+                    continue;
+                }
+                List<Option> options = resp.getOptions();
+                for (Option option : options) {
+                    Object contentMap = option.getContent();
+                    if (option.getType() == OptionType.JSON && contentMap instanceof Map) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> contentObj = (Map<String, Object>) contentMap;
+                        mboxContent.putAll(contentObj);
+                    }
                 }
             }
+            this.content.put(mbox, mboxContent);
         }
-        this.content = finalContent;
-        return finalContent;
+        return mboxContent;
     }
 }

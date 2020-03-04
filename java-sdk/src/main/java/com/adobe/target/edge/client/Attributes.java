@@ -6,15 +6,15 @@ import java.util.Map;
 
 public interface Attributes {
 
-    Map<String, Object> toMap();
+    Map<String, Object> toMap(String mbox);
 
-    boolean getFeatureBoolean(String key);
+    boolean getFeatureBoolean(String mbox, String key);
 
-    String getFeatureString(String key);
+    String getFeatureString(String mbox, String key);
 
-    int getFeatureInteger(String key);
+    int getFeatureInteger(String mbox, String key);
 
-    double getFeatureDouble(String key);
+    double getFeatureDouble(String mbox, String key);
 
     /** Allows access to resulting response to retrieve cookies. */
     TargetDeliveryResponse getResponse();

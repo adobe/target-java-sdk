@@ -91,13 +91,13 @@ public class DefaultTargetClient implements TargetClient {
     @Override
     public Attributes getAttributes(TargetDeliveryRequest targetRequest, String ...mboxes) {
         TargetDeliveryResponse response = getOffers(addMBoxesToRequest(targetRequest, mboxes));
-        return new TargetAttributesResponse(response, mboxes);
+        return new TargetAttributesResponse(response);
     }
 
     @Override
     public CompletableFuture<Attributes> getAttributesAsync(TargetDeliveryRequest targetRequest, String ...mboxes) {
         CompletableFuture<TargetDeliveryResponse> completableResponse = getOffersAsync(addMBoxesToRequest(targetRequest, mboxes));
-        return completableResponse.thenApply(response -> new TargetAttributesResponse(response, mboxes));
+        return completableResponse.thenApply(TargetAttributesResponse::new);
     }
 
     @Override
