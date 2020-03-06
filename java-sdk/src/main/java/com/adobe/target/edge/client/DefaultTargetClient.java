@@ -49,7 +49,9 @@ public class DefaultTargetClient implements TargetClient {
         try {
             Objects.requireNonNull(request, "ClientConfig instance cannot be null");
             TargetDeliveryResponse targetDeliveryResponse;
-            if (request.getExecutionMode() == ExecutionMode.LOCAL) {
+            if (request.getExecutionMode() == ExecutionMode.LOCAL ||
+                    (request.getExecutionMode() == ExecutionMode.HYBRID &&
+                    localService.evaluateLocalExecution(request).isAllLocal())) {
                 targetDeliveryResponse = localService.executeRequest(request);
             }
             else {
@@ -66,7 +68,9 @@ public class DefaultTargetClient implements TargetClient {
         try {
             Objects.requireNonNull(request, "ClientConfig instance cannot be null");
             CompletableFuture<TargetDeliveryResponse> targetDeliveryResponse;
-            if (request.getExecutionMode() == ExecutionMode.LOCAL) {
+            if (request.getExecutionMode() == ExecutionMode.LOCAL ||
+                    (request.getExecutionMode() == ExecutionMode.HYBRID &&
+                    localService.evaluateLocalExecution(request).isAllLocal())) {
                 targetDeliveryResponse = CompletableFuture.completedFuture(localService.executeRequest(request));
             }
             else {
@@ -112,7 +116,7 @@ public class DefaultTargetClient implements TargetClient {
 
     private static TargetDeliveryRequest addMBoxesToRequest(TargetDeliveryRequest targetRequest, String... mboxes) {
         if (targetRequest == null || targetRequest.getDeliveryRequest() == null) {
-            targetRequest = TargetDeliveryRequest.builder().executionMode(ExecutionMode.LOCAL).build();
+            targetRequest = TargetDeliveryRequest.builder().executionMode(ExecutionMode.HYBRID).build();
         }
         int idx = 0;
         Set<String> existingMBoxNames = new HashSet<>();

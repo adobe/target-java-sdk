@@ -28,8 +28,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class LocalDecisioningService {
+
+    public static class LocalExecutionResult {
+        private boolean allLocal;
+        private String reason;
+        private String[] remoteMBoxes;
+
+        public LocalExecutionResult(boolean allLocal, String reason, String[] remoteMBoxes) {
+            this.allLocal = allLocal;
+            this.reason = reason;
+            this.remoteMBoxes = remoteMBoxes;
+        }
+
+        public boolean isAllLocal() {
+            return allLocal;
+        }
+
+        public String getReason() {
+            return reason;
+        }
+
+        public String[] getRemoteMBoxes() {
+            return remoteMBoxes;
+        }
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(LocalDecisioningService.class);
 
@@ -60,6 +85,49 @@ public class LocalDecisioningService {
 
     public void refreshRules() {
         this.ruleLoader.refresh();
+    }
+
+    /**
+     * Use to determine if the given request can be fully executed locally or not and why.
+     *
+     * @param deliveryRequest request to examine
+     * @return LocalExecutionResult
+     */
+    public LocalExecutionResult evaluateLocalExecution(TargetDeliveryRequest deliveryRequest) {
+        if (deliveryRequest == null) {
+            return new LocalExecutionResult(false,
+                    "Given request cannot be null", null);
+        }
+        LocalDecisioningRuleSet ruleSet = this.ruleLoader.getLatestRules();
+        if (ruleSet == null) {
+            return new LocalExecutionResult(false,
+                    "Local-decisioning rule set not yet available", null);
+        }
+        Map<String, Object> meta = ruleSet.getMeta();
+        if (meta == null) {
+            return new LocalExecutionResult(false,
+                    "Local-decisioning rule set does not contain proper information", null);
+        }
+        @SuppressWarnings("unchecked")
+        List<String> allRemoteMboxes = (List<String>)meta.get("remoteMboxes");
+        if (allRemoteMboxes == null || allRemoteMboxes.size() == 0) {
+            return new LocalExecutionResult(true, null, null);
+        }
+        Set<String> remoteSet = new HashSet<>(allRemoteMboxes);
+        Set<String> remoteMboxes = new HashSet<>();
+        for (String mboxName : allMboxNames(deliveryRequest)) {
+            if (remoteSet.contains(mboxName)) {
+                remoteMboxes.add(mboxName);
+            }
+        }
+        if (remoteMboxes.size() > 0) {
+            return new LocalExecutionResult(false,
+                    String.format("mboxes %s have remote activities", remoteMboxes),
+                    remoteMboxes.toArray(new String[0]));
+        }
+        else {
+            return new LocalExecutionResult(true, null, null);
+        }
     }
 
     public TargetDeliveryResponse executeRequest(TargetDeliveryRequest deliveryRequest) {
@@ -95,13 +163,17 @@ public class LocalDecisioningService {
         }
         PrefetchResponse prefetchResponse = new PrefetchResponse();
         ExecuteResponse executeResponse = new ExecuteResponse();
+        LocalExecutionResult localResult = evaluateLocalExecution(deliveryRequest);
+        int status = localResult.isAllLocal() ? 200 : 206;
         DeliveryResponse deliveryResponse = new DeliveryResponse()
                 .client(clientConfig.getClient())
                 .requestId(requestId)
                 .id(devRequest.getId())
-                .status(200);
+                .status(status);
         TargetDeliveryResponse targetResponse = new TargetDeliveryResponse(deliveryRequest,
-                deliveryResponse, 200, "Local-decisioning response");
+                deliveryResponse, status,
+                localResult.isAllLocal() ? "Local-decisioning response" : localResult.getReason());
+        targetResponse.getResponseStatus().setRemoteMboxes(localResult.getRemoteMBoxes());
         List<LocalDecisioningRule> rules = ruleSet.getRules();
         if (rules != null) {
             String visitorId = getOrCreateVisitorId(deliveryRequest, targetResponse);
@@ -350,4 +422,17 @@ public class LocalDecisioningService {
         }
     }
 
+    private List<String> allMboxNames(TargetDeliveryRequest request) {
+        List<String> mboxNames = new ArrayList<>();
+        if (request == null) {
+            return mboxNames;
+        }
+        if (request.getDeliveryRequest().getPrefetch() != null) {
+            mboxNames.addAll(request.getDeliveryRequest().getPrefetch().getMboxes().stream().map(MboxRequest::getName).collect(Collectors.toList()));
+        }
+        if (request.getDeliveryRequest().getExecute() != null) {
+            mboxNames.addAll(request.getDeliveryRequest().getExecute().getMboxes().stream().map(MboxRequest::getName).collect(Collectors.toList()));
+        }
+        return mboxNames;
+    }
 }
