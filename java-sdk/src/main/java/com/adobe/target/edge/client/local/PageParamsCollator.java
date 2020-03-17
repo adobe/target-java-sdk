@@ -41,30 +41,9 @@ public class PageParamsCollator implements ParamsCollator {
         if (context == null) {
             return page;
         }
-        Address address = context.getAddress();
-        if (requestDetails instanceof ViewRequest) {
-            @SuppressWarnings("unchecked")
-            List<String> views = (List<String>)meta.get("views");
-            if (views != null && views.size() > 0 && requestDetails.getAddress() != null) {
-                address = requestDetails.getAddress();
-            }
-        }
-        else if (requestDetails instanceof MboxRequest) {
-            @SuppressWarnings("unchecked")
-            List<String> mboxes = (List<String>)meta.get("mboxes");
-            if (mboxes != null && mboxes.size() > 0) {
-                Set<String> mboxSet = new HashSet<>(mboxes);
-                if (mboxSet.contains(((MboxRequest) requestDetails).getName()) &&
-                        requestDetails.getAddress() != null) {
-                    address = requestDetails.getAddress();
-                }
-            }
-        }
-        else { // pageLoad
-            if (requestDetails.getAddress() != null) {
-                address = requestDetails.getAddress();
-            }
-        }
+        Address address = requestDetails.getAddress() != null ?
+            requestDetails.getAddress() :
+            context.getAddress();
         if (address == null) {
             return page;
         }

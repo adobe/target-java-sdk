@@ -17,7 +17,7 @@ import java.util.Map;
 public class LocalDecisioningRuleSet {
 
     private String version;
-    private List<LocalDecisioningRule> rules;
+    private Map<String, Map<String, List<LocalDecisioningRule>>> rules;
     private Map<String, Object> meta;
 
     public LocalDecisioningRuleSet() { }
@@ -26,7 +26,29 @@ public class LocalDecisioningRuleSet {
         return version;
     }
 
-    public List<LocalDecisioningRule> getRules() {
+    public List<LocalDecisioningRule> getMboxRules(String mbox) {
+        if (rules == null || mbox == null) {
+            return null;
+        }
+        Map<String, List<LocalDecisioningRule>> mboxRules = rules.get("mboxes");
+        if (mboxRules != null) {
+            return mboxRules.get(mbox);
+        }
+        return null;
+    }
+
+    public List<LocalDecisioningRule> getViewRules(String view) {
+        if (rules == null || view == null) {
+            return null;
+        }
+        Map<String, List<LocalDecisioningRule>> viewRules = rules.get("views");
+        if (viewRules != null) {
+            return viewRules.get(view);
+        }
+        return null;
+    }
+
+    public Map<String, Map<String, List<LocalDecisioningRule>>> getRules() {
         return rules;
     }
 

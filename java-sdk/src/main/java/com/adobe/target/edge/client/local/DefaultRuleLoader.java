@@ -128,12 +128,13 @@ public class DefaultRuleLoader implements RuleLoader {
             return;
         }
         LocalDecisioningRuleSet ruleSet = response.getBody();
-        if (ruleSet != null && ruleSet.getVersion() != null && ruleSet.getVersion().startsWith("1.")) {
+        if (ruleSet != null && ruleSet.getRules() != null &&
+          ruleSet.getVersion() != null && ruleSet.getVersion().startsWith("1.")) {
             setLatestETag(response.getHeaders().getFirst("ETag"));
             setLatestRules(ruleSet);
             logger.trace("rulesList={}", latestRules);
         }
-        else if (ruleSet != null) {
+        else if (ruleSet != null && ruleSet.getVersion() != null) {
             String message = "Unknown rules version: " + ruleSet.getVersion();
             logger.warn(message);
             TargetExceptionHandler handler = clientConfig.getExceptionHandler();
@@ -152,7 +153,7 @@ public class DefaultRuleLoader implements RuleLoader {
     }
 
     private String getLocalDecisioningUrl(ClientConfig clientConfig) {
-        return "https://target-local-decisioning-test.s3-us-west-2.amazonaws.com/" +
+        return "https://target-local-decisioning-staging.s3-us-east-2.amazonaws.com/" +
                 clientConfig.getClient() + "/" +
                 clientConfig.getLocalEnvironment().toLowerCase() + "/" +
                 "rules.json";

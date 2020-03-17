@@ -21,29 +21,7 @@ public class CustomParamsCollator implements ParamsCollator {
     public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest,
                                              RequestDetails requestDetails, Map<String, Object> meta) {
         Map<String, Object> custom = new HashMap<>();
-        if (requestDetails instanceof ViewRequest) {
-            @SuppressWarnings("unchecked")
-            List<String> views = (List<String>)meta.get("views");
-            if (views != null && views.size() > 0 && requestDetails.getParameters() != null) {
-                addAllParameters(custom, requestDetails);
-            }
-        }
-        else if (requestDetails instanceof MboxRequest) {
-            @SuppressWarnings("unchecked")
-            List<String> mboxes = (List<String>)meta.get("mboxes");
-            if (mboxes != null && mboxes.size() > 0) {
-                Set<String> mboxSet = new HashSet<>(mboxes);
-                if (mboxSet.contains(((MboxRequest) requestDetails).getName()) &&
-                        requestDetails.getParameters() != null) {
-                    addAllParameters(custom, requestDetails);
-                }
-            }
-        }
-        else { // pageLoad
-            if (requestDetails.getParameters() != null) {
-                addAllParameters(custom, requestDetails);
-            }
-        }
+        addAllParameters(custom, requestDetails);
         return custom;
     }
 
