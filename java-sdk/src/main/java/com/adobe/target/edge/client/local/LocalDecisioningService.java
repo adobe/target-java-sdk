@@ -370,7 +370,10 @@ public class LocalDecisioningService {
         String vid = null;
         VisitorId visitorId = deliveryRequest.getDeliveryRequest().getId();
         if (visitorId != null) {
-            vid = visitorId.getTntId();
+            vid = visitorId.getMarketingCloudVisitorId();
+            if (vid == null) {
+                vid = visitorId.getTntId();
+            }
         }
         else {
             visitorId = targetResponse.getResponse().getId();
@@ -408,10 +411,10 @@ public class LocalDecisioningService {
             notification.setTimestamp(System.currentTimeMillis());
             notification.setTokens(Collections.singletonList(metric.getEventToken()));
             if (details instanceof ViewRequest) {
+                ViewRequest vr = (ViewRequest)details;
                 NotificationView view = new NotificationView();
-                view.setName(view.getName());
-                view.setKey(view.getKey());
-                view.setState(view.getState());
+                view.setName(vr.getName());
+                view.setKey(vr.getKey());
                 notification.setView(view);
             }
             else if (details instanceof MboxRequest) {
