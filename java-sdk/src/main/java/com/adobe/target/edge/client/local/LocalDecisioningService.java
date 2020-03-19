@@ -115,7 +115,7 @@ public class LocalDecisioningService {
         }
         Set<String> remoteSet = new HashSet<>(allRemoteMboxes);
         Set<String> remoteMboxes = new HashSet<>();
-        for (String mboxName : allMboxNames(deliveryRequest)) {
+        for (String mboxName : allMboxNames(deliveryRequest, ruleSet)) {
             if (remoteSet.contains(mboxName)) {
                 remoteMboxes.add(mboxName);
             }
@@ -440,16 +440,25 @@ public class LocalDecisioningService {
         }
     }
 
-    private List<String> allMboxNames(TargetDeliveryRequest request) {
+    private List<String> allMboxNames(TargetDeliveryRequest request, LocalDecisioningRuleSet ruleSet) {
         List<String> mboxNames = new ArrayList<>();
-        if (request == null) {
+        if (request == null || ruleSet == null) {
             return mboxNames;
         }
-        if (request.getDeliveryRequest().getPrefetch() != null) {
-            mboxNames.addAll(request.getDeliveryRequest().getPrefetch().getMboxes().stream().map(MboxRequest::getName).collect(Collectors.toList()));
+        String globalMbox = globalMbox(ruleSet);
+        PrefetchRequest prefetch = request.getDeliveryRequest().getPrefetch();
+        if (prefetch != null) {
+            if (prefetch.getPageLoad() != null) {
+                mboxNames.add(globalMbox);
+            }
+            mboxNames.addAll(prefetch.getMboxes().stream().map(MboxRequest::getName).collect(Collectors.toList()));
         }
-        if (request.getDeliveryRequest().getExecute() != null) {
-            mboxNames.addAll(request.getDeliveryRequest().getExecute().getMboxes().stream().map(MboxRequest::getName).collect(Collectors.toList()));
+        ExecuteRequest execute = request.getDeliveryRequest().getExecute();
+        if (execute != null) {
+            if (execute.getPageLoad() != null) {
+                mboxNames.add(globalMbox);
+            }
+            mboxNames.addAll(execute.getMboxes().stream().map(MboxRequest::getName).collect(Collectors.toList()));
         }
         return mboxNames;
     }
@@ -462,18 +471,15 @@ public class LocalDecisioningService {
             return ruleSet.getMboxRules(((MboxRequest) details).getName());
         }
         else {
-            return ruleSet.getMboxRules(globalMbox(details, ruleSet));
+            return ruleSet.getMboxRules(globalMbox(ruleSet));
         }
     }
 
-    private String globalMbox(RequestDetails details, LocalDecisioningRuleSet ruleSet) {
-        if (!(details instanceof ViewRequest) && !(details instanceof MboxRequest)) {
-            String globalName = (String)ruleSet.getMeta().get("globalMbox");
-            if (globalName == null) {
-                globalName = "target-global-mbox";
-            }
-            return globalName;
+    private String globalMbox(LocalDecisioningRuleSet ruleSet) {
+        String def = "target-global-mbox";
+        if (ruleSet == null || ruleSet.getMeta() == null) {
+            return def;
         }
-        return null;
+        return (String)ruleSet.getMeta().getOrDefault("globalMbox", def);
     }
 }
