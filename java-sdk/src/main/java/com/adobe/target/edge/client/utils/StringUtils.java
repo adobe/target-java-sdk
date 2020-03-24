@@ -21,4 +21,16 @@ public class StringUtils {
         return !isEmpty(cs);
     }
 
+    public static String firstNonBlank(String... values) {
+        if (values.length == 0) {
+            return null;
+        }
+        for (String value : values) {
+            if (isNotEmpty(value)) {
+                return value;
+            }
+        }
+        return null;
+    }
+
 }

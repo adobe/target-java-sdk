@@ -21,6 +21,7 @@ import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import com.adobe.target.edge.client.service.TargetService;
+import com.adobe.target.edge.client.utils.StringUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.jamsesso.jsonlogic.JsonLogic;
@@ -370,23 +371,45 @@ public class LocalDecisioningService {
         String vid = null;
         VisitorId visitorId = deliveryRequest.getDeliveryRequest().getId();
         if (visitorId != null) {
-            vid = visitorId.getMarketingCloudVisitorId();
-            if (vid == null) {
-                vid = visitorId.getTntId();
-            }
+            vid = StringUtils.firstNonBlank(
+                visitorId.getThirdPartyId(),
+                firstAuthenticatedCustomerId(visitorId),
+                visitorId.getMarketingCloudVisitorId(),
+                visitorId.getTntId()
+            );
         }
-        else {
-            visitorId = targetResponse.getResponse().getId();
-            if (visitorId != null) {
-                vid = visitorId.getTntId();
-            }
+        // If no vid found in request, check response in case we have already
+        // set our own tntId there in an earlier call
+        if (vid == null &&
+                targetResponse != null &&
+                targetResponse.getResponse() != null &&
+                targetResponse.getResponse().getId() != null) {
+            vid = targetResponse.getResponse().getId().getTntId();
         }
+        // If vid still null, create new tntId and use that and set it in the response
         if (vid == null) {
             vid = UUID.randomUUID().toString();
             visitorId = new VisitorId().tntId(vid);
             targetResponse.getResponse().setId(visitorId);
         }
         return vid;
+    }
+
+    private String firstAuthenticatedCustomerId(VisitorId visitorId) {
+        if (visitorId == null) {
+            return null;
+        }
+        List<CustomerId> customerIds = visitorId.getCustomerIds();
+        if (customerIds == null) {
+            return null;
+        }
+        for (CustomerId customerId : customerIds) {
+            if (StringUtils.isNotEmpty(customerId.getId()) &&
+                    AuthenticatedState.AUTHENTICATED.equals(customerId.getAuthenticatedState())) {
+                return customerId.getId();
+            }
+        }
+        return null;
     }
 
     private double computeAllocation(String vid, LocalDecisioningRule rule) {
