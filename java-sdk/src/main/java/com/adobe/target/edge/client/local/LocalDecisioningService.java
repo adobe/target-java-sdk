@@ -14,10 +14,7 @@ package com.adobe.target.edge.client.local;
 import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
-import com.adobe.target.edge.client.model.LocalDecisioningRule;
-import com.adobe.target.edge.client.model.LocalDecisioningRuleSet;
-import com.adobe.target.edge.client.model.TargetDeliveryRequest;
-import com.adobe.target.edge.client.model.TargetDeliveryResponse;
+import com.adobe.target.edge.client.model.*;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import com.adobe.target.edge.client.service.TargetService;
@@ -451,6 +448,10 @@ public class LocalDecisioningService {
             DeliveryRequest dreq = deliveryRequest.getDeliveryRequest();
             TargetDeliveryRequest notifRequest = TargetDeliveryRequest
                     .builder()
+                    .locationHint(deliveryRequest.getLocationHint())
+                    .sessionId(deliveryRequest.getSessionId())
+                    .visitor(deliveryRequest.getVisitor())
+                    .executionMode(ExecutionMode.REMOTE)
                     .requestId(UUID.randomUUID().toString())
                     .impressionId(UUID.randomUUID().toString())
                     .id(dreq.getId())
