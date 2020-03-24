@@ -380,16 +380,18 @@ public class LocalDecisioningService {
         }
         // If no vid found in request, check response in case we have already
         // set our own tntId there in an earlier call
-        if (vid == null &&
-                targetResponse != null &&
-                targetResponse.getResponse() != null &&
-                targetResponse.getResponse().getId() != null) {
+        if (vid == null && targetResponse.getResponse().getId() != null) {
             vid = targetResponse.getResponse().getId().getTntId();
         }
         // If vid still null, create new tntId and use that and set it in the response
         if (vid == null) {
             vid = UUID.randomUUID().toString();
-            visitorId = new VisitorId().tntId(vid);
+            if (visitorId == null) {
+                visitorId = new VisitorId().tntId(vid);
+            }
+            else {
+                visitorId.setTntId(vid);
+            }
             targetResponse.getResponse().setId(visitorId);
         }
         return vid;
