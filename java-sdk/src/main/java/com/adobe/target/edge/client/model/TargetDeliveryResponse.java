@@ -48,7 +48,9 @@ public class TargetDeliveryResponse {
     }
 
     public List<TargetCookie> getCookies() {
-        if (response == null || response.getStatus() != HttpStatus.SC_OK) {
+        if (response == null ||
+                !(response.getStatus() == HttpStatus.SC_OK
+                        || response.getStatus() == HttpStatus.SC_PARTIAL_CONTENT)) {
             return Collections.EMPTY_LIST;
         }
         List<TargetCookie> requestCookies = new ArrayList<>();

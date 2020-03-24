@@ -22,6 +22,7 @@ import com.adobe.target.edge.client.utils.StringUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.jamsesso.jsonlogic.JsonLogic;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,9 +141,9 @@ public class LocalDecisioningService {
                     .client(clientConfig.getClient())
                     .requestId(requestId)
                     .id(devRequest.getId())
-                    .status(500);
+                    .status(HttpStatus.SC_SERVICE_UNAVAILABLE);
             return new TargetDeliveryResponse(deliveryRequest, deliveryResponse,
-                    500, "Local-decisioning rules not available");
+                    HttpStatus.SC_SERVICE_UNAVAILABLE, "Local-decisioning rules not available");
         }
         List<RequestDetails> prefetchRequests = new ArrayList<>();
         List<RequestDetails> executeRequests = new ArrayList<>();
@@ -162,7 +163,7 @@ public class LocalDecisioningService {
         PrefetchResponse prefetchResponse = new PrefetchResponse();
         ExecuteResponse executeResponse = new ExecuteResponse();
         LocalExecutionResult localResult = evaluateLocalExecution(deliveryRequest);
-        int status = localResult.isAllLocal() ? 200 : 206;
+        int status = localResult.isAllLocal() ? HttpStatus.SC_OK : HttpStatus.SC_PARTIAL_CONTENT;
         DeliveryResponse deliveryResponse = new DeliveryResponse()
                 .client(clientConfig.getClient())
                 .requestId(requestId)
