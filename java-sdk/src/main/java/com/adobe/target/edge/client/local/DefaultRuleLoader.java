@@ -28,6 +28,7 @@ public class DefaultRuleLoader implements RuleLoader {
     private static final Logger logger = LoggerFactory.getLogger(DefaultRuleLoader.class);
 
     private static final long MIN_POLLING_INTERVAL = 5 * 60 * 1000; // 5 minutes
+    private static final int MAX_RETRIES = 10;
 
     private LocalDecisioningRuleSet latestRules;
     private String lastETag;
@@ -36,6 +37,7 @@ public class DefaultRuleLoader implements RuleLoader {
     private UnirestInstance unirestInstance = Unirest.spawnInstance();
     private Timer timer = new Timer(this.getClass().getCanonicalName());
     private boolean started = false;
+    private int retries = 0;
 
     public DefaultRuleLoader() {}
 
@@ -53,6 +55,7 @@ public class DefaultRuleLoader implements RuleLoader {
             return;
         }
         started = true;
+        retries = 0;
         if (unirestInstance != null) {
             unirestInstance.config()
                 .socketTimeout(clientConfig.getSocketTimeout())
@@ -74,16 +77,29 @@ public class DefaultRuleLoader implements RuleLoader {
 
     public void refresh() {
         this.loadRules(this.clientConfig);
-        this.timer.cancel();
         this.scheduleTimer(pollingInterval());
     }
 
     private void scheduleTimer(long delay) {
+        if (this.timer != null) {
+            this.timer.cancel();
+        }
         this.timer = new Timer(this.getClass().getCanonicalName());
         this.timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                DefaultRuleLoader.this.loadRules(clientConfig);
+                boolean success = DefaultRuleLoader.this.loadRules(clientConfig);
+                if (!success && DefaultRuleLoader.this.latestRules == null) {
+                    // retry if initial rules file download fails
+                    if (DefaultRuleLoader.this.retries++ < MAX_RETRIES) {
+                        long retryDelay = DefaultRuleLoader.this.retries * 10000;
+                        logger.debug("Download of local-decisioning rules failed, retying in {} ms", retryDelay);
+                        scheduleTimer(retryDelay);
+                    }
+                    else {
+                        logger.warn("Exhausted retries trying to download local-decisioning rules. Local-decisioning disabled.");
+                    }
+                }
             }
         }, delay, pollingInterval());
     }
@@ -112,12 +128,12 @@ public class DefaultRuleLoader implements RuleLoader {
     }
 
     // package-private For unit test mocking
-    void loadRules(ClientConfig clientConfig) {
+    boolean loadRules(ClientConfig clientConfig) {
         HttpResponse<LocalDecisioningRuleSet> response = executeRequest(clientConfig);
         if (response.getStatus() != 200) {
             if (response.getStatus() == 304) {
                 // Not updated, skip
-                return;
+                return true;
             }
             String message = "Received invalid HTTP response while getting local-decisioning rule set: " + response.getStatus() + " : " + response.getStatusText();
             logger.warn(message);
@@ -125,7 +141,7 @@ public class DefaultRuleLoader implements RuleLoader {
             if (handler != null) {
                 handler.handleException(new TargetClientException(message));
             }
-            return;
+            return false;
         }
         LocalDecisioningRuleSet ruleSet = response.getBody();
         if (ruleSet != null && ruleSet.getRules() != null &&
@@ -133,6 +149,7 @@ public class DefaultRuleLoader implements RuleLoader {
             setLatestETag(response.getHeaders().getFirst("ETag"));
             setLatestRules(ruleSet);
             logger.trace("rulesList={}", latestRules);
+            return true;
         }
         else if (ruleSet != null && ruleSet.getVersion() != null) {
             String message = "Unknown rules version: " + ruleSet.getVersion();
@@ -141,6 +158,7 @@ public class DefaultRuleLoader implements RuleLoader {
             if (handler != null) {
                 handler.handleException(new TargetClientException(message));
             }
+            return false;
         }
         else {
             String message = "Unable to parse local-decisioning rule set";
@@ -149,6 +167,7 @@ public class DefaultRuleLoader implements RuleLoader {
             if (handler != null) {
                 handler.handleException(new TargetClientException(message));
             }
+            return false;
         }
     }
 
