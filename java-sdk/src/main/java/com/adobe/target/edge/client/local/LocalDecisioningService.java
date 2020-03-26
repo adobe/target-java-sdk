@@ -181,6 +181,7 @@ public class LocalDecisioningService {
                 localResult.isAllLocal() ? "Local-decisioning response" : localResult.getReason());
         targetResponse.getResponseStatus().setRemoteMboxes(localResult.getRemoteMBoxes());
         String visitorId = getOrCreateVisitorId(deliveryRequest, targetResponse);
+        List<Notification> notifications = new ArrayList<>();
         for (RequestDetails details : prefetchRequests) {
             boolean handled = false;
             List<LocalDecisioningRule> rules = detailsRules(details, ruleSet);
@@ -188,7 +189,8 @@ public class LocalDecisioningService {
                 for (LocalDecisioningRule rule : rules) {
                     Map<String, Object> resultMap = executeRule(deliveryRequest,
                       details, visitorId, rule);
-                    handled |= handleResult(resultMap, details, deliveryRequest, targetResponse, prefetchResponse, null);
+                    handled |= handleResult(resultMap, details, prefetchResponse,
+                            null, null);
                     if (handled && details instanceof MboxRequest) {
                         break;
                     }
@@ -206,7 +208,8 @@ public class LocalDecisioningService {
                 for (LocalDecisioningRule rule : rules) {
                     Map<String, Object> resultMap = executeRule(deliveryRequest,
                       details, visitorId, rule);
-                    handled |= handleResult(resultMap, details, deliveryRequest, targetResponse, null, executeResponse);
+                    handled |= handleResult(resultMap, details,null,
+                            executeResponse, notifications);
                     if (handled && details instanceof MboxRequest) {
                         break;
                     }
@@ -217,6 +220,7 @@ public class LocalDecisioningService {
             }
             deliveryResponse.setExecute(executeResponse);
         }
+        sendNotifications(deliveryRequest, targetResponse, notifications);
         if (this.clientConfig.isLogRequests()) {
             logger.debug(targetResponse.toString());
         }
@@ -255,10 +259,9 @@ public class LocalDecisioningService {
 
     private boolean handleResult(Map<String, Object> consequence,
                                  RequestDetails details,
-                                 TargetDeliveryRequest deliveryRequest,
-                                 TargetDeliveryResponse deliveryResponse,
                                  PrefetchResponse prefetchResponse,
-                                 ExecuteResponse executeResponse) {
+                                 ExecuteResponse executeResponse,
+                                 List<Notification> notifications) {
         logger.trace("consequence={}", consequence);
         if (consequence == null || consequence.isEmpty()) {
             return false;
@@ -300,7 +303,7 @@ public class LocalDecisioningService {
                 mboxResponse.setOptions(options);
                 mboxResponse.setMetrics(metrics);
                 executeResponse.addMboxesItem(mboxResponse);
-                submitNotifications(deliveryRequest, deliveryResponse, details, metrics);
+                addNotification(details, metrics, notifications);
             }
             return true;
         }
@@ -308,33 +311,28 @@ public class LocalDecisioningService {
             List<Option> options = mapper.convertValue(consequence.get("options"),
               new TypeReference<List<Option>>() {
               });
-            List<Option> allOptions = new ArrayList<>(options);
             List<Metric> metrics = mapper.convertValue(consequence.get("metrics"),
               new TypeReference<List<Metric>>() {
               });
-            List<Metric> allMetrics = new ArrayList<>(metrics);
-            if (executeResponse != null) {
-                submitNotifications(deliveryRequest, deliveryResponse, details, metrics);
-            }
+            PageLoadResponse pageLoad = null;
             if (prefetchResponse != null) {
-                PageLoadResponse pageLoad = prefetchResponse.getPageLoad();
+                pageLoad = prefetchResponse.getPageLoad();
                 if (pageLoad == null) {
                     pageLoad = new PageLoadResponse();
                     prefetchResponse.setPageLoad(pageLoad);
                 }
-                final PageLoadResponse finalPageLoad = pageLoad;
-                allOptions.forEach(finalPageLoad::addOptionsItem);
-                allMetrics.forEach(finalPageLoad::addMetricsItem);
             }
             else if (executeResponse != null) {
-                PageLoadResponse pageLoad = executeResponse.getPageLoad();
+                pageLoad = executeResponse.getPageLoad();
                 if (pageLoad == null) {
                     pageLoad = new PageLoadResponse();
                     executeResponse.setPageLoad(pageLoad);
                 }
-                final PageLoadResponse finalPageLoad = pageLoad;
-                allOptions.forEach(finalPageLoad::addOptionsItem);
-                allMetrics.forEach(finalPageLoad::addMetricsItem);
+                addNotification(details, metrics, notifications);
+            }
+            if (pageLoad != null) {
+                options.forEach(pageLoad::addOptionsItem);
+                metrics.forEach(pageLoad::addMetricsItem);
             }
             return true;
         }
@@ -441,52 +439,54 @@ public class LocalDecisioningService {
         return ((Math.abs(output) % 10000) / 10000D) * 100D;
     }
 
-    private void submitNotifications(TargetDeliveryRequest deliveryRequest,
-                                     TargetDeliveryResponse deliveryResponse,
-                                     RequestDetails details, List<Metric> metrics) {
-        for (Metric metric : metrics) {
-            Notification notification = new Notification();
-            notification.setId(UUID.randomUUID().toString());
-            notification.setImpressionId(UUID.randomUUID().toString());
-            notification.setType(metric.getType());
-            notification.setTimestamp(System.currentTimeMillis());
-            notification.setTokens(Collections.singletonList(metric.getEventToken()));
-            if (details instanceof ViewRequest) {
-                ViewRequest vr = (ViewRequest)details;
-                NotificationView view = new NotificationView();
-                view.setName(vr.getName());
-                view.setKey(vr.getKey());
-                notification.setView(view);
-            }
-            else if (details instanceof MboxRequest) {
-                MboxRequest mboxRequest = (MboxRequest)details;
-                NotificationMbox mbox = new NotificationMbox();
-                mbox.setName(mboxRequest.getName());
-                notification.setMbox(mbox);
-            }
-            DeliveryRequest dreq = deliveryRequest.getDeliveryRequest();
-            String locationHint = deliveryRequest.getLocationHint() != null ?
-                    deliveryRequest.getLocationHint() :
-                    this.clusterLocator.getLocationHint();
-            TargetDeliveryRequest notifRequest = TargetDeliveryRequest
-                    .builder()
-                    .locationHint(locationHint)
-                    .sessionId(deliveryRequest.getSessionId())
-                    .visitor(deliveryRequest.getVisitor())
-                    .executionMode(ExecutionMode.REMOTE)
-                    .requestId(UUID.randomUUID().toString())
-                    .impressionId(UUID.randomUUID().toString())
-                    .id(dreq.getId() != null ? dreq.getId() : deliveryResponse.getResponse().getId())
-                    .experienceCloud(dreq.getExperienceCloud())
-                    .context(dreq.getContext())
-                    .environmentId(dreq.getEnvironmentId())
-                    .qaMode(dreq.getQaMode())
-                    .property(dreq.getProperty())
-                    .notifications(Collections.singletonList(notification))
-                    .trace(dreq.getTrace())
-                    .build();
-            this.deliveryService.sendNotification(notifRequest);
+    private void addNotification(RequestDetails details,
+            List<Metric> metrics, List<Notification> notifications) {
+        Notification notification = new Notification();
+        notification.setId(UUID.randomUUID().toString());
+        notification.setImpressionId(UUID.randomUUID().toString());
+        notification.setType(MetricType.DISPLAY);
+        notification.setTimestamp(System.currentTimeMillis());
+        notification.setTokens(metrics.stream().map(Metric::getEventToken).collect(Collectors.toList()));
+        if (details instanceof ViewRequest) {
+            ViewRequest vr = (ViewRequest)details;
+            NotificationView view = new NotificationView();
+            view.setName(vr.getName());
+            view.setKey(vr.getKey());
+            notification.setView(view);
         }
+        else if (details instanceof MboxRequest) {
+            MboxRequest mboxRequest = (MboxRequest)details;
+            NotificationMbox mbox = new NotificationMbox();
+            mbox.setName(mboxRequest.getName());
+            notification.setMbox(mbox);
+        }
+        notifications.add(notification);
+    }
+
+    private void sendNotifications(TargetDeliveryRequest deliveryRequest,
+            TargetDeliveryResponse deliveryResponse, List<Notification> notifications) {
+        DeliveryRequest dreq = deliveryRequest.getDeliveryRequest();
+        String locationHint = deliveryRequest.getLocationHint() != null ?
+                                      deliveryRequest.getLocationHint() :
+                                      this.clusterLocator.getLocationHint();
+        TargetDeliveryRequest notifRequest = TargetDeliveryRequest
+                .builder()
+                 .locationHint(locationHint)
+                 .sessionId(deliveryRequest.getSessionId())
+                 .visitor(deliveryRequest.getVisitor())
+                 .executionMode(ExecutionMode.REMOTE)
+                 .requestId(UUID.randomUUID().toString())
+                 .impressionId(UUID.randomUUID().toString())
+                 .id(dreq.getId() != null ? dreq.getId() : deliveryResponse.getResponse().getId())
+                 .experienceCloud(dreq.getExperienceCloud())
+                 .context(dreq.getContext())
+                 .environmentId(dreq.getEnvironmentId())
+                 .qaMode(dreq.getQaMode())
+                 .property(dreq.getProperty())
+                 .notifications(notifications)
+                 .trace(dreq.getTrace())
+                 .build();
+        this.deliveryService.sendNotification(notifRequest);
     }
 
     private List<String> allMboxNames(TargetDeliveryRequest request, LocalDecisioningRuleSet ruleSet) {
