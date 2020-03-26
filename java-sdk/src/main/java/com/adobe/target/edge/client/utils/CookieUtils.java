@@ -146,15 +146,27 @@ public class CookieUtils {
             return Optional.ofNullable(null);
         }
         TargetCookie targetCookie = null;
+        String locationHint = locationHintFromTntId(tntId);
+        if (locationHint != null) {
+            long maxAge = System.currentTimeMillis() / 1000 + CLUSTER_LOCATION_HINT_MAX_AGE;
+            targetCookie = new TargetCookie(CLUSTER_COOKIE_NAME, locationHint, (int) (maxAge / 1000));
+        }
+        return Optional.ofNullable(targetCookie);
+    }
+
+    public static String locationHintFromTntId(String tntId) {
         String[] parts = tntId.split("\\.");
         if (parts.length == 2) {
             String[] nodeDetails = parts[1].split("_");
             if (nodeDetails.length == 2) {
-                long maxAge = System.currentTimeMillis() / 1000 + CLUSTER_LOCATION_HINT_MAX_AGE;
-                targetCookie = new TargetCookie(CLUSTER_COOKIE_NAME, nodeDetails[0], (int) (maxAge / 1000));
+                return nodeDetails[0];
             }
         }
-        return Optional.ofNullable(targetCookie);
+        return null;
+    }
+
+    public static String locationHintToNodeDetails(String locationHint) {
+        return String.format("%s_0", locationHint);
     }
 
     public static Set<String> getTargetCookieNames() {

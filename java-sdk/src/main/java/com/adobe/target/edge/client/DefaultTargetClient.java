@@ -40,8 +40,8 @@ public class DefaultTargetClient implements TargetClient {
 
     DefaultTargetClient(ClientConfig clientConfig) {
         this.targetService = new DefaultTargetService(clientConfig);
-        this.localService = new LocalDecisioningService(clientConfig, this.targetService);
         VisitorProvider.init(clientConfig.getOrganizationId());
+        this.localService = new LocalDecisioningService(clientConfig, this.targetService);
     }
 
     @Override

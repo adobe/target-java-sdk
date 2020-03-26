@@ -18,6 +18,7 @@ import com.adobe.target.edge.client.model.*;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import com.adobe.target.edge.client.service.TargetService;
+import com.adobe.target.edge.client.utils.CookieUtils;
 import com.adobe.target.edge.client.utils.StringUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,6 +62,7 @@ public class LocalDecisioningService {
     private final JsonLogic jsonLogic;
     private final RuleLoader ruleLoader;
     private final NotificationDeliveryService deliveryService;
+    private final ClusterLocator clusterLocator;
 
     private final ParamsCollator timeCollator = new TimeParamsCollator();
     private final ParamsCollator userCollator = new UserParamsCollator();
@@ -71,15 +73,20 @@ public class LocalDecisioningService {
     public LocalDecisioningService(ClientConfig clientConfig, TargetService targetService) {
         this.clientConfig = clientConfig;
         this.jsonLogic = new JsonLogic();
-        this.ruleLoader = RuleLoaderManager.getInstance().getLoader(clientConfig);
+        LocalDecisioningServicesManager.LocalDecisioningServices services =
+                LocalDecisioningServicesManager.getInstance().getServices(clientConfig, targetService);
+        this.ruleLoader = services.getRuleLoader();
         this.ruleLoader.start(clientConfig);
-        this.deliveryService = NotificationDeliveryManager.getInstance().getService(clientConfig, targetService);
+        this.deliveryService = services.getNotificationDeliveryService();
         this.deliveryService.start(clientConfig);
+        this.clusterLocator = services.getClusterLocator();
+        this.clusterLocator.start(clientConfig, targetService);
     }
 
     public void stop() {
         this.ruleLoader.stop();
         this.deliveryService.stop();
+        this.clusterLocator.stop();
     }
 
     public void refreshRules() {
@@ -181,7 +188,7 @@ public class LocalDecisioningService {
                 for (LocalDecisioningRule rule : rules) {
                     Map<String, Object> resultMap = executeRule(deliveryRequest,
                       details, visitorId, rule);
-                    handled |= handleResult(resultMap, details, deliveryRequest, prefetchResponse, null);
+                    handled |= handleResult(resultMap, details, deliveryRequest, targetResponse, prefetchResponse, null);
                     if (handled && details instanceof MboxRequest) {
                         break;
                     }
@@ -199,7 +206,7 @@ public class LocalDecisioningService {
                 for (LocalDecisioningRule rule : rules) {
                     Map<String, Object> resultMap = executeRule(deliveryRequest,
                       details, visitorId, rule);
-                    handled |= handleResult(resultMap, details, deliveryRequest, null, executeResponse);
+                    handled |= handleResult(resultMap, details, deliveryRequest, targetResponse, null, executeResponse);
                     if (handled && details instanceof MboxRequest) {
                         break;
                     }
@@ -249,6 +256,7 @@ public class LocalDecisioningService {
     private boolean handleResult(Map<String, Object> consequence,
                                  RequestDetails details,
                                  TargetDeliveryRequest deliveryRequest,
+                                 TargetDeliveryResponse deliveryResponse,
                                  PrefetchResponse prefetchResponse,
                                  ExecuteResponse executeResponse) {
         logger.trace("consequence={}", consequence);
@@ -292,7 +300,7 @@ public class LocalDecisioningService {
                 mboxResponse.setOptions(options);
                 mboxResponse.setMetrics(metrics);
                 executeResponse.addMboxesItem(mboxResponse);
-                submitNotifications(deliveryRequest, details, metrics);
+                submitNotifications(deliveryRequest, deliveryResponse, details, metrics);
             }
             return true;
         }
@@ -306,7 +314,7 @@ public class LocalDecisioningService {
               });
             List<Metric> allMetrics = new ArrayList<>(metrics);
             if (executeResponse != null) {
-                submitNotifications(deliveryRequest, details, metrics);
+                submitNotifications(deliveryRequest, deliveryResponse, details, metrics);
             }
             if (prefetchResponse != null) {
                 PageLoadResponse pageLoad = prefetchResponse.getPageLoad();
@@ -383,7 +391,7 @@ public class LocalDecisioningService {
         }
         // If vid still null, create new tntId and use that and set it in the response
         if (vid == null) {
-            vid = UUID.randomUUID().toString();
+            vid = generateTntId();
             if (visitorId == null) {
                 visitorId = new VisitorId().tntId(vid);
             }
@@ -393,6 +401,15 @@ public class LocalDecisioningService {
             targetResponse.getResponse().setId(visitorId);
         }
         return vid;
+    }
+
+    private String generateTntId() {
+        String tntId = UUID.randomUUID().toString();
+        String locationHint = this.clusterLocator.getLocationHint();
+        if (locationHint != null) {
+            tntId += "." + CookieUtils.locationHintToNodeDetails(locationHint);
+        }
+        return tntId;
     }
 
     private String firstAuthenticatedCustomerId(VisitorId visitorId) {
@@ -425,6 +442,7 @@ public class LocalDecisioningService {
     }
 
     private void submitNotifications(TargetDeliveryRequest deliveryRequest,
+                                     TargetDeliveryResponse deliveryResponse,
                                      RequestDetails details, List<Metric> metrics) {
         for (Metric metric : metrics) {
             Notification notification = new Notification();
@@ -447,19 +465,20 @@ public class LocalDecisioningService {
                 notification.setMbox(mbox);
             }
             DeliveryRequest dreq = deliveryRequest.getDeliveryRequest();
+            String locationHint = deliveryRequest.getLocationHint() != null ?
+                    deliveryRequest.getLocationHint() :
+                    this.clusterLocator.getLocationHint();
             TargetDeliveryRequest notifRequest = TargetDeliveryRequest
                     .builder()
-                    .locationHint(deliveryRequest.getLocationHint())
+                    .locationHint(locationHint)
                     .sessionId(deliveryRequest.getSessionId())
                     .visitor(deliveryRequest.getVisitor())
                     .executionMode(ExecutionMode.REMOTE)
                     .requestId(UUID.randomUUID().toString())
                     .impressionId(UUID.randomUUID().toString())
-                    .id(dreq.getId())
+                    .id(dreq.getId() != null ? dreq.getId() : deliveryResponse.getResponse().getId())
                     .experienceCloud(dreq.getExperienceCloud())
                     .context(dreq.getContext())
-                    .prefetch(dreq.getPrefetch())
-                    .execute(dreq.getExecute())
                     .environmentId(dreq.getEnvironmentId())
                     .qaMode(dreq.getQaMode())
                     .property(dreq.getProperty())
