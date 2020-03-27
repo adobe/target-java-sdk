@@ -129,43 +129,52 @@ public class DefaultRuleLoader implements RuleLoader {
 
     // package-private For unit test mocking
     boolean loadRules(ClientConfig clientConfig) {
-        HttpResponse<LocalDecisioningRuleSet> response = executeRequest(clientConfig);
-        if (response.getStatus() != 200) {
-            if (response.getStatus() == 304) {
-                // Not updated, skip
+        try {
+            HttpResponse<LocalDecisioningRuleSet> response = executeRequest(clientConfig);
+            if (response.getStatus() != 200) {
+                if (response.getStatus() == 304) {
+                    // Not updated, skip
+                    return true;
+                }
+                String message = "Received invalid HTTP response while getting local-decisioning rule set: " + response.getStatus() + " : " + response.getStatusText();
+                logger.warn(message);
+                TargetExceptionHandler handler = clientConfig.getExceptionHandler();
+                if (handler != null) {
+                    handler.handleException(new TargetClientException(message));
+                }
+                return false;
+            }
+            LocalDecisioningRuleSet ruleSet = response.getBody();
+            if (ruleSet != null && ruleSet.getRules() != null &&
+                    ruleSet.getVersion() != null && ruleSet.getVersion().startsWith("1.")) {
+                setLatestETag(response.getHeaders().getFirst("ETag"));
+                setLatestRules(ruleSet);
+                logger.trace("rulesList={}", latestRules);
                 return true;
+            } else if (ruleSet != null && ruleSet.getVersion() != null) {
+                String message = "Unknown rules version: " + ruleSet.getVersion();
+                logger.warn(message);
+                TargetExceptionHandler handler = clientConfig.getExceptionHandler();
+                if (handler != null) {
+                    handler.handleException(new TargetClientException(message));
+                }
+                return false;
+            } else {
+                String message = "Unable to parse local-decisioning rule set";
+                logger.warn(message);
+                TargetExceptionHandler handler = clientConfig.getExceptionHandler();
+                if (handler != null) {
+                    handler.handleException(new TargetClientException(message));
+                }
+                return false;
             }
-            String message = "Received invalid HTTP response while getting local-decisioning rule set: " + response.getStatus() + " : " + response.getStatusText();
-            logger.warn(message);
+        }
+        catch (Throwable t) {
+            String message = "Hit exception while getting local-decisioning rule set";
+            logger.warn(message, t);
             TargetExceptionHandler handler = clientConfig.getExceptionHandler();
             if (handler != null) {
-                handler.handleException(new TargetClientException(message));
-            }
-            return false;
-        }
-        LocalDecisioningRuleSet ruleSet = response.getBody();
-        if (ruleSet != null && ruleSet.getRules() != null &&
-          ruleSet.getVersion() != null && ruleSet.getVersion().startsWith("1.")) {
-            setLatestETag(response.getHeaders().getFirst("ETag"));
-            setLatestRules(ruleSet);
-            logger.trace("rulesList={}", latestRules);
-            return true;
-        }
-        else if (ruleSet != null && ruleSet.getVersion() != null) {
-            String message = "Unknown rules version: " + ruleSet.getVersion();
-            logger.warn(message);
-            TargetExceptionHandler handler = clientConfig.getExceptionHandler();
-            if (handler != null) {
-                handler.handleException(new TargetClientException(message));
-            }
-            return false;
-        }
-        else {
-            String message = "Unable to parse local-decisioning rule set";
-            logger.warn(message);
-            TargetExceptionHandler handler = clientConfig.getExceptionHandler();
-            if (handler != null) {
-                handler.handleException(new TargetClientException(message));
+                handler.handleException(new TargetClientException(message, t));
             }
             return false;
         }
