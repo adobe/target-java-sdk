@@ -181,7 +181,7 @@ public class DefaultRuleLoader implements RuleLoader {
     }
 
     private String getLocalDecisioningUrl(ClientConfig clientConfig) {
-        return "https://target-local-decisioning-staging.s3-us-east-2.amazonaws.com/" +
+        return "https://assets.staging.adobetarget.com/" +
                 clientConfig.getClient() + "/" +
                 clientConfig.getLocalEnvironment().toLowerCase() + "/" +
                 "rules.json";
