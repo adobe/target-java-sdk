@@ -244,7 +244,7 @@ public class LocalDecisioningService {
             ObjectMapper mapper = new ObjectMapper();
             String expression = mapper.writeValueAsString(condition);
             logger.trace("expression={}", expression);
-            return ((Boolean) jsonLogic.apply(expression, data)) ? rule.getConsequence() : null;
+            return JsonLogic.truthy(jsonLogic.apply(expression, data)) ? rule.getConsequence() : null;
         }
         catch (Exception e) {
             String message = "Hit exception while evaluating local-decisioning rule";

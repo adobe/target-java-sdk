@@ -47,7 +47,7 @@ public class UserParamsCollator implements ParamsCollator {
     private static final Map<String, String> BROWSER_PLATFORMS_MAPPING =
             Collections.unmodifiableMap(new LinkedHashMap<String, String>() {{
                 put("Windows", "windows");
-                put( "Macintosh", "mac");
+                put("Macintosh", "mac");
                 put("Mac OS", "mac");
                 put("Linux", "linux");
             }});
