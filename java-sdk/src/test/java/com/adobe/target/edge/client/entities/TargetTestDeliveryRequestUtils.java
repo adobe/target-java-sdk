@@ -306,7 +306,7 @@ class TargetTestDeliveryRequestUtils {
     }
 
     static ParamsCollator getSpecificTimeCollator(final long now) {
-        return (deliveryRequest, requestDetails, meta) -> {
+        return (deliveryRequest, requestDetails) -> {
             Map<String, Object> time = new HashMap<>();
             time.put("current_timestamp", now);
             Date nowDate = new Date(now);

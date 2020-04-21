@@ -19,6 +19,6 @@ import java.util.Map;
 public interface ParamsCollator {
 
     Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest,
-                                      RequestDetails requestDetails, Map<String, Object> meta);
+                                      RequestDetails requestDetails);
 
 }

@@ -69,7 +69,7 @@ public class UserParamsCollator implements ParamsCollator {
     private static final int COMPATIBILITY_TOKEN_END_LENGTH = COMPATIBILITY_TOKEN_END.length();
 
     public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest,
-                                             RequestDetails requestDetails, Map<String, Object> meta) {
+                                             RequestDetails requestDetails) {
         Map<String, Object> user = new HashMap<>();
         String userAgent = extractUserAgent(deliveryRequest);
         user.put("browserType", parseBrowserType(userAgent));

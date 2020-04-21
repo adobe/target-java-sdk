@@ -30,6 +30,8 @@ public enum OptionType {
 
     DYNAMIC("dynamic"),
 
+    DEFAULT("default"),
+
     ACTIONS("actions");
 
     private String value;

@@ -17,7 +17,10 @@ import java.util.Map;
 public class LocalDecisioningRuleSet {
 
     private String version;
-    private Map<String, Map<String, List<LocalDecisioningRule>>> rules;
+    private String globalMbox;
+    private List<String> remoteMboxes;
+    private List<String> responseTokens;
+    private LocalDecisioningRules rules;
     private Map<String, Object> meta;
 
     public LocalDecisioningRuleSet() { }
@@ -26,29 +29,19 @@ public class LocalDecisioningRuleSet {
         return version;
     }
 
-    public List<LocalDecisioningRule> getMboxRules(String mbox) {
-        if (rules == null || mbox == null) {
-            return null;
-        }
-        Map<String, List<LocalDecisioningRule>> mboxRules = rules.get("mboxes");
-        if (mboxRules != null) {
-            return mboxRules.get(mbox);
-        }
-        return null;
+    public String getGlobalMbox() {
+        return globalMbox;
     }
 
-    public List<LocalDecisioningRule> getViewRules(String view) {
-        if (rules == null || view == null) {
-            return null;
-        }
-        Map<String, List<LocalDecisioningRule>> viewRules = rules.get("views");
-        if (viewRules != null) {
-            return viewRules.get(view);
-        }
-        return null;
+    public List<String> getRemoteMboxes() {
+        return remoteMboxes;
     }
 
-    public Map<String, Map<String, List<LocalDecisioningRule>>> getRules() {
+    public List<String> getResponseTokens() {
+        return responseTokens;
+    }
+
+    public LocalDecisioningRules getRules() {
         return rules;
     }
 
@@ -57,9 +50,12 @@ public class LocalDecisioningRuleSet {
     @Override
     public String toString() {
         return "LocalDecisioningRuleSet{" +
-                "version='" + version + "'" +
-                ", meta=" + meta +
+                "version='" + version + '\'' +
+                ", globalMbox='" + globalMbox + '\'' +
+                ", remoteMboxes=" + remoteMboxes +
+                ", responseTokens=" + responseTokens +
                 ", rules=" + rules +
+                ", meta=" + meta +
                 '}';
     }
 

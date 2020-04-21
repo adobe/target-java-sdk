@@ -60,6 +60,7 @@ public class LocalDecisioningService {
 
     private final ClientConfig clientConfig;
     private final JsonLogic jsonLogic;
+    private final ObjectMapper mapper;
     private final RuleLoader ruleLoader;
     private final NotificationDeliveryService deliveryService;
     private final ClusterLocator clusterLocator;
@@ -71,8 +72,9 @@ public class LocalDecisioningService {
     private final ParamsCollator customCollator = new CustomParamsCollator();
 
     public LocalDecisioningService(ClientConfig clientConfig, TargetService targetService) {
-        this.clientConfig = clientConfig;
         this.jsonLogic = new JsonLogic();
+        this.mapper = new JacksonObjectMapper().getMapper();
+        this.clientConfig = clientConfig;
         LocalDecisioningServicesManager.LocalDecisioningServices services =
                 LocalDecisioningServicesManager.getInstance().getServices(clientConfig, targetService);
         this.ruleLoader = services.getRuleLoader();
@@ -109,13 +111,7 @@ public class LocalDecisioningService {
             return new LocalExecutionResult(false,
                     "Local-decisioning rule set not yet available", null);
         }
-        Map<String, Object> meta = ruleSet.getMeta();
-        if (meta == null) {
-            return new LocalExecutionResult(false,
-                    "Local-decisioning rule set does not contain proper information", null);
-        }
-        @SuppressWarnings("unchecked")
-        List<String> allRemoteMboxes = (List<String>)meta.get("remoteMboxes");
+        List<String> allRemoteMboxes = ruleSet.getRemoteMboxes();
         if (allRemoteMboxes == null || allRemoteMboxes.size() == 0) {
             return new LocalExecutionResult(true, null, null);
         }
@@ -234,15 +230,14 @@ public class LocalDecisioningService {
         Map<String, Object> condition = rule.getCondition();
         Map<String, Object> data = new HashMap<>();
         data.put("allocation", computeAllocation(visitorId, rule));
-        data.putAll(timeCollator.collateParams(deliveryRequest, details, rule.getMeta()));
-        data.put("user", userCollator.collateParams(deliveryRequest, details, rule.getMeta()));
-        data.put("page", pageCollator.collateParams(deliveryRequest, details, rule.getMeta()));
-        data.put("referring", prevPageCollator.collateParams(deliveryRequest, details, rule.getMeta()));
-        data.put("mbox", customCollator.collateParams(deliveryRequest, details, rule.getMeta()));
+        data.putAll(timeCollator.collateParams(deliveryRequest, details));
+        data.put("user", userCollator.collateParams(deliveryRequest, details));
+        data.put("page", pageCollator.collateParams(deliveryRequest, details));
+        data.put("referring", prevPageCollator.collateParams(deliveryRequest, details));
+        data.put("mbox", customCollator.collateParams(deliveryRequest, details));
         logger.trace("data={}", data);
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            String expression = mapper.writeValueAsString(condition);
+            String expression = this.mapper.writeValueAsString(condition);
             logger.trace("expression={}", expression);
             return JsonLogic.truthy(jsonLogic.apply(expression, data)) ? rule.getConsequence() : null;
         }
@@ -266,9 +261,8 @@ public class LocalDecisioningService {
         if (consequence == null || consequence.isEmpty()) {
             return false;
         }
-        ObjectMapper mapper = new JacksonObjectMapper().getMapper();
         if (details instanceof ViewRequest) {
-            View view = mapper.convertValue(consequence, new TypeReference<View>() {
+            View view = this.mapper.convertValue(consequence, new TypeReference<View>() {
             });
             if (prefetchResponse != null) {
                 List<View> views = prefetchResponse.getViews();
@@ -282,10 +276,10 @@ public class LocalDecisioningService {
         }
         else if (details instanceof MboxRequest) {
             MboxRequest mbox = (MboxRequest)details;
-            List<Option> options = mapper.convertValue(consequence.get("options"),
+            List<Option> options = this.mapper.convertValue(consequence.get("options"),
                     new TypeReference<List<Option>>() {
             });
-            List<Metric> metrics = mapper.convertValue(consequence.get("metrics"),
+            List<Metric> metrics = this.mapper.convertValue(consequence.get("metrics"),
                     new TypeReference<List<Metric>>() {
             });
             if (prefetchResponse != null) {
@@ -308,10 +302,10 @@ public class LocalDecisioningService {
             return true;
         }
         else {
-            List<Option> options = mapper.convertValue(consequence.get("options"),
+            List<Option> options = this.mapper.convertValue(consequence.get("options"),
               new TypeReference<List<Option>>() {
               });
-            List<Metric> metrics = mapper.convertValue(consequence.get("metrics"),
+            List<Metric> metrics = this.mapper.convertValue(consequence.get("metrics"),
               new TypeReference<List<Metric>>() {
               });
             PageLoadResponse pageLoad = null;
@@ -494,7 +488,7 @@ public class LocalDecisioningService {
         if (request == null || ruleSet == null) {
             return mboxNames;
         }
-        String globalMbox = globalMbox(ruleSet);
+        String globalMbox = ruleSet.getGlobalMbox();
         PrefetchRequest prefetch = request.getDeliveryRequest().getPrefetch();
         if (prefetch != null) {
             if (prefetch.getPageLoad() != null) {
@@ -514,21 +508,22 @@ public class LocalDecisioningService {
 
     private List<LocalDecisioningRule> detailsRules(RequestDetails details, LocalDecisioningRuleSet ruleSet) {
         if (details instanceof ViewRequest) {
-            return ruleSet.getViewRules(((ViewRequest) details).getName());
+            ViewRequest request = (ViewRequest) details;
+            String name = request.getName();
+            if (name != null) {
+                return ruleSet.getRules().getViews().get(name);
+            }
+            else {
+                return ruleSet.getRules().getViews().values().stream()
+                        .flatMap(List::stream)
+                        .collect(Collectors.toList());
+            }
         }
         else if (details instanceof MboxRequest) {
-            return ruleSet.getMboxRules(((MboxRequest) details).getName());
+            return ruleSet.getRules().getMboxes().get(((MboxRequest) details).getName());
         }
         else {
-            return ruleSet.getMboxRules(globalMbox(ruleSet));
+            return ruleSet.getRules().getMboxes().get(ruleSet.getGlobalMbox());
         }
-    }
-
-    private String globalMbox(LocalDecisioningRuleSet ruleSet) {
-        String def = "target-global-mbox";
-        if (ruleSet == null || ruleSet.getMeta() == null) {
-            return def;
-        }
-        return (String)ruleSet.getMeta().getOrDefault("globalMbox", def);
     }
 }

@@ -19,7 +19,7 @@ import java.util.*;
 public class CustomParamsCollator implements ParamsCollator {
 
     public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest,
-                                             RequestDetails requestDetails, Map<String, Object> meta) {
+                                             RequestDetails requestDetails) {
         Map<String, Object> custom = new HashMap<>();
         addAllParameters(custom, requestDetails);
         return custom;

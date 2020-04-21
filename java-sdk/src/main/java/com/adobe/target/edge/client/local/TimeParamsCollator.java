@@ -20,7 +20,7 @@ import java.util.*;
 public class TimeParamsCollator implements ParamsCollator {
 
     public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest,
-                                             RequestDetails requestDetails, Map<String, Object> meta) {
+                                             RequestDetails requestDetails) {
         Map<String, Object> time = new HashMap<>();
         long now = System.currentTimeMillis();
         Date nowDate = new Date(now);

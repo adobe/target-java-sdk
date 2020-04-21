@@ -35,7 +35,7 @@ public class PageParamsCollator implements ParamsCollator {
     }
 
     public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest,
-                                             RequestDetails requestDetails, Map<String, Object> meta) {
+                                             RequestDetails requestDetails) {
         Map<String, Object> page = new HashMap<>();
         Context context = deliveryRequest.getDeliveryRequest().getContext();
         if (context == null) {
