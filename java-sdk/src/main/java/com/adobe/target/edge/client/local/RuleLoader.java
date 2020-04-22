@@ -14,6 +14,8 @@ package com.adobe.target.edge.client.local;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.model.LocalDecisioningRuleSet;
 
+import java.util.Date;
+
 public interface RuleLoader {
 
     void start(ClientConfig clientConfig);
@@ -23,5 +25,13 @@ public interface RuleLoader {
     void refresh();
 
     LocalDecisioningRuleSet getLatestRules();
+
+    long getPollingInterval();
+
+    int getNumFetches();
+
+    Date getLastFetch();
+
+    String getLocation();
 
 }

@@ -16,12 +16,15 @@ import com.adobe.target.edge.client.Attributes;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
+import com.adobe.target.edge.client.http.JacksonObjectMapper;
+import com.adobe.target.edge.client.local.LocalDecisionHandler;
 import com.adobe.target.edge.client.local.LocalDecisioningService;
 import com.adobe.target.edge.client.local.ParamsCollator;
 import com.adobe.target.edge.client.local.RuleLoader;
 import com.adobe.target.edge.client.model.ExecutionMode;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.service.DefaultTargetService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -67,6 +70,9 @@ class TargetDeliveryAttributesTest {
 
         DefaultTargetService targetService = new DefaultTargetService(clientConfig);
         localService = new LocalDecisioningService(clientConfig, targetService);
+        RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(TEST_RULE_SET);
+        ObjectMapper mapper = new JacksonObjectMapper().getMapper();
+        LocalDecisionHandler decisionHandler = new LocalDecisionHandler(clientConfig, mapper);
 
         targetJavaClient = TargetClient.create(clientConfig);
 
@@ -77,12 +83,13 @@ class TargetDeliveryAttributesTest {
         FieldSetter.setField(targetJavaClient, targetJavaClient.getClass()
                 .getDeclaredField("localService"), localService);
 
-        RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(TEST_RULE_SET);
         FieldSetter.setField(localService, localService.getClass()
                 .getDeclaredField("ruleLoader"), testRuleLoader);
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("decisionHandler"), decisionHandler);
         ParamsCollator specificTimeCollator =
                 TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1582818503000L);
-        FieldSetter.setField(localService, localService.getClass()
+        FieldSetter.setField(decisionHandler, decisionHandler.getClass()
                 .getDeclaredField("timeCollator"), specificTimeCollator);
     }
 

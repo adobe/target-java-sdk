@@ -20,6 +20,7 @@ import kong.unirest.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -38,6 +39,8 @@ public class DefaultRuleLoader implements RuleLoader {
     private Timer timer = new Timer(this.getClass().getCanonicalName());
     private boolean started = false;
     private int retries = 0;
+    private int numFetches = 0;
+    private Date lastFetch = null;
 
     public DefaultRuleLoader() {}
 
@@ -77,7 +80,7 @@ public class DefaultRuleLoader implements RuleLoader {
 
     public void refresh() {
         this.loadRules(this.clientConfig);
-        this.scheduleTimer(pollingInterval());
+        this.scheduleTimer(getPollingInterval());
     }
 
     private void scheduleTimer(long delay) {
@@ -100,16 +103,32 @@ public class DefaultRuleLoader implements RuleLoader {
                         logger.warn("Exhausted retries trying to download local-decisioning rules. Local-decisioning disabled.");
                     }
                 }
+                else {
+                    DefaultRuleLoader.this.numFetches++;
+                    DefaultRuleLoader.this.lastFetch = new Date();
+                }
             }
-        }, delay, pollingInterval());
+        }, delay, getPollingInterval());
     }
 
-    private long pollingInterval() {
+    public long getPollingInterval() {
         return Math.max(MIN_POLLING_INTERVAL, clientConfig.getLocalDecisioningPollingIntSecs() * 1000);
     }
 
-    // package-private For unit test mocking
-    HttpResponse<LocalDecisioningRuleSet> executeRequest(ClientConfig clientConfig) {
+    public int getNumFetches() {
+        return numFetches;
+    }
+
+    public Date getLastFetch() {
+        return lastFetch;
+    }
+
+    public String getLocation() {
+        return this.getLocalDecisioningUrl(this.clientConfig);
+    }
+
+    // For unit test mocking
+    protected HttpResponse<LocalDecisioningRuleSet> executeRequest(ClientConfig clientConfig) {
         GetRequest getRequest = unirestInstance.get(getLocalDecisioningUrl(clientConfig));
         if (this.lastETag != null) {
             getRequest.header("If-None-Match", this.lastETag);
@@ -117,18 +136,18 @@ public class DefaultRuleLoader implements RuleLoader {
         return getRequest.asObject(new GenericType<LocalDecisioningRuleSet>(){});
     }
 
-    // package-private For unit test mocking
-    void setLatestRules(LocalDecisioningRuleSet ruleSet) {
+    // For unit test mocking
+    protected void setLatestRules(LocalDecisioningRuleSet ruleSet) {
         this.latestRules = ruleSet;
     }
 
-    // package-private For unit test mocking
-    void setLatestETag(String etag) {
+    // For unit test mocking
+    protected void setLatestETag(String etag) {
         this.lastETag = etag;
     }
 
-    // package-private For unit test mocking
-    boolean loadRules(ClientConfig clientConfig) {
+    // For unit test mocking
+    protected boolean loadRules(ClientConfig clientConfig) {
         try {
             HttpResponse<LocalDecisioningRuleSet> response = executeRequest(clientConfig);
             if (response.getStatus() != 200) {

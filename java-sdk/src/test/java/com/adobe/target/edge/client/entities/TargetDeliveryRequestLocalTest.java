@@ -15,6 +15,8 @@ import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
+import com.adobe.target.edge.client.http.JacksonObjectMapper;
+import com.adobe.target.edge.client.local.LocalDecisionHandler;
 import com.adobe.target.edge.client.local.LocalDecisioningService;
 import com.adobe.target.edge.client.local.ParamsCollator;
 import com.adobe.target.edge.client.local.RuleLoader;
@@ -22,6 +24,7 @@ import com.adobe.target.edge.client.model.ExecutionMode;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.service.DefaultTargetService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -51,6 +54,7 @@ class TargetDeliveryRequestLocalTest {
     private TargetClient targetJavaClient;
 
     private LocalDecisioningService localService;
+    private LocalDecisionHandler decisionHandler;
 
     @BeforeEach
     @SuppressWarnings("unchecked")
@@ -67,6 +71,9 @@ class TargetDeliveryRequestLocalTest {
 
         DefaultTargetService targetService = new DefaultTargetService(clientConfig);
         localService = new LocalDecisioningService(clientConfig, targetService);
+        RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(TEST_RULE_SET);
+        ObjectMapper mapper = new JacksonObjectMapper().getMapper();
+        decisionHandler = new LocalDecisionHandler(clientConfig, mapper);
 
         targetJavaClient = TargetClient.create(clientConfig);
 
@@ -77,11 +84,12 @@ class TargetDeliveryRequestLocalTest {
         FieldSetter.setField(targetJavaClient, targetJavaClient.getClass()
                 .getDeclaredField("localService"), localService);
 
-        RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(TEST_RULE_SET);
         FieldSetter.setField(localService, localService.getClass()
                 .getDeclaredField("ruleLoader"), testRuleLoader);
-        ParamsCollator specificTimeCollator = TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1582818503000L);
         FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("decisionHandler"), decisionHandler);
+        ParamsCollator specificTimeCollator = TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1582818503000L);
+        FieldSetter.setField(decisionHandler, decisionHandler.getClass()
                 .getDeclaredField("timeCollator"), specificTimeCollator);
     }
 
@@ -149,7 +157,7 @@ class TargetDeliveryRequestLocalTest {
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID);
         ParamsCollator specificTimeCollator =
                 TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1583625037000L);
-        FieldSetter.setField(localService, localService.getClass()
+        FieldSetter.setField(decisionHandler, decisionHandler.getClass()
                 .getDeclaredField("timeCollator"), specificTimeCollator);
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         verifyLocalServerState(targetDeliveryRequest, targetDeliveryResponse,

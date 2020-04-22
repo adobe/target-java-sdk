@@ -263,6 +263,26 @@ class TargetTestDeliveryRequestUtils {
                     throw new RuntimeException(e);
                 }
             }
+
+            @Override
+            public long getPollingInterval() {
+                return 0;
+            }
+
+            @Override
+            public int getNumFetches() {
+                return 0;
+            }
+
+            @Override
+            public Date getLastFetch() {
+                return null;
+            }
+
+            @Override
+            public String getLocation() {
+                return null;
+            }
         };
     }
 
