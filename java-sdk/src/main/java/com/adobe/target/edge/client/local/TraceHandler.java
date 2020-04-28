@@ -44,8 +44,9 @@ public final class TraceHandler {
         this.evaluatedTargets = new HashMap<>();
     }
 
-    public void updateRequest(TargetDeliveryRequest request, RequestDetails details) {
-        this.trace.put("request", this.requestTrace(request, details));
+    public void updateRequest(TargetDeliveryRequest request, RequestDetails details,
+            boolean execute) {
+        this.trace.put("request", this.requestTrace(request, details, execute));
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -97,6 +98,7 @@ public final class TraceHandler {
         artifacts.put("pollingInterval", ruleLoader.getPollingInterval());
         artifacts.put("artifactRetrievalCount", ruleLoader.getNumFetches());
         artifacts.put("artifactLocation", ruleLoader.getLocation());
+        artifacts.put("pollingHalted", false);
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
         format.setTimeZone(this.utc);
         artifacts.put("artifactLastRetrieved", format.format(ruleLoader.getLastFetch()));
@@ -106,14 +108,38 @@ public final class TraceHandler {
     private Map<String, Object> profileTrace(VisitorId visitorId) {
         Map<String, Object> profile = new HashMap<>();
         if (visitorId != null) {
-            profile.put("visitorId", mapper.convertValue(visitorId, Map.class));
+            String tntId = visitorId.getTntId();
+            if (tntId != null) {
+                Map<String, Object> visitorIdMap = new HashMap<>();
+                int idx = tntId.lastIndexOf(".");
+                if (idx >= 0 && idx < tntId.length() - 1) {
+                    visitorIdMap.put("tntId", tntId.substring(0, idx));
+                    visitorIdMap.put("profileLocation", tntId.substring(idx + 1));
+                }
+                else {
+                    visitorIdMap.put("tntId", tntId);
+                }
+                String mcid = visitorId.getMarketingCloudVisitorId();
+                if (mcid != null) {
+                    visitorIdMap.put("marketingCloudVisitorId", mcid);
+                }
+                String thirdParty = visitorId.getThirdPartyId();
+                if (thirdParty != null) {
+                    visitorIdMap.put("thirdPartyId", thirdParty);
+                }
+                List<CustomerId> customerIds = visitorId.getCustomerIds();
+                if (customerIds != null) {
+                    visitorIdMap.put("customerIds", mapper.convertValue(customerIds, Map.class));
+                }
+                profile.put("visitorId", visitorIdMap);
+            }
         }
         return profile;
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     private Map<String, Object> requestTrace(TargetDeliveryRequest request,
-            RequestDetails details) {
+            RequestDetails details, boolean execute) {
         Map<String, Object> req = new HashMap<>();
         req.put("sessionId", request.getSessionId());
         if (details instanceof ViewRequest) {
@@ -124,12 +150,13 @@ public final class TraceHandler {
             if (!mbox.containsKey("name")) {
                 mbox.put("name", this.ruleSet.getGlobalMbox());
             }
+            mbox.put("type", execute ? "execute" : "prefetch");
             req.put("mbox", mbox);
         }
         Address address = details.getAddress();
         if (address != null) {
             String urlStr = address.getUrl();
-            req.put("url", address.getUrl());
+            req.put("pageURL", address.getUrl());
             try {
                 URL url = new URL(urlStr);
                 req.put("host", url.getHost());

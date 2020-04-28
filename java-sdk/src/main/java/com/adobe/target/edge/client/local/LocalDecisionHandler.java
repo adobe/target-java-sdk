@@ -45,7 +45,8 @@ public class LocalDecisionHandler {
             ExecuteResponse executeResponse,
             List<Notification> notifications) {
         if (traceHandler != null) {
-            traceHandler.updateRequest(deliveryRequest, details);
+            traceHandler.updateRequest(deliveryRequest, details,
+                    executeResponse != null);
         }
         List<LocalDecisioningRule> rules = detailsRules(details, ruleSet);
         boolean handled = false;
