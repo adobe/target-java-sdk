@@ -170,7 +170,8 @@ public class DefaultRuleLoader implements RuleLoader {
                 setLatestRules(ruleSet);
                 logger.trace("rulesList={}", latestRules);
                 return true;
-            } else if (ruleSet != null && ruleSet.getVersion() != null) {
+            }
+            if (ruleSet != null && ruleSet.getVersion() != null) {
                 String message = "Unknown rules version: " + ruleSet.getVersion();
                 logger.warn(message);
                 TargetExceptionHandler handler = clientConfig.getExceptionHandler();
@@ -178,15 +179,14 @@ public class DefaultRuleLoader implements RuleLoader {
                     handler.handleException(new TargetClientException(message));
                 }
                 return false;
-            } else {
-                String message = "Unable to parse local-decisioning rule set";
-                logger.warn(message);
-                TargetExceptionHandler handler = clientConfig.getExceptionHandler();
-                if (handler != null) {
-                    handler.handleException(new TargetClientException(message));
-                }
-                return false;
             }
+            String message = "Unable to parse local-decisioning rule set";
+            logger.warn(message);
+            TargetExceptionHandler handler = clientConfig.getExceptionHandler();
+            if (handler != null) {
+                handler.handleException(new TargetClientException(message));
+            }
+            return false;
         }
         catch (Throwable t) {
             String message = "Hit exception while getting local-decisioning rule set";

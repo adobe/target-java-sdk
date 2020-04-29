@@ -54,35 +54,49 @@ public final class TraceHandler {
             boolean matched) {
         Map<String, Object> meta = rule.getMeta();
         Number activityId = (Number)meta.get("activityId");
-        if (activityId != null) {
-            if (!this.campaigns.containsKey(activityId)) {
-                Map<String, Object> campaign = this.campaignTrace(rule);
-                campaign.put("branchId", meta.get("experienceId"));
-                campaign.put("offers", meta.get("offerIds"));
-                campaign.put("environmentId", meta.get("environmentId"));
-                Map<String, Object> consequence = rule.getConsequence();
-                campaign.put("metrics", consequence.get("metrics"));
-                this.campaigns.put(activityId, campaign);
-            }
-            Map<String, Object> target = this.evaluatedTargets.get(activityId);
-            if (target == null) {
-                target = this.campaignTargetTrace(rule, context);
-                this.evaluatedTargets.put(activityId, target);
-            }
-            List audienceIds = (List)meta.get("audienceIds");
-            List ids;
-            List rules;
-            if (matched) {
-                ids = (List)target.get(MATCHED_IDS_KEY);
-                rules = (List)target.get(MATCHED_RULES_KEY);
-            }
-            else {
-                ids = (List)target.get(UNMATCHED_IDS_KEY);
-                rules = (List)target.get(UNMATCHED_RULES_KEY);
-            }
-            ids.addAll(audienceIds);
-            rules.add(rule.getCondition());
+        if (activityId == null) {
+            return;
         }
+        if (matched && !this.campaigns.containsKey(activityId)) {
+            Map<String, Object> campaign = this.campaignTrace(rule);
+            campaign.put("branchId", meta.get("experienceId"));
+            campaign.put("offers", meta.get("offerIds"));
+            campaign.put("environmentId", meta.get("environmentId"));
+            this.campaigns.put(activityId, campaign);
+        }
+        Map<String, Object> target = this.evaluatedTargets.get(activityId);
+        if (target == null) {
+            target = this.campaignTargetTrace(rule, context);
+            this.evaluatedTargets.put(activityId, target);
+        }
+        List audienceIds = (List)meta.get("audienceIds");
+        List ids;
+        List rules;
+        if (matched) {
+            ids = (List)target.get(MATCHED_IDS_KEY);
+            rules = (List)target.get(MATCHED_RULES_KEY);
+        }
+        else {
+            ids = (List)target.get(UNMATCHED_IDS_KEY);
+            rules = (List)target.get(UNMATCHED_RULES_KEY);
+        }
+        ids.addAll(audienceIds);
+        rules.add(rule.getCondition());
+    }
+
+    public void addNotification(LocalDecisioningRule rule, Notification notification) {
+        Map<String, Object> meta = rule.getMeta();
+        Number activityId = (Number) meta.get("activityId");
+        if (activityId == null) {
+            return;
+        }
+        Map<String, Object> campaign = this.campaigns.get(activityId);
+        if (campaign == null) {
+            return;
+        }
+        @SuppressWarnings("rawtypes")
+        Map notificationMap = mapper.convertValue(notification, Map.class);
+        campaign.put("notifications", Collections.singletonList(notificationMap));
     }
 
     public Map<String, Object> getCurrentTrace() {
@@ -142,6 +156,7 @@ public final class TraceHandler {
             RequestDetails details, boolean execute) {
         Map<String, Object> req = new HashMap<>();
         req.put("sessionId", request.getSessionId());
+        req.put("environmentId", request.getDeliveryRequest().getEnvironmentId());
         if (details instanceof ViewRequest) {
             req.put("view", mapper.convertValue(details, Map.class));
         }
