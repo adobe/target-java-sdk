@@ -9,6 +9,7 @@ public class TargetAttributesResponse implements Attributes {
 
     private final TargetDeliveryResponse response;
     private final Map<String, Map<String, Object>> content = new HashMap<>();
+    private volatile boolean contentCreated = false;
 
     public TargetAttributesResponse(TargetDeliveryResponse response) {
         this.response = response;
@@ -16,7 +17,7 @@ public class TargetAttributesResponse implements Attributes {
 
     @Override
     public boolean getFeatureBoolean(String mbox, String key) {
-        Map<String, Object> map = toMap(mbox);
+        Map<String, Object> map = toMboxMap(mbox);
         if (map != null) {
             Object value = map.get(key);
             if (value instanceof Boolean) {
@@ -28,7 +29,7 @@ public class TargetAttributesResponse implements Attributes {
 
     @Override
     public String getFeatureString(String mbox, String key) {
-        Map<String, Object> map = toMap(mbox);
+        Map<String, Object> map = toMboxMap(mbox);
         if (map != null) {
             Object value = map.get(key);
             if (value != null) {
@@ -40,7 +41,7 @@ public class TargetAttributesResponse implements Attributes {
 
     @Override
     public int getFeatureInteger(String mbox, String key) {
-        Map<String, Object> map = toMap(mbox);
+        Map<String, Object> map = toMboxMap(mbox);
         if (map != null) {
             Object value = map.get(key);
             if (value instanceof Number) {
@@ -55,7 +56,7 @@ public class TargetAttributesResponse implements Attributes {
 
     @Override
     public double getFeatureDouble(String mbox, String key) {
-        Map<String, Object> map = toMap(mbox);
+        Map<String, Object> map = toMboxMap(mbox);
         if (map != null) {
             Object value = map.get(key);
             if (value instanceof Number) {
@@ -74,13 +75,21 @@ public class TargetAttributesResponse implements Attributes {
     }
 
     @Override
-    public Map<String, Object> toMap(String mbox) {
+    public Map<String, Object> toMboxMap(String mbox) {
         Map<String, Object> mboxContent = this.content.get("mbox");
         if (mboxContent != null) {
             return mboxContent;
         }
-        if (this.response == null || mbox == null) {
+        return toMap().get(mbox);
+    }
+
+    @Override
+    public Map<String, Map<String, Object>> toMap() {
+        if (this.response == null) {
             return null;
+        }
+        if (this.contentCreated) {
+            return this.content;
         }
         synchronized (this.content) {
             List<MboxResponse> allMboxes = new ArrayList<>();
@@ -95,11 +104,9 @@ public class TargetAttributesResponse implements Attributes {
                 List<MboxResponse> executeMboxes = executeResponse.getMboxes();
                 allMboxes.addAll(executeMboxes);
             }
-            mboxContent = new HashMap<>();
             for (MboxResponse resp : allMboxes) {
-                if (resp.getName() == null || !mbox.equals(resp.getName())) {
-                    continue;
-                }
+                String mbox = resp.getName();
+                Map<String, Object> mboxContent = new HashMap<>();
                 List<Option> options = resp.getOptions();
                 for (Option option : options) {
                     Object contentMap = option.getContent();
@@ -109,9 +116,10 @@ public class TargetAttributesResponse implements Attributes {
                         mboxContent.putAll(contentObj);
                     }
                 }
+                this.content.put(mbox, mboxContent);
             }
-            this.content.put(mbox, mboxContent);
+            this.contentCreated = true;
         }
-        return mboxContent;
+        return this.content;
     }
 }

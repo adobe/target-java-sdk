@@ -28,6 +28,7 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
     private static final Logger logger = LoggerFactory.getLogger(DefaultTargetHttpClient.class);
 
     private UnirestInstance unirestInstance = Unirest.spawnInstance();
+    private ObjectMapper serializer = new JacksonObjectMapper();
 
     public DefaultTargetHttpClient(ClientConfig clientConfig) {
         unirestInstance.config()
@@ -58,8 +59,6 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
     }
 
     private ObjectMapper getObjectMapper() {
-        ObjectMapper serializer = new JacksonObjectMapper();
-
         logger.debug("using json serializer: {}", serializer.getClass().getSimpleName());
         return serializer;
     }

@@ -113,7 +113,8 @@ class TargetDeliveryAttributesTest {
         assertTrue(attrs.getFeatureBoolean("testoffer", "test"));
         assertEquals("b", attrs.getFeatureString("testoffer", "experience"));
         assertEquals(9.99, attrs.getFeatureDouble("testoffer", "price"), 0.0001);
-        assertEquals("b", attrs.toMap("testoffer").get("experience"));
+        assertEquals("b", attrs.toMboxMap("testoffer").get("experience"));
+        assertEquals("b", attrs.toMap().get("testoffer").get("experience"));
         assertEquals(2, attrs.getFeatureInteger("testoffer2", "offer"));
     }
 
@@ -158,9 +159,9 @@ class TargetDeliveryAttributesTest {
         verify(defaultTargetHttpClient, atMostOnce()).execute(any(Map.class), any(String.class),
                 any(TargetDeliveryRequest.class), any(Class.class));
         assertTrue(attrs.getFeatureBoolean("testoffer", "test"));
-        assertTrue(attrs.toMap("testoffer").containsKey("experience"));
-        assertTrue(attrs.toMap("testoffer").containsKey("price"));
-        assertTrue(attrs.toMap("testoffer2").containsKey("offer"));
+        assertTrue(attrs.toMboxMap("testoffer").containsKey("experience"));
+        assertTrue(attrs.toMboxMap("testoffer").containsKey("price"));
+        assertTrue(attrs.toMboxMap("testoffer2").containsKey("offer"));
     }
 
     private TargetDeliveryRequest localDeliveryRequest(String visitorIdStr, ExecutionMode mode) {
@@ -198,7 +199,8 @@ class TargetDeliveryAttributesTest {
         assertTrue(attrs.getFeatureBoolean("testoffer", "test"));
         assertEquals("a", attrs.getFeatureString("testoffer", "experience"));
         assertEquals(12.99, attrs.getFeatureDouble("testoffer", "price"), 0.0001);
-        assertEquals("a", attrs.toMap("testoffer").get("experience"));
+        assertEquals("a", attrs.toMboxMap("testoffer").get("experience"));
+        assertEquals("a", attrs.toMap().get("testoffer").get("experience"));
         assertEquals(1, attrs.getFeatureInteger("testoffer2", "offer"));
     }
 

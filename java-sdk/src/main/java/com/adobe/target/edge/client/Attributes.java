@@ -6,7 +6,9 @@ import java.util.Map;
 
 public interface Attributes {
 
-    Map<String, Object> toMap(String mbox);
+    Map<String, Map<String, Object>> toMap();
+
+    Map<String, Object> toMboxMap(String mbox);
 
     boolean getFeatureBoolean(String mbox, String key);
 
