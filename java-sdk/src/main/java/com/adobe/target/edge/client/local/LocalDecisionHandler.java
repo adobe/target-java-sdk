@@ -50,20 +50,37 @@ public class LocalDecisionHandler {
         }
         List<LocalDecisioningRule> rules = detailsRules(details, ruleSet);
         boolean handled = false;
+        Set<String> skipKeySet = new HashSet<>();
         if (rules != null) {
             for (LocalDecisioningRule rule : rules) {
-                Map<String, Object> resultMap = executeRule(deliveryRequest,
+                Map<String, Object> consequence = executeRule(deliveryRequest,
                         details, visitorId, rule, traceHandler);
-                handled |= handleResult(resultMap, rule, details, prefetchResponse,
+                String skipKey = getSkipKey(consequence);
+                if (skipKey != null && skipKeySet.contains(skipKey)) {
+                    continue;
+                }
+                handled |= handleResult(consequence, rule, details, prefetchResponse,
                         executeResponse, notifications, traceHandler);
-                if (handled && details instanceof MboxRequest) {
-                    break;
+                if (handled) {
+                    if (details instanceof MboxRequest) {
+                        break;
+                    }
+                    if (skipKey != null) {
+                        skipKeySet.add(skipKey);
+                    }
                 }
             }
         }
         if (!handled) {
             unhandledResponse(details, prefetchResponse, executeResponse, traceHandler);
         }
+    }
+
+    private String getSkipKey(Map<String, Object> consequence) {
+        if (consequence != null) {
+            return (String) consequence.get("skipKey");
+        }
+        return null;
     }
 
     private Map<String, Object> executeRule(TargetDeliveryRequest deliveryRequest,
@@ -182,7 +199,12 @@ public class LocalDecisionHandler {
                 if (pageLoad != null) {
                     pageLoad.setTrace(currentTrace(traceHandler));
                     options.forEach(pageLoad::addOptionsItem);
-                    metrics.forEach(pageLoad::addMetricsItem);
+                    for (Metric metric : metrics) {
+                        if (pageLoad.getMetrics() == null ||
+                                !pageLoad.getMetrics().contains(metric)) {
+                            pageLoad.addMetricsItem(metric);
+                        }
+                    }
                     return true;
                 }
                 return false;
@@ -205,20 +227,18 @@ public class LocalDecisionHandler {
         }
         else if (details instanceof MboxRequest) {
             MboxRequest request = (MboxRequest)details;
+            MboxResponse response;
             if (prefetchResponse != null) {
-                PrefetchMboxResponse response = new PrefetchMboxResponse();
-                response.setIndex(request.getIndex());
-                response.setName(request.getName());
-                response.setTrace(trace);
-                prefetchResponse.addMboxesItem(response);
+                response = new PrefetchMboxResponse();
+                prefetchResponse.addMboxesItem((PrefetchMboxResponse)response);
             }
             else {
-                MboxResponse response = new MboxResponse();
-                response.setIndex(request.getIndex());
-                response.setName(request.getName());
-                response.setTrace(trace);
+                response = new MboxResponse();
                 executeResponse.addMboxesItem(response);
             }
+            response.setIndex(request.getIndex());
+            response.setName(request.getName());
+            response.setTrace(trace);
         }
         else {
             PageLoadResponse response = new PageLoadResponse();
