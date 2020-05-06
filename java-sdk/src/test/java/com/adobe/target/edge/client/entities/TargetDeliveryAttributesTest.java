@@ -110,12 +110,12 @@ class TargetDeliveryAttributesTest {
         Attributes attrs = targetJavaClient.getAttributes(targetDeliveryRequest,
                 "testoffer", "testoffer2");
         validateInitialResponse(targetDeliveryRequest, attrs);
-        assertTrue(attrs.getFeatureBoolean("testoffer", "test"));
-        assertEquals("b", attrs.getFeatureString("testoffer", "experience"));
-        assertEquals(9.99, attrs.getFeatureDouble("testoffer", "price"), 0.0001);
+        assertTrue(attrs.getBoolean("testoffer", "test"));
+        assertEquals("b", attrs.getString("testoffer", "experience"));
+        assertEquals(9.99, attrs.getDouble("testoffer", "price"), 0.0001);
         assertEquals("b", attrs.toMboxMap("testoffer").get("experience"));
         assertEquals("b", attrs.toMap().get("testoffer").get("experience"));
-        assertEquals(2, attrs.getFeatureInteger("testoffer2", "offer"));
+        assertEquals(2, attrs.getInteger("testoffer2", "offer"));
     }
 
     @Test
@@ -158,7 +158,7 @@ class TargetDeliveryAttributesTest {
         assertEquals(200, attrs.getResponse().getStatus());
         verify(defaultTargetHttpClient, atMostOnce()).execute(any(Map.class), any(String.class),
                 any(TargetDeliveryRequest.class), any(Class.class));
-        assertTrue(attrs.getFeatureBoolean("testoffer", "test"));
+        assertTrue(attrs.getBoolean("testoffer", "test"));
         assertTrue(attrs.toMboxMap("testoffer").containsKey("experience"));
         assertTrue(attrs.toMboxMap("testoffer").containsKey("price"));
         assertTrue(attrs.toMboxMap("testoffer2").containsKey("offer"));
@@ -196,12 +196,12 @@ class TargetDeliveryAttributesTest {
     }
 
     private void validateResultA(Attributes attrs) {
-        assertTrue(attrs.getFeatureBoolean("testoffer", "test"));
-        assertEquals("a", attrs.getFeatureString("testoffer", "experience"));
-        assertEquals(12.99, attrs.getFeatureDouble("testoffer", "price"), 0.0001);
+        assertTrue(attrs.getBoolean("testoffer", "test"));
+        assertEquals("a", attrs.getString("testoffer", "experience"));
+        assertEquals(12.99, attrs.getDouble("testoffer", "price"), 0.0001);
         assertEquals("a", attrs.toMboxMap("testoffer").get("experience"));
         assertEquals("a", attrs.toMap().get("testoffer").get("experience"));
-        assertEquals(1, attrs.getFeatureInteger("testoffer2", "offer"));
+        assertEquals(1, attrs.getInteger("testoffer2", "offer"));
     }
 
 }

@@ -16,7 +16,7 @@ public class TargetAttributesResponse implements Attributes {
     }
 
     @Override
-    public boolean getFeatureBoolean(String mbox, String key) {
+    public boolean getBoolean(String mbox, String key) {
         Map<String, Object> map = toMboxMap(mbox);
         if (map != null) {
             Object value = map.get(key);
@@ -28,7 +28,7 @@ public class TargetAttributesResponse implements Attributes {
     }
 
     @Override
-    public String getFeatureString(String mbox, String key) {
+    public String getString(String mbox, String key) {
         Map<String, Object> map = toMboxMap(mbox);
         if (map != null) {
             Object value = map.get(key);
@@ -40,7 +40,7 @@ public class TargetAttributesResponse implements Attributes {
     }
 
     @Override
-    public int getFeatureInteger(String mbox, String key) {
+    public int getInteger(String mbox, String key) {
         Map<String, Object> map = toMboxMap(mbox);
         if (map != null) {
             Object value = map.get(key);
@@ -55,7 +55,7 @@ public class TargetAttributesResponse implements Attributes {
     }
 
     @Override
-    public double getFeatureDouble(String mbox, String key) {
+    public double getDouble(String mbox, String key) {
         Map<String, Object> map = toMboxMap(mbox);
         if (map != null) {
             Object value = map.get(key);

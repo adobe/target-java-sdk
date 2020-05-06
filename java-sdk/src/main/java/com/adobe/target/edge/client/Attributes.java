@@ -10,13 +10,13 @@ public interface Attributes {
 
     Map<String, Object> toMboxMap(String mbox);
 
-    boolean getFeatureBoolean(String mbox, String key);
+    boolean getBoolean(String mbox, String key);
 
-    String getFeatureString(String mbox, String key);
+    String getString(String mbox, String key);
 
-    int getFeatureInteger(String mbox, String key);
+    int getInteger(String mbox, String key);
 
-    double getFeatureDouble(String mbox, String key);
+    double getDouble(String mbox, String key);
 
     /** Allows access to resulting response to retrieve cookies. */
     TargetDeliveryResponse getResponse();
