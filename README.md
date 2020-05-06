@@ -88,11 +88,14 @@ end client including browsers, mobiles, IOT devices or servers.
   * [ECID and Analytics Integration](#ecid-and-analytics-integration)
   * [at.js integration via serverState](#atjs-integration-via-serverstate)
   * [Custom rendering of Target offers](#custom-rendering-of-target-offers)
+  * [JSON offers simplified](#json-offers-simplified)
+  * [Local execution mode](#local-execution-mode)
   * [Troubleshooting](#troubleshooting)
   * [Target Traces](#target-traces)
   * [Target Java SDK API](#target-java-sdk-api)
       - [TargetClient.create](#targetclientcreate)
       - [TargetClient.getOffers](#targetclientgetoffers)
+      - [TargetClient.getAttributes](#targetclientgetattributes)
       - [TargetClient.sendNotifications](#targetclientsendnotifications)
       - [Target SDK utility accessors](#targetsdk-utility-accessors)
   * [Multiple API requests](#multiple-api-requests)
@@ -788,6 +791,123 @@ counterpart `sendNotificationsAsync`.
 
 ---
 
+## JSON offers simplified
+
+The Target Java SDK provides a simplified way to to retrieve JSON offers from target and access the attributes of the offer. This is done using the `getAttributes` method.
+
+In the code sample below, take a look at the `getAttributes` call.  A `TargetDeliveryRequest` and a var-args array of mbox names is passed in. The result is an `Attributes` object with a few methods that can be used to get offer details. 
+
+Let's say that the JSON content for an offer for mbox `demo-engineering-flags` is the following:
+
+```json
+{
+    "cdnHostname": "cdn.cloud.corp.net",
+    "searchProviderId": 143,
+    "hasLegacyAccess": false
+}
+```
+
+There are various methods that can be used to get the values from the `demo-engineering-flags` mbox offer, depending on their type such as `getString(mbox)` and `getBoolean(mbox)`.
+
+And the `toMboxMap(mbox)` method can be used to get a Map representation of the mbox offer.
+
+```java
+
+Attributes attrs = targetJavaClient.getAttributes(targetRequest, "demo-engineering-flags");
+
+String searchProviderId = attrs.getString("demo-engineering-flags", "searchProviderId");
+boolean hasLegacyAccess = attrs.getBoolean("demo-engineering-flags", hasLegacyAccess");
+
+Map<String, Object> mboxMap = attrs.toMboxMap("demo-engineering-flags");
+String cdnHostname = (String) mboxMap.get("cdnHostname");
+
+```
+
+Note that you don't have to add the attribute mboxes into the `TargetDeliveryRequest` that is passed into `getAttributes`. If you don't add them yourself, they will be added for you. However, if you would like to add custom parameters or customize the mbox request in any way, you can do that in the `TargetDeliveryRequest` parameter. 
+
+#### Example
+
+See the `localGetAttributes` method in `TargetController` in the [Adobe Target Java SDK Samples](https://github.com/adobe/target-java-sdk-samples) for a working example.
+
+---
+
+## Local execution mode
+
+The Target Java SDK can be configured to run in local execution mode. In this mode, the SDK loads a rules definition file on startup and uses it to determine the outcomes for subsequent `getOffers` calls instead of making repeat requests to the delivery API each time. This can greatly improve performance if you are concerned about network latency and would like to limit the number of requests made to target edge servers.
+
+By default, the SDK is configured to always make a request to the target delivery API for each `getOffers` call. But you can configure the SDK to use local execution mode instead by setting `executionMode` in the `TargetDeliveryRequest`.
+
+```java
+
+ExecuteRequest executeRequest = new ExecuteRequest()
+        .mboxes(getMboxRequests("server-side-mbox"));
+
+TargetDeliveryRequest targetRequest = TargetDeliveryRequest.builder()
+    .context(getContext(request))    
+    .cookies(getTargetCookies(cookies))
+    .execute(executeRequest)
+    .executionMode(ExecutionMode.LOCAL)
+    .build();
+
+TargetDeliveryResponse response = targetJavaClient.getOffers(targetRequest);
+
+```
+
+With executionMode set to ExecutionMode.LOCAL, your app will determine what offers the user qualifies for locally without hitting the target edge servers.
+
+### Limitations
+
+Not all target activities can be decided locally at this time.  
+
+#### Audience Rules
+
+Some activities are not supported due to audience rules. Below is a list of audience rules with an indication for they are supported by local decisioning or will require a request to target edge servers to fulfill:
+
+| Audience Rule    | Local execution mode | Remote execution mode |
+|------------------|----------------------|-----------------------|
+| Geo              | Not Supported        | Supported             |
+| Network          | Not Supported        | Supported             |
+| Mobile           | Not Supported        | Supported             |
+| Custom           | Supported            | Supported             |
+| Operating System | Supported            | Supported             |
+| Site Pages       | Supported            | Supported             |
+| Browser          | Supported            | Supported             |
+| Visitor Profile  | Not Supported        | Supported             |
+| Traffic Sources  | Not Supported        | Supported             |
+| Time Frame       | Supported            | Supported             |
+
+#### Response Types
+
+Most, but not all response types are supported by local decisioning:
+
+| Response Type    | Local execution mode | Remote execution mode |
+|------------------|----------------------|-----------------------|
+| Default Content  | Supported            | Supported             |
+| HTML             | Supported            | Supported             |
+| JSON             | Supported            | Supported             |
+| Recommendation   | Not Supported        | Supported             |
+| Redirect         | Supported            | Supported             |
+| Remote           | Not Supported        | Supported             |
+| Visual/VEC       | Supported            | Supported             |
+
+#### Other Limitations
+
+Only A/B activities with Manual Traffic Allocation are supported in local-decisioning. Auto-allocate and Auto-target are not supported currently.
+
+XT activities are supported in local-decisioning.
+
+Automated Personalization, Multi-variate and Recommendations activities are not currently supported in local-decisioning.
+
+### Hybrid Mode
+
+Although all activities are not yet supported by local execution mode, there is a way to get the best of both worlds. If you set `executionMode` to `ExecutionMode.HYBRID`, then the SDK will determine on its own whether to make decisions locally or remotely. This way, if a `getOffers` request can be completed locally, the SDK will do so. But if the request includes activities that are not supported, a request to the target delivery API will be made instead. This may be useful as you begin to adopt local decisioning.
+
+### Example
+
+See the `localExecution` method in `TargetController` in the [Adobe Target Java SDK Samples](https://github.com/adobe/target-java-sdk-samples) for a working example.
+
+---
+
 ## Troubleshooting
 
 In order to understand what is happening on the wire, you have 3 options when instantiating the Java SDK.  
@@ -917,10 +1037,28 @@ The `TargetCookie` object used for saving data for user session has the followin
 | Name   | Type   | Description                                                                                               |
 |--------|--------|-----------------------------------------------------------------------------------------------------------|
 | name   | String | Cookie name                                                                                               |
-| value  | String    | Cookie value, the value will be converted to string                                                       |
+| value  | String | Cookie value, the value will be converted to string                                                       |
 | maxAge | Number | The `maxAge` option is a convenience for setting `expires` relative to the current time in seconds        |
 
 You don't have to worry about expiring the cookies. Target handles maxAge inside the Sdk.
+
+#### TargetClient.getAttributes
+
+`Attributes TargetClient.getAttributes(TargetDeliveryRequest request, String ...mboxes)` is used to fetch JSON offers for the given mboes from Target. It 
+also has an async counterpart `getAttributesAsync`.
+`TargetDeliveryRequest` is created using `TargetDeliveryRequestBuilder TargetDeliveryRequest.builder()`. See `getOffers` documentation above for details.
+
+The `Attributes` object returned by `TargetClient.getAttributes()` has the following methods:
+
+| Name                     | Type                   | Description                                                 |
+|--------------------------|------------------------|-------------------------------------------------------------|
+| toMboxMap(mbox)          | Map<String, Object>    | Map representation of JSON offer for given mbox. |
+| toMap()                  | Map<String, Map<String, Object>>   | Map representation of all JSON offers for all mboxes, keyed by mbox. |
+| getString(mbox, key)     | String                 | String representation of value for given key in JSON offer. |
+| getBoolean(mbox, key)    | boolean                | Boolean representation of value for given key in JSON offer. Returns false if not present. |
+| getInteger(mbox, key)    | int                    | Integer representation of value for given key in JSON offer. Returns 0 if not present. |
+| getDouble(mbox, key)     | double                 | Double representation of value for given key in JSON offer. Returns 0 if not present. |
+| getResponse()            | TargetDeliveryResponse | See `TargetDeliveryResponse` above in `getOffers()` documentation. |
 
 #### TargetClient.sendNotifications
 
