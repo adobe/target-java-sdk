@@ -1,3 +1,14 @@
+/*
+ * Copyright 2019 Adobe. All rights reserved.
+ * This file is licensed to you under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License. You may obtain a copy
+ * of the License at http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
+ * OF ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ */
 package com.adobe.target.edge.client.local;
 
 import com.adobe.target.delivery.v1.model.*;
@@ -53,12 +64,12 @@ public class LocalDecisionHandler {
         Set<String> skipKeySet = new HashSet<>();
         if (rules != null) {
             for (LocalDecisioningRule rule : rules) {
-                Map<String, Object> consequence = executeRule(deliveryRequest,
-                        details, visitorId, rule, traceHandler);
-                String skipKey = getSkipKey(consequence);
+                String skipKey = String.valueOf(rule.getMeta().get("activityId"));
                 if (skipKey != null && skipKeySet.contains(skipKey)) {
                     continue;
                 }
+                Map<String, Object> consequence = executeRule(deliveryRequest,
+                        details, visitorId, rule, traceHandler);
                 handled |= handleResult(consequence, rule, details, prefetchResponse,
                         executeResponse, notifications, traceHandler);
                 if (handled) {
@@ -76,19 +87,12 @@ public class LocalDecisionHandler {
         }
     }
 
-    private String getSkipKey(Map<String, Object> consequence) {
-        if (consequence != null) {
-            return (String) consequence.get("skipKey");
-        }
-        return null;
-    }
-
     private Map<String, Object> executeRule(TargetDeliveryRequest deliveryRequest,
             RequestDetails details,
             String visitorId,
             LocalDecisioningRule rule,
             TraceHandler traceHandler) {
-        Map<String, Object> condition = rule.getCondition();
+        Object condition = rule.getCondition();
         Map<String, Object> context = new HashMap<>();
         context.put("allocation", computeAllocation(visitorId, rule));
         context.putAll(timeCollator.collateParams(deliveryRequest, details));
@@ -168,7 +172,12 @@ public class LocalDecisionHandler {
                 }
                 mboxResponse.setName(mbox.getName());
                 mboxResponse.setIndex(mbox.getIndex());
-                mboxResponse.setOptions(options);
+                for (Option option : options) {
+                    if (executeResponse != null) {
+                        option.setEventToken(null);
+                    }
+                    mboxResponse.addOptionsItem(option);
+                }
                 mboxResponse.setMetrics(metrics);
                 mboxResponse.setTrace(currentTrace(traceHandler));
                 if (prefetchResponse != null) {
@@ -198,7 +207,12 @@ public class LocalDecisionHandler {
                 }
                 if (pageLoad != null) {
                     pageLoad.setTrace(currentTrace(traceHandler));
-                    options.forEach(pageLoad::addOptionsItem);
+                    for (Option option : options) {
+                        if (executeResponse != null) {
+                            option.setEventToken(null);
+                        }
+                        pageLoad.addOptionsItem(option);
+                    }
                     for (Metric metric : metrics) {
                         if (pageLoad.getMetrics() == null ||
                                 !pageLoad.getMetrics().contains(metric)) {

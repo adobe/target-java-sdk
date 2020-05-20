@@ -15,24 +15,18 @@ import java.util.Map;
 
 public class LocalDecisioningRule {
 
-    private Map<String, Object> condition;
+    private Object condition;
     private Map<String, Object> consequence;
     private Map<String, Object> meta;
 
     public LocalDecisioningRule() {
     }
 
-    public LocalDecisioningRule(Map<String, Object> condition, Map<String, Object> consequence, Map<String, Object> meta) {
-        this.condition = condition;
-        this.consequence = consequence;
-        this.meta = meta;
-    }
-
-    public Map<String, Object> getCondition() {
+    public Object getCondition() {
         return condition;
     }
 
-    public void setCondition(Map<String, Object> condition) {
+    public void setCondition(Object condition) {
         this.condition = condition;
     }
 
@@ -56,8 +50,8 @@ public class LocalDecisioningRule {
     public String toString() {
         return "LocalDecisioningRule{" +
                 "condition=" + condition +
-                ",consequence=" + consequence +
-                ",meta=" + meta +
+                ", consequence=" + consequence +
+                ", meta=" + meta +
                 '}';
     }
 }

@@ -19,7 +19,7 @@ public class TargetDeliveryRequest {
     private String sessionId;
     private String locationHint;
     private Visitor visitor;
-    private ExecutionMode executionMode = ExecutionMode.REMOTE;
+    private ExecutionMode executionMode;
     private DeliveryRequest deliveryRequest = new DeliveryRequest();
 
     private TargetDeliveryRequest() {}

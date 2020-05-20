@@ -12,8 +12,10 @@
 package com.adobe.target.edge.client.local;
 
 import com.adobe.target.edge.client.ClientConfig;
+import com.adobe.target.edge.client.ClientProxyConfig;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.model.LocalDecisioningRuleSet;
+import com.adobe.target.edge.client.model.LocalExecutionReadyHandler;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import kong.unirest.*;
@@ -51,7 +53,7 @@ public class DefaultRuleLoader implements RuleLoader {
 
     @Override
     public synchronized void start(final ClientConfig clientConfig) {
-        if (clientConfig.getLocalEnvironment() == null) {
+        if (!clientConfig.isLocalExecutionEnabled()) {
             return;
         }
         if (started) {
@@ -68,6 +70,15 @@ public class DefaultRuleLoader implements RuleLoader {
                 .enableCookieManagement(false)
                 .setObjectMapper(new JacksonObjectMapper())
                 .setDefaultHeader("Accept", "application/json");
+            if (clientConfig.isProxyEnabled()) {
+                ClientProxyConfig proxyConfig = clientConfig.getProxyConfig();
+                if (proxyConfig.isAuthProxy()) {
+                    unirestInstance.config().proxy(proxyConfig.getHost(), proxyConfig.getPort(),
+                            proxyConfig.getUsername(), proxyConfig.getPassword());
+                } else {
+                    unirestInstance.config().proxy(proxyConfig.getHost(), proxyConfig.getPort());
+                }
+            }
         }
         this.clientConfig = clientConfig;
         this.scheduleTimer(0);
@@ -104,6 +115,12 @@ public class DefaultRuleLoader implements RuleLoader {
                     }
                 }
                 else {
+                    if (DefaultRuleLoader.this.numFetches == 0) {
+                        LocalExecutionReadyHandler handler = clientConfig.getLocalExecutionReadyHandler();
+                        if (handler != null) {
+                            handler.localExecutionReady();
+                        }
+                    }
                     DefaultRuleLoader.this.numFetches++;
                     DefaultRuleLoader.this.lastFetch = new Date();
                 }
@@ -155,7 +172,9 @@ public class DefaultRuleLoader implements RuleLoader {
                     // Not updated, skip
                     return true;
                 }
-                String message = "Received invalid HTTP response while getting local-decisioning rule set: " + response.getStatus() + " : " + response.getStatusText();
+                String message = "Received invalid HTTP response while getting local-decisioning rule set: "
+                        + response.getStatus() + " : " + response.getStatusText()
+                        + " from " + getLocalDecisioningUrl(clientConfig);
                 logger.warn(message);
                 TargetExceptionHandler handler = clientConfig.getExceptionHandler();
                 if (handler != null) {
@@ -180,7 +199,9 @@ public class DefaultRuleLoader implements RuleLoader {
                 }
                 return false;
             }
-            String message = "Unable to parse local-decisioning rule set";
+            String message = "Unable to parse local-decisioning rule set from: "
+                    + getLocalDecisioningUrl(clientConfig)
+                    + ", error: " + response.getParsingError();
             logger.warn(message);
             TargetExceptionHandler handler = clientConfig.getExceptionHandler();
             if (handler != null) {
@@ -189,7 +210,8 @@ public class DefaultRuleLoader implements RuleLoader {
             return false;
         }
         catch (Throwable t) {
-            String message = "Hit exception while getting local-decisioning rule set";
+            String message = "Hit exception while getting local-decisioning rule set from: "
+                    + getLocalDecisioningUrl(clientConfig);
             logger.warn(message, t);
             TargetExceptionHandler handler = clientConfig.getExceptionHandler();
             if (handler != null) {

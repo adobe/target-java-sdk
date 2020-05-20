@@ -37,11 +37,13 @@ public class DefaultTargetClient implements TargetClient {
     private static final Logger logger = LoggerFactory.getLogger(DefaultTargetHttpClient.class);
     private final TargetService targetService;
     private final LocalDecisioningService localService;
+    private final ExecutionMode defaultExecutionMode;
 
     DefaultTargetClient(ClientConfig clientConfig) {
         this.targetService = new DefaultTargetService(clientConfig);
         VisitorProvider.init(clientConfig.getOrganizationId());
         this.localService = new LocalDecisioningService(clientConfig, this.targetService);
+        this.defaultExecutionMode = clientConfig.getDefaultExecutionMode();
     }
 
     @Override
@@ -49,8 +51,9 @@ public class DefaultTargetClient implements TargetClient {
         try {
             Objects.requireNonNull(request, "ClientConfig instance cannot be null");
             TargetDeliveryResponse targetDeliveryResponse;
-            if (request.getExecutionMode() == ExecutionMode.LOCAL ||
-                    (request.getExecutionMode() == ExecutionMode.HYBRID &&
+            ExecutionMode executionMode = getExecutionMode(request);
+            if (executionMode == ExecutionMode.LOCAL ||
+                    (executionMode == ExecutionMode.HYBRID &&
                     localService.evaluateLocalExecution(request).isAllLocal())) {
                 targetDeliveryResponse = localService.executeRequest(request);
             }
@@ -68,8 +71,9 @@ public class DefaultTargetClient implements TargetClient {
         try {
             Objects.requireNonNull(request, "ClientConfig instance cannot be null");
             CompletableFuture<TargetDeliveryResponse> targetDeliveryResponse;
-            if (request.getExecutionMode() == ExecutionMode.LOCAL ||
-                    (request.getExecutionMode() == ExecutionMode.HYBRID &&
+            ExecutionMode executionMode = getExecutionMode(request);
+            if (executionMode == ExecutionMode.LOCAL ||
+                    (executionMode == ExecutionMode.HYBRID &&
                     localService.evaluateLocalExecution(request).isAllLocal())) {
                 targetDeliveryResponse = CompletableFuture.completedFuture(localService.executeRequest(request));
             }
@@ -112,6 +116,14 @@ public class DefaultTargetClient implements TargetClient {
         } catch (Exception e) {
             logger.error("Could not close TargetClient: {}", e.getMessage());
         }
+    }
+
+    private ExecutionMode getExecutionMode(TargetDeliveryRequest targetRequest) {
+        ExecutionMode mode = targetRequest.getExecutionMode();
+        if (mode != null) {
+            return mode;
+        }
+        return defaultExecutionMode;
     }
 
     private static TargetDeliveryRequest addMBoxesToRequest(TargetDeliveryRequest targetRequest, String... mboxes) {

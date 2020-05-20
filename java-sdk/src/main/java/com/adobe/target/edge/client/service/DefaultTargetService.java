@@ -120,7 +120,7 @@ public class DefaultTargetService implements TargetService {
     }
 
     private void updateStickyLocationHint(DeliveryResponse deliveryResponse) {
-        if (StringUtils.isEmpty(clientConfig.getLocalEnvironment()) ||
+        if (!clientConfig.isLocalExecutionEnabled() ||
                 StringUtils.isNotEmpty(stickyLocationHint)) {
             return;
         }

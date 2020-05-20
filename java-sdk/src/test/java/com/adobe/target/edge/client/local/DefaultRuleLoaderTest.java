@@ -12,6 +12,7 @@
 package com.adobe.target.edge.client.local;
 
 import com.adobe.target.edge.client.ClientConfig;
+import com.adobe.target.edge.client.model.ExecutionMode;
 import com.adobe.target.edge.client.model.LocalDecisioningRuleSet;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
@@ -62,6 +63,7 @@ class DefaultRuleLoaderTest {
                 .client("emeaprod4")
                 .organizationId(TEST_ORG_ID)
                 .localEnvironment("production")
+                .defaultExecutionMode(ExecutionMode.LOCAL)
                 .exceptionHandler(exceptionHandler)
                 .build();
     }

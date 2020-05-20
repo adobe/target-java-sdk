@@ -11,6 +11,8 @@
  */
 package com.adobe.target.edge.client;
 
+import com.adobe.target.edge.client.model.ExecutionMode;
+import com.adobe.target.edge.client.model.LocalExecutionReadyHandler;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import org.apache.http.HttpRequestInterceptor;
 
@@ -36,6 +38,8 @@ public class ClientConfig {
     private HttpRequestInterceptor requestInterceptor;
     private ClientProxyConfig proxyConfig;
     private TargetExceptionHandler exceptionHandler;
+    private LocalExecutionReadyHandler localExecutionReadyHandler;
+    private ExecutionMode defaultExecutionMode;
     private String localEnvironment;
     private int localDecisioningPollingIntSecs;
 
@@ -90,19 +94,26 @@ public class ClientConfig {
     	return proxyConfig;
     }
 
+    public boolean isProxyEnabled() {
+        return proxyConfig != null;
+    }
+
+
     public TargetExceptionHandler getExceptionHandler() { return exceptionHandler; }
 
-    public boolean isProxyEnabled() {
-    	return proxyConfig != null;
-    }
+    public LocalExecutionReadyHandler getLocalExecutionReadyHandler() { return localExecutionReadyHandler; }
 
-    public static ClientConfigBuilder builder() {
-        return new ClientConfigBuilder();
-    }
+    public ExecutionMode getDefaultExecutionMode() { return defaultExecutionMode; }
 
     public String getLocalEnvironment() { return localEnvironment; }
 
     public int getLocalDecisioningPollingIntSecs() { return localDecisioningPollingIntSecs; }
+
+    public boolean isLocalExecutionEnabled() { return defaultExecutionMode != ExecutionMode.REMOTE;}
+
+    public static ClientConfigBuilder builder() {
+        return new ClientConfigBuilder();
+    }
 
     public static final class ClientConfigBuilder {
         private static final String CLUSTER_PREFIX = "mboxedge";
@@ -121,7 +132,9 @@ public class ClientConfig {
         private HttpRequestInterceptor requestInterceptor;
         private ClientProxyConfig proxyConfig;
         private TargetExceptionHandler exceptionHandler;
-        private String localEnvironment;
+        private LocalExecutionReadyHandler localExecutionReadyHandler;
+        private ExecutionMode defaultExecutionMode = ExecutionMode.REMOTE;
+        private String localEnvironment = "production";
         private int localDecisioningPollingIntSecs = 300;
 
         private ClientConfigBuilder() {
@@ -196,6 +209,16 @@ public class ClientConfig {
             return this;
         }
 
+        public ClientConfigBuilder localExecutionReadyHandler(LocalExecutionReadyHandler handler) {
+            this.localExecutionReadyHandler = handler;
+            return this;
+        }
+
+        public ClientConfigBuilder defaultExecutionMode(ExecutionMode executionMode) {
+            this.defaultExecutionMode = executionMode;
+            return this;
+        }
+
         public ClientConfigBuilder localEnvironment(String environment) {
             this.localEnvironment = environment;
             return this;
@@ -226,6 +249,8 @@ public class ClientConfig {
             clientConfig.logRequestStatus = this.logRequestStatus;
             clientConfig.proxyConfig = this.proxyConfig;
             clientConfig.exceptionHandler = this.exceptionHandler;
+            clientConfig.localExecutionReadyHandler = this.localExecutionReadyHandler;
+            clientConfig.defaultExecutionMode = this.defaultExecutionMode;
             clientConfig.localEnvironment = this.localEnvironment;
             clientConfig.localDecisioningPollingIntSecs = this.localDecisioningPollingIntSecs;
             return clientConfig;
