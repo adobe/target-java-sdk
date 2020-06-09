@@ -9,7 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package com.adobe.target.edge.client.local;
+package com.adobe.target.edge.client.local.collator;
 
 import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
@@ -24,6 +24,21 @@ import java.util.*;
 public class PageParamsCollator implements ParamsCollator {
 
     private static final Logger logger = LoggerFactory.getLogger(PageParamsCollator.class);
+
+    private static final String PAGE_URL = "url";
+    private static final String PAGE_URL_LOWER = "url_lc";
+    private static final String PAGE_DOMAIN = "domain";
+    private static final String PAGE_DOMAIN_LOWER = "domain_lc";
+    private static final String PAGE_SUBDOMAIN = "subdomain";
+    private static final String PAGE_SUBDOMAIN_LOWER = "subdomain_lc";
+    private static final String PAGE_TOP_LEVEL_DOMAIN = "topLevelDomain";
+    private static final String PAGE_TOP_LEVEL_DOMAIN_LOWER = "topLevelDomain_lc";
+    private static final String PAGE_PATH = "path";
+    private static final String PAGE_PATH_LOWER = "path_lc";
+    private static final String PAGE_QUERY = "query";
+    private static final String PAGE_QUERY_LOWER = "query_lc";
+    private static final String PAGE_FRAGMENT = "fragment";
+    private static final String PAGE_FRAGMENT_LOWER = "fragment_lc";
 
     private boolean referring = false;
 
@@ -53,26 +68,26 @@ public class PageParamsCollator implements ParamsCollator {
                 return page;
             }
             URL url = new URL(urlToUse);
-            page.put("url", url.toString());
-            page.put("url_lc", url.toString().toLowerCase());
+            page.put(PAGE_URL, url.toString());
+            page.put(PAGE_URL_LOWER, url.toString().toLowerCase());
             String host = url.getHost();
-            page.put("domain", strOrBlank(host));
-            page.put("domain_lc", strLowerOrBlank(host));
+            page.put(PAGE_DOMAIN, strOrBlank(host));
+            page.put(PAGE_DOMAIN_LOWER, strLowerOrBlank(host));
             String subdomain = extractSubDomain(host);
-            page.put("subdomain", strOrBlank(subdomain));
-            page.put("subdomain_lc", strLowerOrBlank(subdomain));
+            page.put(PAGE_SUBDOMAIN, strOrBlank(subdomain));
+            page.put(PAGE_SUBDOMAIN_LOWER, strLowerOrBlank(subdomain));
             String topLevelDomain = extractTopLevel(host);
-            page.put("topLevelDomain", strOrBlank(topLevelDomain));
-            page.put("topLevelDomain_lc", strLowerOrBlank(topLevelDomain));
+            page.put(PAGE_TOP_LEVEL_DOMAIN, strOrBlank(topLevelDomain));
+            page.put(PAGE_TOP_LEVEL_DOMAIN_LOWER, strLowerOrBlank(topLevelDomain));
             String path = url.getPath();
-            page.put("path", strOrBlank(path));
-            page.put("path_lc", strLowerOrBlank(path));
+            page.put(PAGE_PATH, strOrBlank(path));
+            page.put(PAGE_PATH_LOWER, strLowerOrBlank(path));
             String query = url.getQuery();
-            page.put("query", strOrBlank(query));
-            page.put("query_lc", strLowerOrBlank(query));
+            page.put(PAGE_QUERY, strOrBlank(query));
+            page.put(PAGE_QUERY_LOWER, strLowerOrBlank(query));
             String fragment = url.getRef();
-            page.put("fragment", strOrBlank(fragment));
-            page.put("fragment_lc", strLowerOrBlank(fragment));
+            page.put(PAGE_FRAGMENT, strOrBlank(fragment));
+            page.put(PAGE_FRAGMENT_LOWER, strLowerOrBlank(fragment));
         }
         catch (MalformedURLException ex) {
             logger.warn("URL in context address malformed, skipping", ex);

@@ -13,11 +13,10 @@ package com.adobe.target.edge.client.entities;
 
 import com.adobe.experiencecloud.ecid.visitor.CustomerState;
 import com.adobe.target.edge.client.ClientConfig;
-import com.adobe.target.edge.client.local.ParamsCollator;
+import com.adobe.target.edge.client.local.collator.ParamsCollator;
 import com.adobe.target.edge.client.local.RuleLoader;
 import com.adobe.target.edge.client.model.LocalDecisioningRuleSet;
 import com.adobe.target.edge.client.model.TargetCookie;
-import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.utils.CookieUtils;
 import com.adobe.target.delivery.v1.model.*;
 import com.fasterxml.jackson.annotation.JsonInclude;

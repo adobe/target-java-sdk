@@ -18,7 +18,11 @@ public class LocalDecisioningRuleSet {
 
     private String version;
     private String globalMbox;
+    private boolean hasGeoTargeting;
     private List<String> remoteMboxes;
+    private List<String> remoteViews;
+    private List<String> localMboxes;
+    private List<String> localViews;
     private List<String> responseTokens;
     private LocalDecisioningRules rules;
     private Map<String, Object> meta;
@@ -33,12 +37,28 @@ public class LocalDecisioningRuleSet {
         return globalMbox;
     }
 
+    public boolean getHasGeoTargeting() {
+        return hasGeoTargeting;
+    }
+
     public List<String> getRemoteMboxes() {
         return remoteMboxes;
     }
 
+    public List<String> getRemoteViews() {
+        return remoteViews;
+    }
+
     public List<String> getResponseTokens() {
         return responseTokens;
+    }
+
+    public List<String> getLocalMboxes() {
+        return localMboxes;
+    }
+
+    public List<String> getLocalViews() {
+        return localViews;
     }
 
     public LocalDecisioningRules getRules() {
@@ -52,7 +72,11 @@ public class LocalDecisioningRuleSet {
         return "LocalDecisioningRuleSet{" +
                 "version='" + version + '\'' +
                 ", globalMbox='" + globalMbox + '\'' +
+                ", hasGeoTargeting=" + hasGeoTargeting +
                 ", remoteMboxes=" + remoteMboxes +
+                ", remoteViews=" + remoteViews +
+                ", localMboxes=" + localMboxes +
+                ", localViews=" + localViews +
                 ", responseTokens=" + responseTokens +
                 ", rules=" + rules +
                 ", meta=" + meta +

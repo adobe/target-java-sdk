@@ -41,6 +41,7 @@ public class ClientConfig {
     private LocalExecutionReadyHandler localExecutionReadyHandler;
     private ExecutionMode defaultExecutionMode;
     private String localEnvironment;
+    private String localConfigHostname;
     private int localDecisioningPollingIntSecs;
 
     public String getClient() {
@@ -98,7 +99,6 @@ public class ClientConfig {
         return proxyConfig != null;
     }
 
-
     public TargetExceptionHandler getExceptionHandler() { return exceptionHandler; }
 
     public LocalExecutionReadyHandler getLocalExecutionReadyHandler() { return localExecutionReadyHandler; }
@@ -106,6 +106,8 @@ public class ClientConfig {
     public ExecutionMode getDefaultExecutionMode() { return defaultExecutionMode; }
 
     public String getLocalEnvironment() { return localEnvironment; }
+
+    public String getLocalConfigHostname() { return localConfigHostname; }
 
     public int getLocalDecisioningPollingIntSecs() { return localDecisioningPollingIntSecs; }
 
@@ -135,6 +137,7 @@ public class ClientConfig {
         private LocalExecutionReadyHandler localExecutionReadyHandler;
         private ExecutionMode defaultExecutionMode = ExecutionMode.REMOTE;
         private String localEnvironment = "production";
+        private String localConfigHostname = "assets.adobetarget.com";
         private int localDecisioningPollingIntSecs = 300;
 
         private ClientConfigBuilder() {
@@ -224,6 +227,11 @@ public class ClientConfig {
             return this;
         }
 
+        public ClientConfigBuilder localConfigHostname(String hostname) {
+            this.localConfigHostname = hostname;
+            return this;
+        }
+
         public ClientConfigBuilder localDecisioningPollingIntSecs(int pollingInterval) {
             this.localDecisioningPollingIntSecs = pollingInterval;
             return this;
@@ -252,6 +260,7 @@ public class ClientConfig {
             clientConfig.localExecutionReadyHandler = this.localExecutionReadyHandler;
             clientConfig.defaultExecutionMode = this.defaultExecutionMode;
             clientConfig.localEnvironment = this.localEnvironment;
+            clientConfig.localConfigHostname = this.localConfigHostname;
             clientConfig.localDecisioningPollingIntSecs = this.localDecisioningPollingIntSecs;
             return clientConfig;
         }

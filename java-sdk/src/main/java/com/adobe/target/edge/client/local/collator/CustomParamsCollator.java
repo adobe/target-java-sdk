@@ -9,7 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package com.adobe.target.edge.client.local;
+package com.adobe.target.edge.client.local.collator;
 
 import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
@@ -17,6 +17,8 @@ import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import java.util.*;
 
 public class CustomParamsCollator implements ParamsCollator {
+
+    private static final String LOWER_CASE_POSTFIX = "_lc";
 
     public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest,
                                              RequestDetails requestDetails) {
@@ -30,7 +32,7 @@ public class CustomParamsCollator implements ParamsCollator {
             Map<String, String> params = details.getParameters();
             if (params != null) {
                 custom.putAll(params);
-                params.forEach((key, value) -> custom.put(key + "_lc", value.toLowerCase()));
+                params.forEach((key, value) -> custom.put(key + LOWER_CASE_POSTFIX, value.toLowerCase()));
             }
         }
     }

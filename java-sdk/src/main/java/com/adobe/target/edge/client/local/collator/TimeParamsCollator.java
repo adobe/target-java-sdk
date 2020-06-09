@@ -9,7 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package com.adobe.target.edge.client.local;
+package com.adobe.target.edge.client.local.collator;
 
 import com.adobe.target.delivery.v1.model.RequestDetails;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
@@ -19,18 +19,22 @@ import java.util.*;
 
 public class TimeParamsCollator implements ParamsCollator {
 
+    private static final String CURRENT_TIMESTAMP = "current_timestamp";
+    private static final String CURRENT_DAY = "current_day";
+    private static final String CURRENT_TIME = "current_time";
+
     public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest,
                                              RequestDetails requestDetails) {
         Map<String, Object> time = new HashMap<>();
         long now = System.currentTimeMillis();
         Date nowDate = new Date(now);
-        time.put("current_timestamp", now);
+        time.put(CURRENT_TIMESTAMP, now);
         SimpleDateFormat dayFormat = new SimpleDateFormat("u");
         dayFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        time.put("current_day", dayFormat.format(nowDate));
+        time.put(CURRENT_DAY, dayFormat.format(nowDate));
         SimpleDateFormat timeFormat = new SimpleDateFormat("HHmm");
         timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        time.put("current_time", timeFormat.format(nowDate));
+        time.put(CURRENT_TIME, timeFormat.format(nowDate));
         return time;
     }
 

@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class LocalDecisioningService {
@@ -102,7 +103,7 @@ public class LocalDecisioningService {
                     "Local-decisioning rule set not yet available", null);
         }
         List<String> allRemoteMboxes = ruleSet.getRemoteMboxes();
-        if (allRemoteMboxes == null || allRemoteMboxes.size() == 0) {
+        if (allRemoteMboxes == null || allRemoteMboxes.isEmpty()) {
             return new LocalExecutionResult(true, null, null);
         }
         Set<String> remoteSet = new HashSet<>(allRemoteMboxes);
@@ -112,7 +113,7 @@ public class LocalDecisioningService {
                 remoteMboxes.add(mboxName);
             }
         }
-        if (remoteMboxes.size() > 0) {
+        if (!remoteMboxes.isEmpty()) {
             return new LocalExecutionResult(false,
                     String.format("mboxes %s have remote activities", remoteMboxes),
                     remoteMboxes.toArray(new String[0]));
@@ -120,6 +121,10 @@ public class LocalDecisioningService {
         else {
             return new LocalExecutionResult(true, null, null);
         }
+    }
+
+    public CompletableFuture<TargetDeliveryResponse> executeRequestAsync(TargetDeliveryRequest deliveryRequest) {
+        return CompletableFuture.supplyAsync(() -> executeRequest(deliveryRequest));
     }
 
     public TargetDeliveryResponse executeRequest(TargetDeliveryRequest deliveryRequest) {

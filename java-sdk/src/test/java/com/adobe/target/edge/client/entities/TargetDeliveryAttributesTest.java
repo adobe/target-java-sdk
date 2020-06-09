@@ -19,7 +19,7 @@ import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.local.LocalDecisionHandler;
 import com.adobe.target.edge.client.local.LocalDecisioningService;
-import com.adobe.target.edge.client.local.ParamsCollator;
+import com.adobe.target.edge.client.local.collator.ParamsCollator;
 import com.adobe.target.edge.client.local.RuleLoader;
 import com.adobe.target.edge.client.model.ExecutionMode;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;

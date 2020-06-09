@@ -9,16 +9,12 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package com.adobe.target.edge.client.local;
+package com.adobe.target.edge.client.local.client.geo;
 
-import com.adobe.target.delivery.v1.model.RequestDetails;
-import com.adobe.target.edge.client.model.TargetDeliveryRequest;
+import com.adobe.target.delivery.v1.model.Geo;
 
-import java.util.Map;
+public interface GeoClient extends AutoCloseable {
 
-public interface ParamsCollator {
-
-    Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest,
-                                      RequestDetails requestDetails);
+    Geo lookupGeo(String ip);
 
 }

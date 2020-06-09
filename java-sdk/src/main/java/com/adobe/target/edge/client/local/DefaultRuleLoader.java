@@ -222,7 +222,8 @@ public class DefaultRuleLoader implements RuleLoader {
     }
 
     private String getLocalDecisioningUrl(ClientConfig clientConfig) {
-        return "https://assets.adobetarget.com/" +
+        return "https://" +
+                clientConfig.getLocalConfigHostname() + "/" +
                 clientConfig.getClient() + "/" +
                 clientConfig.getLocalEnvironment().toLowerCase() + "/" +
                 "rules.json";

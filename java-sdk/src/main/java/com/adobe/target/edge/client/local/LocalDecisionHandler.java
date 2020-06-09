@@ -13,11 +13,20 @@ package com.adobe.target.edge.client.local;
 
 import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.ClientConfig;
+import com.adobe.target.edge.client.local.client.geo.DefaultGeoClient;
+import com.adobe.target.edge.client.local.client.geo.GeoClient;
+import com.adobe.target.edge.client.local.collator.CustomParamsCollator;
+import com.adobe.target.edge.client.local.collator.GeoParamsCollator;
+import com.adobe.target.edge.client.local.collator.PageParamsCollator;
+import com.adobe.target.edge.client.local.collator.ParamsCollator;
+import com.adobe.target.edge.client.local.collator.TimeParamsCollator;
+import com.adobe.target.edge.client.local.collator.UserParamsCollator;
 import com.adobe.target.edge.client.model.LocalDecisioningRule;
 import com.adobe.target.edge.client.model.LocalDecisioningRuleSet;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
+import com.adobe.target.edge.client.utils.StringUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.jamsesso.jsonlogic.JsonLogic;
@@ -34,6 +43,7 @@ public class LocalDecisionHandler {
 
     private final ClientConfig clientConfig;
     private final ObjectMapper mapper;
+    private final GeoClient geoClient;
 
     private final JsonLogic jsonLogic = new JsonLogic();
     private final ParamsCollator timeCollator = new TimeParamsCollator();
@@ -41,10 +51,12 @@ public class LocalDecisionHandler {
     private final ParamsCollator pageCollator = new PageParamsCollator();
     private final ParamsCollator prevPageCollator = new PageParamsCollator(true);
     private final ParamsCollator customCollator = new CustomParamsCollator();
+    private final GeoParamsCollator geoCollator = new GeoParamsCollator();
 
     public LocalDecisionHandler(ClientConfig clientConfig, ObjectMapper mapper) {
         this.clientConfig = clientConfig;
         this.mapper = mapper;
+        this.geoClient = new DefaultGeoClient(clientConfig);
     }
 
     public void handleDetails(TargetDeliveryRequest deliveryRequest,
@@ -69,7 +81,7 @@ public class LocalDecisionHandler {
                     continue;
                 }
                 Map<String, Object> consequence = executeRule(deliveryRequest,
-                        details, visitorId, rule, traceHandler);
+                        details, visitorId, rule, traceHandler, ruleSet.getHasGeoTargeting());
                 handled |= handleResult(consequence, rule, details, prefetchResponse,
                         executeResponse, notifications, traceHandler);
                 if (handled) {
@@ -91,7 +103,8 @@ public class LocalDecisionHandler {
             RequestDetails details,
             String visitorId,
             LocalDecisioningRule rule,
-            TraceHandler traceHandler) {
+            TraceHandler traceHandler,
+            boolean doGeoLookup) {
         Object condition = rule.getCondition();
         Map<String, Object> context = new HashMap<>();
         context.put("allocation", computeAllocation(visitorId, rule));
@@ -100,6 +113,7 @@ public class LocalDecisionHandler {
         context.put("page", pageCollator.collateParams(deliveryRequest, details));
         context.put("referring", prevPageCollator.collateParams(deliveryRequest, details));
         context.put("mbox", customCollator.collateParams(deliveryRequest, details));
+        context.put("geo", geoParams(deliveryRequest, details, doGeoLookup));
         logger.trace("details={}, context={}", details, context);
         try {
             String expression = this.mapper.writeValueAsString(condition);
@@ -327,5 +341,33 @@ public class LocalDecisionHandler {
             return null;
         }
         return traceHandler.getCurrentTrace();
+    }
+
+    private Map<String, Object> geoParams(TargetDeliveryRequest deliveryRequest,
+            RequestDetails requestDetails,
+            boolean doGeoLookup) {
+        Map<String, Object> params = new HashMap<>();
+        if (!doGeoLookup) {
+            return params;
+        }
+        Context context = deliveryRequest.getDeliveryRequest().getContext();
+        if (context != null) {
+            Geo geo = context.getGeo();
+            if (geo != null) {
+                if (StringUtils.isNotEmpty(geo.getIpAddress()) &&
+                        StringUtils.isEmpty(geo.getCity()) &&
+                        StringUtils.isEmpty(geo.getState()) &&
+                        StringUtils.isEmpty(geo.getCountry()) &&
+                        geo.getLatitude() == null &&
+                        geo.getLongitude() == null) {
+                    Geo resolvedGeo = this.geoClient.lookupGeo(geo.getIpAddress());
+                    geoCollator.updateGeoParams(params, resolvedGeo);
+                }
+                else {
+                    return geoCollator.collateParams(deliveryRequest, requestDetails);
+                }
+            }
+        }
+        return params;
     }
 }

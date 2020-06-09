@@ -28,6 +28,9 @@ public class Browser {
     @JsonProperty("host")
     private String host;
 
+    @JsonProperty("language")
+    private String language;
+
     @JsonProperty("webGLRenderer")
     private String webGLRenderer;
 
@@ -37,11 +40,9 @@ public class Browser {
     }
 
     /**
-     * Current web page host.
-     *
+     * Current web page host
      * @return host
      **/
-
     public String getHost() {
         return host;
     }
@@ -50,17 +51,32 @@ public class Browser {
         this.host = host;
     }
 
+    public Browser language(String language) {
+        this.language = language;
+        return this;
+    }
+
+    /**
+     * Language in Accept-Language header format, see RFC 7231 sec. 5.3.5
+     * @return language
+     **/
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
+
     public Browser webGLRenderer(String webGLRenderer) {
         this.webGLRenderer = webGLRenderer;
         return this;
     }
 
     /**
-     * This is an optional field, added to help with device detection using device atlas.
-     *
+     * This is an optional field, added to help with device detection using device atlas
      * @return webGLRenderer
      **/
-
     public String getWebGLRenderer() {
         return webGLRenderer;
     }
@@ -80,12 +96,13 @@ public class Browser {
         }
         Browser browser = (Browser) o;
         return Objects.equals(this.host, browser.host) &&
+                Objects.equals(this.language, browser.language) &&
                 Objects.equals(this.webGLRenderer, browser.webGLRenderer);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(host, webGLRenderer);
+        return Objects.hash(host, language, webGLRenderer);
     }
 
 
@@ -94,6 +111,7 @@ public class Browser {
         StringBuilder sb = new StringBuilder();
         sb.append("class Browser {\n");
         sb.append("    host: ").append(toIndentedString(host)).append("\n");
+        sb.append("    language: ").append(toIndentedString(language)).append("\n");
         sb.append("    webGLRenderer: ").append(toIndentedString(webGLRenderer)).append("\n");
         sb.append("}");
         return sb.toString();

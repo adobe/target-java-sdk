@@ -75,7 +75,7 @@ public class DefaultTargetClient implements TargetClient {
             if (executionMode == ExecutionMode.LOCAL ||
                     (executionMode == ExecutionMode.HYBRID &&
                     localService.evaluateLocalExecution(request).isAllLocal())) {
-                targetDeliveryResponse = CompletableFuture.completedFuture(localService.executeRequest(request));
+                targetDeliveryResponse = localService.executeRequestAsync(request);
             }
             else {
                 targetDeliveryResponse = targetService.executeRequestAsync(request);

@@ -9,7 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package com.adobe.target.edge.client.local;
+package com.adobe.target.edge.client.local.collator;
 
 import com.adobe.target.delivery.v1.model.Context;
 import com.adobe.target.delivery.v1.model.RequestDetails;
@@ -29,6 +29,10 @@ public class UserParamsCollator implements ParamsCollator {
 
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(UserParamsCollator.class);
+
+    private static final String USER_BROWSER_TYPE = "browserType";
+    private static final String USER_BROWSER_VERSION = "browserVersion";
+    private static final String USER_PLATFORM = "platform";
 
     private static final String UNKNOWN = "unknown";
     private static final Map<String, Predicate<String>> BROWSER_TYPE_MATCHER =
@@ -72,9 +76,9 @@ public class UserParamsCollator implements ParamsCollator {
                                              RequestDetails requestDetails) {
         Map<String, Object> user = new HashMap<>();
         String userAgent = extractUserAgent(deliveryRequest);
-        user.put("browserType", parseBrowserType(userAgent));
-        user.put("platform", parseBrowserPlatform(userAgent));
-        user.put("browserVersion", parseBrowserVersion(userAgent));
+        user.put(USER_BROWSER_TYPE, parseBrowserType(userAgent));
+        user.put(USER_PLATFORM, parseBrowserPlatform(userAgent));
+        user.put(USER_BROWSER_VERSION, parseBrowserVersion(userAgent));
         return user;
     }
 
