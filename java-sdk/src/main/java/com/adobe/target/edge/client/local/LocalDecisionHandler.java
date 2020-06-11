@@ -72,10 +72,16 @@ public class LocalDecisionHandler {
                     executeResponse != null);
         }
         List<LocalDecisioningRule> rules = detailsRules(details, ruleSet);
+        String propertyToken = requestPropertyToken(deliveryRequest);
         boolean handled = false;
         Set<String> skipKeySet = new HashSet<>();
         if (rules != null) {
             for (LocalDecisioningRule rule : rules) {
+                if (propertyToken != null &&
+                        rule.getPropertyToken() != null &&
+                        !propertyToken.equals(rule.getPropertyToken())) {
+                    continue;
+                }
                 String ruleKey = rule.getRuleKey();
                 if (ruleKey != null && skipKeySet.contains(ruleKey)) {
                     continue;
@@ -334,6 +340,14 @@ public class LocalDecisionHandler {
         else {
             return ruleSet.getRules().getMboxes().get(ruleSet.getGlobalMbox());
         }
+    }
+
+    private String requestPropertyToken(TargetDeliveryRequest deliveryRequest) {
+        Property property = deliveryRequest.getDeliveryRequest().getProperty();
+        if (property == null) {
+            return null;
+        }
+        return property.getToken();
     }
 
     private Map<String, Object> currentTrace(TraceHandler traceHandler) {

@@ -17,6 +17,7 @@ public class LocalDecisioningRule {
 
     private String ruleKey;
     private String seed;
+    private String propertyToken;
     private Object condition;
     private Map<String, Object> consequence;
     private Map<String, Object> meta;
@@ -28,40 +29,24 @@ public class LocalDecisioningRule {
         return ruleKey;
     }
 
-    public void setRuleKey(String ruleKey) {
-        this.ruleKey = ruleKey;
-    }
-
     public String getSeed() {
         return seed;
     }
 
-    public void setSeed(String seed) {
-        this.seed = seed;
+    public String getPropertyToken() {
+        return propertyToken;
     }
 
     public Object getCondition() {
         return condition;
     }
 
-    public void setCondition(Object condition) {
-        this.condition = condition;
-    }
-
     public Map<String, Object> getConsequence() {
         return consequence;
     }
 
-    public void setConsequence(Map<String, Object> consequence) {
-        this.consequence = consequence;
-    }
-
     public Map<String, Object> getMeta() {
         return meta;
-    }
-
-    public void setMeta(Map<String, Object> meta) {
-        this.meta = meta;
     }
 
     @Override
@@ -69,6 +54,7 @@ public class LocalDecisioningRule {
         return "LocalDecisioningRule{" +
                 "ruleKey='" + ruleKey + '\'' +
                 ", seed='" + seed + '\'' +
+                ", propertyToken='" + propertyToken + '\'' +
                 ", condition=" + condition +
                 ", consequence=" + consequence +
                 ", meta=" + meta +
