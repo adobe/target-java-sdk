@@ -15,11 +15,29 @@ import java.util.Map;
 
 public class LocalDecisioningRule {
 
+    private String ruleKey;
+    private String seed;
     private Object condition;
     private Map<String, Object> consequence;
     private Map<String, Object> meta;
 
     public LocalDecisioningRule() {
+    }
+
+    public String getRuleKey() {
+        return ruleKey;
+    }
+
+    public void setRuleKey(String ruleKey) {
+        this.ruleKey = ruleKey;
+    }
+
+    public String getSeed() {
+        return seed;
+    }
+
+    public void setSeed(String seed) {
+        this.seed = seed;
     }
 
     public Object getCondition() {
@@ -49,7 +67,9 @@ public class LocalDecisioningRule {
     @Override
     public String toString() {
         return "LocalDecisioningRule{" +
-                "condition=" + condition +
+                "ruleKey='" + ruleKey + '\'' +
+                ", seed='" + seed + '\'' +
+                ", condition=" + condition +
                 ", consequence=" + consequence +
                 ", meta=" + meta +
                 '}';

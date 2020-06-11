@@ -76,8 +76,8 @@ public class LocalDecisionHandler {
         Set<String> skipKeySet = new HashSet<>();
         if (rules != null) {
             for (LocalDecisioningRule rule : rules) {
-                String skipKey = String.valueOf(rule.getMeta().get("activityId"));
-                if (skipKey != null && skipKeySet.contains(skipKey)) {
+                String ruleKey = rule.getRuleKey();
+                if (ruleKey != null && skipKeySet.contains(ruleKey)) {
                     continue;
                 }
                 Map<String, Object> consequence = executeRule(deliveryRequest,
@@ -88,8 +88,8 @@ public class LocalDecisionHandler {
                     if (details instanceof MboxRequest) {
                         break;
                     }
-                    if (skipKey != null) {
-                        skipKeySet.add(skipKey);
+                    if (ruleKey != null) {
+                        skipKeySet.add(ruleKey);
                     }
                 }
             }
@@ -282,12 +282,12 @@ public class LocalDecisionHandler {
 
     private double computeAllocation(String vid, LocalDecisioningRule rule) {
         String client = this.clientConfig.getClient();
-        String activityId = rule.getMeta().get("activityId").toString();
+        String seed = rule.getSeed();
         int index = vid.indexOf(".");
         if (index > 0) {
             vid = vid.substring(0, index);
         }
-        String input = client + "." + activityId + "." + vid;
+        String input = client + "." + seed + "." + vid;
         int output = MurmurHash.hash32(input);
         return ((Math.abs(output) % 10000) / 10000D) * 100D;
     }
@@ -356,8 +356,8 @@ public class LocalDecisionHandler {
             if (geo != null) {
                 if (StringUtils.isNotEmpty(geo.getIpAddress()) &&
                         StringUtils.isEmpty(geo.getCity()) &&
-                        StringUtils.isEmpty(geo.getState()) &&
-                        StringUtils.isEmpty(geo.getCountry()) &&
+                        StringUtils.isEmpty(geo.getStateCode()) &&
+                        StringUtils.isEmpty(geo.getCountryCode()) &&
                         geo.getLatitude() == null &&
                         geo.getLongitude() == null) {
                     Geo resolvedGeo = this.geoClient.lookupGeo(geo.getIpAddress());

@@ -34,17 +34,17 @@ public class Geo {
     @JsonProperty("longitude")
     private Float longitude;
 
-    @JsonProperty("country")
-    private String country;
+    @JsonProperty("countryCode")
+    private String countryCode;
 
-    @JsonProperty("state")
-    private String state;
+    @JsonProperty("stateCode")
+    private String stateCode;
 
     @JsonProperty("city")
     private String city;
 
-    @JsonProperty("zipCode")
-    private String zipCode;
+    @JsonProperty("zip")
+    private String zip;
 
     public Geo ipAddress(String ipAddress) {
         this.ipAddress = ipAddress;
@@ -97,38 +97,38 @@ public class Geo {
         this.longitude = longitude;
     }
 
-    public Geo country(String country) {
-        this.country = country;
+    public Geo countryCode(String countryCode) {
+        this.countryCode = countryCode;
         return this;
     }
 
     /**
      * Country code in ISO 3166-1 alpha-2 format
-     * @return country
+     * @return countryCode
      **/
-    public String getCountry() {
-        return country;
+    public String getCountryCode() {
+        return countryCode;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
-    public Geo state(String state) {
-        this.state = state;
+    public Geo stateCode(String stateCode) {
+        this.stateCode = stateCode;
         return this;
     }
 
     /**
      * Alphanumeric characters representing the subdivision part from ISO 3166-2
-     * @return state
+     * @return stateCode
      **/
-    public String getState() {
-        return state;
+    public String getStateCode() {
+        return stateCode;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setStateCode(String stateCode) {
+        this.stateCode = stateCode;
     }
 
     public Geo city(String city) {
@@ -148,21 +148,21 @@ public class Geo {
         this.city = city;
     }
 
-    public Geo zipCode(String zipCode) {
-        this.zipCode = zipCode;
+    public Geo zip(String zip) {
+        this.zip = zip;
         return this;
     }
 
     /**
      * Zip/Postal Code
-     * @return zipCode
+     * @return zip
      **/
-    public String getZipCode() {
-        return zipCode;
+    public String getZip() {
+        return zip;
     }
 
-    public void setZipCode(String zipCode) {
-        this.zipCode = zipCode;
+    public void setZip(String zip) {
+        this.zip = zip;
     }
 
 
@@ -178,15 +178,15 @@ public class Geo {
         return Objects.equals(this.ipAddress, geo.ipAddress) &&
                 Objects.equals(this.latitude, geo.latitude) &&
                 Objects.equals(this.longitude, geo.longitude) &&
-                Objects.equals(this.country, geo.country) &&
-                Objects.equals(this.state, geo.state) &&
+                Objects.equals(this.countryCode, geo.countryCode) &&
+                Objects.equals(this.stateCode, geo.stateCode) &&
                 Objects.equals(this.city, geo.city) &&
-                Objects.equals(this.zipCode, geo.zipCode);
+                Objects.equals(this.zip, geo.zip);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(ipAddress, latitude, longitude, country, state, city, zipCode);
+        return Objects.hash(ipAddress, latitude, longitude, countryCode, stateCode, city, zip);
     }
 
 
@@ -197,10 +197,10 @@ public class Geo {
         sb.append("    ipAddress: ").append(toIndentedString(ipAddress)).append("\n");
         sb.append("    latitude: ").append(toIndentedString(latitude)).append("\n");
         sb.append("    longitude: ").append(toIndentedString(longitude)).append("\n");
-        sb.append("    country: ").append(toIndentedString(country)).append("\n");
-        sb.append("    state: ").append(toIndentedString(state)).append("\n");
+        sb.append("    countryCode: ").append(toIndentedString(countryCode)).append("\n");
+        sb.append("    stateCode: ").append(toIndentedString(stateCode)).append("\n");
         sb.append("    city: ").append(toIndentedString(city)).append("\n");
-        sb.append("    zipCode: ").append(toIndentedString(zipCode)).append("\n");
+        sb.append("    zip: ").append(toIndentedString(zip)).append("\n");
         sb.append("}");
         return sb.toString();
     }

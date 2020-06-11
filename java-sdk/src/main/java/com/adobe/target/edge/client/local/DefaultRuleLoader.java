@@ -30,6 +30,8 @@ public class DefaultRuleLoader implements RuleLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultRuleLoader.class);
 
+    private static final String MAJOR_VERSION = "1";
+
     private static final long MIN_POLLING_INTERVAL = 5 * 60 * 1000; // 5 minutes
     private static final int MAX_RETRIES = 10;
 
@@ -184,7 +186,8 @@ public class DefaultRuleLoader implements RuleLoader {
             }
             LocalDecisioningRuleSet ruleSet = response.getBody();
             if (ruleSet != null && ruleSet.getRules() != null &&
-                    ruleSet.getVersion() != null && ruleSet.getVersion().startsWith("1.")) {
+                    ruleSet.getVersion() != null &&
+                    ruleSet.getVersion().startsWith(MAJOR_VERSION + ".")) {
                 setLatestETag(response.getHeaders().getFirst("ETag"));
                 setLatestRules(ruleSet);
                 logger.trace("rulesList={}", latestRules);
@@ -225,7 +228,8 @@ public class DefaultRuleLoader implements RuleLoader {
         return "https://" +
                 clientConfig.getLocalConfigHostname() + "/" +
                 clientConfig.getClient() + "/" +
-                clientConfig.getLocalEnvironment().toLowerCase() + "/" +
-                "rules.json";
+                clientConfig.getLocalEnvironment().toLowerCase() +
+                "/v" + MAJOR_VERSION +
+                "/rules.json";
     }
 }

@@ -52,11 +52,11 @@ public class GeoParamsCollator implements ParamsCollator {
             if (city != null) {
                 params.put(GEO_CITY, city.toUpperCase().replace(" ", ""));
             }
-            String region = geo.getState();
+            String region = geo.getStateCode();
             if (region != null) {
                 params.put(GEO_REGION, region.toUpperCase());
             }
-            String country = geo.getCountry();
+            String country = geo.getCountryCode();
             if (country != null) {
                 params.put(GEO_COUNTRY, country.toUpperCase());
             }

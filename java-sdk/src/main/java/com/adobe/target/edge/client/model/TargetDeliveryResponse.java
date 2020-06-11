@@ -76,8 +76,6 @@ public class TargetDeliveryResponse {
         return status.getMessage();
     }
 
-    public String[] getRemoteMboxes() { return status.getRemoteMboxes(); }
-
     public ResponseStatus getResponseStatus() { return status; }
 
     @JsonIgnore

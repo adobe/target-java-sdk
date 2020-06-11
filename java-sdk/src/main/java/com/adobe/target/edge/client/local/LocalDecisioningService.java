@@ -14,6 +14,7 @@ package com.adobe.target.edge.client.local;
 import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
+import com.adobe.target.edge.client.http.ResponseStatus;
 import com.adobe.target.edge.client.model.*;
 import com.adobe.target.edge.client.service.TargetService;
 import com.adobe.target.edge.client.utils.CookieUtils;
@@ -25,42 +26,18 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 public class LocalDecisioningService {
-
-    public static class LocalExecutionResult {
-        private boolean allLocal;
-        private String reason;
-        private String[] remoteMBoxes;
-
-        public LocalExecutionResult(boolean allLocal, String reason, String[] remoteMBoxes) {
-            this.allLocal = allLocal;
-            this.reason = reason;
-            this.remoteMBoxes = remoteMBoxes;
-        }
-
-        public boolean isAllLocal() {
-            return allLocal;
-        }
-
-        public String getReason() {
-            return reason;
-        }
-
-        public String[] getRemoteMBoxes() {
-            return remoteMBoxes;
-        }
-    }
 
     private static final Logger logger = LoggerFactory.getLogger(LocalDecisioningService.class);
 
     private final ClientConfig clientConfig;
     private final ObjectMapper mapper;
-    private final LocalDecisionHandler decisionHandler;
     private final RuleLoader ruleLoader;
     private final NotificationDeliveryService deliveryService;
     private final ClusterLocator clusterLocator;
+    private final LocalDecisionHandler decisionHandler;
+    private final LocalExecutionEvaluator localExecutionEvaluator;
 
     public LocalDecisioningService(ClientConfig clientConfig, TargetService targetService) {
         this.mapper = new JacksonObjectMapper().getMapper();
@@ -74,6 +51,7 @@ public class LocalDecisioningService {
         this.clusterLocator = services.getClusterLocator();
         this.clusterLocator.start(clientConfig, targetService);
         this.decisionHandler = new LocalDecisionHandler(clientConfig, mapper);
+        this.localExecutionEvaluator = new LocalExecutionEvaluator(this.ruleLoader);
     }
 
     public void stop() {
@@ -86,41 +64,8 @@ public class LocalDecisioningService {
         this.ruleLoader.refresh();
     }
 
-    /**
-     * Use to determine if the given request can be fully executed locally or not and why.
-     *
-     * @param deliveryRequest request to examine
-     * @return LocalExecutionResult
-     */
-    public LocalExecutionResult evaluateLocalExecution(TargetDeliveryRequest deliveryRequest) {
-        if (deliveryRequest == null) {
-            return new LocalExecutionResult(false,
-                    "Given request cannot be null", null);
-        }
-        LocalDecisioningRuleSet ruleSet = this.ruleLoader.getLatestRules();
-        if (ruleSet == null) {
-            return new LocalExecutionResult(false,
-                    "Local-decisioning rule set not yet available", null);
-        }
-        List<String> allRemoteMboxes = ruleSet.getRemoteMboxes();
-        if (allRemoteMboxes == null || allRemoteMboxes.isEmpty()) {
-            return new LocalExecutionResult(true, null, null);
-        }
-        Set<String> remoteSet = new HashSet<>(allRemoteMboxes);
-        Set<String> remoteMboxes = new HashSet<>();
-        for (String mboxName : allMboxNames(deliveryRequest, ruleSet)) {
-            if (remoteSet.contains(mboxName)) {
-                remoteMboxes.add(mboxName);
-            }
-        }
-        if (!remoteMboxes.isEmpty()) {
-            return new LocalExecutionResult(false,
-                    String.format("mboxes %s have remote activities", remoteMboxes),
-                    remoteMboxes.toArray(new String[0]));
-        }
-        else {
-            return new LocalExecutionResult(true, null, null);
-        }
+    public LocalExecutionEvaluation evaluateLocalExecution(TargetDeliveryRequest deliveryRequest) {
+        return this.localExecutionEvaluator.evaluateLocalExecution(deliveryRequest);
     }
 
     public CompletableFuture<TargetDeliveryResponse> executeRequestAsync(TargetDeliveryRequest deliveryRequest) {
@@ -160,8 +105,8 @@ public class LocalDecisioningService {
         }
         PrefetchResponse prefetchResponse = new PrefetchResponse();
         ExecuteResponse executeResponse = new ExecuteResponse();
-        LocalExecutionResult localResult = evaluateLocalExecution(deliveryRequest);
-        int status = localResult.isAllLocal() ? HttpStatus.SC_OK : HttpStatus.SC_PARTIAL_CONTENT;
+        LocalExecutionEvaluation localEvaluation = evaluateLocalExecution(deliveryRequest);
+        int status = localEvaluation.isAllLocal() ? HttpStatus.SC_OK : HttpStatus.SC_PARTIAL_CONTENT;
         DeliveryResponse deliveryResponse = new DeliveryResponse()
                 .client(clientConfig.getClient())
                 .requestId(requestId)
@@ -169,8 +114,10 @@ public class LocalDecisioningService {
                 .status(status);
         TargetDeliveryResponse targetResponse = new TargetDeliveryResponse(deliveryRequest,
                 deliveryResponse, status,
-                localResult.isAllLocal() ? "Local-decisioning response" : localResult.getReason());
-        targetResponse.getResponseStatus().setRemoteMboxes(localResult.getRemoteMBoxes());
+                localEvaluation.isAllLocal() ? "Local-decisioning response" : localEvaluation.getReason());
+        ResponseStatus responseStatus = targetResponse.getResponseStatus();
+        responseStatus.setRemoteMboxes(localEvaluation.getRemoteMBoxes());
+        responseStatus.setRemoteViews(localEvaluation.getRemoteViews());
         String visitorId = getOrCreateVisitorId(deliveryRequest, targetResponse);
         List<Notification> notifications = new ArrayList<>();
         TraceHandler traceHandler = null;
@@ -278,26 +225,4 @@ public class LocalDecisioningService {
         this.deliveryService.sendNotification(notifRequest);
     }
 
-    private List<String> allMboxNames(TargetDeliveryRequest request, LocalDecisioningRuleSet ruleSet) {
-        List<String> mboxNames = new ArrayList<>();
-        if (request == null || ruleSet == null) {
-            return mboxNames;
-        }
-        String globalMbox = ruleSet.getGlobalMbox();
-        PrefetchRequest prefetch = request.getDeliveryRequest().getPrefetch();
-        if (prefetch != null) {
-            if (prefetch.getPageLoad() != null) {
-                mboxNames.add(globalMbox);
-            }
-            mboxNames.addAll(prefetch.getMboxes().stream().map(MboxRequest::getName).collect(Collectors.toList()));
-        }
-        ExecuteRequest execute = request.getDeliveryRequest().getExecute();
-        if (execute != null) {
-            if (execute.getPageLoad() != null) {
-                mboxNames.add(globalMbox);
-            }
-            mboxNames.addAll(execute.getMboxes().stream().map(MboxRequest::getName).collect(Collectors.toList()));
-        }
-        return mboxNames;
-    }
 }

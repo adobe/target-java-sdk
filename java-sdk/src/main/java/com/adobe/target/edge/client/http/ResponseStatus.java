@@ -11,12 +11,13 @@
  */
 package com.adobe.target.edge.client.http;
 
-import java.util.Arrays;
+import java.util.List;
 
 public class ResponseStatus {
     private final int status;
     private final String message;
-    private String[] remoteMboxes;
+    private List<String> remoteMboxes;
+    private List<String> remoteViews;
 
     public ResponseStatus(int status, String message) {
         this.status = status;
@@ -31,16 +32,21 @@ public class ResponseStatus {
         return message;
     }
 
-    public String[] getRemoteMboxes() { return remoteMboxes; }
+    public List<String> getRemoteMboxes() { return remoteMboxes; }
 
-    public void setRemoteMboxes(String[] mboxes) { remoteMboxes = mboxes; }
+    public void setRemoteMboxes(List<String> mboxes) { remoteMboxes = mboxes; }
+
+    public List<String> getRemoteViews() { return remoteViews; }
+
+    public void setRemoteViews(List<String> views) { remoteViews = views; }
 
     @Override
     public String toString() {
         return "ResponseStatus{" +
                 "status=" + status +
                 ", message='" + message + '\'' +
-                ", remoteMboxes=" + Arrays.toString(remoteMboxes) +
+                ", remoteMboxes=" + remoteMboxes +
+                ", remoteViews=" + remoteViews +
                 '}';
     }
 }

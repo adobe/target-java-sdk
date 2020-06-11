@@ -72,8 +72,8 @@ public class DefaultGeoClient implements GeoClient {
     private Geo headersToGeo(Headers headers) {
         Geo geo = new Geo();
         geo.setCity(headers.getFirst(GEO_HEADER_CITY));
-        geo.setState(headers.getFirst(GEO_HEADER_REGION));
-        geo.setCountry(headers.getFirst(GEO_HEADER_COUNTRY));
+        geo.setStateCode(headers.getFirst(GEO_HEADER_REGION));
+        geo.setCountryCode(headers.getFirst(GEO_HEADER_COUNTRY));
         geo.setLatitude(parseFloat(headers.getFirst(GEO_HEADER_LATITUDE)));
         geo.setLongitude(parseFloat(headers.getFirst(GEO_HEADER_LONGITUDE)));
         return geo;
