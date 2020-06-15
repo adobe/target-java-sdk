@@ -77,9 +77,7 @@ public class LocalDecisionHandler {
         Set<String> skipKeySet = new HashSet<>();
         if (rules != null) {
             for (LocalDecisioningRule rule : rules) {
-                if (propertyToken != null &&
-                        rule.getPropertyToken() != null &&
-                        !propertyToken.equals(rule.getPropertyToken())) {
+                if (propertyTokenMismatch(rule.getPropertyTokens(), propertyToken)) {
                     continue;
                 }
                 String ruleKey = rule.getRuleKey();
@@ -348,6 +346,16 @@ public class LocalDecisionHandler {
             return null;
         }
         return property.getToken();
+    }
+
+    private boolean propertyTokenMismatch(List<String> rulePropertyTokens, String propertyToken) {
+        if (StringUtils.isEmpty(propertyToken)) {
+            return false;
+        }
+        if (rulePropertyTokens == null || rulePropertyTokens.isEmpty()) {
+            return false;
+        }
+        return rulePropertyTokens.contains(propertyToken);
     }
 
     private Map<String, Object> currentTrace(TraceHandler traceHandler) {

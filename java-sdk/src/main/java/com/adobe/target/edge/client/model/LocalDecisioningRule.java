@@ -11,13 +11,14 @@
  */
 package com.adobe.target.edge.client.model;
 
+import java.util.List;
 import java.util.Map;
 
 public class LocalDecisioningRule {
 
     private String ruleKey;
     private String seed;
-    private String propertyToken;
+    private List<String> propertyTokens;
     private Object condition;
     private Map<String, Object> consequence;
     private Map<String, Object> meta;
@@ -33,8 +34,8 @@ public class LocalDecisioningRule {
         return seed;
     }
 
-    public String getPropertyToken() {
-        return propertyToken;
+    public List<String> getPropertyTokens() {
+        return propertyTokens;
     }
 
     public Object getCondition() {
@@ -54,7 +55,7 @@ public class LocalDecisioningRule {
         return "LocalDecisioningRule{" +
                 "ruleKey='" + ruleKey + '\'' +
                 ", seed='" + seed + '\'' +
-                ", propertyToken='" + propertyToken + '\'' +
+                ", propertyTokens='" + propertyTokens + '\'' +
                 ", condition=" + condition +
                 ", consequence=" + consequence +
                 ", meta=" + meta +
