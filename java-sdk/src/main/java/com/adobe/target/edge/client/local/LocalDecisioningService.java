@@ -16,6 +16,8 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.http.ResponseStatus;
 import com.adobe.target.edge.client.model.*;
+import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
+import com.adobe.target.edge.client.model.local.LocalExecutionEvaluation;
 import com.adobe.target.edge.client.service.TargetService;
 import com.adobe.target.edge.client.utils.CookieUtils;
 import com.adobe.target.edge.client.utils.StringUtils;

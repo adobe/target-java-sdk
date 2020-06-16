@@ -12,7 +12,7 @@
 package com.adobe.target.edge.client;
 
 import com.adobe.target.edge.client.model.ExecutionMode;
-import com.adobe.target.edge.client.model.LocalExecutionReadyHandler;
+import com.adobe.target.edge.client.model.local.LocalExecutionHandler;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import org.apache.http.HttpRequestInterceptor;
 
@@ -38,7 +38,7 @@ public class ClientConfig {
     private HttpRequestInterceptor requestInterceptor;
     private ClientProxyConfig proxyConfig;
     private TargetExceptionHandler exceptionHandler;
-    private LocalExecutionReadyHandler localExecutionReadyHandler;
+    private LocalExecutionHandler localExecutionHandler;
     private ExecutionMode defaultExecutionMode;
     private String localEnvironment;
     private String localConfigHostname;
@@ -101,7 +101,7 @@ public class ClientConfig {
 
     public TargetExceptionHandler getExceptionHandler() { return exceptionHandler; }
 
-    public LocalExecutionReadyHandler getLocalExecutionReadyHandler() { return localExecutionReadyHandler; }
+    public LocalExecutionHandler getLocalExecutionHandler() { return localExecutionHandler; }
 
     public ExecutionMode getDefaultExecutionMode() { return defaultExecutionMode; }
 
@@ -134,7 +134,7 @@ public class ClientConfig {
         private HttpRequestInterceptor requestInterceptor;
         private ClientProxyConfig proxyConfig;
         private TargetExceptionHandler exceptionHandler;
-        private LocalExecutionReadyHandler localExecutionReadyHandler;
+        private LocalExecutionHandler localExecutionHandler;
         private ExecutionMode defaultExecutionMode = ExecutionMode.REMOTE;
         private String localEnvironment = "production";
         private String localConfigHostname = "assets.adobetarget.com";
@@ -212,8 +212,8 @@ public class ClientConfig {
             return this;
         }
 
-        public ClientConfigBuilder localExecutionReadyHandler(LocalExecutionReadyHandler handler) {
-            this.localExecutionReadyHandler = handler;
+        public ClientConfigBuilder localExecutionHandler(LocalExecutionHandler handler) {
+            this.localExecutionHandler = handler;
             return this;
         }
 
@@ -257,7 +257,7 @@ public class ClientConfig {
             clientConfig.logRequestStatus = this.logRequestStatus;
             clientConfig.proxyConfig = this.proxyConfig;
             clientConfig.exceptionHandler = this.exceptionHandler;
-            clientConfig.localExecutionReadyHandler = this.localExecutionReadyHandler;
+            clientConfig.localExecutionHandler = this.localExecutionHandler;
             clientConfig.defaultExecutionMode = this.defaultExecutionMode;
             clientConfig.localEnvironment = this.localEnvironment;
             clientConfig.localConfigHostname = this.localConfigHostname;

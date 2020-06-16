@@ -13,7 +13,8 @@ package com.adobe.target.edge.client.local;
 
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.model.ExecutionMode;
-import com.adobe.target.edge.client.model.LocalDecisioningRuleSet;
+import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
+import com.adobe.target.edge.client.model.local.LocalExecutionHandler;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -46,9 +47,9 @@ class DefaultRuleLoaderTest {
     static final String TEST_RULE_SET = "{\"version\":\"1.0.0\",\"meta\":{\"generatedAt\":\"2020-03-17T22:29:29.115Z\",\"remoteMboxes\":[\"recommendations\"],\"globalMbox\":\"target-global-mbox\"},\"rules\":{\"mboxes\":{\"product\":[{\"condition\":{\"and\":[{\"<\":[0,{\"var\":\"allocation\"},50]},{\"<=\":[1580371200000,{\"var\":\"current_timestamp\"},1600585200000]}]},\"consequence\":{\"mboxes\":[{\"options\":[{\"content\":{\"product\":\"default\"},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"3eLgpLF+APtuSsE47wxq/mqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"product\"}]},\"meta\":{\"activityId\":317586,\"experienceId\":0,\"type\":\"ab\",\"mbox\":\"product\"}},{\"condition\":{\"and\":[{\"<\":[50,{\"var\":\"allocation\"},100]},{\"<=\":[1580371200000,{\"var\":\"current_timestamp\"},1600585200000]}]},\"consequence\":{\"mboxes\":[{\"options\":[{\"content\":{\"product\":\"new_layout\"},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"3eLgpLF+APtuSsE47wxq/pNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"product\"}]},\"meta\":{\"activityId\":317586,\"experienceId\":1,\"type\":\"ab\",\"mbox\":\"product\"}}]},\"views\":{}}}";
     static final String TEST_RULE_SET_HIGHER_VERSION = "{\"version\":\"2.0.0\",\"meta\":{\"generatedAt\":\"2020-03-17T22:29:29.115Z\",\"remoteMboxes\":[\"recommendations\"],\"globalMbox\":\"target-global-mbox\"},\"rules\":{\"mboxes\":{\"product\":[{\"condition\":{\"and\":[{\"<\":[0,{\"var\":\"allocation\"},50]},{\"<=\":[1580371200000,{\"var\":\"current_timestamp\"},1600585200000]}]},\"consequence\":{\"mboxes\":[{\"options\":[{\"content\":{\"product\":\"default\"},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"3eLgpLF+APtuSsE47wxq/mqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"product\"}]},\"meta\":{\"activityId\":317586,\"experienceId\":0,\"type\":\"ab\",\"mbox\":\"product\"}},{\"condition\":{\"and\":[{\"<\":[50,{\"var\":\"allocation\"},100]},{\"<=\":[1580371200000,{\"var\":\"current_timestamp\"},1600585200000]}]},\"consequence\":{\"mboxes\":[{\"options\":[{\"content\":{\"product\":\"new_layout\"},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"3eLgpLF+APtuSsE47wxq/pNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"product\"}]},\"meta\":{\"activityId\":317586,\"experienceId\":1,\"type\":\"ab\",\"mbox\":\"product\"}}]},\"views\":{}}}";
 
-    TargetExceptionHandler exceptionHandler;
-
-    ClientConfig clientConfig;
+    private TargetExceptionHandler exceptionHandler;
+    private LocalExecutionHandler executionHandler;
+    private ClientConfig clientConfig;
 
     @BeforeEach
     void init() {
@@ -59,12 +60,30 @@ class DefaultRuleLoaderTest {
             }
         });
 
+        executionHandler = spy(new LocalExecutionHandler() {
+            @Override
+            public void localExecutionReady() {
+
+            }
+
+            @Override
+            public void artifactDownloadSucceeded(byte[] artifactData) {
+
+            }
+
+            @Override
+            public void artifactDownloadFailed(TargetClientException e) {
+
+            }
+        });
+
         clientConfig = ClientConfig.builder()
                 .client("emeaprod4")
                 .organizationId(TEST_ORG_ID)
                 .localEnvironment("production")
                 .defaultExecutionMode(ExecutionMode.LOCAL)
                 .exceptionHandler(exceptionHandler)
+                .localExecutionHandler(executionHandler)
                 .build();
     }
 
@@ -154,17 +173,22 @@ class DefaultRuleLoaderTest {
         DefaultRuleLoader defaultRuleLoader = mock(DefaultRuleLoader.class, CALLS_REAL_METHODS);
 
         String etag = "5b1cf3c050e1a0d16934922bf19ba6ea";
+        Mockito.doReturn(null)
+                .when(defaultRuleLoader).generateRequest(any(ClientConfig.class));
         Mockito.doReturn(getTestResponse(TEST_RULE_SET, etag, HttpStatus.SC_OK))
-                .when(defaultRuleLoader).executeRequest(any(ClientConfig.class));
+                .when(defaultRuleLoader).executeRequest(any());
 
         defaultRuleLoader.start(clientConfig);
         verify(defaultRuleLoader, timeout(1000)).setLatestRules(any(LocalDecisioningRuleSet.class));
         verify(defaultRuleLoader, timeout(1000)).setLatestETag(eq(etag));
+        verify(executionHandler, timeout(1000)).localExecutionReady();
+        verify(executionHandler, timeout(1000)).artifactDownloadSucceeded(any());
+        verify(executionHandler, never()).artifactDownloadFailed(any());
         LocalDecisioningRuleSet rules = defaultRuleLoader.getLatestRules();
         assertNotNull(rules);
 
         Mockito.doReturn(getTestResponse(TEST_RULE_SET, "5b1cf3c050e1a0d16934922bf19ba6ea", HttpStatus.SC_NOT_MODIFIED))
-                .when(defaultRuleLoader).executeRequest(any(ClientConfig.class));
+                .when(defaultRuleLoader).executeRequest(any());
 
         defaultRuleLoader.refresh();
         verify(exceptionHandler, never()).handleException(any(TargetClientException.class));
@@ -175,11 +199,16 @@ class DefaultRuleLoaderTest {
     void testDefaultRuleLoaderNullResponse() {
         DefaultRuleLoader defaultRuleLoader = mock(DefaultRuleLoader.class, CALLS_REAL_METHODS);
 
+        Mockito.doReturn(null)
+                .when(defaultRuleLoader).generateRequest(any(ClientConfig.class));
         Mockito.doReturn(getTestResponse(null, "5b1cf3c050e1a0d16934922bf19ba6ea", HttpStatus.SC_OK))
-                .when(defaultRuleLoader).executeRequest(any(ClientConfig.class));
+                .when(defaultRuleLoader).executeRequest(any());
 
         defaultRuleLoader.start(clientConfig);
         verify(exceptionHandler, timeout(1000)).handleException(any(TargetClientException.class));
+        verify(executionHandler, never()).localExecutionReady();
+        verify(executionHandler, never()).artifactDownloadSucceeded(any());
+        verify(executionHandler, timeout(1000)).artifactDownloadFailed(any());
         defaultRuleLoader.stop();
     }
 
@@ -188,11 +217,16 @@ class DefaultRuleLoaderTest {
 
         DefaultRuleLoader defaultRuleLoader = mock(DefaultRuleLoader.class, CALLS_REAL_METHODS);
 
+        Mockito.doReturn(null)
+                .when(defaultRuleLoader).generateRequest(any(ClientConfig.class));
         Mockito.doReturn(getTestResponse(TEST_RULE_SET_HIGHER_VERSION, "5b1cf3c050e1a0d16934922bf19ba6ea", HttpStatus.SC_OK))
-                .when(defaultRuleLoader).executeRequest(any(ClientConfig.class));
+                .when(defaultRuleLoader).executeRequest(any());
 
         defaultRuleLoader.start(clientConfig);
         verify(exceptionHandler, timeout(1000)).handleException(any(TargetClientException.class));
+        verify(executionHandler, never()).localExecutionReady();
+        verify(executionHandler, never()).artifactDownloadSucceeded(any());
+        verify(executionHandler, timeout(1000)).artifactDownloadFailed(any());
         defaultRuleLoader.stop();
     }
 
@@ -200,11 +234,16 @@ class DefaultRuleLoaderTest {
     void testDefaultRuleLoaderInvalidStatus() {
         DefaultRuleLoader defaultRuleLoader = mock(DefaultRuleLoader.class, CALLS_REAL_METHODS);
 
+        Mockito.doReturn(null)
+                .when(defaultRuleLoader).generateRequest(any(ClientConfig.class));
         Mockito.doReturn(getTestResponse(TEST_RULE_SET, "5b1cf3c050e1a0d16934922bf19ba6ea", HttpStatus.SC_NOT_FOUND))
-                .when(defaultRuleLoader).executeRequest(any(ClientConfig.class));
+                .when(defaultRuleLoader).executeRequest(any());
 
         defaultRuleLoader.start(clientConfig);
         verify(exceptionHandler, timeout(1000)).handleException(any(TargetClientException.class));
+        verify(executionHandler, never()).localExecutionReady();
+        verify(executionHandler, never()).artifactDownloadSucceeded(any());
+        verify(executionHandler, timeout(1000)).artifactDownloadFailed(any());
         defaultRuleLoader.stop();
     }
 }

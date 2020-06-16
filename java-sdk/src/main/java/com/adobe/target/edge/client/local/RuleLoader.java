@@ -12,7 +12,7 @@
 package com.adobe.target.edge.client.local;
 
 import com.adobe.target.edge.client.ClientConfig;
-import com.adobe.target.edge.client.model.LocalDecisioningRuleSet;
+import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
 
 import java.util.Date;
 

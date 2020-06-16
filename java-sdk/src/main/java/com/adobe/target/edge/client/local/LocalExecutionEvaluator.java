@@ -15,8 +15,8 @@ import com.adobe.target.delivery.v1.model.ExecuteRequest;
 import com.adobe.target.delivery.v1.model.MboxRequest;
 import com.adobe.target.delivery.v1.model.PrefetchRequest;
 import com.adobe.target.delivery.v1.model.ViewRequest;
-import com.adobe.target.edge.client.model.LocalDecisioningRuleSet;
-import com.adobe.target.edge.client.model.LocalExecutionEvaluation;
+import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
+import com.adobe.target.edge.client.model.local.LocalExecutionEvaluation;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 
 import java.util.ArrayList;

@@ -13,8 +13,8 @@ package com.adobe.target.edge.client.local;
 
 import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.ClientConfig;
-import com.adobe.target.edge.client.model.LocalDecisioningRule;
-import com.adobe.target.edge.client.model.LocalDecisioningRuleSet;
+import com.adobe.target.edge.client.model.local.LocalDecisioningRule;
+import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

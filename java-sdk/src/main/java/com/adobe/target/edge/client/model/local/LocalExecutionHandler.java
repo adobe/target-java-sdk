@@ -9,13 +9,19 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package com.adobe.target.edge.client.model;
+package com.adobe.target.edge.client.model.local;
 
-public interface LocalExecutionReadyHandler {
+import com.adobe.target.edge.client.service.TargetClientException;
+
+public interface LocalExecutionHandler {
 
     /**
      * This is called when local execution is ready. It is called only once.
      */
     void localExecutionReady();
+
+    void artifactDownloadSucceeded(byte[] artifactData);
+
+    void artifactDownloadFailed(TargetClientException e);
 
 }

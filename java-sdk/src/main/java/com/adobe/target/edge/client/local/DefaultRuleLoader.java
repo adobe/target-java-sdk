@@ -14,8 +14,8 @@ package com.adobe.target.edge.client.local;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.ClientProxyConfig;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
-import com.adobe.target.edge.client.model.LocalDecisioningRuleSet;
-import com.adobe.target.edge.client.model.LocalExecutionReadyHandler;
+import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
+import com.adobe.target.edge.client.model.local.LocalExecutionHandler;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import kong.unirest.*;
@@ -105,23 +105,28 @@ public class DefaultRuleLoader implements RuleLoader {
             @Override
             public void run() {
                 boolean success = DefaultRuleLoader.this.loadRules(clientConfig);
+                LocalExecutionHandler handler = clientConfig.getLocalExecutionHandler();
                 if (!success && DefaultRuleLoader.this.latestRules == null) {
                     // retry if initial rules file download fails
+                    String message;
                     if (DefaultRuleLoader.this.retries++ < MAX_RETRIES) {
-                        long retryDelay = DefaultRuleLoader.this.retries * 10000;
-                        logger.debug("Download of local-decisioning rules failed, retying in {} ms", retryDelay);
+                        long retryDelay = DefaultRuleLoader.this.retries * 1000;
+                        message = String.format("Download of local-decisioning rules failed, retying in %s ms", retryDelay);
+                        logger.debug(message);
                         scheduleTimer(retryDelay);
                     }
                     else {
-                        logger.warn("Exhausted retries trying to download local-decisioning rules. Local-decisioning disabled.");
+                        message = "Exhausted retries trying to download local-decisioning rules.";
+                        logger.warn(message);
+                    }
+                    if (handler != null) {
+                        handler.artifactDownloadFailed(new TargetClientException(message));
                     }
                 }
                 else {
-                    if (DefaultRuleLoader.this.numFetches == 0) {
-                        LocalExecutionReadyHandler handler = clientConfig.getLocalExecutionReadyHandler();
-                        if (handler != null) {
-                            handler.localExecutionReady();
-                        }
+                    if (handler != null &&
+                            DefaultRuleLoader.this.numFetches == 0) {
+                        handler.localExecutionReady();
                     }
                     DefaultRuleLoader.this.numFetches++;
                     DefaultRuleLoader.this.lastFetch = new Date();
@@ -147,11 +152,16 @@ public class DefaultRuleLoader implements RuleLoader {
     }
 
     // For unit test mocking
-    protected HttpResponse<LocalDecisioningRuleSet> executeRequest(ClientConfig clientConfig) {
+    protected GetRequest generateRequest(ClientConfig clientConfig) {
         GetRequest getRequest = unirestInstance.get(getLocalDecisioningUrl(clientConfig));
         if (this.lastETag != null) {
             getRequest.header("If-None-Match", this.lastETag);
         }
+        return getRequest;
+    }
+
+    // For unit test mocking
+    protected HttpResponse<LocalDecisioningRuleSet> executeRequest(GetRequest getRequest) {
         return getRequest.asObject(new GenericType<LocalDecisioningRuleSet>(){});
     }
 
@@ -168,7 +178,9 @@ public class DefaultRuleLoader implements RuleLoader {
     // For unit test mocking
     protected boolean loadRules(ClientConfig clientConfig) {
         try {
-            HttpResponse<LocalDecisioningRuleSet> response = executeRequest(clientConfig);
+            TargetExceptionHandler handler = clientConfig.getExceptionHandler();
+            GetRequest request = generateRequest(clientConfig);
+            HttpResponse<LocalDecisioningRuleSet> response = executeRequest(request);
             if (response.getStatus() != 200) {
                 if (response.getStatus() == 304) {
                     // Not updated, skip
@@ -178,7 +190,6 @@ public class DefaultRuleLoader implements RuleLoader {
                         + response.getStatus() + " : " + response.getStatusText()
                         + " from " + getLocalDecisioningUrl(clientConfig);
                 logger.warn(message);
-                TargetExceptionHandler handler = clientConfig.getExceptionHandler();
                 if (handler != null) {
                     handler.handleException(new TargetClientException(message));
                 }
@@ -190,13 +201,16 @@ public class DefaultRuleLoader implements RuleLoader {
                     ruleSet.getVersion().startsWith(MAJOR_VERSION + ".")) {
                 setLatestETag(response.getHeaders().getFirst("ETag"));
                 setLatestRules(ruleSet);
+                LocalExecutionHandler localHandler = clientConfig.getLocalExecutionHandler();
+                if (localHandler != null) {
+                    localHandler.artifactDownloadSucceeded(request == null ? null : request.asBytes().getBody());
+                }
                 logger.trace("rulesList={}", latestRules);
                 return true;
             }
             if (ruleSet != null && ruleSet.getVersion() != null) {
                 String message = "Unknown rules version: " + ruleSet.getVersion();
                 logger.warn(message);
-                TargetExceptionHandler handler = clientConfig.getExceptionHandler();
                 if (handler != null) {
                     handler.handleException(new TargetClientException(message));
                 }
@@ -206,7 +220,6 @@ public class DefaultRuleLoader implements RuleLoader {
                     + getLocalDecisioningUrl(clientConfig)
                     + ", error: " + response.getParsingError();
             logger.warn(message);
-            TargetExceptionHandler handler = clientConfig.getExceptionHandler();
             if (handler != null) {
                 handler.handleException(new TargetClientException(message));
             }
