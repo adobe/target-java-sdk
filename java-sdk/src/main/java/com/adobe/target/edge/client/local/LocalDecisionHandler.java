@@ -85,7 +85,7 @@ public class LocalDecisionHandler {
                     continue;
                 }
                 Map<String, Object> consequence = executeRule(deliveryRequest,
-                        details, visitorId, rule, traceHandler, ruleSet.getHasGeoTargeting());
+                        details, visitorId, rule, traceHandler, ruleSet.isGeoTargetingEnabled());
                 handled |= handleResult(consequence, rule, details, prefetchResponse,
                         executeResponse, notifications, traceHandler);
                 if (handled) {
@@ -286,7 +286,7 @@ public class LocalDecisionHandler {
 
     private double computeAllocation(String vid, LocalDecisioningRule rule) {
         String client = this.clientConfig.getClient();
-        String seed = rule.getSeed();
+        String seed = rule.getActivityId();
         int index = vid.indexOf(".");
         if (index > 0) {
             vid = vid.substring(0, index);

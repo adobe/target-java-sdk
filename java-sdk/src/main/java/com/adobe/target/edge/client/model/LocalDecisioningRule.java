@@ -17,7 +17,7 @@ import java.util.Map;
 public class LocalDecisioningRule {
 
     private String ruleKey;
-    private String seed;
+    private String activityId;
     private List<String> propertyTokens;
     private Object condition;
     private Map<String, Object> consequence;
@@ -30,8 +30,8 @@ public class LocalDecisioningRule {
         return ruleKey;
     }
 
-    public String getSeed() {
-        return seed;
+    public String getActivityId() {
+        return activityId;
     }
 
     public List<String> getPropertyTokens() {
@@ -54,7 +54,7 @@ public class LocalDecisioningRule {
     public String toString() {
         return "LocalDecisioningRule{" +
                 "ruleKey='" + ruleKey + '\'' +
-                ", seed='" + seed + '\'' +
+                ", activityId='" + activityId + '\'' +
                 ", propertyTokens='" + propertyTokens + '\'' +
                 ", condition=" + condition +
                 ", consequence=" + consequence +
