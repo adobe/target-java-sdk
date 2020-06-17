@@ -38,7 +38,7 @@ import java.util.*;
 import static com.adobe.target.edge.client.entities.TargetDeliveryRequestTest.*;
 import static com.adobe.target.edge.client.utils.TargetConstants.COOKIE_NAME;
 
-class TargetTestDeliveryRequestUtils {
+public class TargetTestDeliveryRequestUtils {
 
     static final int SESSION_ID_COOKIE_MAX_AGE = 1860;
     static final int DEVICE_ID_COOKIE_MAX_AGE = 63244800;
@@ -234,7 +234,7 @@ class TargetTestDeliveryRequestUtils {
         return basicResponse;
     }
 
-    static RuleLoader getTestRuleLoader(final String ruleSet) {
+    public static RuleLoader getTestRuleLoader(final String ruleSet) {
         return new RuleLoader() {
             @Override
             public void start(ClientConfig clientConfig) {
@@ -250,6 +250,9 @@ class TargetTestDeliveryRequestUtils {
 
             @Override
             public LocalDecisioningRuleSet getLatestRules() {
+                if (ruleSet == null) {
+                    return null;
+                }
                 ObjectMapper mapper = new ObjectMapper();
                 mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
                 mapper.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);

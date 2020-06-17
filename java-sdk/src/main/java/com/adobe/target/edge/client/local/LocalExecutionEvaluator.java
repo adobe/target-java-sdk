@@ -52,28 +52,8 @@ public class LocalExecutionEvaluator {
                     "Local-decisioning rule set not yet available", null, null);
         }
 
-        List<String> requestMboxNames = allMboxNames(deliveryRequest, ruleSet);
-        Set<String> localMboxSet = new HashSet<>(ruleSet.getLocalMboxes());
-        Set<String> remoteMboxes = new HashSet<>();
-        for (String mboxName : requestMboxNames) {
-            if (!localMboxSet.contains(mboxName)) {
-                remoteMboxes.add(mboxName);
-            }
-        }
-
-        List<String> requestViews = allViewNames(deliveryRequest);
-        Set<String> localViewSet = new HashSet<>(ruleSet.getLocalViews());
-        Set<String> remoteViews = new HashSet<>();
-        if (allViews(requestViews)) {
-            remoteViews.addAll(ruleSet.getRemoteViews());
-        }
-        else {
-            for (String viewName : requestViews) {
-                if (!localViewSet.contains(viewName)) {
-                    remoteViews.add(viewName);
-                }
-            }
-        }
+        List<String> remoteMboxes = computeRemoteMboxes(deliveryRequest, ruleSet);
+        List<String> remoteViews = computeRemoteViews(deliveryRequest, ruleSet);
 
         if (!remoteMboxes.isEmpty() || !remoteViews.isEmpty()) {
             StringBuilder reason = new StringBuilder("remote activities in: ");
@@ -89,13 +69,52 @@ public class LocalExecutionEvaluator {
             }
             return new LocalExecutionEvaluation(false,
                     reason.toString(),
-                    new ArrayList<>(remoteMboxes),
-                    new ArrayList<>(remoteViews));
-        }
-        else {
-            return new LocalExecutionEvaluation(true, null, null, null);
+                    remoteMboxes.isEmpty() ? null : new ArrayList<>(remoteMboxes),
+                    remoteViews.isEmpty() ? null : new ArrayList<>(remoteViews));
         }
 
+        return new LocalExecutionEvaluation(true, null, null, null);
+    }
+
+    private List<String> computeRemoteMboxes(TargetDeliveryRequest deliveryRequest, LocalDecisioningRuleSet ruleSet) {
+        List<String> requestMboxNames = allMboxNames(deliveryRequest, ruleSet);
+        if (requestMboxNames.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Set<String> remoteMboxes = new HashSet<>();
+        Set<String> localMboxSet = new HashSet<>(ruleSet.getLocalMboxes());
+        Set<String> bothMboxSet = new HashSet<>(ruleSet.getRemoteMboxes());
+
+        for (String mboxName : requestMboxNames) {
+            if (!localMboxSet.contains(mboxName) ||
+                    bothMboxSet.contains(mboxName)) {
+                remoteMboxes.add(mboxName);
+            }
+        }
+        return new ArrayList<>(remoteMboxes);
+    }
+
+    private List<String> computeRemoteViews(TargetDeliveryRequest deliveryRequest, LocalDecisioningRuleSet ruleSet) {
+        List<String> requestViews = allViewNames(deliveryRequest);
+        if (requestViews.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Set<String> bothViewSet = new HashSet<>(ruleSet.getRemoteViews());
+        if (allViews(requestViews)) {
+            return new ArrayList<>(bothViewSet);
+        }
+
+        Set<String> remoteViews = new HashSet<>();
+        Set<String> localViewSet = new HashSet<>(ruleSet.getLocalViews());
+        for (String viewName : requestViews) {
+            if (!localViewSet.contains(viewName) ||
+                    bothViewSet.contains(viewName)) {
+                remoteViews.add(viewName);
+            }
+        }
+        return new ArrayList<>(remoteViews);
     }
 
     private List<String> allMboxNames(TargetDeliveryRequest request, LocalDecisioningRuleSet ruleSet) {

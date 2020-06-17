@@ -40,7 +40,6 @@ public class LocalDecisionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(LocalDecisionHandler.class);
 
-
     private final ClientConfig clientConfig;
     private final ObjectMapper mapper;
     private final GeoClient geoClient;
