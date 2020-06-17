@@ -25,20 +25,20 @@ public class PageParamsCollator implements ParamsCollator {
 
     private static final Logger logger = LoggerFactory.getLogger(PageParamsCollator.class);
 
-    private static final String PAGE_URL = "url";
-    private static final String PAGE_URL_LOWER = "url_lc";
-    private static final String PAGE_DOMAIN = "domain";
-    private static final String PAGE_DOMAIN_LOWER = "domain_lc";
-    private static final String PAGE_SUBDOMAIN = "subdomain";
-    private static final String PAGE_SUBDOMAIN_LOWER = "subdomain_lc";
-    private static final String PAGE_TOP_LEVEL_DOMAIN = "topLevelDomain";
-    private static final String PAGE_TOP_LEVEL_DOMAIN_LOWER = "topLevelDomain_lc";
-    private static final String PAGE_PATH = "path";
-    private static final String PAGE_PATH_LOWER = "path_lc";
-    private static final String PAGE_QUERY = "query";
-    private static final String PAGE_QUERY_LOWER = "query_lc";
-    private static final String PAGE_FRAGMENT = "fragment";
-    private static final String PAGE_FRAGMENT_LOWER = "fragment_lc";
+    protected static final String PAGE_URL = "url";
+    protected static final String PAGE_URL_LOWER = "url_lc";
+    protected static final String PAGE_DOMAIN = "domain";
+    protected static final String PAGE_DOMAIN_LOWER = "domain_lc";
+    protected static final String PAGE_SUBDOMAIN = "subdomain";
+    protected static final String PAGE_SUBDOMAIN_LOWER = "subdomain_lc";
+    protected static final String PAGE_TOP_LEVEL_DOMAIN = "topLevelDomain";
+    protected static final String PAGE_TOP_LEVEL_DOMAIN_LOWER = "topLevelDomain_lc";
+    protected static final String PAGE_PATH = "path";
+    protected static final String PAGE_PATH_LOWER = "path_lc";
+    protected static final String PAGE_QUERY = "query";
+    protected static final String PAGE_QUERY_LOWER = "query_lc";
+    protected static final String PAGE_FRAGMENT = "fragment";
+    protected static final String PAGE_FRAGMENT_LOWER = "fragment_lc";
 
     private boolean referring = false;
 

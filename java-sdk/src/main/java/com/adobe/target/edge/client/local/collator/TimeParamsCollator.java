@@ -19,14 +19,14 @@ import java.util.*;
 
 public class TimeParamsCollator implements ParamsCollator {
 
-    private static final String CURRENT_TIMESTAMP = "current_timestamp";
-    private static final String CURRENT_DAY = "current_day";
-    private static final String CURRENT_TIME = "current_time";
+    protected static final String CURRENT_TIMESTAMP = "current_timestamp";
+    protected static final String CURRENT_DAY = "current_day";
+    protected static final String CURRENT_TIME = "current_time";
 
     public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest,
                                              RequestDetails requestDetails) {
         Map<String, Object> time = new HashMap<>();
-        long now = System.currentTimeMillis();
+        long now = currentTimestamp();
         Date nowDate = new Date(now);
         time.put(CURRENT_TIMESTAMP, now);
         SimpleDateFormat dayFormat = new SimpleDateFormat("u");
@@ -36,6 +36,10 @@ public class TimeParamsCollator implements ParamsCollator {
         timeFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         time.put(CURRENT_TIME, timeFormat.format(nowDate));
         return time;
+    }
+
+    protected long currentTimestamp() {
+        return System.currentTimeMillis();
     }
 
 }

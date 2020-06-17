@@ -18,7 +18,7 @@ import java.util.*;
 
 public class CustomParamsCollator implements ParamsCollator {
 
-    private static final String LOWER_CASE_POSTFIX = "_lc";
+    protected static final String LOWER_CASE_POSTFIX = "_lc";
 
     public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest,
                                              RequestDetails requestDetails) {

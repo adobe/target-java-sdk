@@ -30,11 +30,11 @@ public class UserParamsCollator implements ParamsCollator {
     @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(UserParamsCollator.class);
 
-    private static final String USER_BROWSER_TYPE = "browserType";
-    private static final String USER_BROWSER_VERSION = "browserVersion";
-    private static final String USER_PLATFORM = "platform";
+    protected static final String USER_BROWSER_TYPE = "browserType";
+    protected static final String USER_BROWSER_VERSION = "browserVersion";
+    protected static final String USER_PLATFORM = "platform";
 
-    private static final String UNKNOWN = "unknown";
+    protected static final String UNKNOWN = "unknown";
     private static final Map<String, Predicate<String>> BROWSER_TYPE_MATCHER =
             Collections.unmodifiableMap(new LinkedHashMap<String, Predicate<String>>() {{
                 put("chrome", browser -> (browser.contains("Chrome") || browser.contains("CriOS")) &&

@@ -21,11 +21,11 @@ import java.util.Map;
 
 public class GeoParamsCollator implements ParamsCollator {
 
-    private static final String GEO_LATITUDE = "latitude";
-    private static final String GEO_LONGITUDE = "longitude";
-    private static final String GEO_CITY = "city";
-    private static final String GEO_REGION = "region";
-    private static final String GEO_COUNTRY = "country";
+    protected static final String GEO_LATITUDE = "latitude";
+    protected static final String GEO_LONGITUDE = "longitude";
+    protected static final String GEO_CITY = "city";
+    protected static final String GEO_REGION = "region";
+    protected static final String GEO_COUNTRY = "country";
 
     public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest,
                                              RequestDetails requestDetails) {
