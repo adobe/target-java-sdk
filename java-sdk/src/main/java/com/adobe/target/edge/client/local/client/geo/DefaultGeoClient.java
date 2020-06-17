@@ -14,6 +14,7 @@ package com.adobe.target.edge.client.local.client.geo;
 import com.adobe.target.delivery.v1.model.Geo;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.ClientProxyConfig;
+import kong.unirest.GetRequest;
 import kong.unirest.Headers;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -23,6 +24,8 @@ public class DefaultGeoClient implements GeoClient {
 
     public static final String GEO_PATH = "/v1/geo";
 
+    public static final String GEO_IP_HEADER = "x-forwarded-for";
+
     public static final String GEO_HEADER_CITY = "x-geo-city";
     public static final String GEO_HEADER_REGION = "x-geo-region-code";
     public static final String GEO_HEADER_COUNTRY = "x-geo-country-code";
@@ -30,10 +33,12 @@ public class DefaultGeoClient implements GeoClient {
     public static final String GEO_HEADER_LONGITUDE = "x-geo-longitude";
 
     private UnirestInstance unirestInstance = Unirest.spawnInstance();
-    private final String geoUrl;
+    private String geoUrl;
 
-    public DefaultGeoClient(ClientConfig clientConfig) {
+    public DefaultGeoClient() {
+    }
 
+    public void start(ClientConfig clientConfig) {
         this.geoUrl = "https://" + clientConfig.getLocalConfigHostname() + GEO_PATH;
 
         unirestInstance.config()
@@ -51,15 +56,12 @@ public class DefaultGeoClient implements GeoClient {
                 unirestInstance.config().proxy(proxyConfig.getHost(), proxyConfig.getPort());
             }
         }
-
     }
 
     @Override
     @SuppressWarnings("rawtypes")
     public Geo lookupGeo(String ip) {
-        HttpResponse response = unirestInstance
-                .get(this.geoUrl)
-                .header("X-Forwarded-For", ip)
+        HttpResponse response = geoRequest(this.geoUrl, GEO_IP_HEADER, ip)
                 .asEmpty();
         return headersToGeo(response.getHeaders());
     }
@@ -69,7 +71,13 @@ public class DefaultGeoClient implements GeoClient {
         unirestInstance.shutDown();
     }
 
-    private Geo headersToGeo(Headers headers) {
+    protected GetRequest geoRequest(String url, String headerName, String headerValue) {
+        return unirestInstance
+                .get(url)
+                .header(headerName, headerValue);
+    }
+
+    protected Geo headersToGeo(Headers headers) {
         Geo geo = new Geo();
         geo.setCity(headers.getFirst(GEO_HEADER_CITY));
         geo.setStateCode(headers.getFirst(GEO_HEADER_REGION));

@@ -42,7 +42,7 @@ public class LocalDecisionHandler {
 
     private final ClientConfig clientConfig;
     private final ObjectMapper mapper;
-    private final GeoClient geoClient;
+    private final DefaultGeoClient geoClient;
 
     private final JsonLogic jsonLogic = new JsonLogic();
     private final ParamsCollator timeCollator = new TimeParamsCollator();
@@ -55,7 +55,8 @@ public class LocalDecisionHandler {
     public LocalDecisionHandler(ClientConfig clientConfig, ObjectMapper mapper) {
         this.clientConfig = clientConfig;
         this.mapper = mapper;
-        this.geoClient = new DefaultGeoClient(clientConfig);
+        this.geoClient = new DefaultGeoClient();
+        this.geoClient.start(clientConfig);
     }
 
     public void handleDetails(TargetDeliveryRequest deliveryRequest,
