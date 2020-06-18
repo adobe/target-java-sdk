@@ -28,6 +28,7 @@ public class ClientConfig {
     private String defaultUrl;
     private String clusterUrlPrefix;
     private String clusterUrlSuffix;
+    private String defaultPropertyToken;
     private int socketTimeout;
     private int connectTimeout;
     private int maxConnectionsPerHost;
@@ -51,6 +52,8 @@ public class ClientConfig {
     public String getOrganizationId() {
         return organizationId;
     }
+
+    public String getDefaultPropertyToken() { return defaultPropertyToken; }
 
     public int getSocketTimeout() {
         return socketTimeout;
@@ -123,6 +126,7 @@ public class ClientConfig {
         private String client;
         private String organizationId;
         private String serverDomain = "tt.omtrdc.net";
+        private String defaultPropertyToken;
         private boolean secure = true;
         private int socketTimeout = 10000;
         private int connectTimeout = 10000;
@@ -155,6 +159,11 @@ public class ClientConfig {
 
         public ClientConfigBuilder serverDomain(String serverDomain) {
             this.serverDomain = serverDomain;
+            return this;
+        }
+
+        public ClientConfigBuilder defaultPropertyToken(String defaultPropertyToken) {
+            this.defaultPropertyToken = defaultPropertyToken;
             return this;
         }
 
@@ -244,6 +253,7 @@ public class ClientConfig {
             clientConfig.client = client;
             clientConfig.organizationId = this.organizationId;
             clientConfig.protocol = secure ? "https://" : "http://";
+            clientConfig.defaultPropertyToken = this.defaultPropertyToken;
             clientConfig.connectTimeout = this.connectTimeout;
             clientConfig.maxConnectionsTotal = this.maxConnectionsTotal;
             clientConfig.socketTimeout = this.socketTimeout;

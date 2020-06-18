@@ -46,6 +46,7 @@ class TargetDeliveryRequestTest {
     static final String TEST_MCID = "20250794242226839061607285880759069379";
     static final String TEST_TRACKING_SERVER = "jimsbrims.sc.omtrds.net";
     static final String TEST_ORG_ID = "0DD934B85278256B0A490D44@AdobeOrg";
+    static final String TEST_PROPERTY_TOKEN = "6147bff3-ff76-4793-a185-d2e56380a81a";
 
     @Mock
     private DefaultTargetHttpClient defaultTargetHttpClient;
@@ -64,6 +65,7 @@ class TargetDeliveryRequestTest {
         ClientConfig clientConfig = ClientConfig.builder()
                 .client("emeaprod4")
                 .organizationId(TEST_ORG_ID)
+                .defaultPropertyToken(TEST_PROPERTY_TOKEN)
                 .build();
 
         targetService = new DefaultTargetService(clientConfig);
@@ -243,6 +245,42 @@ class TargetDeliveryRequestTest {
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         verifyServerStateAndNewCookie(targetDeliveryResponse, newSessionId);
         verifyVisitorState(targetDeliveryResponse, customerIds);
+    }
+
+    @Test
+    void testTargetDeliveryRequestWithDefaultProperty() {
+        Context context = getContext();
+        PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
+        ExecuteRequest executeRequest = getMboxExecuteRequest();
+
+        TargetDeliveryRequest targetDeliveryRequest = TargetDeliveryRequest.builder()
+                .context(context)
+                .prefetch(prefetchRequest)
+                .execute(executeRequest)
+                .build();
+
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        DeliveryRequest finalRequest = targetDeliveryResponse.getRequest();
+        assertEquals(TEST_PROPERTY_TOKEN, finalRequest.getProperty().getToken());
+    }
+
+    @Test
+    void testTargetDeliveryRequestWithNonDefaultProperty() {
+        Context context = getContext();
+        PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
+        ExecuteRequest executeRequest = getMboxExecuteRequest();
+        String nonDefaultToken = "non-default-token";
+
+        TargetDeliveryRequest targetDeliveryRequest = TargetDeliveryRequest.builder()
+                .context(context)
+                .prefetch(prefetchRequest)
+                .execute(executeRequest)
+                .property(new Property().token(nonDefaultToken))
+                .build();
+
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        DeliveryRequest finalRequest = targetDeliveryResponse.getRequest();
+        assertEquals(nonDefaultToken, finalRequest.getProperty().getToken());
     }
 
 }

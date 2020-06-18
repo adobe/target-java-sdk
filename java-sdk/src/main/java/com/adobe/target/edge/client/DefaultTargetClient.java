@@ -23,6 +23,7 @@ import com.adobe.target.edge.client.service.DefaultTargetService;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.service.VisitorProvider;
+import com.adobe.target.edge.client.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,21 +38,24 @@ public class DefaultTargetClient implements TargetClient {
     private static final Logger logger = LoggerFactory.getLogger(DefaultTargetHttpClient.class);
     private final TargetService targetService;
     private final LocalDecisioningService localService;
+    private final String defaultPropertyToken;
     private final ExecutionMode defaultExecutionMode;
 
     DefaultTargetClient(ClientConfig clientConfig) {
         this.targetService = new DefaultTargetService(clientConfig);
         VisitorProvider.init(clientConfig.getOrganizationId());
         this.localService = new LocalDecisioningService(clientConfig, this.targetService);
+        this.defaultPropertyToken = clientConfig.getDefaultPropertyToken();
         this.defaultExecutionMode = clientConfig.getDefaultExecutionMode();
     }
 
     @Override
     public TargetDeliveryResponse getOffers(TargetDeliveryRequest request) {
         try {
-            Objects.requireNonNull(request, "ClientConfig instance cannot be null");
+            Objects.requireNonNull(request, "request cannot be null");
             TargetDeliveryResponse targetDeliveryResponse;
             ExecutionMode executionMode = getExecutionMode(request);
+            updatePropertyToken(request);
             if (executionMode == ExecutionMode.LOCAL ||
                     (executionMode == ExecutionMode.HYBRID &&
                     localService.evaluateLocalExecution(request).isAllLocal())) {
@@ -69,9 +73,10 @@ public class DefaultTargetClient implements TargetClient {
     @Override
     public CompletableFuture<TargetDeliveryResponse> getOffersAsync(TargetDeliveryRequest request) {
         try {
-            Objects.requireNonNull(request, "ClientConfig instance cannot be null");
+            Objects.requireNonNull(request, "request cannot be null");
             CompletableFuture<TargetDeliveryResponse> targetDeliveryResponse;
             ExecutionMode executionMode = getExecutionMode(request);
+            updatePropertyToken(request);
             if (executionMode == ExecutionMode.LOCAL ||
                     (executionMode == ExecutionMode.HYBRID &&
                     localService.evaluateLocalExecution(request).isAllLocal())) {
@@ -124,6 +129,22 @@ public class DefaultTargetClient implements TargetClient {
             return mode;
         }
         return defaultExecutionMode;
+    }
+
+    private void updatePropertyToken(TargetDeliveryRequest targetRequest) {
+        if (StringUtils.isEmpty(this.defaultPropertyToken)) {
+            return;
+        }
+        DeliveryRequest deliveryRequest = targetRequest.getDeliveryRequest();
+        Property property = deliveryRequest.getProperty();
+        if (property != null && property.getToken() != null) {
+            return;
+        }
+        if (property == null) {
+            property = new Property();
+            deliveryRequest.setProperty(property);
+        }
+        property.setToken(this.defaultPropertyToken);
     }
 
     private static TargetDeliveryRequest addMBoxesToRequest(TargetDeliveryRequest targetRequest, String... mboxes) {
