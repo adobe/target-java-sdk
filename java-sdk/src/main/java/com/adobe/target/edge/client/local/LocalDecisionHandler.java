@@ -355,7 +355,7 @@ public class LocalDecisionHandler {
         if (rulePropertyTokens == null || rulePropertyTokens.isEmpty()) {
             return false;
         }
-        return rulePropertyTokens.contains(propertyToken);
+        return !rulePropertyTokens.contains(propertyToken);
     }
 
     private Map<String, Object> currentTrace(TraceHandler traceHandler) {
