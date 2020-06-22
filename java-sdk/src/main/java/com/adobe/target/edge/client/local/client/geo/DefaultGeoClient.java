@@ -67,7 +67,7 @@ public class DefaultGeoClient implements GeoClient {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         unirestInstance.shutDown();
     }
 

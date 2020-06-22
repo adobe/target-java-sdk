@@ -12,8 +12,11 @@
 package com.adobe.target.edge.client.local.client.geo;
 
 import com.adobe.target.delivery.v1.model.Geo;
+import com.adobe.target.edge.client.ClientConfig;
 
 public interface GeoClient extends AutoCloseable {
+
+    void start(ClientConfig clientConfig);
 
     Geo lookupGeo(String ip);
 

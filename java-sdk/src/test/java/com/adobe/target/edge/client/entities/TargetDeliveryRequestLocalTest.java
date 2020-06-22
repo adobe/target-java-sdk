@@ -39,6 +39,7 @@ import java.util.Map;
 
 import static com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -54,7 +55,6 @@ class TargetDeliveryRequestLocalTest {
 
     private TargetClient targetJavaClient;
 
-    private LocalDecisioningService localService;
     private LocalDecisionHandler decisionHandler;
 
     @BeforeEach
@@ -71,7 +71,7 @@ class TargetDeliveryRequestLocalTest {
                 .build();
 
         DefaultTargetService targetService = new DefaultTargetService(clientConfig);
-        localService = new LocalDecisioningService(clientConfig, targetService);
+        LocalDecisioningService localService = new LocalDecisioningService(clientConfig, targetService);
         RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(TEST_RULE_SET);
         ObjectMapper mapper = new JacksonObjectMapper().getMapper();
         decisionHandler = new LocalDecisionHandler(clientConfig, mapper);
@@ -169,6 +169,7 @@ class TargetDeliveryRequestLocalTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void testTargetDeliveryAttributesLocalOnlyPartial() {
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.LOCAL);
@@ -184,6 +185,7 @@ class TargetDeliveryRequestLocalTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void testTargetDeliveryAttributesHybridRemote() {
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID);
@@ -216,6 +218,7 @@ class TargetDeliveryRequestLocalTest {
         return targetDeliveryRequest;
     }
 
+    @SuppressWarnings("unchecked")
     private void verifyLocalServerState(TargetDeliveryRequest targetDeliveryRequest,
                                         TargetDeliveryResponse targetDeliveryResponse,
                                         String preToken, String execToken, int offer, String experience) {

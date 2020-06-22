@@ -1,0 +1,444 @@
+{
+  "version": "1.0.0",
+  "meta": {
+    "clientCode": "adobesummit2018",
+    "environment": "test",
+    "generatedAt": "2020-06-15T20:35:35.603Z"
+  },
+  "globalMbox": "target-global-mbox",
+  "geoTargetingEnabled": false,
+  "responseTokens": [
+    "activity.id",
+    "activity.name",
+    "experience.id",
+    "geo.country",
+    "geo.city",
+    "geo.state"
+  ],
+  "remoteMboxes": [
+  ],
+  "remoteViews": [],
+  "localMboxes": [
+    "geo"
+  ],
+  "localViews": [],
+  "rules": {
+    "mboxes": {
+      "geo": [
+        {
+          "ruleKey": "349133",
+          "activityId": "349133",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 349133,
+            "activityType": "ab",
+            "experienceId": 0,
+            "locationName": "geo",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              5753100
+            ],
+            "offerIds": [
+              651951
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "<": [
+                  0,
+                  {
+                    "var": "allocation"
+                  },
+                  50
+                ]
+              },
+              {
+                "and": [
+                  {
+                    "or": [
+                      {
+                        "==": [
+                          "UNITED STATES",
+                          {
+                            "var": "geo.country"
+                          }
+                        ]
+                      },
+                      {
+                        "==": [
+                          "US",
+                          {
+                            "var": "geo.country"
+                          }
+                        ]
+                      },
+                      {
+                        "==": [
+                          "CANADA",
+                          {
+                            "var": "geo.country"
+                          }
+                        ]
+                      },
+                      {
+                        "==": [
+                          "CA",
+                          {
+                            "var": "geo.country"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "or": [
+                      {
+                        "==": [
+                          "CALIFORNIA",
+                          {
+                            "var": "geo.region"
+                          }
+                        ]
+                      },
+                      {
+                        "==": [
+                          "CA",
+                          {
+                            "var": "geo.region"
+                          }
+                        ]
+                      },
+                      {
+                        "==": [
+                          "BRITISH COLUMBIA",
+                          {
+                            "var": "geo.region"
+                          }
+                        ]
+                      },
+                      {
+                        "==": [
+                          "BC",
+                          {
+                            "var": "geo.region"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "or": [
+                      {
+                        "==": [
+                          "SAN FRANCISCO",
+                          {
+                            "var": "geo.city"
+                          }
+                        ]
+                      },
+                      {
+                        "==": [
+                          "SANFRANCISCO",
+                          {
+                            "var": "geo.city"
+                          }
+                        ]
+                      },
+                      {
+                        "==": [
+                          "VANCOUVER",
+                          {
+                            "var": "geo.city"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "<": [
+                      "37.70",
+                      {
+                        "var": "geo.latitude"
+                      }
+                    ]
+                  },
+                  {
+                    ">=": [
+                      "37.80",
+                      {
+                        "var": "geo.latitude"
+                      }
+                    ]
+                  },
+                  {
+                    "<=": [
+                      "-122.5",
+                      {
+                        "var": "geo.longitude"
+                      }
+                    ]
+                  },
+                  {
+                    ">": [
+                      "-122.3",
+                      {
+                        "var": "geo.longitude"
+                      }
+                    ]
+                  },
+                  {
+                    "!": {
+                      "or": [
+                        {
+                          "==": [
+                            "SOUTH SAN FRANCISCO",
+                            {
+                              "var": "geo.city"
+                            }
+                          ]
+                        },
+                        {
+                          "==": [
+                            "SOUTHSANFRANCISCO",
+                            {
+                              "var": "geo.city"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "geo",
+            "options": [
+              {
+                "type": "json",
+                "eventToken": "LYJSFrgKxsp5ZlEO5o4jpGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": {
+                  "geo": true,
+                  "exp": "geo.a"
+                }
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "349133",
+          "activityId": "349133",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 349133,
+            "activityType": "ab",
+            "experienceId": 1,
+            "locationName": "geo",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              5753100
+            ],
+            "offerIds": [
+              650379
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "<": [
+                  50,
+                  {
+                    "var": "allocation"
+                  },
+                  100
+                ]
+              },
+              {
+                "and": [
+                  {
+                    "or": [
+                      {
+                        "==": [
+                          "UNITED STATES",
+                          {
+                            "var": "geo.country"
+                          }
+                        ]
+                      },
+                      {
+                        "==": [
+                          "US",
+                          {
+                            "var": "geo.country"
+                          }
+                        ]
+                      },
+                      {
+                        "==": [
+                          "CANADA",
+                          {
+                            "var": "geo.country"
+                          }
+                        ]
+                      },
+                      {
+                        "==": [
+                          "CA",
+                          {
+                            "var": "geo.country"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "or": [
+                      {
+                        "==": [
+                          "CALIFORNIA",
+                          {
+                            "var": "geo.region"
+                          }
+                        ]
+                      },
+                      {
+                        "==": [
+                          "CA",
+                          {
+                            "var": "geo.region"
+                          }
+                        ]
+                      },
+                      {
+                        "==": [
+                          "BRITISH COLUMBIA",
+                          {
+                            "var": "geo.region"
+                          }
+                        ]
+                      },
+                      {
+                        "==": [
+                          "BC",
+                          {
+                            "var": "geo.region"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "or": [
+                      {
+                        "==": [
+                          "SAN FRANCISCO",
+                          {
+                            "var": "geo.city"
+                          }
+                        ]
+                      },
+                      {
+                        "==": [
+                          "SANFRANCISCO",
+                          {
+                            "var": "geo.city"
+                          }
+                        ]
+                      },
+                      {
+                        "==": [
+                          "VANCOUVER",
+                          {
+                            "var": "geo.city"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "<": [
+                      "37.70",
+                      {
+                        "var": "geo.latitude"
+                      }
+                    ]
+                  },
+                  {
+                    ">=": [
+                      "37.80",
+                      {
+                        "var": "geo.latitude"
+                      }
+                    ]
+                  },
+                  {
+                    "<=": [
+                      "-122.4",
+                      {
+                        "var": "geo.longitude"
+                      }
+                    ]
+                  },
+                  {
+                    ">": [
+                      "-122.2",
+                      {
+                        "var": "geo.longitude"
+                      }
+                    ]
+                  },
+                  {
+                    "!": {
+                      "or": [
+                        {
+                          "==": [
+                            "SOUTH SAN FRANCISCO",
+                            {
+                              "var": "geo.city"
+                            }
+                          ]
+                        },
+                        {
+                          "==": [
+                            "SOUTHSANFRANCISCO",
+                            {
+                              "var": "geo.city"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "geo",
+            "options": [
+              {
+                "type": "json",
+                "eventToken": "LYJSFrgKxsp5ZlEO5o4jpJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": {
+                  "geo": true,
+                  "exp": "geo.b"
+                }
+              }
+            ],
+            "metrics": []
+          }
+        }
+      ]
+    },
+    "views": {}
+  }
+}

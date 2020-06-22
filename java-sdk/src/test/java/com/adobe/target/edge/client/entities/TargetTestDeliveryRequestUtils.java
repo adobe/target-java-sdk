@@ -27,11 +27,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kong.unirest.*;
 import org.apache.http.HttpStatus;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -40,6 +45,7 @@ import static com.adobe.target.edge.client.utils.TargetConstants.COOKIE_NAME;
 
 public class TargetTestDeliveryRequestUtils {
 
+    public static final String TEST_RESOURCES_DIR = "src/test/resources";
     static final int SESSION_ID_COOKIE_MAX_AGE = 1860;
     static final int DEVICE_ID_COOKIE_MAX_AGE = 63244800;
 
@@ -232,6 +238,26 @@ public class TargetTestDeliveryRequestUtils {
         };
         HttpResponse<DeliveryResponse> basicResponse = new BasicResponse(rawResponse, deliveryResponse);
         return basicResponse;
+    }
+
+    public static RuleLoader getTestRuleLoaderFromFile(final String fileName) throws IOException {
+        File inputFile = new File(TEST_RESOURCES_DIR, fileName);
+        InputStream is = null;
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        byte[] fileBytes = new byte[4096];
+        int read;
+        try {
+            is = new BufferedInputStream(new FileInputStream(inputFile));
+            while ((read = is.read(fileBytes)) >= 0) {
+                os.write(fileBytes, 0, read);
+            }
+        }
+        finally {
+            if (is != null) {
+                is.close();
+            }
+        }
+        return getTestRuleLoader(os.toString(StandardCharsets.UTF_8.name()));
     }
 
     public static RuleLoader getTestRuleLoader(final String ruleSet) {

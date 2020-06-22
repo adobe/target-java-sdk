@@ -42,7 +42,7 @@ public class LocalDecisionHandler {
 
     private final ClientConfig clientConfig;
     private final ObjectMapper mapper;
-    private final DefaultGeoClient geoClient;
+    private final GeoClient geoClient;
 
     private final JsonLogic jsonLogic = new JsonLogic();
     private final ParamsCollator timeCollator = new TimeParamsCollator();
