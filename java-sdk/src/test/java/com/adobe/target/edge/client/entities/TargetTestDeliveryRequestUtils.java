@@ -314,18 +314,18 @@ public class TargetTestDeliveryRequestUtils {
         };
     }
 
-    static PrefetchRequest getMboxPrefetchLocalRequest() {
+    static PrefetchRequest getMboxPrefetchLocalRequest(String mbox) {
         List<MboxRequest> mboxRequests = new ArrayList() {{
-            add(new MboxRequest().name("testoffer").index(1).parameters(getLocalParameters()));
+            add(new MboxRequest().name(mbox).index(1).parameters(getLocalParameters()));
         }};
         PrefetchRequest prefetchRequest = new PrefetchRequest();
         prefetchRequest.setMboxes(mboxRequests);
         return prefetchRequest;
     }
 
-    static ExecuteRequest getMboxExecuteLocalRequest() {
+    static ExecuteRequest getMboxExecuteLocalRequest(String mbox) {
         List<MboxRequest> mboxRequests = new ArrayList() {{
-            add(new MboxRequest().name("testoffer2").index(1).parameters(getLocalParameters()));
+            add(new MboxRequest().name(mbox).index(1).parameters(getLocalParameters()));
         }};
         ExecuteRequest executeRequest = new ExecuteRequest();
         executeRequest.setMboxes(mboxRequests);

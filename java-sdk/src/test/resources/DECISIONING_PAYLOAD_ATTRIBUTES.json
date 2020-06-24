@@ -1,0 +1,192 @@
+{
+  "version": "1.0.0",
+  "meta": {
+    "clientCode": "adobesummit2018",
+    "environment": "test",
+    "generatedAt": "2020-06-23T23:31:18.876Z"
+  },
+  "globalMbox": "target-global-mbox",
+  "geoTargetingEnabled": false,
+  "responseTokens": [
+    "activity.id",
+    "activity.name",
+    "experience.id",
+    "geo.country",
+    "geo.city",
+    "geo.state"
+  ],
+  "remoteMboxes": [],
+  "remoteViews": [],
+  "localMboxes": [
+    "testoffer2",
+    "testoffer"
+  ],
+  "localViews": [],
+  "rules": {
+    "mboxes": {
+      "testoffer2": [
+        {
+          "ruleKey": "334694",
+          "activityId": 334694,
+          "meta": {
+            "activityId": 334694,
+            "activityType": "ab",
+            "experienceId": 0,
+            "locationName": "testoffer2",
+            "locationType": "mbox",
+            "locationId": 1,
+            "audienceIds": [],
+            "offerIds": [
+              632285
+            ]
+          },
+          "condition": {
+            "<": [
+              0,
+              {
+                "var": "allocation"
+              },
+              50
+            ]
+          },
+          "consequence": {
+            "name": "testoffer2",
+            "options": [
+              {
+                "type": "json",
+                "eventToken": "IbG2Jz2xmHaqX7Ml/YRxRGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": {
+                  "test": true,
+                  "offer": 1
+                }
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "334694",
+          "activityId": 334694,
+          "meta": {
+            "activityId": 334694,
+            "activityType": "ab",
+            "experienceId": 1,
+            "locationName": "testoffer2",
+            "locationType": "mbox",
+            "locationId": 1,
+            "audienceIds": [],
+            "offerIds": [
+              632286
+            ]
+          },
+          "condition": {
+            "<": [
+              50,
+              {
+                "var": "allocation"
+              },
+              100
+            ]
+          },
+          "consequence": {
+            "name": "testoffer2",
+            "options": [
+              {
+                "type": "json",
+                "eventToken": "IbG2Jz2xmHaqX7Ml/YRxRJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": {
+                  "test": true,
+                  "offer": 2
+                }
+              }
+            ],
+            "metrics": []
+          }
+        }
+      ],
+      "testoffer": [
+        {
+          "ruleKey": "334694",
+          "activityId": 334694,
+          "meta": {
+            "activityId": 334694,
+            "activityType": "ab",
+            "experienceId": 0,
+            "locationName": "testoffer",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [],
+            "offerIds": [
+              632283
+            ]
+          },
+          "condition": {
+            "<": [
+              0,
+              {
+                "var": "allocation"
+              },
+              50
+            ]
+          },
+          "consequence": {
+            "name": "testoffer",
+            "options": [
+              {
+                "type": "json",
+                "eventToken": "IbG2Jz2xmHaqX7Ml/YRxRGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": {
+                  "test": true,
+                  "experience": "a",
+                  "price": 12.99
+                }
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "334694",
+          "activityId": 334694,
+          "meta": {
+            "activityId": 334694,
+            "activityType": "ab",
+            "experienceId": 1,
+            "locationName": "testoffer",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [],
+            "offerIds": [
+              632284
+            ]
+          },
+          "condition": {
+            "<": [
+              50,
+              {
+                "var": "allocation"
+              },
+              100
+            ]
+          },
+          "consequence": {
+            "name": "testoffer",
+            "options": [
+              {
+                "type": "json",
+                "eventToken": "IbG2Jz2xmHaqX7Ml/YRxRJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": {
+                  "test": true,
+                  "experience": "b",
+                  "price": 9.99
+                }
+              }
+            ],
+            "metrics": []
+          }
+        }
+      ]
+    },
+    "views": {}
+  }
+}

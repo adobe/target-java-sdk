@@ -73,7 +73,7 @@ public class LocalDecisionHandler {
         }
         List<LocalDecisioningRule> rules = detailsRules(details, ruleSet);
         String propertyToken = requestPropertyToken(deliveryRequest);
-        boolean handled = false;
+        boolean handledAtLeastOnce = false;
         Set<String> skipKeySet = new HashSet<>();
         if (rules != null) {
             for (LocalDecisioningRule rule : rules) {
@@ -86,9 +86,10 @@ public class LocalDecisionHandler {
                 }
                 Map<String, Object> consequence = executeRule(deliveryRequest,
                         details, visitorId, rule, traceHandler, ruleSet.isGeoTargetingEnabled());
-                handled |= handleResult(consequence, rule, details, prefetchResponse,
+                boolean handled = handleResult(consequence, rule, details, prefetchResponse,
                         executeResponse, notifications, traceHandler);
                 if (handled) {
+                    handledAtLeastOnce = true;
                     if (details instanceof MboxRequest) {
                         break;
                     }
@@ -98,7 +99,7 @@ public class LocalDecisionHandler {
                 }
             }
         }
-        if (!handled) {
+        if (!handledAtLeastOnce) {
             unhandledResponse(details, prefetchResponse, executeResponse, traceHandler);
         }
     }

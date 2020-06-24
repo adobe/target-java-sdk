@@ -34,6 +34,7 @@ import org.mockito.Mockito;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
 import java.util.Map;
 
 import static com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils.*;
@@ -46,19 +47,15 @@ import static org.mockito.Mockito.*;
 class TargetDeliveryAttributesTest {
 
     static final String TEST_ORG_ID = "0DD934B85278256B0A490D44@AdobeOrg";
-    static final String TEST_RULE_SET = "{\"version\":\"1.0.0\",\"geoTargetingEnabled\":false,\"remoteMboxes\":[\"recommendations\"],\"remoteViews\":[\"remote\"],\"localMboxes\":[\"testoffer\",\"testoffer2\"],\"localViews\":[\"home\"],\"meta\":{\"generatedAt\":\"2020-02-27T23:27:26.445Z\"},\"rules\":{\"mboxes\":{\"testoffer\":[{\"activityId\":334694,\"condition\":{\"and\":[{\"<\":[0,{\"var\":\"allocation\"},50]},{\"and\":[{\"and\":[{\"==\":[\"bar\",{\"var\":\"mbox.foo\"}]},{\"==\":[\"buz\",{\"substr\":[{\"var\":\"mbox.baz_lc\"},0,3]}]}]},{\"and\":[{\"or\":[{\"<=\":[1582790400000,{\"var\":\"current_timestamp\"},4736217600000]}]},{\"or\":[{\"and\":[{\"or\":[{\"==\":[{\"var\":\"current_day\"},\"1\"]},{\"==\":[{\"var\":\"current_day\"},\"3\"]},{\"==\":[{\"var\":\"current_day\"},\"5\"]},{\"==\":[{\"var\":\"current_day\"},\"7\"]}]},{\"<=\":[\"0900\",{\"var\":\"current_time\"},\"1745\"]}]},{\"and\":[{\"or\":[{\"==\":[{\"var\":\"current_day\"},\"1\"]},{\"==\":[{\"var\":\"current_day\"},\"2\"]},{\"==\":[{\"var\":\"current_day\"},\"3\"]},{\"==\":[{\"var\":\"current_day\"},\"4\"]},{\"==\":[{\"var\":\"current_day\"},\"5\"]}]},{\"<=\":[\"0515\",{\"var\":\"current_time\"},\"1940\"]}]}]}]},{\"and\":[{\"==\":[{\"var\":\"user.browserType\"},\"firefox\"]},{\"and\":[{\">=\":[{\"var\":\"user.browserVersion\"},72]},{\"!=\":[{\"var\":\"user.browserType\"},\"ipad\"]}]}]},{\"and\":[{\"in\":[\"foo\",{\"var\":\"page.query\"}]},{\"==\":[\".jpg\",{\"substr\":[{\"var\":\"page.path\"},-4]}]},{\"==\":[\"ref1\",{\"var\":\"page.fragment_lc\"}]}]}]}]},\"consequence\":{\"options\":[{\"id\":632283,\"content\":{\"test\":true,\"experience\":\"a\",\"price\":12.99},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"IbG2Jz2xmHaqX7Ml/YRxRGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"testoffer\"},\"meta\":{\"activityId\":334694,\"experienceId\":0,\"type\":\"ab\",\"mbox\":\"testoffer\"}},{\"activityId\":334694,\"condition\":{\"and\":[{\"<\":[50,{\"var\":\"allocation\"},100]},{\"and\":[{\"and\":[{\"==\":[\"bar\",{\"var\":\"mbox.foo\"}]},{\"==\":[\"buz\",{\"substr\":[{\"var\":\"mbox.baz_lc\"},0,3]}]}]},{\"and\":[{\"or\":[{\"<=\":[1582790400000,{\"var\":\"current_timestamp\"},4736217600000]}]},{\"or\":[{\"and\":[{\"or\":[{\"==\":[{\"var\":\"current_day\"},\"1\"]},{\"==\":[{\"var\":\"current_day\"},\"3\"]},{\"==\":[{\"var\":\"current_day\"},\"5\"]},{\"==\":[{\"var\":\"current_day\"},\"7\"]}]},{\"<=\":[\"0900\",{\"var\":\"current_time\"},\"1745\"]}]},{\"and\":[{\"or\":[{\"==\":[{\"var\":\"current_day\"},\"1\"]},{\"==\":[{\"var\":\"current_day\"},\"2\"]},{\"==\":[{\"var\":\"current_day\"},\"3\"]},{\"==\":[{\"var\":\"current_day\"},\"4\"]},{\"==\":[{\"var\":\"current_day\"},\"5\"]}]},{\"<=\":[\"0515\",{\"var\":\"current_time\"},\"1940\"]}]}]}]},{\"and\":[{\"==\":[{\"var\":\"user.browserType\"},\"firefox\"]},{\"and\":[{\">=\":[{\"var\":\"user.browserVersion\"},72]},{\"!=\":[{\"var\":\"user.browserType\"},\"ipad\"]}]}]},{\"and\":[{\"in\":[\"foo\",{\"var\":\"page.query\"}]},{\"==\":[\".jpg\",{\"substr\":[{\"var\":\"page.path\"},-4]}]},{\"==\":[\"ref1\",{\"var\":\"page.fragment_lc\"}]}]}]}]},\"consequence\":{\"options\":[{\"id\":632284,\"content\":{\"test\":true,\"experience\":\"b\",\"price\":9.99},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"IbG2Jz2xmHaqX7Ml/YRxRJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"testoffer\"},\"meta\":{\"activityId\":334694,\"experienceId\":1,\"type\":\"ab\",\"mbox\":\"testoffer\"}}],\"testoffer2\":[{\"activityId\":334694,\"condition\":{\"and\":[{\"<\":[0,{\"var\":\"allocation\"},50]},{\"and\":[{\"and\":[{\"==\":[\"bar\",{\"var\":\"mbox.foo\"}]},{\"==\":[\"buz\",{\"substr\":[{\"var\":\"mbox.baz_lc\"},0,3]}]}]},{\"and\":[{\"or\":[{\"<=\":[1582790400000,{\"var\":\"current_timestamp\"},4736217600000]}]},{\"or\":[{\"and\":[{\"or\":[{\"==\":[{\"var\":\"current_day\"},\"1\"]},{\"==\":[{\"var\":\"current_day\"},\"3\"]},{\"==\":[{\"var\":\"current_day\"},\"5\"]},{\"==\":[{\"var\":\"current_day\"},\"7\"]}]},{\"<=\":[\"0900\",{\"var\":\"current_time\"},\"1745\"]}]},{\"and\":[{\"or\":[{\"==\":[{\"var\":\"current_day\"},\"1\"]},{\"==\":[{\"var\":\"current_day\"},\"2\"]},{\"==\":[{\"var\":\"current_day\"},\"3\"]},{\"==\":[{\"var\":\"current_day\"},\"4\"]},{\"==\":[{\"var\":\"current_day\"},\"5\"]}]},{\"<=\":[\"0515\",{\"var\":\"current_time\"},\"1940\"]}]}]}]},{\"and\":[{\"==\":[{\"var\":\"user.browserType\"},\"firefox\"]},{\"and\":[{\">=\":[{\"var\":\"user.browserVersion\"},72]},{\"!=\":[{\"var\":\"user.browserType\"},\"ipad\"]}]}]},{\"and\":[{\"in\":[\"foo\",{\"var\":\"page.query\"}]},{\"==\":[\".jpg\",{\"substr\":[{\"var\":\"page.path\"},-4]}]},{\"==\":[\"ref1\",{\"var\":\"page.fragment_lc\"}]}]}]}]},\"consequence\":{\"options\":[{\"id\":632285,\"content\":{\"test\":true,\"offer\":1},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"IbG2Jz2xmHaqX7Ml/YRxRGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"testoffer2\"},\"meta\":{\"activityId\":334694,\"experienceId\":0,\"type\":\"ab\",\"mbox\":\"testoffer2\"}},{\"activityId\":334694,\"condition\":{\"and\":[{\"<\":[50,{\"var\":\"allocation\"},100]},{\"and\":[{\"and\":[{\"==\":[\"bar\",{\"var\":\"mbox.foo\"}]},{\"==\":[\"buz\",{\"substr\":[{\"var\":\"mbox.baz_lc\"},0,3]}]}]},{\"and\":[{\"or\":[{\"<=\":[1582790400000,{\"var\":\"current_timestamp\"},4736217600000]}]},{\"or\":[{\"and\":[{\"or\":[{\"==\":[{\"var\":\"current_day\"},\"1\"]},{\"==\":[{\"var\":\"current_day\"},\"3\"]},{\"==\":[{\"var\":\"current_day\"},\"5\"]},{\"==\":[{\"var\":\"current_day\"},\"7\"]}]},{\"<=\":[\"0900\",{\"var\":\"current_time\"},\"1745\"]}]},{\"and\":[{\"or\":[{\"==\":[{\"var\":\"current_day\"},\"1\"]},{\"==\":[{\"var\":\"current_day\"},\"2\"]},{\"==\":[{\"var\":\"current_day\"},\"3\"]},{\"==\":[{\"var\":\"current_day\"},\"4\"]},{\"==\":[{\"var\":\"current_day\"},\"5\"]}]},{\"<=\":[\"0515\",{\"var\":\"current_time\"},\"1940\"]}]}]}]},{\"and\":[{\"==\":[{\"var\":\"user.browserType\"},\"firefox\"]},{\"and\":[{\">=\":[{\"var\":\"user.browserVersion\"},72]},{\"!=\":[{\"var\":\"user.browserType\"},\"ipad\"]}]}]},{\"and\":[{\"in\":[\"foo\",{\"var\":\"page.query\"}]},{\"==\":[\".jpg\",{\"substr\":[{\"var\":\"page.path\"},-4]}]},{\"==\":[\"ref1\",{\"var\":\"page.fragment_lc\"}]}]}]}]},\"consequence\":{\"options\":[{\"id\":632286,\"content\":{\"test\":true,\"offer\":2},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"IbG2Jz2xmHaqX7Ml/YRxRJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"testoffer2\"},\"meta\":{\"activityId\":334694,\"experienceId\":1,\"type\":\"ab\",\"mbox\":\"testoffer2\"}}]}}}";
-    static final String TEST_RULE_SET_NO_AUDIENCE = "{\"version\":\"1.0.0\",\"geoTargetingEnabled\":false,\"remoteMboxes\":[\"recommendations\"],\"remoteViews\":[\"remote\"],\"localMboxes\":[\"testoffer\",\"testoffer2\"],\"localViews\":[\"home\"],\"meta\":{\"generatedAt\":\"2020-02-27T23:27:26.445Z\"},\"rules\":{\"mboxes\":{\"testoffer\":[{\"activityId\":334694,\"condition\":{\"<\":[0,{\"var\":\"allocation\"},50]},\"consequence\":{\"options\":[{\"id\":632283,\"content\":{\"test\":true,\"experience\":\"a\",\"price\":12.99},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"IbG2Jz2xmHaqX7Ml/YRxRGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"testoffer\"},\"meta\":{\"activityId\":334694,\"experienceId\":0,\"type\":\"ab\",\"mbox\":\"testoffer\",\"views\":[]}},{\"activityId\":334694,\"condition\":{\"<\":[50,{\"var\":\"allocation\"},100]},\"consequence\":{\"options\":[{\"id\":632284,\"content\":{\"test\":true,\"experience\":\"b\",\"price\":9.99},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"IbG2Jz2xmHaqX7Ml/YRxRJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"testoffer\"},\"meta\":{\"activityId\":334694,\"experienceId\":1,\"type\":\"ab\",\"mbox\":\"testoffer\"}}],\"testoffer2\":[{\"activityId\":334694,\"condition\":{\"<\":[0,{\"var\":\"allocation\"},50]},\"consequence\":{\"options\":[{\"id\":632285,\"content\":{\"test\":true,\"offer\":1},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"IbG2Jz2xmHaqX7Ml/YRxRGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"testoffer2\"},\"meta\":{\"activityId\":334694,\"experienceId\":0,\"type\":\"ab\",\"mbox\":\"testoffer2\"}},{\"activityId\":334694,\"condition\":{\"<\":[50,{\"var\":\"allocation\"},100]},\"consequence\":{\"options\":[{\"id\":632286,\"content\":{\"test\":true,\"offer\":2},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"IbG2Jz2xmHaqX7Ml/YRxRJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"testoffer2\"},\"meta\":{\"activityId\":334694,\"experienceId\":1,\"type\":\"ab\",\"mbox\":\"testoffer2\"}}]}}}";
 
     @Mock
     private DefaultTargetHttpClient defaultTargetHttpClient;
 
     private TargetClient targetJavaClient;
 
-    private LocalDecisioningService localService;
-
     @BeforeEach
     @SuppressWarnings("unchecked")
-    void init() throws NoSuchFieldException {
+    void init() throws IOException, NoSuchFieldException {
 
         Mockito.lenient().doReturn(getTestDeliveryResponse())
                 .when(defaultTargetHttpClient).execute(any(Map.class), any(String.class),
@@ -70,11 +67,9 @@ class TargetDeliveryAttributesTest {
                 .build();
 
         DefaultTargetService targetService = new DefaultTargetService(clientConfig);
-        localService = new LocalDecisioningService(clientConfig, targetService);
-        RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(TEST_RULE_SET);
+        LocalDecisioningService localService = new LocalDecisioningService(clientConfig, targetService);
         ObjectMapper mapper = new JacksonObjectMapper().getMapper();
         LocalDecisionHandler decisionHandler = new LocalDecisionHandler(clientConfig, mapper);
-        LocalExecutionEvaluator evaluator = new LocalExecutionEvaluator(testRuleLoader);
 
         targetJavaClient = TargetClient.create(clientConfig);
 
@@ -86,21 +81,25 @@ class TargetDeliveryAttributesTest {
                 .getDeclaredField("localService"), localService);
 
         FieldSetter.setField(localService, localService.getClass()
-                .getDeclaredField("ruleLoader"), testRuleLoader);
-        FieldSetter.setField(localService, localService.getClass()
                 .getDeclaredField("decisionHandler"), decisionHandler);
-        FieldSetter.setField(localService, localService.getClass()
-                .getDeclaredField("localExecutionEvaluator"), evaluator);
         ParamsCollator specificTimeCollator =
                 TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1582818503000L);
         FieldSetter.setField(decisionHandler, decisionHandler.getClass()
                 .getDeclaredField("timeCollator"), specificTimeCollator);
+
+        RuleLoader testRuleLoader =
+                TargetTestDeliveryRequestUtils.getTestRuleLoaderFromFile("DECISIONING_PAYLOAD_ATTRIBUTES.json");
+        LocalExecutionEvaluator evaluator = new LocalExecutionEvaluator(testRuleLoader);
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("ruleLoader"), testRuleLoader);
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("localExecutionEvaluator"), evaluator);
     }
 
     @Test
     void testTargetDeliveryAttributesVisitor1() {
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID);
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874");
         Attributes attrs = targetJavaClient.getAttributes(targetDeliveryRequest,
                 "testoffer", "testoffer2");
         validateInitialResponse(targetDeliveryRequest, attrs);
@@ -108,9 +107,9 @@ class TargetDeliveryAttributesTest {
     }
 
     @Test
-    void testTargetDeliveryAttributesVisitor2() {
+    void testTargetDeliveryAttributesVisitor2()  {
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID);
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873");
         Attributes attrs = targetJavaClient.getAttributes(targetDeliveryRequest,
                 "testoffer", "testoffer2");
         validateInitialResponse(targetDeliveryRequest, attrs);
@@ -123,39 +122,8 @@ class TargetDeliveryAttributesTest {
     }
 
     @Test
-    void testTargetDeliveryAttributesLocalOnly() {
-        TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.LOCAL);
-        Attributes attrs = targetJavaClient.getAttributes(targetDeliveryRequest,
-                "testoffer", "testoffer2", "recommendations");
-        assertNotNull(attrs);
-        assertNotNull(attrs.getResponse());
-        assertEquals(206, attrs.getResponse().getStatus());
-        verify(defaultTargetHttpClient, never()).execute(any(Map.class), any(String.class),
-                eq(targetDeliveryRequest), any(Class.class));
-        verify(defaultTargetHttpClient, atMostOnce()).execute(any(Map.class), any(String.class),
-                any(TargetDeliveryRequest.class), any(Class.class));
-        validateResultA(attrs);
-    }
-
-    @Test
-    void testTargetDeliveryAttributesHybridRemote() {
-        TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID);
-        Attributes attrs = targetJavaClient.getAttributes(targetDeliveryRequest,
-                "testoffer", "testoffer2", "recommendations");
-        assertNotNull(attrs);
-        assertNotNull(attrs.getResponse());
-        assertEquals(200, attrs.getResponse().getStatus());
-        verify(defaultTargetHttpClient, atMostOnce()).execute(any(Map.class), any(String.class),
-                eq(targetDeliveryRequest), any(Class.class));
-    }
-
-    @Test
-    void testTargetDeliveryAttributesNoRequest() throws NoSuchFieldException {
-        RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(TEST_RULE_SET_NO_AUDIENCE);
-        FieldSetter.setField(localService, localService.getClass()
-                .getDeclaredField("ruleLoader"), testRuleLoader);
+    @SuppressWarnings("unchecked")
+    void testTargetDeliveryAttributesNoRequest() {
         Attributes attrs = targetJavaClient.getAttributes(null, "testoffer", "testoffer2");
         assertNotNull(attrs);
         assertNotNull(attrs.getResponse());
@@ -168,10 +136,10 @@ class TargetDeliveryAttributesTest {
         assertTrue(attrs.toMboxMap("testoffer2").containsKey("offer"));
     }
 
-    private TargetDeliveryRequest localDeliveryRequest(String visitorIdStr, ExecutionMode mode) {
+    private TargetDeliveryRequest localDeliveryRequest(String visitorIdStr) {
         Context context = getLocalContext();
-        PrefetchRequest prefetchRequest = getMboxPrefetchLocalRequest();
-        ExecuteRequest executeRequest = getMboxExecuteLocalRequest();
+        PrefetchRequest prefetchRequest = getMboxPrefetchLocalRequest("testoffer");
+        ExecuteRequest executeRequest = getMboxExecuteLocalRequest("testoffer2");
         VisitorId visitorId = new VisitorId().tntId(visitorIdStr);
 
         TargetDeliveryRequest targetDeliveryRequest = TargetDeliveryRequest.builder()
@@ -179,7 +147,7 @@ class TargetDeliveryAttributesTest {
                 .prefetch(prefetchRequest)
                 .execute(executeRequest)
                 .id(visitorId)
-                .executionMode(mode)
+                .executionMode(ExecutionMode.HYBRID)
                 .build();
 
         assertEquals(prefetchRequest, targetDeliveryRequest.getDeliveryRequest().getPrefetch());
@@ -188,6 +156,7 @@ class TargetDeliveryAttributesTest {
         return targetDeliveryRequest;
     }
 
+    @SuppressWarnings("unchecked")
     private void validateInitialResponse(TargetDeliveryRequest targetDeliveryRequest, Attributes attrs) {
         assertNotNull(attrs);
         assertNotNull(attrs.getResponse());
@@ -196,7 +165,6 @@ class TargetDeliveryAttributesTest {
                 eq(targetDeliveryRequest), any(Class.class));
         verify(defaultTargetHttpClient, atMostOnce()).execute(any(Map.class), any(String.class),
                 any(TargetDeliveryRequest.class), any(Class.class));
-
     }
 
     private void validateResultA(Attributes attrs) {

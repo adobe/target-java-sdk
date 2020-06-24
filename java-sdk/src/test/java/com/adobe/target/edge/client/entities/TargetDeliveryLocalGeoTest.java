@@ -294,6 +294,5 @@ public class TargetDeliveryLocalGeoTest {
                 .getDeclaredField("ruleLoader"), testRuleLoader);
         FieldSetter.setField(localService, localService.getClass()
                 .getDeclaredField("localExecutionEvaluator"), evaluator);
-
     }
 }

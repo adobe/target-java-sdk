@@ -1,0 +1,189 @@
+{
+  "version": "1.0.0",
+  "meta": {
+    "clientCode": "adobesummit2018",
+    "environment": "test",
+    "generatedAt": "2020-06-23T22:52:18.533Z"
+  },
+  "globalMbox": "target-global-mbox",
+  "geoTargetingEnabled": false,
+  "responseTokens": [
+    "activity.id",
+    "activity.name",
+    "experience.id",
+    "geo.country",
+    "geo.city",
+    "geo.state"
+  ],
+  "remoteMboxes": [],
+  "remoteViews": [],
+  "localMboxes": [
+    "daterange-mbox"
+  ],
+  "localViews": [],
+  "rules": {
+    "mboxes": {
+      "daterange-mbox": [
+        {
+          "ruleKey": "334853",
+          "activityId": 334853,
+          "meta": {
+            "activityId": 334853,
+            "activityType": "landing",
+            "experienceId": 4,
+            "locationName": "daterange-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              5372446
+            ],
+            "offerIds": [
+              632493
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "or": [
+                  {
+                    "==": [
+                      {
+                        "var": "current_day"
+                      },
+                      "5"
+                    ]
+                  }
+                ]
+              },
+              {
+                "<=": [
+                  "0000",
+                  {
+                    "var": "current_time"
+                  },
+                  "2359"
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "daterange-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "wQY/V1IOYec8T4fAT5ww7hB3JWElmEno9qwHyGr0QvSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<strong>it's friday</strong>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "334853",
+          "activityId": 334853,
+          "meta": {
+            "activityId": 334853,
+            "activityType": "landing",
+            "experienceId": 5,
+            "locationName": "daterange-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              5372445
+            ],
+            "offerIds": [
+              632494
+            ]
+          },
+          "condition": {
+            "<=": [
+              1582794000000,
+              {
+                "var": "current_timestamp"
+              },
+              1582999200000
+            ]
+          },
+          "consequence": {
+            "name": "daterange-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "wQY/V1IOYec8T4fAT5ww7unJlneZxJu5VqGhXCosHhWCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<strong>date range 1 (feb 27-29)</strong>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "334853",
+          "activityId": 334853,
+          "meta": {
+            "activityId": 334853,
+            "activityType": "landing",
+            "experienceId": 1,
+            "locationName": "daterange-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              5372444
+            ],
+            "offerIds": [
+              632451
+            ]
+          },
+          "condition": {
+            "<=": [
+              1583149200000,
+              {
+                "var": "current_timestamp"
+              },
+              1583494800000
+            ]
+          },
+          "consequence": {
+            "name": "daterange-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "wQY/V1IOYec8T4fAT5ww7pNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<strong>date range 2 (mar 2 - 6)</strong>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "334853",
+          "activityId": 334853,
+          "meta": {
+            "activityId": 334853,
+            "activityType": "landing",
+            "experienceId": 0,
+            "locationName": "daterange-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [],
+            "offerIds": [
+              632450
+            ]
+          },
+          "condition": true,
+          "consequence": {
+            "name": "daterange-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "wQY/V1IOYec8T4fAT5ww7mqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<strong>default result</strong>"
+              }
+            ],
+            "metrics": []
+          }
+        }
+      ]
+    },
+    "views": {}
+  }
+}

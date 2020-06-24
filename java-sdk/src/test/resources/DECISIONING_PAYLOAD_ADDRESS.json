@@ -1,0 +1,141 @@
+{
+  "version": "1.0.0",
+  "meta": {
+    "clientCode": "adobesummit2018",
+    "environment": "test",
+    "generatedAt": "2020-06-15T20:45:01.734Z"
+  },
+  "globalMbox": "target-global-mbox",
+  "geoTargetingEnabled": false,
+  "responseTokens": [
+    "activity.id",
+    "activity.name",
+    "experience.id",
+    "geo.country",
+    "geo.city",
+    "geo.state"
+  ],
+  "remoteMboxes": [],
+  "remoteViews": [],
+  "localMboxes": [
+    "offer2"
+  ],
+  "localViews": [],
+  "rules": {
+    "mboxes": {
+      "offer2": [
+        {
+          "ruleKey": "333312",
+          "activityId": "333312",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 333312,
+            "activityType": "ab",
+            "experienceId": 0,
+            "locationName": "offer2",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              5356811
+            ],
+            "offerIds": [
+              630815
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "<": [
+                  0,
+                  {
+                    "var": "allocation"
+                  },
+                  50
+                ]
+              },
+              {
+                "in": [
+                  "bar",
+                  {
+                    "var": "page.url_lc"
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "offer2",
+            "options": [
+              {
+                "type": "json",
+                "eventToken": "mWtD0yDAXMnesyQOa7/jS2qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": {
+                  "baz": 1
+                }
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "333312",
+          "activityId": "333312",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 333312,
+            "activityType": "ab",
+            "experienceId": 1,
+            "locationName": "offer2",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              5356811
+            ],
+            "offerIds": [
+              630814
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "<": [
+                  50,
+                  {
+                    "var": "allocation"
+                  },
+                  100
+                ]
+              },
+              {
+                "in": [
+                  "bar",
+                  {
+                    "var": "page.url_lc"
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "offer2",
+            "options": [
+              {
+                "type": "json",
+                "eventToken": "mWtD0yDAXMnesyQOa7/jS5NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": {
+                  "baz": 2
+                }
+              }
+            ],
+            "metrics": []
+          }
+        }
+      ]
+    },
+    "views": {}
+  }
+}

@@ -34,6 +34,8 @@ import org.mockito.Mockito;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,13 +50,13 @@ import static org.mockito.Mockito.*;
 class TargetDeliveryRequestLocalTest {
 
     static final String TEST_ORG_ID = "0DD934B85278256B0A490D44@AdobeOrg";
-    static final String TEST_RULE_SET = "{\"version\":\"1.0.0\",\"geoTargetingEnabled\":false,\"remoteMboxes\":[\"recommendations\"],\"remoteViews\":[\"remote\"],\"localMboxes\":[\"testoffer\",\"testoffer2\"],\"localViews\":[\"home\"],\"meta\":{\"generatedAt\":\"2020-02-27T23:27:26.445Z\"},\"rules\":{\"mboxes\":{\"testoffer\":[{\"activityId\":334694,\"condition\":{\"and\":[{\"<\":[0,{\"var\":\"allocation\"},50]},{\"and\":[{\"and\":[{\"==\":[\"bar\",{\"var\":\"mbox.foo\"}]},{\"==\":[\"buz\",{\"substr\":[{\"var\":\"mbox.baz_lc\"},0,3]}]}]},{\"and\":[{\"or\":[{\"<=\":[1582790400000,{\"var\":\"current_timestamp\"},4736217600000]}]},{\"or\":[{\"and\":[{\"or\":[{\"==\":[{\"var\":\"current_day\"},\"1\"]},{\"==\":[{\"var\":\"current_day\"},\"3\"]},{\"==\":[{\"var\":\"current_day\"},\"5\"]},{\"==\":[{\"var\":\"current_day\"},\"7\"]}]},{\"<=\":[\"0900\",{\"var\":\"current_time\"},\"1745\"]}]},{\"and\":[{\"or\":[{\"==\":[{\"var\":\"current_day\"},\"1\"]},{\"==\":[{\"var\":\"current_day\"},\"2\"]},{\"==\":[{\"var\":\"current_day\"},\"3\"]},{\"==\":[{\"var\":\"current_day\"},\"4\"]},{\"==\":[{\"var\":\"current_day\"},\"5\"]}]},{\"<=\":[\"0515\",{\"var\":\"current_time\"},\"1940\"]}]}]}]},{\"and\":[{\"==\":[{\"var\":\"user.browserType\"},\"firefox\"]},{\"and\":[{\">=\":[{\"var\":\"user.browserVersion\"},72]},{\"!=\":[{\"var\":\"user.browserType\"},\"ipad\"]}]}]},{\"and\":[{\"in\":[\"foo\",{\"var\":\"page.query\"}]},{\"==\":[\".jpg\",{\"substr\":[{\"var\":\"page.path\"},-4]}]},{\"==\":[\"ref1\",{\"var\":\"page.fragment_lc\"}]}]}]}]},\"consequence\":{\"options\":[{\"id\":632283,\"content\":{\"test\":true,\"experience\":\"a\"},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"IbG2Jz2xmHaqX7Ml/YRxRGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"testoffer\"},\"meta\":{\"activityId\":334694,\"experienceId\":0,\"type\":\"ab\",\"mbox\":\"testoffer\"}},{\"activityId\":334694,\"condition\":{\"and\":[{\"<\":[50,{\"var\":\"allocation\"},100]},{\"and\":[{\"and\":[{\"==\":[\"bar\",{\"var\":\"mbox.foo\"}]},{\"==\":[\"buz\",{\"substr\":[{\"var\":\"mbox.baz_lc\"},0,3]}]}]},{\"and\":[{\"or\":[{\"<=\":[1582790400000,{\"var\":\"current_timestamp\"},4736217600000]}]},{\"or\":[{\"and\":[{\"or\":[{\"==\":[{\"var\":\"current_day\"},\"1\"]},{\"==\":[{\"var\":\"current_day\"},\"3\"]},{\"==\":[{\"var\":\"current_day\"},\"5\"]},{\"==\":[{\"var\":\"current_day\"},\"7\"]}]},{\"<=\":[\"0900\",{\"var\":\"current_time\"},\"1745\"]}]},{\"and\":[{\"or\":[{\"==\":[{\"var\":\"current_day\"},\"1\"]},{\"==\":[{\"var\":\"current_day\"},\"2\"]},{\"==\":[{\"var\":\"current_day\"},\"3\"]},{\"==\":[{\"var\":\"current_day\"},\"4\"]},{\"==\":[{\"var\":\"current_day\"},\"5\"]}]},{\"<=\":[\"0515\",{\"var\":\"current_time\"},\"1940\"]}]}]}]},{\"and\":[{\"==\":[{\"var\":\"user.browserType\"},\"firefox\"]},{\"and\":[{\">=\":[{\"var\":\"user.browserVersion\"},72]},{\"!=\":[{\"var\":\"user.browserType\"},\"ipad\"]}]}]},{\"and\":[{\"in\":[\"foo\",{\"var\":\"page.query\"}]},{\"==\":[\".jpg\",{\"substr\":[{\"var\":\"page.path\"},-4]}]},{\"==\":[\"ref1\",{\"var\":\"page.fragment_lc\"}]}]}]}]},\"consequence\":{\"options\":[{\"id\":632284,\"content\":{\"test\":true,\"experience\":\"b\"},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"IbG2Jz2xmHaqX7Ml/YRxRJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"testoffer\"},\"meta\":{\"activityId\":334694,\"experienceId\":1,\"type\":\"ab\",\"mbox\":\"testoffer\"}}],\"testoffer2\":[{\"activityId\":334694,\"condition\":{\"and\":[{\"<\":[0,{\"var\":\"allocation\"},50]},{\"and\":[{\"and\":[{\"==\":[\"bar\",{\"var\":\"mbox.foo\"}]},{\"==\":[\"buz\",{\"substr\":[{\"var\":\"mbox.baz_lc\"},0,3]}]}]},{\"and\":[{\"or\":[{\"<=\":[1582790400000,{\"var\":\"current_timestamp\"},4736217600000]}]},{\"or\":[{\"and\":[{\"or\":[{\"==\":[{\"var\":\"current_day\"},\"1\"]},{\"==\":[{\"var\":\"current_day\"},\"3\"]},{\"==\":[{\"var\":\"current_day\"},\"5\"]},{\"==\":[{\"var\":\"current_day\"},\"7\"]}]},{\"<=\":[\"0900\",{\"var\":\"current_time\"},\"1745\"]}]},{\"and\":[{\"or\":[{\"==\":[{\"var\":\"current_day\"},\"1\"]},{\"==\":[{\"var\":\"current_day\"},\"2\"]},{\"==\":[{\"var\":\"current_day\"},\"3\"]},{\"==\":[{\"var\":\"current_day\"},\"4\"]},{\"==\":[{\"var\":\"current_day\"},\"5\"]}]},{\"<=\":[\"0515\",{\"var\":\"current_time\"},\"1940\"]}]}]}]},{\"and\":[{\"==\":[{\"var\":\"user.browserType\"},\"firefox\"]},{\"and\":[{\">=\":[{\"var\":\"user.browserVersion\"},72]},{\"!=\":[{\"var\":\"user.browserType\"},\"ipad\"]}]}]},{\"and\":[{\"in\":[\"foo\",{\"var\":\"page.query\"}]},{\"==\":[\".jpg\",{\"substr\":[{\"var\":\"page.path\"},-4]}]},{\"==\":[\"ref1\",{\"var\":\"page.fragment_lc\"}]}]}]}]},\"consequence\":{\"options\":[{\"id\":632285,\"content\":{\"test\":true,\"offer\":1},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"IbG2Jz2xmHaqX7Ml/YRxRGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"testoffer2\"},\"meta\":{\"activityId\":334694,\"experienceId\":0,\"type\":\"ab\",\"mbox\":\"testoffer2\"}},{\"activityId\":334694,\"condition\":{\"and\":[{\"<\":[50,{\"var\":\"allocation\"},100]},{\"and\":[{\"and\":[{\"==\":[\"bar\",{\"var\":\"mbox.foo\"}]},{\"==\":[\"buz\",{\"substr\":[{\"var\":\"mbox.baz_lc\"},0,3]}]}]},{\"and\":[{\"or\":[{\"<=\":[1582790400000,{\"var\":\"current_timestamp\"},4736217600000]}]},{\"or\":[{\"and\":[{\"or\":[{\"==\":[{\"var\":\"current_day\"},\"1\"]},{\"==\":[{\"var\":\"current_day\"},\"3\"]},{\"==\":[{\"var\":\"current_day\"},\"5\"]},{\"==\":[{\"var\":\"current_day\"},\"7\"]}]},{\"<=\":[\"0900\",{\"var\":\"current_time\"},\"1745\"]}]},{\"and\":[{\"or\":[{\"==\":[{\"var\":\"current_day\"},\"1\"]},{\"==\":[{\"var\":\"current_day\"},\"2\"]},{\"==\":[{\"var\":\"current_day\"},\"3\"]},{\"==\":[{\"var\":\"current_day\"},\"4\"]},{\"==\":[{\"var\":\"current_day\"},\"5\"]}]},{\"<=\":[\"0515\",{\"var\":\"current_time\"},\"1940\"]}]}]}]},{\"and\":[{\"==\":[{\"var\":\"user.browserType\"},\"firefox\"]},{\"and\":[{\">=\":[{\"var\":\"user.browserVersion\"},72]},{\"!=\":[{\"var\":\"user.browserType\"},\"ipad\"]}]}]},{\"and\":[{\"in\":[\"foo\",{\"var\":\"page.query\"}]},{\"==\":[\".jpg\",{\"substr\":[{\"var\":\"page.path\"},-4]}]},{\"==\":[\"ref1\",{\"var\":\"page.fragment_lc\"}]}]}]}]},\"consequence\":{\"options\":[{\"id\":632286,\"content\":{\"test\":true,\"offer\":2},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"IbG2Jz2xmHaqX7Ml/YRxRJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"testoffer2\"},\"meta\":{\"activityId\":334694,\"experienceId\":1,\"type\":\"ab\",\"mbox\":\"testoffer2\"}}]}}}";
 
     @Mock
     private DefaultTargetHttpClient defaultTargetHttpClient;
 
     private TargetClient targetJavaClient;
 
+    private LocalDecisioningService localService;
     private LocalDecisionHandler decisionHandler;
 
     @BeforeEach
@@ -71,11 +73,9 @@ class TargetDeliveryRequestLocalTest {
                 .build();
 
         DefaultTargetService targetService = new DefaultTargetService(clientConfig);
-        LocalDecisioningService localService = new LocalDecisioningService(clientConfig, targetService);
-        RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(TEST_RULE_SET);
+        localService = new LocalDecisioningService(clientConfig, targetService);
         ObjectMapper mapper = new JacksonObjectMapper().getMapper();
         decisionHandler = new LocalDecisionHandler(clientConfig, mapper);
-        LocalExecutionEvaluator evaluator = new LocalExecutionEvaluator(testRuleLoader);
 
         targetJavaClient = TargetClient.create(clientConfig);
 
@@ -87,10 +87,6 @@ class TargetDeliveryRequestLocalTest {
                 .getDeclaredField("localService"), localService);
 
         FieldSetter.setField(localService, localService.getClass()
-                .getDeclaredField("ruleLoader"), testRuleLoader);
-        FieldSetter.setField(localService, localService.getClass()
-                .getDeclaredField("localExecutionEvaluator"), evaluator);
-        FieldSetter.setField(localService, localService.getClass()
                 .getDeclaredField("decisionHandler"), decisionHandler);
         ParamsCollator specificTimeCollator = TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1582818503000L);
         FieldSetter.setField(decisionHandler, decisionHandler.getClass()
@@ -98,82 +94,404 @@ class TargetDeliveryRequestLocalTest {
     }
 
     @Test
-    void testTargetDeliveryLocalRequestVisitor1() {
+    @SuppressWarnings("unchecked")
+    void testTargetDeliveryLocalRequestVisitor1() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_ADDRESS.json");
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID);
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID,
+                        "offer2");
+        targetDeliveryRequest.getDeliveryRequest().getContext().setAddress(
+                new Address().url("https://test.com?foo=bar"));
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
-        verifyLocalServerState(targetDeliveryRequest, targetDeliveryResponse,
-                "IbG2Jz2xmHaqX7Ml/YRxRGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                "IbG2Jz2xmHaqX7Ml/YRxRGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                1, "a");
-    }
-
-    @Test
-    void testTargetDeliveryLocalRequestVisitor2() {
-        TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID);
-        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
-        verifyLocalServerState(targetDeliveryRequest, targetDeliveryResponse,
-                "IbG2Jz2xmHaqX7Ml/YRxRJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                "IbG2Jz2xmHaqX7Ml/YRxRJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                2, "b");
-    }
-
-    @Test
-    void testTargetDeliveryLocalRequestWrongBrowser() {
-        TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID);
-        targetDeliveryRequest.getDeliveryRequest().getContext().setUserAgent(
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36");
-        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
-        verifyLocalServerState(targetDeliveryRequest, targetDeliveryResponse,
-                null, null, 0, null);
-    }
-
-    @Test
-    void testTargetDeliveryLocalRequestWrongBrowserVersion() {
-        TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID);
-        targetDeliveryRequest.getDeliveryRequest().getContext().setUserAgent(
-                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:73.0) Gecko/20100101 Firefox/71.0");
-        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
-        verifyLocalServerState(targetDeliveryRequest, targetDeliveryResponse,
-                null, null, 0, null);
-    }
-
-    @Test
-    void testTargetDeliveryLocalRequestMBoxAddress() {
-        TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID);
-        Address address = targetDeliveryRequest.getDeliveryRequest().getContext().getAddress();
-        targetDeliveryRequest.getDeliveryRequest().getContext().setAddress(new Address().url("https://wrong.com"));
-        targetDeliveryRequest.getDeliveryRequest().getExecute().getMboxes().get(0).setAddress(address);
-        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
-        verifyLocalServerState(targetDeliveryRequest, targetDeliveryResponse,
-                null,
-                "IbG2Jz2xmHaqX7Ml/YRxRJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                2, null);
-    }
-
-    @Test
-    void testTargetDeliveryLocalRequestWrongTime() throws NoSuchFieldException {
-        TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID);
-        ParamsCollator specificTimeCollator =
-                TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1583625037000L);
-        FieldSetter.setField(decisionHandler, decisionHandler.getClass()
-                .getDeclaredField("timeCollator"), specificTimeCollator);
-        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
-        verifyLocalServerState(targetDeliveryRequest, targetDeliveryResponse,
-                null, null, 0, null);
+        List<Option> prefetchOptions =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "offer2");
+        assertNotNull(prefetchOptions);
+        Option preOption = prefetchOptions.get(0);
+        assertEquals(OptionType.JSON, preOption.getType());
+        assertEquals("mWtD0yDAXMnesyQOa7/jS2qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                preOption.getEventToken());
+        Map<String, Object> preContent = (Map<String, Object>) preOption.getContent();
+        assertNotNull(preContent);
+        assertEquals(1, preContent.get("baz"));
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    void testTargetDeliveryAttributesLocalOnlyPartial() {
+    void testTargetDeliveryLocalRequestVisitor2() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_ADDRESS.json");
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.LOCAL);
-        targetDeliveryRequest.getDeliveryRequest().getExecute().addMboxesItem(
+                localDeliveryRequest("58734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID,
+                        "offer2");
+        targetDeliveryRequest.getDeliveryRequest().getContext().setAddress(
+                new Address().url("https://test.com?foo=bar"));
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> prefetchOptions =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "offer2");
+        assertNotNull(prefetchOptions);
+        Option preOption = prefetchOptions.get(0);
+        assertEquals(OptionType.JSON, preOption.getType());
+        assertEquals("mWtD0yDAXMnesyQOa7/jS5NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                preOption.getEventToken());
+        Map<String, Object> preContent = (Map<String, Object>) preOption.getContent();
+        assertNotNull(preContent);
+        assertEquals(2, preContent.get("baz"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void testTargetDeliveryLocalRequestAddressMbox() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_ADDRESS.json");
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("58734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID,
+                        "offer2");
+        targetDeliveryRequest.getDeliveryRequest().getContext().setAddress(
+                new Address().url("https://test.com"));
+        targetDeliveryRequest.getDeliveryRequest().getPrefetch().getMboxes().get(0).setAddress(
+                new Address().url("https://test.com?foo=bar"));
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> prefetchOptions =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "offer2");
+        assertNotNull(prefetchOptions);
+        Option preOption = prefetchOptions.get(0);
+        assertEquals(OptionType.JSON, preOption.getType());
+        assertEquals("mWtD0yDAXMnesyQOa7/jS5NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                preOption.getEventToken());
+        Map<String, Object> preContent = (Map<String, Object>) preOption.getContent();
+        assertNotNull(preContent);
+        assertEquals(2, preContent.get("baz"));
+    }
+
+    @Test
+    void testTargetDeliveryLocalRequestWrongURL() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_ADDRESS.json");
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("58734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID,
+                        "offer2");
+        targetDeliveryRequest.getDeliveryRequest().getContext().setAddress(
+                new Address().url("https://test.com?foo=baz"));
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> prefetchOptions =
+            extractOptions(targetDeliveryRequest, targetDeliveryResponse, "offer2");
+        assertEquals(0, prefetchOptions.size());
+    }
+
+    @Test
+    void testTargetDeliveryLocalRequestBrowserChrome() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_BROWSER.json");
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
+                        "browser-mbox");
+        targetDeliveryRequest.getDeliveryRequest().getContext().setUserAgent(
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36");
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> prefetchOptions =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "browser-mbox");
+        assertNotNull(prefetchOptions);
+        Option preOption = prefetchOptions.get(0);
+        assertEquals(OptionType.HTML, preOption.getType());
+        assertEquals("B8C2FP2IuBgmeJcDfXHjGpZBXFCzaoRRABbzIA9EnZOCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                preOption.getEventToken());
+        String preContent = (String) preOption.getContent();
+        assertEquals("<h1>it's chrome</h1>", preContent);
+    }
+
+    @Test
+    void testTargetDeliveryLocalRequestWrongBrowserFirefox() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_BROWSER.json");
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
+                        "browser-mbox");
+        targetDeliveryRequest.getDeliveryRequest().getContext().setUserAgent(
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:73.0) Gecko/20100101 Firefox/71.0");
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> prefetchOptions =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "browser-mbox");
+        assertNotNull(prefetchOptions);
+        Option preOption = prefetchOptions.get(0);
+        assertEquals(OptionType.HTML, preOption.getType());
+        assertEquals("B8C2FP2IuBgmeJcDfXHjGpNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                preOption.getEventToken());
+        String preContent = (String) preOption.getContent();
+        assertEquals("<h1>it's firefox</h1>", preContent);
+    }
+
+    @Test
+    void testTargetDeliveryLocalRequestBrowserNoMatch() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_BROWSER.json");
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
+                        "browser-mbox");
+        targetDeliveryRequest.getDeliveryRequest().getContext().setUserAgent(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36 Edge/17.17134");
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> prefetchOptions =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "browser-mbox");
+        assertNotNull(prefetchOptions);
+        Option preOption = prefetchOptions.get(0);
+        assertEquals(OptionType.HTML, preOption.getType());
+        assertEquals("B8C2FP2IuBgmeJcDfXHjGmqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                preOption.getEventToken());
+        String preContent = (String) preOption.getContent();
+        assertEquals("<h1>not firefox, safari or chrome</h1>", preContent);
+    }
+
+    @Test
+    void testTargetDeliveryLocalRequestTimeRange() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_TIMEFRAME.json");
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
+                        "daterange-mbox");
+        ParamsCollator specificTimeCollator =
+                TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1582830000000L);
+        FieldSetter.setField(decisionHandler, decisionHandler.getClass()
+                .getDeclaredField("timeCollator"), specificTimeCollator);
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> prefetchOptions =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "daterange-mbox");
+        assertNotNull(prefetchOptions);
+        Option preOption = prefetchOptions.get(0);
+        assertEquals(OptionType.HTML, preOption.getType());
+        assertEquals("wQY/V1IOYec8T4fAT5ww7unJlneZxJu5VqGhXCosHhWCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                preOption.getEventToken());
+        String preContent = (String) preOption.getContent();
+        assertEquals("<strong>date range 1 (feb 27-29)</strong>", preContent);
+    }
+
+    @Test
+    void testTargetDeliveryLocalRequestTimeRange2() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_TIMEFRAME.json");
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
+                        "daterange-mbox");
+        ParamsCollator specificTimeCollator =
+                TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1583348400000L);
+        FieldSetter.setField(decisionHandler, decisionHandler.getClass()
+                .getDeclaredField("timeCollator"), specificTimeCollator);
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> prefetchOptions =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "daterange-mbox");
+        assertNotNull(prefetchOptions);
+        Option preOption = prefetchOptions.get(0);
+        assertEquals(OptionType.HTML, preOption.getType());
+        assertEquals("wQY/V1IOYec8T4fAT5ww7pNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                preOption.getEventToken());
+        String preContent = (String) preOption.getContent();
+        assertEquals("<strong>date range 2 (mar 2 - 6)</strong>", preContent);
+    }
+
+    @Test
+    void testTargetDeliveryLocalRequestFriday() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_TIMEFRAME.json");
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
+                        "daterange-mbox");
+        ParamsCollator specificTimeCollator =
+                TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1583521200000L);
+        FieldSetter.setField(decisionHandler, decisionHandler.getClass()
+                .getDeclaredField("timeCollator"), specificTimeCollator);
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> prefetchOptions =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "daterange-mbox");
+        assertNotNull(prefetchOptions);
+        Option preOption = prefetchOptions.get(0);
+        assertEquals(OptionType.HTML, preOption.getType());
+        assertEquals("wQY/V1IOYec8T4fAT5ww7hB3JWElmEno9qwHyGr0QvSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                preOption.getEventToken());
+        String preContent = (String) preOption.getContent();
+        assertEquals("<strong>it's friday</strong>", preContent);
+    }
+
+    @Test
+    void testTargetDeliveryLocalRequestOutTimeRange() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_TIMEFRAME.json");
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
+                        "daterange-mbox");
+        ParamsCollator specificTimeCollator =
+                TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1590516000000L);
+        FieldSetter.setField(decisionHandler, decisionHandler.getClass()
+                .getDeclaredField("timeCollator"), specificTimeCollator);
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> prefetchOptions =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "daterange-mbox");
+        assertNotNull(prefetchOptions);
+        Option preOption = prefetchOptions.get(0);
+        assertEquals(OptionType.HTML, preOption.getType());
+        assertEquals("wQY/V1IOYec8T4fAT5ww7mqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                preOption.getEventToken());
+        String preContent = (String) preOption.getContent();
+        assertEquals("<strong>default result</strong>", preContent);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void testTargetDeliveryLocalRequestParams() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_PARAMS.json");
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("338e3c1e51f7416a8e1ccba4f81acea0.28_0", ExecutionMode.HYBRID,
+                        "redundant-mbox");
+        targetDeliveryRequest.getDeliveryRequest().getPrefetch().getMboxes().get(0).setParameters(
+                new HashMap<String, String>() {{
+                    put("foo", "bar");
+                }}
+        );
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> prefetchOptions =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "redundant-mbox");
+        assertNotNull(prefetchOptions);
+        Option preOption = prefetchOptions.get(0);
+        assertEquals(OptionType.JSON, preOption.getType());
+        assertEquals("Zhwxeqy1O2r9Ske1YDA9bJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                preOption.getEventToken());
+        Map<String, Object> preContent = (Map<String, Object>) preOption.getContent();
+        assertNotNull(preContent);
+        assertEquals("bar", preContent.get("foo"));
+        assertEquals(true, preContent.get("isFooBar"));
+        assertEquals("B", preContent.get("experience"));
+    }
+
+    @Test
+    void testTargetDeliveryLocalRequestParamsMismatch() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_PARAMS.json");
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("338e3c1e51f7416a8e1ccba4f81acea0.28_0", ExecutionMode.HYBRID,
+                        "redundant-mbox");
+        targetDeliveryRequest.getDeliveryRequest().getPrefetch().getMboxes().get(0).setParameters(
+                new HashMap<String, String>() {{
+                    put("foo", "bart");
+                }}
+        );
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> prefetchOptions =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "redundant-mbox");
+        assertNotNull(prefetchOptions);
+        assertEquals(0, prefetchOptions.size());
+    }
+
+    @Test
+    void testTargetDeliveryLocalRequestPriority() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_PRIORITIES.json");
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("338e3c1e51f7416a8e1ccba4f81acea0.28_0", ExecutionMode.HYBRID,
+                        "kitty");
+        targetDeliveryRequest.getDeliveryRequest().getContext().setUserAgent(
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:73.0) Gecko/20100101 Firefox/71.0");
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        assertEquals(1, targetDeliveryResponse.getResponse().getPrefetch().getMboxes().size());
+        List<Option> prefetchOptions =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "kitty");
+        assertNotNull(prefetchOptions);
+        Option preOption = prefetchOptions.get(0);
+        assertEquals(OptionType.HTML, preOption.getType());
+        assertEquals("/DhjxnVDh9heBZ0MrYFLF2qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                preOption.getEventToken());
+        String preContent = (String) preOption.getContent();
+        assertEquals("<div>kitty high with targeting: Firefox</div>", preContent);
+    }
+
+    @Test
+    void testTargetDeliveryLocalRequestPriority2() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_PRIORITIES.json");
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("238e3c1e51f7416a8e1ccba4f81acea0.28_0", ExecutionMode.HYBRID,
+                        "kitty");
+        targetDeliveryRequest.getDeliveryRequest().getContext().setUserAgent(
+                "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)");
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        assertEquals(1, targetDeliveryResponse.getResponse().getPrefetch().getMboxes().size());
+        List<Option> prefetchOptions =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "kitty");
+        assertNotNull(prefetchOptions);
+        Option preOption = prefetchOptions.get(0);
+        assertEquals(OptionType.HTML, preOption.getType());
+        assertEquals("ruhwp7VESR7F74TJL2DV5WqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                preOption.getEventToken());
+        String preContent = (String) preOption.getContent();
+        assertEquals("<div>kitty high A</div>", preContent);
+    }
+
+    @Test
+    void testTargetDeliveryLocalRequestPageload() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_GLOBAL_MBOX.json");
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.LOCAL,
+                        null);
+        targetDeliveryRequest.getDeliveryRequest().getContext().setUserAgent(
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:73.0) Gecko/20100101 Firefox/71.0");
+        PrefetchRequest prefetchRequest = new PrefetchRequest();
+        prefetchRequest.setPageLoad(new RequestDetails());
+        targetDeliveryRequest.getDeliveryRequest().setPrefetch(prefetchRequest);
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> prefetchOptions = targetDeliveryResponse.getResponse().getPrefetch().getPageLoad().getOptions();
+        assertNotNull(prefetchOptions);
+        assertEquals(2, prefetchOptions.size());
+        for (Option option : prefetchOptions) {
+            assertEquals(OptionType.HTML, option.getType());
+            String preContent = (String) option.getContent();
+            if (preContent.equals("<div>Firetime</div>")) {
+                assertEquals("9FNM3ikASssS+sVoFXNulJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                        option.getEventToken());
+            }
+            else if (preContent.equals("<div>mouse</div>")) {
+                assertEquals("5C2cbrGD+bQ5qOATNGy1AZNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                        option.getEventToken());
+            }
+            else {
+                throw new IllegalStateException("unexpected content");
+            }
+        }
+    }
+
+    @Test
+    void testTargetDeliveryLocalRequestPageload2() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_GLOBAL_MBOX.json");
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.LOCAL,
+                        null);
+        targetDeliveryRequest.getDeliveryRequest().getContext().setUserAgent(
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36");
+        PrefetchRequest prefetchRequest = new PrefetchRequest();
+        RequestDetails preload = new RequestDetails();
+        preload.setParameters(
+                new HashMap<String, String>() {{
+                    put("foo", "bar");
+                }}
+        );
+        prefetchRequest.setPageLoad(preload);
+        targetDeliveryRequest.getDeliveryRequest().setPrefetch(prefetchRequest);
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> prefetchOptions = targetDeliveryResponse.getResponse().getPrefetch().getPageLoad().getOptions();
+        assertNotNull(prefetchOptions);
+        assertEquals(3, prefetchOptions.size());
+        for (Option option : prefetchOptions) {
+            assertEquals(OptionType.HTML, option.getType());
+            String preContent = (String) option.getContent();
+            if (preContent.equals("<div>Chrometastic</div>")) {
+                assertEquals("9FNM3ikASssS+sVoFXNulGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                        option.getEventToken());
+            }
+            else if (preContent.equals("<div>foo=bar experience A</div>")) {
+                assertEquals("0L1rCkDps3F+UEAm1B9A4GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                        option.getEventToken());
+            }
+            else if (preContent.equals("<div>mouse</div>")) {
+                assertEquals("5C2cbrGD+bQ5qOATNGy1AZNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                        option.getEventToken());
+            }
+            else {
+                throw new IllegalStateException("unexpected content");
+            }
+        }
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void testTargetDeliveryAttributesLocalOnlyPartial() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_RECOMMENDATIONS.json");
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.LOCAL,
+                        "daterange-mbox");
+        targetDeliveryRequest.getDeliveryRequest().getPrefetch().addMboxesItem(
                 new MboxRequest().index(2).name("recommendations"));
         TargetDeliveryResponse response = targetJavaClient.getOffers(targetDeliveryRequest);
         assertNotNull(response);
@@ -186,10 +504,12 @@ class TargetDeliveryRequestLocalTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void testTargetDeliveryAttributesHybridRemote() {
+    void testTargetDeliveryAttributesHybridRemote() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_RECOMMENDATIONS.json");
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID);
-        targetDeliveryRequest.getDeliveryRequest().getExecute().addMboxesItem(
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID,
+                        "daterange-mbox");
+        targetDeliveryRequest.getDeliveryRequest().getPrefetch().addMboxesItem(
                 new MboxRequest().index(2).name("recommendations"));
         TargetDeliveryResponse response = targetJavaClient.getOffers(targetDeliveryRequest);
         assertNotNull(response);
@@ -198,104 +518,66 @@ class TargetDeliveryRequestLocalTest {
                 eq(targetDeliveryRequest), any(Class.class));
     }
 
-    private TargetDeliveryRequest localDeliveryRequest(String visitorIdStr, ExecutionMode mode) {
+    private TargetDeliveryRequest localDeliveryRequest(String visitorIdStr,
+            ExecutionMode mode,
+            String prefetchMbox) {
         Context context = getLocalContext();
-        PrefetchRequest prefetchRequest = getMboxPrefetchLocalRequest();
-        ExecuteRequest executeRequest = getMboxExecuteLocalRequest();
+        PrefetchRequest prefetchRequest = null;
+        if (prefetchMbox != null) {
+            prefetchRequest = getMboxPrefetchLocalRequest(prefetchMbox);
+        }
         VisitorId visitorId = new VisitorId().tntId(visitorIdStr);
 
         TargetDeliveryRequest targetDeliveryRequest = TargetDeliveryRequest.builder()
                 .context(context)
                 .prefetch(prefetchRequest)
-                .execute(executeRequest)
                 .id(visitorId)
                 .executionMode(mode)
                 .build();
 
         assertEquals(prefetchRequest, targetDeliveryRequest.getDeliveryRequest().getPrefetch());
-        assertEquals(executeRequest, targetDeliveryRequest.getDeliveryRequest().getExecute());
         assertEquals(context, targetDeliveryRequest.getDeliveryRequest().getContext());
         return targetDeliveryRequest;
     }
 
     @SuppressWarnings("unchecked")
-    private void verifyLocalServerState(TargetDeliveryRequest targetDeliveryRequest,
-                                        TargetDeliveryResponse targetDeliveryResponse,
-                                        String preToken, String execToken, int offer, String experience) {
+    private List<Option> extractOptions(TargetDeliveryRequest targetDeliveryRequest,
+            TargetDeliveryResponse targetDeliveryResponse,
+            String prefetchMbox) {
         DeliveryResponse response = targetDeliveryResponse.getResponse();
         assertNotNull(response);
         PrefetchResponse preResponse = response.getPrefetch();
         assertNotNull(preResponse);
         List<PrefetchMboxResponse> preMboxes = preResponse.getMboxes();
         assertNotNull(preMboxes);
-        assertEquals(1, preMboxes.size());
-        PrefetchMboxResponse preMboxResponse = preMboxes.get(0);
-        assertEquals("testoffer", preMboxResponse.getName());
-        assertEquals(1, preMboxResponse.getIndex());
-        if (preToken != null) {
-            List<Metric> preMetrics = preMboxResponse.getMetrics();
-            assertNotNull(preMetrics);
-            assertEquals(1, preMetrics.size());
-            Metric preMetric = preMetrics.get(0);
-            assertEquals(preToken, preMetric.getEventToken());
-            assertEquals(MetricType.DISPLAY, preMetric.getType());
-            List<Option> preOptions = preMboxResponse.getOptions();
-            assertNotNull(preOptions);
-            assertEquals(1, preOptions.size());
-            Option preOption = preOptions.get(0);
-            assertEquals(OptionType.JSON, preOption.getType());
-            @SuppressWarnings("unchecked")
-            Map<String, Object> preContent = (Map<String, Object>) preOption.getContent();
-            assertNotNull(preContent);
-            assertEquals(true, preContent.get("test"));
-            assertEquals(experience, preContent.get("experience"));
-        }
-        else {
-            List<Metric> preMetrics = preMboxResponse.getMetrics();
-            assertNotNull(preMetrics);
-            assertEquals(0, preMetrics.size());
-            List<Option> preOptions = preMboxResponse.getOptions();
-            assertNotNull(preOptions);
-            assertEquals(0, preOptions.size());
+        List<Option> prefetchOptions = null;
+        if (prefetchMbox != null) {
+            assertEquals(1, preMboxes.size());
+            PrefetchMboxResponse preMboxResponse = preMboxes.get(0);
+            assertEquals(prefetchMbox, preMboxResponse.getName());
+            assertEquals(1, preMboxResponse.getIndex());
+            prefetchOptions = preMboxResponse.getOptions();
+        } else {
+            assertEquals(0, preMboxes.size());
         }
         ExecuteResponse execResponse = response.getExecute();
         assertNotNull(execResponse);
         List<MboxResponse> mboxes = execResponse.getMboxes();
         assertNotNull(mboxes);
-        assertEquals(1, mboxes.size());
-        MboxResponse mboxResponse = mboxes.get(0);
-        assertEquals("testoffer2", mboxResponse.getName());
-        assertEquals(1, mboxResponse.getIndex());
-        if (execToken != null) {
-            List<Metric> metrics = mboxResponse.getMetrics();
-            assertNotNull(metrics);
-            assertEquals(1, metrics.size());
-            Metric metric = metrics.get(0);
-            assertEquals(execToken, metric.getEventToken());
-            assertEquals(MetricType.DISPLAY, metric.getType());
-            List<Option> options = mboxResponse.getOptions();
-            assertNotNull(options);
-            assertEquals(1, options.size());
-            Option option = options.get(0);
-            assertEquals(OptionType.JSON, option.getType());
-            @SuppressWarnings("unchecked")
-            Map<String, Object> content = (Map<String, Object>) option.getContent();
-            assertNotNull(content);
-            assertEquals(true, content.get("test"));
-            assertEquals(offer, content.get("offer"));
-        }
-        else {
-            List<Metric> metrics = mboxResponse.getMetrics();
-            assertNotNull(metrics);
-            assertEquals(0, metrics.size());
-            List<Option> options = mboxResponse.getOptions();
-            assertNotNull(options);
-            assertEquals(0, options.size());
-        }
         verify(defaultTargetHttpClient, never()).execute(any(Map.class), any(String.class),
                 eq(targetDeliveryRequest), any(Class.class));
         verify(defaultTargetHttpClient, atMostOnce()).execute(any(Map.class), any(String.class),
                 any(TargetDeliveryRequest.class), any(Class.class));
+        return prefetchOptions;
+    }
+
+    public void fileRuleLoader(String fileName) throws IOException, NoSuchFieldException {
+        RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoaderFromFile(fileName);
+        LocalExecutionEvaluator evaluator = new LocalExecutionEvaluator(testRuleLoader);
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("ruleLoader"), testRuleLoader);
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("localExecutionEvaluator"), evaluator);
     }
 
 }

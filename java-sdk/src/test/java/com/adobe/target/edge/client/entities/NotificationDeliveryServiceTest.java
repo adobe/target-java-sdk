@@ -77,18 +77,19 @@ class NotificationDeliveryServiceTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void testNotificationDeliveryService() {
-        TargetDeliveryRequest localDeliveryRequest = localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873");
+        TargetDeliveryRequest localDeliveryRequest = localDeliveryRequest();
         notificationDeliveryService.sendNotification(localDeliveryRequest);
         verify(defaultTargetHttpClient, timeout(1000)).execute(
                 any(Map.class), any(String.class), eq(localDeliveryRequest.getDeliveryRequest()), any(Class.class));
     }
 
-    private TargetDeliveryRequest localDeliveryRequest(String visitorIdStr) {
+    private TargetDeliveryRequest localDeliveryRequest() {
         Context context = getLocalContext();
-        PrefetchRequest prefetchRequest = getMboxPrefetchLocalRequest();
-        ExecuteRequest executeRequest = getMboxExecuteLocalRequest();
-        VisitorId visitorId = new VisitorId().tntId(visitorIdStr);
+        PrefetchRequest prefetchRequest = getMboxPrefetchLocalRequest("testoffer");
+        ExecuteRequest executeRequest = getMboxExecuteLocalRequest("testoffer2");
+        VisitorId visitorId = new VisitorId().tntId("38734fba-262c-4722-b4a3-ac0a93916873");
         Notification notification = new Notification();
         notification.setId(UUID.randomUUID().toString());
         notification.setImpressionId(UUID.randomUUID().toString());
