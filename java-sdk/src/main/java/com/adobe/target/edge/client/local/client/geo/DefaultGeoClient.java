@@ -14,6 +14,8 @@ package com.adobe.target.edge.client.local.client.geo;
 import com.adobe.target.delivery.v1.model.Geo;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.ClientProxyConfig;
+import com.adobe.target.edge.client.http.LoggingMetricConsumer;
+import com.adobe.target.edge.client.http.TargetMetrics;
 import kong.unirest.GetRequest;
 import kong.unirest.Headers;
 import kong.unirest.HttpResponse;
@@ -47,6 +49,10 @@ public class DefaultGeoClient implements GeoClient {
                 .concurrency(clientConfig.getMaxConnectionsTotal(), clientConfig.getMaxConnectionsPerHost())
                 .automaticRetries(clientConfig.isEnabledRetries())
                 .enableCookieManagement(false);
+
+        if (clientConfig.isLogRequestStatus()) {
+            unirestInstance.config().instrumentWith(new TargetMetrics(new LoggingMetricConsumer()));
+        }
 
         if (clientConfig.isProxyEnabled()) {
             ClientProxyConfig proxyConfig = clientConfig.getProxyConfig();

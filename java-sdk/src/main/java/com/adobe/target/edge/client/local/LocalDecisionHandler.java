@@ -13,14 +13,6 @@ package com.adobe.target.edge.client.local;
 
 import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.ClientConfig;
-import com.adobe.target.edge.client.local.client.geo.DefaultGeoClient;
-import com.adobe.target.edge.client.local.client.geo.GeoClient;
-import com.adobe.target.edge.client.local.collator.CustomParamsCollator;
-import com.adobe.target.edge.client.local.collator.GeoParamsCollator;
-import com.adobe.target.edge.client.local.collator.PageParamsCollator;
-import com.adobe.target.edge.client.local.collator.ParamsCollator;
-import com.adobe.target.edge.client.local.collator.TimeParamsCollator;
-import com.adobe.target.edge.client.local.collator.UserParamsCollator;
 import com.adobe.target.edge.client.model.local.LocalDecisioningRule;
 import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
@@ -42,27 +34,19 @@ public class LocalDecisionHandler {
 
     private final ClientConfig clientConfig;
     private final ObjectMapper mapper;
-    private final GeoClient geoClient;
 
     private final JsonLogic jsonLogic = new JsonLogic();
-    private final ParamsCollator timeCollator = new TimeParamsCollator();
-    private final ParamsCollator userCollator = new UserParamsCollator();
-    private final ParamsCollator pageCollator = new PageParamsCollator();
-    private final ParamsCollator prevPageCollator = new PageParamsCollator(true);
-    private final ParamsCollator customCollator = new CustomParamsCollator();
-    private final GeoParamsCollator geoCollator = new GeoParamsCollator();
 
     public LocalDecisionHandler(ClientConfig clientConfig, ObjectMapper mapper) {
         this.clientConfig = clientConfig;
         this.mapper = mapper;
-        this.geoClient = new DefaultGeoClient();
-        this.geoClient.start(clientConfig);
     }
 
     public void handleDetails(TargetDeliveryRequest deliveryRequest,
+            Map<String, Object> localContext,
+            String visitorId,
             TraceHandler traceHandler,
             LocalDecisioningRuleSet ruleSet,
-            String visitorId,
             RequestDetails details,
             PrefetchResponse prefetchResponse,
             ExecuteResponse executeResponse,
@@ -84,8 +68,8 @@ public class LocalDecisionHandler {
                 if (ruleKey != null && skipKeySet.contains(ruleKey)) {
                     continue;
                 }
-                Map<String, Object> consequence = executeRule(deliveryRequest,
-                        details, visitorId, rule, traceHandler, ruleSet.isGeoTargetingEnabled());
+                Map<String, Object> consequence = executeRule(localContext,
+                        details, visitorId, rule, traceHandler);
                 boolean handled = handleResult(consequence, rule, details, prefetchResponse,
                         executeResponse, notifications, traceHandler);
                 if (handled) {
@@ -104,28 +88,20 @@ public class LocalDecisionHandler {
         }
     }
 
-    private Map<String, Object> executeRule(TargetDeliveryRequest deliveryRequest,
+    private Map<String, Object> executeRule(Map<String, Object> localContext,
             RequestDetails details,
             String visitorId,
             LocalDecisioningRule rule,
-            TraceHandler traceHandler,
-            boolean doGeoLookup) {
+            TraceHandler traceHandler) {
+        localContext.put("allocation", computeAllocation(visitorId, rule));
         Object condition = rule.getCondition();
-        Map<String, Object> context = new HashMap<>();
-        context.put("allocation", computeAllocation(visitorId, rule));
-        context.putAll(timeCollator.collateParams(deliveryRequest, details));
-        context.put("user", userCollator.collateParams(deliveryRequest, details));
-        context.put("page", pageCollator.collateParams(deliveryRequest, details));
-        context.put("referring", prevPageCollator.collateParams(deliveryRequest, details));
-        context.put("mbox", customCollator.collateParams(deliveryRequest, details));
-        context.put("geo", geoParams(deliveryRequest, details, doGeoLookup));
-        logger.trace("details={}, context={}", details, context);
+        logger.trace("details={}, context={}", details, localContext);
         try {
             String expression = this.mapper.writeValueAsString(condition);
             logger.trace("expression={}", expression);
-            boolean matched = JsonLogic.truthy(jsonLogic.apply(expression, context));
+            boolean matched = JsonLogic.truthy(jsonLogic.apply(expression, localContext));
             if (traceHandler != null) {
-                traceHandler.addCampaign(rule, context, matched);
+                traceHandler.addCampaign(rule, localContext, matched);
             }
             return matched ? rule.getConsequence() : null;
         }
@@ -366,31 +342,4 @@ public class LocalDecisionHandler {
         return traceHandler.getCurrentTrace();
     }
 
-    private Map<String, Object> geoParams(TargetDeliveryRequest deliveryRequest,
-            RequestDetails requestDetails,
-            boolean doGeoLookup) {
-        Map<String, Object> params = new HashMap<>();
-        if (!doGeoLookup) {
-            return params;
-        }
-        Context context = deliveryRequest.getDeliveryRequest().getContext();
-        if (context != null) {
-            Geo geo = context.getGeo();
-            if (geo != null) {
-                if (StringUtils.isNotEmpty(geo.getIpAddress()) &&
-                        StringUtils.isEmpty(geo.getCity()) &&
-                        StringUtils.isEmpty(geo.getStateCode()) &&
-                        StringUtils.isEmpty(geo.getCountryCode()) &&
-                        geo.getLatitude() == null &&
-                        geo.getLongitude() == null) {
-                    Geo resolvedGeo = this.geoClient.lookupGeo(geo.getIpAddress());
-                    geoCollator.updateGeoParams(params, resolvedGeo);
-                }
-                else {
-                    return geoCollator.collateParams(deliveryRequest, requestDetails);
-                }
-            }
-        }
-        return params;
-    }
 }

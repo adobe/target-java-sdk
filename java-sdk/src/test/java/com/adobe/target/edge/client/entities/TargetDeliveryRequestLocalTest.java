@@ -89,8 +89,8 @@ class TargetDeliveryRequestLocalTest {
         FieldSetter.setField(localService, localService.getClass()
                 .getDeclaredField("decisionHandler"), decisionHandler);
         ParamsCollator specificTimeCollator = TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1582818503000L);
-        FieldSetter.setField(decisionHandler, decisionHandler.getClass()
-                .getDeclaredField("timeCollator"), specificTimeCollator);
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("timeParamsCollator"), specificTimeCollator);
     }
 
     @Test
@@ -243,8 +243,8 @@ class TargetDeliveryRequestLocalTest {
                         "daterange-mbox");
         ParamsCollator specificTimeCollator =
                 TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1582830000000L);
-        FieldSetter.setField(decisionHandler, decisionHandler.getClass()
-                .getDeclaredField("timeCollator"), specificTimeCollator);
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("timeParamsCollator"), specificTimeCollator);
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> prefetchOptions =
                 extractOptions(targetDeliveryRequest, targetDeliveryResponse, "daterange-mbox");
@@ -265,8 +265,8 @@ class TargetDeliveryRequestLocalTest {
                         "daterange-mbox");
         ParamsCollator specificTimeCollator =
                 TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1583348400000L);
-        FieldSetter.setField(decisionHandler, decisionHandler.getClass()
-                .getDeclaredField("timeCollator"), specificTimeCollator);
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("timeParamsCollator"), specificTimeCollator);
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> prefetchOptions =
                 extractOptions(targetDeliveryRequest, targetDeliveryResponse, "daterange-mbox");
@@ -287,8 +287,8 @@ class TargetDeliveryRequestLocalTest {
                         "daterange-mbox");
         ParamsCollator specificTimeCollator =
                 TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1583521200000L);
-        FieldSetter.setField(decisionHandler, decisionHandler.getClass()
-                .getDeclaredField("timeCollator"), specificTimeCollator);
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("timeParamsCollator"), specificTimeCollator);
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> prefetchOptions =
                 extractOptions(targetDeliveryRequest, targetDeliveryResponse, "daterange-mbox");
@@ -309,8 +309,8 @@ class TargetDeliveryRequestLocalTest {
                         "daterange-mbox");
         ParamsCollator specificTimeCollator =
                 TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1590516000000L);
-        FieldSetter.setField(decisionHandler, decisionHandler.getClass()
-                .getDeclaredField("timeCollator"), specificTimeCollator);
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("timeParamsCollator"), specificTimeCollator);
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> prefetchOptions =
                 extractOptions(targetDeliveryRequest, targetDeliveryResponse, "daterange-mbox");

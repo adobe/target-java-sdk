@@ -15,6 +15,14 @@ import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.http.ResponseStatus;
+import com.adobe.target.edge.client.local.client.geo.DefaultGeoClient;
+import com.adobe.target.edge.client.local.client.geo.GeoClient;
+import com.adobe.target.edge.client.local.collator.CustomParamsCollator;
+import com.adobe.target.edge.client.local.collator.GeoParamsCollator;
+import com.adobe.target.edge.client.local.collator.PageParamsCollator;
+import com.adobe.target.edge.client.local.collator.ParamsCollator;
+import com.adobe.target.edge.client.local.collator.TimeParamsCollator;
+import com.adobe.target.edge.client.local.collator.UserParamsCollator;
 import com.adobe.target.edge.client.model.*;
 import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
 import com.adobe.target.edge.client.model.local.LocalExecutionEvaluation;
@@ -33,6 +41,19 @@ public class LocalDecisioningService {
 
     private static final Logger logger = LoggerFactory.getLogger(LocalDecisioningService.class);
 
+    private final static Map<String, ParamsCollator> REQUEST_PARAMS_COLLATORS = new HashMap<String, ParamsCollator>() {{
+        put("user", new UserParamsCollator());
+        put("geo", new GeoParamsCollator());
+    }};
+
+    private final static Map<String, ParamsCollator> DETAILS_PARAMS_COLLATORS = new HashMap<String, ParamsCollator>() {{
+        put("page", new PageParamsCollator());
+        put("referring", new PageParamsCollator(true));
+        put("mbox", new CustomParamsCollator());
+    }};
+
+    private ParamsCollator timeParamsCollator = new TimeParamsCollator();
+
     private final ClientConfig clientConfig;
     private final ObjectMapper mapper;
     private final RuleLoader ruleLoader;
@@ -40,6 +61,7 @@ public class LocalDecisioningService {
     private final ClusterLocator clusterLocator;
     private final LocalDecisionHandler decisionHandler;
     private final LocalExecutionEvaluator localExecutionEvaluator;
+    private final GeoClient geoClient;
 
     public LocalDecisioningService(ClientConfig clientConfig, TargetService targetService) {
         this.mapper = new JacksonObjectMapper().getMapper();
@@ -54,6 +76,8 @@ public class LocalDecisioningService {
         this.clusterLocator.start(clientConfig, targetService);
         this.decisionHandler = new LocalDecisionHandler(clientConfig, mapper);
         this.localExecutionEvaluator = new LocalExecutionEvaluator(this.ruleLoader);
+        this.geoClient = new DefaultGeoClient();
+        this.geoClient.start(clientConfig);
     }
 
     public void stop() {
@@ -80,6 +104,7 @@ public class LocalDecisioningService {
         if (requestId == null) {
             requestId = UUID.randomUUID().toString();
         }
+
         LocalDecisioningRuleSet ruleSet = this.ruleLoader.getLatestRules();
         if (ruleSet == null) {
             DeliveryResponse deliveryResponse = new DeliveryResponse()
@@ -90,57 +115,82 @@ public class LocalDecisioningService {
             return new TargetDeliveryResponse(deliveryRequest, deliveryResponse,
                     HttpStatus.SC_SERVICE_UNAVAILABLE, "Local-decisioning rules not available");
         }
-        List<RequestDetails> prefetchRequests = new ArrayList<>();
-        List<RequestDetails> executeRequests = new ArrayList<>();
-        if (delivRequest.getPrefetch() != null) {
-            prefetchRequests.addAll(new ArrayList<>(delivRequest.getPrefetch().getMboxes()));
-            prefetchRequests.addAll(new ArrayList<>(delivRequest.getPrefetch().getViews()));
-            if (delivRequest.getPrefetch().getPageLoad() != null) {
-                prefetchRequests.add(delivRequest.getPrefetch().getPageLoad());
-            }
+
+        Map<String, Object> requestContext =
+                new HashMap<>(timeParamsCollator.collateParams(deliveryRequest, null));
+        geoLookupIfNeeded(deliveryRequest, ruleSet.isGeoTargetingEnabled());
+        collateParams(requestContext, REQUEST_PARAMS_COLLATORS, deliveryRequest, null);
+
+        TraceHandler traceHandler = null;
+        if (delivRequest.getTrace() != null) {
+            traceHandler = new TraceHandler(this.clientConfig, this.ruleLoader, this.mapper,
+                    ruleSet, deliveryRequest);
         }
-        if (delivRequest.getExecute() != null) {
-            executeRequests.addAll(new ArrayList<>(delivRequest.getExecute().getMboxes()));
-            if (delivRequest.getExecute().getPageLoad() != null) {
-                executeRequests.add(delivRequest.getExecute().getPageLoad());
-            }
+
+        TargetDeliveryResponse targetResponse = buildDeliveryResponse(deliveryRequest, requestId);
+        String visitorId = getOrCreateVisitorId(deliveryRequest, targetResponse);
+
+        List<RequestDetails> prefetchRequests = detailsFromPrefetch(delivRequest);
+        handleDetails(prefetchRequests, requestContext, deliveryRequest, visitorId, traceHandler,
+                ruleSet, targetResponse.getResponse().getPrefetch(), null, null);
+
+        List<RequestDetails> executeRequests = detailsFromExecute(delivRequest);
+        List<Notification> notifications = new ArrayList<>();
+        handleDetails(executeRequests, requestContext, deliveryRequest, visitorId, traceHandler,
+                ruleSet, null, targetResponse.getResponse().getExecute(), notifications);
+
+        sendNotifications(deliveryRequest, targetResponse, notifications);
+
+        if (this.clientConfig.isLogRequests()) {
+            logger.debug(targetResponse.toString());
         }
-        PrefetchResponse prefetchResponse = new PrefetchResponse();
-        ExecuteResponse executeResponse = new ExecuteResponse();
+
+        return targetResponse;
+    }
+
+    private List<RequestDetails> detailsFromPrefetch(DeliveryRequest deliveryRequest) {
+        if (deliveryRequest.getPrefetch() != null) {
+            List<RequestDetails> prefetchRequests = new ArrayList<>();
+            prefetchRequests.addAll(new ArrayList<>(deliveryRequest.getPrefetch().getMboxes()));
+            prefetchRequests.addAll(new ArrayList<>(deliveryRequest.getPrefetch().getViews()));
+            if (deliveryRequest.getPrefetch().getPageLoad() != null) {
+                prefetchRequests.add(deliveryRequest.getPrefetch().getPageLoad());
+            }
+            return prefetchRequests;
+        }
+        return Collections.emptyList();
+    }
+
+    private List<RequestDetails> detailsFromExecute(DeliveryRequest deliveryRequest) {
+        if (deliveryRequest.getExecute() != null) {
+            List<RequestDetails> executeRequests = new ArrayList<>();
+            executeRequests.addAll(new ArrayList<>(deliveryRequest.getExecute().getMboxes()));
+            if (deliveryRequest.getExecute().getPageLoad() != null) {
+                executeRequests.add(deliveryRequest.getExecute().getPageLoad());
+            }
+            return executeRequests;
+        }
+        return Collections.emptyList();
+    }
+
+    private TargetDeliveryResponse buildDeliveryResponse(TargetDeliveryRequest deliveryRequest, String requestId) {
         LocalExecutionEvaluation localEvaluation = evaluateLocalExecution(deliveryRequest);
         int status = localEvaluation.isAllLocal() ? HttpStatus.SC_OK : HttpStatus.SC_PARTIAL_CONTENT;
         DeliveryResponse deliveryResponse = new DeliveryResponse()
                 .client(clientConfig.getClient())
                 .requestId(requestId)
-                .id(delivRequest.getId())
+                .id(deliveryRequest.getDeliveryRequest().getId())
                 .status(status);
+        PrefetchResponse prefetchResponse = new PrefetchResponse();
+        ExecuteResponse executeResponse = new ExecuteResponse();
+        deliveryResponse.setPrefetch(prefetchResponse);
+        deliveryResponse.setExecute(executeResponse);
         TargetDeliveryResponse targetResponse = new TargetDeliveryResponse(deliveryRequest,
                 deliveryResponse, status,
                 localEvaluation.isAllLocal() ? "Local-decisioning response" : localEvaluation.getReason());
         ResponseStatus responseStatus = targetResponse.getResponseStatus();
         responseStatus.setRemoteMboxes(localEvaluation.getRemoteMBoxes());
         responseStatus.setRemoteViews(localEvaluation.getRemoteViews());
-        String visitorId = getOrCreateVisitorId(deliveryRequest, targetResponse);
-        List<Notification> notifications = new ArrayList<>();
-        TraceHandler traceHandler = null;
-        if (delivRequest.getTrace() != null) {
-            traceHandler = new TraceHandler(this.clientConfig, this.ruleLoader, this.mapper,
-                    ruleSet, deliveryRequest);
-        }
-        for (RequestDetails details : prefetchRequests) {
-            this.decisionHandler.handleDetails(deliveryRequest, traceHandler, ruleSet,
-                    visitorId, details, prefetchResponse, null, null);
-        }
-        deliveryResponse.setPrefetch(prefetchResponse);
-        for (RequestDetails details : executeRequests) {
-            this.decisionHandler.handleDetails(deliveryRequest, traceHandler, ruleSet,
-                    visitorId, details, null, executeResponse, notifications);
-        }
-        deliveryResponse.setExecute(executeResponse);
-        sendNotifications(deliveryRequest, targetResponse, notifications);
-        if (this.clientConfig.isLogRequests()) {
-            logger.debug(targetResponse.toString());
-        }
         return targetResponse;
     }
 
@@ -199,6 +249,53 @@ public class LocalDecisioningService {
             }
         }
         return null;
+    }
+
+    private void geoLookupIfNeeded(TargetDeliveryRequest deliveryRequest, boolean doGeoLookup) {
+        if (!doGeoLookup) {
+            return;
+        }
+        Context context = deliveryRequest.getDeliveryRequest().getContext();
+        if (context != null) {
+            Geo geo = context.getGeo();
+            if (geo != null) {
+                if (StringUtils.isNotEmpty(geo.getIpAddress()) &&
+                        StringUtils.isEmpty(geo.getCity()) &&
+                        StringUtils.isEmpty(geo.getStateCode()) &&
+                        StringUtils.isEmpty(geo.getCountryCode()) &&
+                        geo.getLatitude() == null &&
+                        geo.getLongitude() == null) {
+                    Geo resolvedGeo = this.geoClient.lookupGeo(geo.getIpAddress());
+                    deliveryRequest.getDeliveryRequest().getContext().setGeo(resolvedGeo);
+                }
+            }
+        }
+    }
+
+    private void collateParams(Map<String, Object> localContext,
+            Map<String, ParamsCollator> paramsCollator,
+            TargetDeliveryRequest deliveryRequest,
+            RequestDetails requestDetails) {
+        for (Map.Entry<String, ParamsCollator> entry : paramsCollator.entrySet()) {
+            localContext.put(entry.getKey(), entry.getValue().collateParams(deliveryRequest, requestDetails));
+        }
+    }
+
+    private void handleDetails(List<RequestDetails> detailsList,
+            Map<String, Object> requestContext,
+            TargetDeliveryRequest deliveryRequest,
+            String visitorId,
+            TraceHandler traceHandler,
+            LocalDecisioningRuleSet ruleSet,
+            PrefetchResponse prefetchResponse,
+            ExecuteResponse executeResponse,
+            List<Notification> notifications) {
+        for (RequestDetails details : detailsList) {
+            Map<String, Object> detailsContext = new HashMap<>(requestContext);
+            collateParams(detailsContext, DETAILS_PARAMS_COLLATORS, deliveryRequest, details);
+            this.decisionHandler.handleDetails(deliveryRequest, detailsContext, visitorId, traceHandler,
+                    ruleSet, details, prefetchResponse, executeResponse, notifications);
+        }
     }
 
     private void sendNotifications(TargetDeliveryRequest deliveryRequest,

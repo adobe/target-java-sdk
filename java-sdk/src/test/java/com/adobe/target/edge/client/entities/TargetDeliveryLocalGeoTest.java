@@ -114,7 +114,7 @@ public class TargetDeliveryLocalGeoTest {
             public void close() {
             }
         });
-        FieldSetter.setField(decisionHandler, decisionHandler.getClass()
+        FieldSetter.setField(localService, localService.getClass()
                 .getDeclaredField("geoClient"), mockGeoClient);
     }
 
