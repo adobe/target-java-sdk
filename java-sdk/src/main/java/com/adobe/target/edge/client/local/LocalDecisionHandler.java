@@ -137,7 +137,34 @@ public class LocalDecisionHandler {
                     views = new ArrayList<>();
                     prefetchResponse.setViews(views);
                 }
-                views.add(view);
+                View foundView = null;
+                for (View existing : views) {
+                    if (existing.getName().equals(view.getName())) {
+                        foundView = existing;
+                        break;
+                    }
+                }
+                if (foundView == null) {
+                    views.add(view);
+                }
+                else {
+                    if (view.getOptions() != null) {
+                        List<Option> foundOptions = foundView.getOptions();
+                        if (foundOptions == null) {
+                            foundOptions = new ArrayList<>();
+                            foundView.setOptions(foundOptions);
+                        }
+                        foundOptions.addAll(view.getOptions());
+                    }
+                    if (view.getMetrics() != null) {
+                        List<Metric> foundMetrics = foundView.getMetrics();
+                        if (foundMetrics == null) {
+                            foundMetrics = new ArrayList<>();
+                            foundView.setMetrics(foundMetrics);
+                        }
+                        foundMetrics.addAll(view.getMetrics());
+                    }
+                }
                 return true;
             }
             return false;

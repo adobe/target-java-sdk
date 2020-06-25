@@ -13,6 +13,8 @@ package com.adobe.target.edge.client.entities;
 
 import com.adobe.experiencecloud.ecid.visitor.CustomerState;
 import com.adobe.target.edge.client.ClientConfig;
+import com.adobe.target.edge.client.local.LocalDecisioningService;
+import com.adobe.target.edge.client.local.LocalExecutionEvaluator;
 import com.adobe.target.edge.client.local.collator.ParamsCollator;
 import com.adobe.target.edge.client.local.RuleLoader;
 import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
@@ -26,6 +28,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kong.unirest.*;
 import org.apache.http.HttpStatus;
+import org.mockito.internal.util.reflection.FieldSetter;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -366,5 +369,14 @@ public class TargetTestDeliveryRequestUtils {
             time.put("current_time", timeFormat.format(nowDate));
             return time;
         };
+    }
+
+    public static void fileRuleLoader(String fileName, LocalDecisioningService localService) throws IOException, NoSuchFieldException {
+        RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoaderFromFile(fileName);
+        LocalExecutionEvaluator evaluator = new LocalExecutionEvaluator(testRuleLoader);
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("ruleLoader"), testRuleLoader);
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("localExecutionEvaluator"), evaluator);
     }
 }

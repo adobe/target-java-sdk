@@ -18,9 +18,7 @@ import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.local.LocalDecisionHandler;
 import com.adobe.target.edge.client.local.LocalDecisioningService;
-import com.adobe.target.edge.client.local.LocalExecutionEvaluator;
 import com.adobe.target.edge.client.local.collator.ParamsCollator;
-import com.adobe.target.edge.client.local.RuleLoader;
 import com.adobe.target.edge.client.model.ExecutionMode;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
@@ -47,7 +45,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TargetDeliveryRequestLocalTest {
+class TargetDeliveryRequestLocalMboxTest {
 
     static final String TEST_ORG_ID = "0DD934B85278256B0A490D44@AdobeOrg";
 
@@ -57,7 +55,6 @@ class TargetDeliveryRequestLocalTest {
     private TargetClient targetJavaClient;
 
     private LocalDecisioningService localService;
-    private LocalDecisionHandler decisionHandler;
 
     @BeforeEach
     @SuppressWarnings("unchecked")
@@ -75,7 +72,7 @@ class TargetDeliveryRequestLocalTest {
         DefaultTargetService targetService = new DefaultTargetService(clientConfig);
         localService = new LocalDecisioningService(clientConfig, targetService);
         ObjectMapper mapper = new JacksonObjectMapper().getMapper();
-        decisionHandler = new LocalDecisionHandler(clientConfig, mapper);
+        LocalDecisionHandler decisionHandler = new LocalDecisionHandler(clientConfig, mapper);
 
         targetJavaClient = TargetClient.create(clientConfig);
 
@@ -94,9 +91,8 @@ class TargetDeliveryRequestLocalTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void testTargetDeliveryLocalRequestVisitor1() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_ADDRESS.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_ADDRESS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID,
                         "offer2");
@@ -105,20 +101,16 @@ class TargetDeliveryRequestLocalTest {
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> prefetchOptions =
                 extractOptions(targetDeliveryRequest, targetDeliveryResponse, "offer2");
-        assertNotNull(prefetchOptions);
-        Option preOption = prefetchOptions.get(0);
-        assertEquals(OptionType.JSON, preOption.getType());
-        assertEquals("mWtD0yDAXMnesyQOa7/jS2qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                preOption.getEventToken());
-        Map<String, Object> preContent = (Map<String, Object>) preOption.getContent();
-        assertNotNull(preContent);
-        assertEquals(1, preContent.get("baz"));
+        Map<String, Object> expectedContent = new HashMap<String, Object>() {{
+            put("baz", 1);
+        }};
+        verifyJSONContent(prefetchOptions, expectedContent,
+                "mWtD0yDAXMnesyQOa7/jS2qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void testTargetDeliveryLocalRequestVisitor2() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_ADDRESS.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_ADDRESS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("58734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID,
                         "offer2");
@@ -127,20 +119,16 @@ class TargetDeliveryRequestLocalTest {
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> prefetchOptions =
                 extractOptions(targetDeliveryRequest, targetDeliveryResponse, "offer2");
-        assertNotNull(prefetchOptions);
-        Option preOption = prefetchOptions.get(0);
-        assertEquals(OptionType.JSON, preOption.getType());
-        assertEquals("mWtD0yDAXMnesyQOa7/jS5NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                preOption.getEventToken());
-        Map<String, Object> preContent = (Map<String, Object>) preOption.getContent();
-        assertNotNull(preContent);
-        assertEquals(2, preContent.get("baz"));
+        Map<String, Object> expectedContent = new HashMap<String, Object>() {{
+            put("baz", 2);
+        }};
+        verifyJSONContent(prefetchOptions, expectedContent,
+                "mWtD0yDAXMnesyQOa7/jS5NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void testTargetDeliveryLocalRequestAddressMbox() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_ADDRESS.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_ADDRESS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("58734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID,
                         "offer2");
@@ -151,19 +139,16 @@ class TargetDeliveryRequestLocalTest {
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> prefetchOptions =
                 extractOptions(targetDeliveryRequest, targetDeliveryResponse, "offer2");
-        assertNotNull(prefetchOptions);
-        Option preOption = prefetchOptions.get(0);
-        assertEquals(OptionType.JSON, preOption.getType());
-        assertEquals("mWtD0yDAXMnesyQOa7/jS5NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                preOption.getEventToken());
-        Map<String, Object> preContent = (Map<String, Object>) preOption.getContent();
-        assertNotNull(preContent);
-        assertEquals(2, preContent.get("baz"));
+        Map<String, Object> expectedContent = new HashMap<String, Object>() {{
+            put("baz", 2);
+        }};
+        verifyJSONContent(prefetchOptions, expectedContent,
+                "mWtD0yDAXMnesyQOa7/jS5NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
     }
 
     @Test
     void testTargetDeliveryLocalRequestWrongURL() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_ADDRESS.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_ADDRESS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("58734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID,
                         "offer2");
@@ -177,7 +162,7 @@ class TargetDeliveryRequestLocalTest {
 
     @Test
     void testTargetDeliveryLocalRequestBrowserChrome() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_BROWSER.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_BROWSER.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
                         "browser-mbox");
@@ -186,18 +171,13 @@ class TargetDeliveryRequestLocalTest {
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> prefetchOptions =
                 extractOptions(targetDeliveryRequest, targetDeliveryResponse, "browser-mbox");
-        assertNotNull(prefetchOptions);
-        Option preOption = prefetchOptions.get(0);
-        assertEquals(OptionType.HTML, preOption.getType());
-        assertEquals("B8C2FP2IuBgmeJcDfXHjGpZBXFCzaoRRABbzIA9EnZOCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                preOption.getEventToken());
-        String preContent = (String) preOption.getContent();
-        assertEquals("<h1>it's chrome</h1>", preContent);
+        verifyHTMLContent(prefetchOptions, "<h1>it's chrome</h1>",
+                "B8C2FP2IuBgmeJcDfXHjGpZBXFCzaoRRABbzIA9EnZOCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
     }
 
     @Test
     void testTargetDeliveryLocalRequestWrongBrowserFirefox() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_BROWSER.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_BROWSER.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
                         "browser-mbox");
@@ -206,18 +186,13 @@ class TargetDeliveryRequestLocalTest {
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> prefetchOptions =
                 extractOptions(targetDeliveryRequest, targetDeliveryResponse, "browser-mbox");
-        assertNotNull(prefetchOptions);
-        Option preOption = prefetchOptions.get(0);
-        assertEquals(OptionType.HTML, preOption.getType());
-        assertEquals("B8C2FP2IuBgmeJcDfXHjGpNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                preOption.getEventToken());
-        String preContent = (String) preOption.getContent();
-        assertEquals("<h1>it's firefox</h1>", preContent);
+        verifyHTMLContent(prefetchOptions, "<h1>it's firefox</h1>",
+                "B8C2FP2IuBgmeJcDfXHjGpNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
     }
 
     @Test
     void testTargetDeliveryLocalRequestBrowserNoMatch() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_BROWSER.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_BROWSER.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
                         "browser-mbox");
@@ -226,18 +201,13 @@ class TargetDeliveryRequestLocalTest {
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> prefetchOptions =
                 extractOptions(targetDeliveryRequest, targetDeliveryResponse, "browser-mbox");
-        assertNotNull(prefetchOptions);
-        Option preOption = prefetchOptions.get(0);
-        assertEquals(OptionType.HTML, preOption.getType());
-        assertEquals("B8C2FP2IuBgmeJcDfXHjGmqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                preOption.getEventToken());
-        String preContent = (String) preOption.getContent();
-        assertEquals("<h1>not firefox, safari or chrome</h1>", preContent);
+        verifyHTMLContent(prefetchOptions, "<h1>not firefox, safari or chrome</h1>",
+                "B8C2FP2IuBgmeJcDfXHjGmqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
     }
 
     @Test
     void testTargetDeliveryLocalRequestTimeRange() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_TIMEFRAME.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_TIMEFRAME.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
                         "daterange-mbox");
@@ -248,18 +218,13 @@ class TargetDeliveryRequestLocalTest {
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> prefetchOptions =
                 extractOptions(targetDeliveryRequest, targetDeliveryResponse, "daterange-mbox");
-        assertNotNull(prefetchOptions);
-        Option preOption = prefetchOptions.get(0);
-        assertEquals(OptionType.HTML, preOption.getType());
-        assertEquals("wQY/V1IOYec8T4fAT5ww7unJlneZxJu5VqGhXCosHhWCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                preOption.getEventToken());
-        String preContent = (String) preOption.getContent();
-        assertEquals("<strong>date range 1 (feb 27-29)</strong>", preContent);
+        verifyHTMLContent(prefetchOptions, "<strong>date range 1 (feb 27-29)</strong>",
+                "wQY/V1IOYec8T4fAT5ww7unJlneZxJu5VqGhXCosHhWCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
     }
 
     @Test
     void testTargetDeliveryLocalRequestTimeRange2() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_TIMEFRAME.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_TIMEFRAME.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
                         "daterange-mbox");
@@ -270,18 +235,13 @@ class TargetDeliveryRequestLocalTest {
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> prefetchOptions =
                 extractOptions(targetDeliveryRequest, targetDeliveryResponse, "daterange-mbox");
-        assertNotNull(prefetchOptions);
-        Option preOption = prefetchOptions.get(0);
-        assertEquals(OptionType.HTML, preOption.getType());
-        assertEquals("wQY/V1IOYec8T4fAT5ww7pNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                preOption.getEventToken());
-        String preContent = (String) preOption.getContent();
-        assertEquals("<strong>date range 2 (mar 2 - 6)</strong>", preContent);
+        verifyHTMLContent(prefetchOptions, "<strong>date range 2 (mar 2 - 6)</strong>",
+                "wQY/V1IOYec8T4fAT5ww7pNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
     }
 
     @Test
     void testTargetDeliveryLocalRequestFriday() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_TIMEFRAME.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_TIMEFRAME.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
                         "daterange-mbox");
@@ -292,18 +252,13 @@ class TargetDeliveryRequestLocalTest {
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> prefetchOptions =
                 extractOptions(targetDeliveryRequest, targetDeliveryResponse, "daterange-mbox");
-        assertNotNull(prefetchOptions);
-        Option preOption = prefetchOptions.get(0);
-        assertEquals(OptionType.HTML, preOption.getType());
-        assertEquals("wQY/V1IOYec8T4fAT5ww7hB3JWElmEno9qwHyGr0QvSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                preOption.getEventToken());
-        String preContent = (String) preOption.getContent();
-        assertEquals("<strong>it's friday</strong>", preContent);
+        verifyHTMLContent(prefetchOptions, "<strong>it's friday</strong>",
+                "wQY/V1IOYec8T4fAT5ww7hB3JWElmEno9qwHyGr0QvSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
     }
 
     @Test
     void testTargetDeliveryLocalRequestOutTimeRange() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_TIMEFRAME.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_TIMEFRAME.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
                         "daterange-mbox");
@@ -314,19 +269,13 @@ class TargetDeliveryRequestLocalTest {
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> prefetchOptions =
                 extractOptions(targetDeliveryRequest, targetDeliveryResponse, "daterange-mbox");
-        assertNotNull(prefetchOptions);
-        Option preOption = prefetchOptions.get(0);
-        assertEquals(OptionType.HTML, preOption.getType());
-        assertEquals("wQY/V1IOYec8T4fAT5ww7mqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                preOption.getEventToken());
-        String preContent = (String) preOption.getContent();
-        assertEquals("<strong>default result</strong>", preContent);
+        verifyHTMLContent(prefetchOptions, "<strong>default result</strong>",
+                "wQY/V1IOYec8T4fAT5ww7mqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     void testTargetDeliveryLocalRequestParams() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_PARAMS.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_PARAMS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("338e3c1e51f7416a8e1ccba4f81acea0.28_0", ExecutionMode.HYBRID,
                         "redundant-mbox");
@@ -338,21 +287,18 @@ class TargetDeliveryRequestLocalTest {
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> prefetchOptions =
                 extractOptions(targetDeliveryRequest, targetDeliveryResponse, "redundant-mbox");
-        assertNotNull(prefetchOptions);
-        Option preOption = prefetchOptions.get(0);
-        assertEquals(OptionType.JSON, preOption.getType());
-        assertEquals("Zhwxeqy1O2r9Ske1YDA9bJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                preOption.getEventToken());
-        Map<String, Object> preContent = (Map<String, Object>) preOption.getContent();
-        assertNotNull(preContent);
-        assertEquals("bar", preContent.get("foo"));
-        assertEquals(true, preContent.get("isFooBar"));
-        assertEquals("B", preContent.get("experience"));
+        Map<String, Object> expectedContent = new HashMap<String, Object>() {{
+            put("foo", "bar");
+            put("isFooBar", true);
+            put("experience", "B");
+        }};
+        verifyJSONContent(prefetchOptions, expectedContent,
+                "Zhwxeqy1O2r9Ske1YDA9bJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
     }
 
     @Test
     void testTargetDeliveryLocalRequestParamsMismatch() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_PARAMS.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_PARAMS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("338e3c1e51f7416a8e1ccba4f81acea0.28_0", ExecutionMode.HYBRID,
                         "redundant-mbox");
@@ -370,7 +316,7 @@ class TargetDeliveryRequestLocalTest {
 
     @Test
     void testTargetDeliveryLocalRequestPriority() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_PRIORITIES.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_PRIORITIES.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("338e3c1e51f7416a8e1ccba4f81acea0.28_0", ExecutionMode.HYBRID,
                         "kitty");
@@ -380,18 +326,13 @@ class TargetDeliveryRequestLocalTest {
         assertEquals(1, targetDeliveryResponse.getResponse().getPrefetch().getMboxes().size());
         List<Option> prefetchOptions =
                 extractOptions(targetDeliveryRequest, targetDeliveryResponse, "kitty");
-        assertNotNull(prefetchOptions);
-        Option preOption = prefetchOptions.get(0);
-        assertEquals(OptionType.HTML, preOption.getType());
-        assertEquals("/DhjxnVDh9heBZ0MrYFLF2qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                preOption.getEventToken());
-        String preContent = (String) preOption.getContent();
-        assertEquals("<div>kitty high with targeting: Firefox</div>", preContent);
+       verifyHTMLContent(prefetchOptions, "<div>kitty high with targeting: Firefox</div>",
+                "/DhjxnVDh9heBZ0MrYFLF2qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
     }
 
     @Test
     void testTargetDeliveryLocalRequestPriority2() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_PRIORITIES.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_PRIORITIES.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("238e3c1e51f7416a8e1ccba4f81acea0.28_0", ExecutionMode.HYBRID,
                         "kitty");
@@ -401,18 +342,13 @@ class TargetDeliveryRequestLocalTest {
         assertEquals(1, targetDeliveryResponse.getResponse().getPrefetch().getMboxes().size());
         List<Option> prefetchOptions =
                 extractOptions(targetDeliveryRequest, targetDeliveryResponse, "kitty");
-        assertNotNull(prefetchOptions);
-        Option preOption = prefetchOptions.get(0);
-        assertEquals(OptionType.HTML, preOption.getType());
-        assertEquals("ruhwp7VESR7F74TJL2DV5WqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-                preOption.getEventToken());
-        String preContent = (String) preOption.getContent();
-        assertEquals("<div>kitty high A</div>", preContent);
+        verifyHTMLContent(prefetchOptions, "<div>kitty high A</div>",
+                "ruhwp7VESR7F74TJL2DV5WqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
     }
 
     @Test
     void testTargetDeliveryLocalRequestPageload() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_GLOBAL_MBOX.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_GLOBAL_MBOX.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.LOCAL,
                         null);
@@ -425,26 +361,30 @@ class TargetDeliveryRequestLocalTest {
         List<Option> prefetchOptions = targetDeliveryResponse.getResponse().getPrefetch().getPageLoad().getOptions();
         assertNotNull(prefetchOptions);
         assertEquals(2, prefetchOptions.size());
+        int matches = 0;
         for (Option option : prefetchOptions) {
             assertEquals(OptionType.HTML, option.getType());
             String preContent = (String) option.getContent();
             if (preContent.equals("<div>Firetime</div>")) {
                 assertEquals("9FNM3ikASssS+sVoFXNulJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
                         option.getEventToken());
+                matches++;
             }
             else if (preContent.equals("<div>mouse</div>")) {
                 assertEquals("5C2cbrGD+bQ5qOATNGy1AZNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
                         option.getEventToken());
+                matches++;
             }
             else {
                 throw new IllegalStateException("unexpected content");
             }
         }
+        assertEquals(2, matches);
     }
 
     @Test
     void testTargetDeliveryLocalRequestPageload2() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_GLOBAL_MBOX.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_GLOBAL_MBOX.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.LOCAL,
                         null);
@@ -463,31 +403,36 @@ class TargetDeliveryRequestLocalTest {
         List<Option> prefetchOptions = targetDeliveryResponse.getResponse().getPrefetch().getPageLoad().getOptions();
         assertNotNull(prefetchOptions);
         assertEquals(3, prefetchOptions.size());
+        int matches = 0;
         for (Option option : prefetchOptions) {
             assertEquals(OptionType.HTML, option.getType());
             String preContent = (String) option.getContent();
             if (preContent.equals("<div>Chrometastic</div>")) {
                 assertEquals("9FNM3ikASssS+sVoFXNulGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
                         option.getEventToken());
+                matches++;
             }
             else if (preContent.equals("<div>foo=bar experience A</div>")) {
                 assertEquals("0L1rCkDps3F+UEAm1B9A4GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
                         option.getEventToken());
+                matches++;
             }
             else if (preContent.equals("<div>mouse</div>")) {
                 assertEquals("5C2cbrGD+bQ5qOATNGy1AZNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
                         option.getEventToken());
+                matches++;
             }
             else {
                 throw new IllegalStateException("unexpected content");
             }
         }
+        assertEquals(3, matches);
     }
 
     @Test
     @SuppressWarnings("unchecked")
     void testTargetDeliveryAttributesLocalOnlyPartial() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_RECOMMENDATIONS.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_RECOMMENDATIONS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.LOCAL,
                         "daterange-mbox");
@@ -505,7 +450,7 @@ class TargetDeliveryRequestLocalTest {
     @Test
     @SuppressWarnings("unchecked")
     void testTargetDeliveryAttributesHybridRemote() throws IOException, NoSuchFieldException {
-        fileRuleLoader("DECISIONING_PAYLOAD_RECOMMENDATIONS.json");
+        fileRuleLoader("DECISIONING_PAYLOAD_RECOMMENDATIONS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID,
                         "daterange-mbox");
@@ -571,13 +516,27 @@ class TargetDeliveryRequestLocalTest {
         return prefetchOptions;
     }
 
-    public void fileRuleLoader(String fileName) throws IOException, NoSuchFieldException {
-        RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoaderFromFile(fileName);
-        LocalExecutionEvaluator evaluator = new LocalExecutionEvaluator(testRuleLoader);
-        FieldSetter.setField(localService, localService.getClass()
-                .getDeclaredField("ruleLoader"), testRuleLoader);
-        FieldSetter.setField(localService, localService.getClass()
-                .getDeclaredField("localExecutionEvaluator"), evaluator);
+    private void verifyHTMLContent(List<Option> options, String expectedContent, String eventToken) {
+        assertNotNull(options);
+        assertEquals(1, options.size());
+        Option option = options.get(0);
+        assertEquals(OptionType.HTML, option.getType());
+        assertEquals(eventToken, option.getEventToken());
+        String preContent = (String) option.getContent();
+        assertEquals(expectedContent, preContent);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void verifyJSONContent(List<Option> options, Map<String, Object> expectedContent, String eventToken) {
+        assertNotNull(options);
+        assertEquals(1, options.size());
+        Option option = options.get(0);
+        assertEquals(OptionType.JSON, option.getType());
+        assertEquals(eventToken, option.getEventToken());
+        Map<String, Object> preContent = (Map<String, Object>) option.getContent();
+        for (Map.Entry<String, Object> entry : preContent.entrySet()) {
+            assertEquals(expectedContent.get(entry.getKey()), entry.getValue());
+        }
     }
 
 }

@@ -18,8 +18,6 @@ import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.local.LocalDecisionHandler;
 import com.adobe.target.edge.client.local.LocalDecisioningService;
-import com.adobe.target.edge.client.local.LocalExecutionEvaluator;
-import com.adobe.target.edge.client.local.RuleLoader;
 import com.adobe.target.edge.client.local.client.geo.GeoClient;
 import com.adobe.target.edge.client.model.ExecutionMode;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
@@ -38,6 +36,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils.fileRuleLoader;
 import static com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils.getTestDeliveryResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -92,7 +91,7 @@ public class TargetDeliveryLocalGeoTest {
         FieldSetter.setField(localService, localService.getClass()
                 .getDeclaredField("decisionHandler"), decisionHandler);
 
-        fileRuleLoader(GEO_TEST_FILE);
+        fileRuleLoader(GEO_TEST_FILE, localService);
 
         Geo geoResult = new Geo()
                 .city("san francisco")
@@ -165,7 +164,7 @@ public class TargetDeliveryLocalGeoTest {
 
     @Test
     void testTargetDeliveryLocalRequestGeoNoIPLookup() throws IOException, NoSuchFieldException {
-        fileRuleLoader(GEO_TEST_FAKE_FILE);
+        fileRuleLoader(GEO_TEST_FAKE_FILE, localService);
         String ip = "127.0.0.1";
         Geo ipGeo = new Geo().ipAddress(ip);
         TargetDeliveryRequest targetDeliveryRequest = TargetDeliveryRequest.builder()
@@ -285,14 +284,5 @@ public class TargetDeliveryLocalGeoTest {
         assertEquals(0, mboxResponse.getIndex());
         assertEquals("geo", mboxResponse.getName());
         return mboxResponse.getOptions();
-    }
-
-    public void fileRuleLoader(String fileName) throws IOException, NoSuchFieldException {
-        RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoaderFromFile(fileName);
-        LocalExecutionEvaluator evaluator = new LocalExecutionEvaluator(testRuleLoader);
-        FieldSetter.setField(localService, localService.getClass()
-                .getDeclaredField("ruleLoader"), testRuleLoader);
-        FieldSetter.setField(localService, localService.getClass()
-                .getDeclaredField("localExecutionEvaluator"), evaluator);
     }
 }

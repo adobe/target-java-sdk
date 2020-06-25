@@ -18,8 +18,6 @@ import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.local.LocalDecisionHandler;
 import com.adobe.target.edge.client.local.LocalDecisioningService;
-import com.adobe.target.edge.client.local.LocalExecutionEvaluator;
-import com.adobe.target.edge.client.local.RuleLoader;
 import com.adobe.target.edge.client.model.ExecutionMode;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryRequestBuilder;
@@ -38,6 +36,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils.fileRuleLoader;
 import static com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils.getTestDeliveryResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -56,7 +55,6 @@ public class TargetDeliveryLocalPropertyTest {
     private DefaultTargetHttpClient defaultTargetHttpClient;
 
     private TargetClient targetJavaClient;
-    private LocalDecisioningService localService;
 
     @BeforeEach
     @SuppressWarnings("unchecked")
@@ -72,7 +70,7 @@ public class TargetDeliveryLocalPropertyTest {
                 .build();
 
         DefaultTargetService targetService = new DefaultTargetService(clientConfig);
-        localService = new LocalDecisioningService(clientConfig, targetService);
+        LocalDecisioningService localService = new LocalDecisioningService(clientConfig, targetService);
         ObjectMapper mapper = new JacksonObjectMapper().getMapper();
         LocalDecisionHandler decisionHandler = new LocalDecisionHandler(clientConfig, mapper);
 
@@ -88,7 +86,7 @@ public class TargetDeliveryLocalPropertyTest {
         FieldSetter.setField(localService, localService.getClass()
                 .getDeclaredField("decisionHandler"), decisionHandler);
 
-        fileRuleLoader();
+        fileRuleLoader(PROPERTY_TEST_FILE, localService);
     }
 
     @Test
@@ -152,15 +150,6 @@ public class TargetDeliveryLocalPropertyTest {
         assertEquals(0, mboxResponse.getIndex());
         assertEquals("superfluous-mbox", mboxResponse.getName());
         return mboxResponse.getOptions();
-    }
-
-    private void fileRuleLoader() throws IOException, NoSuchFieldException {
-        RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoaderFromFile(PROPERTY_TEST_FILE);
-        LocalExecutionEvaluator evaluator = new LocalExecutionEvaluator(testRuleLoader);
-        FieldSetter.setField(localService, localService.getClass()
-                .getDeclaredField("ruleLoader"), testRuleLoader);
-        FieldSetter.setField(localService, localService.getClass()
-                .getDeclaredField("localExecutionEvaluator"), evaluator);
     }
 
     private void verifyPropertyResult(List<Option> options) {
