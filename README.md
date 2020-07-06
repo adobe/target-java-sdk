@@ -831,16 +831,71 @@ See the `localGetAttributes` method in `TargetController` in the [Adobe Target J
 
 ---
 
+## Enterprise Permissions and Property Support
+
+The Target Java SDK includes support for Target Properties.  If you are unfamiliar with how Adobe Target handles enterprise permissions via workspaces and properties, you can [read more about it here](https://docs.adobe.com/content/help/en/target/using/administer/manage-users/enterprise/properties-overview.html).
+
+The client can make use of a property token in one of two ways.
+
+### Global Property Token
+
+If you want all getOffers calls to use the same propertyToken, you can specify a `defaultPropertyToken` in the ClientConfig object passed in during initialization.  When configured in this way all getOffers calls will automatically include the property token.
+
+```java
+ClientConfig clientConfig = ClientConfig.builder()
+	.client("emeaprod4")
+	.organizationId("0DD934B85278256B0A490D44@AdobeOrg")
+	.defaultPropertyToken("8c4630b1-16db-e2fc-3391-8b3d81436cfb")
+	.build();
+
+TargetClient targetClient = TargetClient.create(clientConfig);
+```
+
+### Incidental Property Token in getOffers call
+
+A property token can also be specified in an individual getOffers call.  This is done by [adding a property object with token to the request](https://developers.adobetarget.com/api/delivery-api/#section/User-Permissions-(Premium)).  A property token specified in this way takes precedent over one set in the config.  
+
+```java
+ExecuteRequest executeRequest = new ExecuteRequest()
+    .mboxes(getMboxRequests(mbox));
+
+TargetDeliveryRequest targetDeliveryRequest = TargetDeliveryRequest.builder()
+    .context(getContext(request))
+    .execute(executeRequest)
+    .cookies(getTargetCookies(request.getCookies()))
+    .property(new Property().token("8c4630b1-16db-e2fc-3391-8b3d81436cfb"))
+    .build();
+
+TargetDeliveryResponse targetResponse = targetClient.getOffers(targetDeliveryRequest);
+```
+
+---
+
 ## Local execution mode
 
 The Target Java SDK can be configured to run in local execution mode. In this mode, the SDK loads a rules definition file on startup and uses it to determine the outcomes for subsequent `getOffers` calls instead of making repeat requests to the delivery API each time. This can greatly improve performance if you are concerned about network latency and would like to limit the number of requests made to target edge servers.
 
-By default, the SDK is configured to always make a request to the target delivery API for each `getOffers` call. But you can configure the SDK to use local execution mode instead by setting `executionMode` in the `TargetDeliveryRequest`.
+By default, the SDK is configured to always make a request to the target delivery API for each `getOffers` call. But you can configure the SDK to use local execution mode instead.
+ 
+First, you need to configure the SDK properly in order to enable local execution. This is done by setting the defaultExecutionMode to either `ExecutionMode.LOCAL` or `ExecutionMode.HYBRID` in the `ClientConfig` object that is used to initialize the targetClient.
 
 ```java
+ClientConfig clientConfig = ClientConfig.builder()
+    .client("emeaprod4")
+    .organizationId("0DD934B85278256B0A490D44@AdobeOrg")
+    .defaultExecutionMode(ExecutionMode.HYBRID)
+    .build();
 
+TargetClient targetClient = TargetClient.create(clientConfig);
+```
+
+This will set the `executionMode` in each getOffers request to whatever you specify as the `defaultExecutionMode` by default. 
+
+However, you can override the execution mode in any `getOffers` call by explicitly setting `executionMode` in the `TargetDeliveryRequest`.
+
+```java
 ExecuteRequest executeRequest = new ExecuteRequest()
-        .mboxes(getMboxRequests("server-side-mbox"));
+    .mboxes(getMboxRequests("local-mbox"));
 
 TargetDeliveryRequest targetRequest = TargetDeliveryRequest.builder()
     .context(getContext(request))    
@@ -849,11 +904,12 @@ TargetDeliveryRequest targetRequest = TargetDeliveryRequest.builder()
     .executionMode(ExecutionMode.LOCAL)
     .build();
 
-TargetDeliveryResponse response = targetJavaClient.getOffers(targetRequest);
-
+TargetDeliveryResponse response = targetClient.getOffers(targetRequest);
 ```
 
 With executionMode set to ExecutionMode.LOCAL, your app will determine what offers the user qualifies for locally without hitting the target edge servers.
+
+Note that it will take some time (usually less than 1 second) between when the targetClient is initialized until it will be able to execute requests locally. You can set a `LocalExecutionHandler` object in the `ClientConfig` and its `localExecutionReady` method will be called when the client is ready to handle local execution. Please see the documentation for the `LocalExecutionHandler` below for more details.
 
 ### Limitations
 
@@ -865,7 +921,7 @@ Some activities are not supported due to audience rules. Below is a list of audi
 
 | Audience Rule    | Local execution mode | Remote execution mode |
 |------------------|----------------------|-----------------------|
-| Geo              | Not Supported        | Supported             |
+| Geo              | Supported            | Supported             |
 | Network          | Not Supported        | Supported             |
 | Mobile           | Not Supported        | Supported             |
 | Custom           | Supported            | Supported             |
@@ -901,6 +957,60 @@ Automated Personalization, Multi-variate and Recommendations activities are not 
 ### Hybrid Mode
 
 Although all activities are not yet supported by local execution mode, there is a way to get the best of both worlds. If you set `executionMode` to `ExecutionMode.HYBRID`, then the SDK will determine on its own whether to make decisions locally or remotely. This way, if a `getOffers` request can be completed locally, the SDK will do so. But if the request includes activities that are not supported, a request to the target delivery API will be made instead. This may be useful as you begin to adopt local decisioning.
+
+### Geo support in local execution
+
+In order to maintain zero latency in local decisioned requests with geo-based audiences, we recommend that you provide the geo values yourself in each `TargetDeliveryRequest`. You can do this by setting the `Geo` object in the `Context` of the request.
+
+This means your server will need a way to determine the location of each end user, for instance by doing an IP-to-Geo lookup using a service you will need to set up yourself. Also, some hosting providers such as Google Cloud provide this functionality via custom headers in each `HttpServletRequest`.
+
+```java
+public class TargetRequestUtils {
+
+    public static Context getContext(HttpServletRequest request) {
+        Context context = new Context()
+            .geo(ipToGeoLookup(request.getRemoteAddr()))
+            .channel(ChannelType.WEB)
+            .timeOffsetInMinutes(330.0)
+            .address(getAddress(request));
+        return context;
+    }
+    
+    public static Geo ipToGeoLookup(String ip) {
+        GeoResult geoResult = geoLookupService.lookup(ip);
+        return new Geo()
+            .city(geoResult.getCity())
+            .stateCode(geoResult.getStateCode())
+            .countryCode(geoResult.getCountryCode());
+    }
+
+}
+```
+
+However, if you don't have the ability to perform IP-to-Geo lookups in your server and you still want to be able to perform local execution of `getOffers` requests that contain geo-based audiences, this is also supported.
+
+The downside of this approach is that it will use a remote IP-to-Geo lookup that will add latency to each `getOffers` call. This latency should be lower than a remote `getOffers` call since it hits a CDN that should be closer to the end user than the target server.
+
+You can signal to the targetClient that you want to perform an IP-to-Geo lookup in your local execution request by setting *only* the `ipAddress` object in the `Geo` object in the `Context` of your request. 
+
+```java
+public class TargetRequestUtils {
+
+    public static Context getContext(HttpServletRequest request) {
+        Context context = new Context()
+            .geo(new Geo().ipAddress(request.getRemoteAddr()))
+            .channel(ChannelType.WEB)
+            .timeOffsetInMinutes(330.0)
+            .address(getAddress(request));
+        return context;
+    }
+
+}
+```
+
+Note that if you specify the IP address in the `Geo` object in the `Context` and you don't currently have any local execution activities that use geo-based audiences then the IP-to-Geo lookup will be skipped as a latency optimization.
+
+---
 
 ### Example
 
@@ -984,6 +1094,20 @@ The `ClientConfigBuilder` object has the following structure:
 | serverDomain         |  String  | No      | `client`.tt.omtrdc.net | Overrides default hostname                          |
 | secure               |  Boolean | No      | true                   | Unset to enforce HTTP scheme                        |
 | requestInterceptor   |  HttpRequestInterceptor  | No      | Null   | Add custom request Interceptor                      |
+| defaultPropertyToken | String   | No      | None                   | Sets the default property token for every getOffers call |
+| defaultExecutionMode | ExecutionMode enum | No | REMOTE            | Must be set to LOCAL or HYBRID to enable local decisioning |
+| localEnvironment     | String   | No      | production             | Can be used to specify a different local environment such as staging |
+| localConfigHostname  | String   | No      | assets.adobetarget.com | Can be used to specify a different host to use to download the local decisioning artifact file |
+| localDecisioningPollingIntSecs | int | No | 300 (5 min)            | Number of seconds between fetches of the local decisioning artifact file |
+| localExecutionHandler | LocalExecutionHandler | No | None          | Registers callbacks for local execution events      |
+
+The `LocationExecutionHandler` object contains the following callbacks which are called for certain local executionEvents:
+
+| Name                 | Arguments | Description                                         |
+|----------------------|-----------|-----------------------------------------------------|
+| localExecutionReady  |  None     | Called only once the first time the client is ready for local execution |
+| artifactDownloadSucceeded | byte[] contents of artifact file | Called every time a local decisioning artifact is downloaded |
+| artifactDownloadFailed | Exception | Called every time there is a failure to download a local decisioning artifact |
 
 #### TargetClient.getOffers
 
@@ -1017,6 +1141,7 @@ The `TargetDeliveryRequestBuilder` object has the following structure:
 | mcId                     | String | No | Used to merge and share data between different Adobe solutions(ECID). Fetched from targetCookies. Auto-generated if not provided. |
 | trackingServer           | String | No | The Adobe Analaytics Server in order for Adobe Target and Adobe Analytics to correctly stitch the data together.
 | trackingServerSecure     | String | No | The Adobe Analaytics Secure Server in order for Adobe Target and Adobe Analytics to correctly stitch the data together.
+| executionMode            | ExecutionMode | No | Can be used to explicitly set LOCAL or HYBRID execution mode for local decisioning |
 
 The values of each field should conform to [Target View Delivery API] request specification. 
 To learn more about the [Target View Delivery API], see http://developers.adobetarget.com/api/#view-delivery-overview
@@ -1029,8 +1154,16 @@ The `TargetDeliveryResponse` returned by `TargetClient.getOffers()` has the foll
 | response                 | DeliveryResponse            | [Target View Delivery API] response                         |
 | cookies                  | List<TargetCookies>         | List of session metadata for this user. Need to be passed in next target request for this user.  |
 | visitorState             | Map<String, VisitorState>   | Visitor state to be set on client side to be used by Visitor API|
-| status                   | inr                         | HTTP status returned from Target          |
+| responseStatus           | ResponseStatus              | An object representing the status of the resposne |
+
+The `ResponseStatus` in the response contains the following fields:
+
+| Name                     | Type              | Description                                                 |
+|--------------------------|-------------------|-------------------------------------------------------------|
+| status                   | int                         | HTTP status returned from Target          |
 | message                  | String                      | Status message in case HTTP status is not 200    |
+| remoteMboxes             | List of Strings             | Used for local-decisioning. Contains a list of mboxes that have remote activities that cannot be decided entirely locally. |
+| remoteViews              | List of Strings             | Used for local-decisioning. Contains a list of views that have remote activities that cannot be decided entirely locally. |
 
 The `TargetCookie` object used for saving data for user session has the following structure:
 
