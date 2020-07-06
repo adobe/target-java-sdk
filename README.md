@@ -89,6 +89,7 @@ end client including browsers, mobiles, IOT devices or servers.
   * [at.js integration via serverState](#atjs-integration-via-serverstate)
   * [Custom rendering of Target offers](#custom-rendering-of-target-offers)
   * [JSON offers simplified](#json-offers-simplified)
+  * [Enterprise Permissions and Property Support](#enterprise-permissions-and-property-support)
   * [Local execution mode](#local-execution-mode)
   * [Troubleshooting](#troubleshooting)
   * [Target Traces](#target-traces)
