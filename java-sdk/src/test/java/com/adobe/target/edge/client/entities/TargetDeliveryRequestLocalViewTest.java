@@ -15,6 +15,8 @@ import com.adobe.target.delivery.v1.model.Address;
 import com.adobe.target.delivery.v1.model.Context;
 import com.adobe.target.delivery.v1.model.DeliveryRequest;
 import com.adobe.target.delivery.v1.model.DeliveryResponse;
+import com.adobe.target.delivery.v1.model.ExecuteRequest;
+import com.adobe.target.delivery.v1.model.ExecuteResponse;
 import com.adobe.target.delivery.v1.model.Option;
 import com.adobe.target.delivery.v1.model.OptionType;
 import com.adobe.target.delivery.v1.model.PrefetchRequest;
@@ -32,6 +34,7 @@ import com.adobe.target.edge.client.local.LocalDecisioningService;
 import com.adobe.target.edge.client.local.collator.ParamsCollator;
 import com.adobe.target.edge.client.model.ExecutionMode;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
+import com.adobe.target.edge.client.model.TargetDeliveryRequestBuilder;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.service.DefaultTargetService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -150,10 +153,10 @@ class TargetDeliveryRequestLocalViewTest {
         fileRuleLoader("DECISIONING_PAYLOAD_VIEWS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874",
-                        Collections.emptyList());
+                        Collections.emptyList(), false);
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> contactOptions =
-                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "contact");
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "contact", false);
         List<SelectorContent> contactSelectors = new ArrayList<SelectorContent>() {{
             add(new SelectorContent("insertAfter",
                     "#spa-content > P:nth-of-type(1)",
@@ -172,7 +175,7 @@ class TargetDeliveryRequestLocalViewTest {
         verifyContent(contactOptions, contactSelectors);
 
         List<Option> homeOptions =
-                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "home");
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "home", false);
         List<SelectorContent> homeSelectors = new ArrayList<SelectorContent>() {{
             add(new SelectorContent("insertAfter",
                     "#spa-content > P:nth-of-type(1)",
@@ -203,14 +206,14 @@ class TargetDeliveryRequestLocalViewTest {
         fileRuleLoader("DECISIONING_PAYLOAD_VIEWS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874",
-                        Collections.emptyList());
+                        Collections.emptyList(), false);
         Map<String, String> params = new HashMap<String, String>() {{
             put("jason", "correct");
         }};
         targetDeliveryRequest.getDeliveryRequest().getPrefetch().getViews().get(0).setParameters(params);
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> contactOptions =
-                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "contact");
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "contact", false);
         List<SelectorContent> contactSelectors = new ArrayList<SelectorContent>() {{
             add(new SelectorContent("insertBefore",
                     "#spa-content > P:nth-of-type(1)",
@@ -229,7 +232,7 @@ class TargetDeliveryRequestLocalViewTest {
         verifyContent(contactOptions, contactSelectors);
 
         List<Option> homeOptions =
-                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "home");
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "home", false);
         List<SelectorContent> homeSelectors = new ArrayList<SelectorContent>() {{
             add(new SelectorContent("insertAfter",
                     "#spa-content > P:nth-of-type(1)",
@@ -270,14 +273,14 @@ class TargetDeliveryRequestLocalViewTest {
         fileRuleLoader("DECISIONING_PAYLOAD_VIEWS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874",
-                        Collections.emptyList());
+                        Collections.emptyList(), false);
         Map<String, String> params = new HashMap<String, String>() {{
             put("greg", "correct");
         }};
         targetDeliveryRequest.getDeliveryRequest().getPrefetch().getViews().get(0).setParameters(params);
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> contactOptions =
-                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "contact");
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "contact", false);
         List<SelectorContent> contactSelectors = new ArrayList<SelectorContent>() {{
             add(new SelectorContent("insertBefore",
                     "#spa-content > P:nth-of-type(1)",
@@ -296,7 +299,7 @@ class TargetDeliveryRequestLocalViewTest {
         verifyContent(contactOptions, contactSelectors);
 
         List<Option> homeOptions =
-                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "home");
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "home", false);
         List<SelectorContent> homeSelectors = new ArrayList<SelectorContent>() {{
             add(new SelectorContent("insertAfter",
                     "#spa-content > P:nth-of-type(1)",
@@ -337,7 +340,7 @@ class TargetDeliveryRequestLocalViewTest {
         fileRuleLoader("DECISIONING_PAYLOAD_VIEWS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
                 localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874",
-                        Collections.emptyList());
+                        Collections.emptyList(), false);
         Map<String, String> params = new HashMap<String, String>() {{
             put("jason", "correct");
             put("greg", "correct");
@@ -345,7 +348,7 @@ class TargetDeliveryRequestLocalViewTest {
         targetDeliveryRequest.getDeliveryRequest().getPrefetch().getViews().get(0).setParameters(params);
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> contactOptions =
-                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "contact");
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "contact", false);
         List<SelectorContent> contactSelectors = new ArrayList<SelectorContent>() {{
             add(new SelectorContent("insertBefore",
                     "#spa-content > P:nth-of-type(1)",
@@ -368,13 +371,13 @@ class TargetDeliveryRequestLocalViewTest {
     void testTargetDeliveryLocalPageLoadViewAB() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_PAGELOAD_VEC_AB.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916877", null);
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916877", null, false);
         Map<String, String> params = new HashMap<String, String>() {{
         }};
         targetDeliveryRequest.getDeliveryRequest().getPrefetch().getPageLoad().setParameters(params);
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> options =
-                extractOptions(targetDeliveryRequest, targetDeliveryResponse, null);
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, null, false);
         List<SelectorContent> selectors = new ArrayList<SelectorContent>() {{
             add(new SelectorContent("insertBefore",
                     "HTML > BODY > DIV.offer:eq(0) > IMG:nth-of-type(1)",
@@ -407,14 +410,14 @@ class TargetDeliveryRequestLocalViewTest {
     void testTargetDeliveryLocalPageLoadViewABJason() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_PAGELOAD_VEC_AB.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916877", null);
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916877", null, false);
         Map<String, String> params = new HashMap<String, String>() {{
             put("jason", "correct");
         }};
         targetDeliveryRequest.getDeliveryRequest().getPrefetch().getPageLoad().setParameters(params);
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> options =
-                extractOptions(targetDeliveryRequest, targetDeliveryResponse, null);
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, null, false);
         List<SelectorContent> selectors = new ArrayList<SelectorContent>() {{
             add(new SelectorContent("setHtml",
                     "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(2)",
@@ -466,11 +469,11 @@ class TargetDeliveryRequestLocalViewTest {
         verifyContent(options, selectors);
     }
 
-    @Test
+     @Test
     void testTargetDeliveryLocalPageLoadViewABBoth() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_PAGELOAD_VEC_AB.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916877", null);
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916877", null, false);
         Map<String, String> params = new HashMap<String, String>() {{
             put("jason", "correct");
             put("greg", "correct");
@@ -478,7 +481,7 @@ class TargetDeliveryRequestLocalViewTest {
         targetDeliveryRequest.getDeliveryRequest().getPrefetch().getPageLoad().setParameters(params);
         TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
         List<Option> options =
-                extractOptions(targetDeliveryRequest, targetDeliveryResponse, null);
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, null, false);
         List<SelectorContent> selectors = new ArrayList<SelectorContent>() {{
             add(new SelectorContent("setHtml",
                     "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(1)",
@@ -553,8 +556,150 @@ class TargetDeliveryRequestLocalViewTest {
         verifyContent(options, selectors);
     }
 
+    @Test
+    void testTargetDeliveryLocalPageLoadViewXTBoth() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_PAGELOAD_VEC_XT.json", localService);
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916877", null, false);
+        Map<String, String> params = new HashMap<String, String>() {{
+            put("jason", "correct");
+            put("greg", "correct");
+        }};
+        targetDeliveryRequest.getDeliveryRequest().getPrefetch().getPageLoad().setParameters(params);
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> options =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, null, false);
+        List<SelectorContent> selectors = new ArrayList<SelectorContent>() {{
+            add(new SelectorContent("setHtml",
+                    "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(1)",
+                    "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(1)",
+                    "greg is correct",
+                    "39UdigzDfmb97ogXP1PN62qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+            add(new SelectorContent("setHtml",
+                    "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                    "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                    "Hello greg",
+                    "39UdigzDfmb97ogXP1PN62qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+            add(new SelectorContent(null,
+                    null,
+                    null,
+                    null,
+                    "39UdigzDfmb97ogXP1PN62qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+            add(new SelectorContent(null,
+                    null,
+                    null,
+                    null,
+                    "39UdigzDfmb97ogXP1PN62qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+        }};
+        verifyContent(options, selectors);
+    }
+
+    @Test
+    void testTargetDeliveryLocalPageLoadViewXTJason() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_PAGELOAD_VEC_XT.json", localService);
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916877", null, false);
+        Map<String, String> params = new HashMap<String, String>() {{
+            put("jason", "correct");
+        }};
+        targetDeliveryRequest.getDeliveryRequest().getPrefetch().getPageLoad().setParameters(params);
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> options =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, null, false);
+        List<SelectorContent> selectors = new ArrayList<SelectorContent>() {{
+            add(new SelectorContent(null,
+                    null,
+                    null,
+                    null,
+                    "39UdigzDfmb97ogXP1PN65NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+            add(new SelectorContent("setHtml",
+                    "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                    "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                    "Hello jason",
+                    "39UdigzDfmb97ogXP1PN65NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+            add(new SelectorContent("setHtml",
+                    "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(2)",
+                    "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(2)",
+                    "jason is correct",
+                    "39UdigzDfmb97ogXP1PN65NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+            add(new SelectorContent(null,
+                    null,
+                    null,
+                    null,
+                    "39UdigzDfmb97ogXP1PN65NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+        }};
+        verifyContent(options, selectors);
+    }
+
+    @Test
+    void testTargetDeliveryLocalPageLoadViewXTNone() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_PAGELOAD_VEC_XT.json", localService);
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916877", null, false);
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> options =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, null, false);
+        List<SelectorContent> selectors = new ArrayList<SelectorContent>() {{
+            add(new SelectorContent(null,
+                    null,
+                    null,
+                    null,
+                    "39UdigzDfmb97ogXP1PN6wreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+            add(new SelectorContent("setHtml",
+                    "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                    "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                    "Hello everyone",
+                    "39UdigzDfmb97ogXP1PN6wreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+            add(new SelectorContent(null,
+                    null,
+                    null,
+                    null,
+                    "39UdigzDfmb97ogXP1PN6wreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+            add(new SelectorContent("setHtml",
+                    "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                    "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                    "all visitors",
+                    "39UdigzDfmb97ogXP1PN6wreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+        }};
+        verifyContent(options, selectors);
+    }
+
+    @Test
+    void testTargetDeliveryLocalPageLoadViewXTExecute() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_PAGELOAD_VEC_XT.json", localService);
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916877", null, true);
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> options =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, null, true);
+        List<SelectorContent> selectors = new ArrayList<SelectorContent>() {{
+            add(new SelectorContent(null,
+                    null,
+                    null,
+                    null,
+                    null));
+            add(new SelectorContent("setHtml",
+                    "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                    "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                    "Hello everyone",
+                    null));
+            add(new SelectorContent(null,
+                    null,
+                    null,
+                    null,
+                    null));
+            add(new SelectorContent("setHtml",
+                    "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                    "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                    "all visitors",
+                    null));
+        }};
+        verifyContent(options, selectors);
+    }
+
     private TargetDeliveryRequest localDeliveryRequest(String visitorIdStr,
-            List<String> views) {
+            List<String> views,
+            boolean execute) {
         Context context = getLocalContext();
         context.setAddress(new Address().url("http://local-target-test/"));
         PrefetchRequest prefetchRequest = new PrefetchRequest();
@@ -570,14 +715,22 @@ class TargetDeliveryRequestLocalViewTest {
         else {
             prefetchRequest.setPageLoad(new RequestDetails());
         }
+        ExecuteRequest executeRequest = null;
+        if (execute) {
+            executeRequest = new ExecuteRequest();
+            executeRequest.setPageLoad(new RequestDetails());
+        }
         VisitorId visitorId = new VisitorId().tntId(visitorIdStr);
 
-        TargetDeliveryRequest targetDeliveryRequest = TargetDeliveryRequest.builder()
+        TargetDeliveryRequestBuilder targetDeliveryRequestBuilder = TargetDeliveryRequest.builder()
                 .context(context)
                 .prefetch(prefetchRequest)
                 .id(visitorId)
-                .executionMode(ExecutionMode.LOCAL)
-                .build();
+                .executionMode(ExecutionMode.LOCAL);
+        if (execute) {
+            targetDeliveryRequestBuilder.execute(executeRequest);
+        }
+        TargetDeliveryRequest targetDeliveryRequest = targetDeliveryRequestBuilder.build();
 
         assertEquals(prefetchRequest, targetDeliveryRequest.getDeliveryRequest().getPrefetch());
         assertEquals(context, targetDeliveryRequest.getDeliveryRequest().getContext());
@@ -587,24 +740,31 @@ class TargetDeliveryRequestLocalViewTest {
     @SuppressWarnings("unchecked")
     private List<Option> extractOptions(TargetDeliveryRequest targetDeliveryRequest,
             TargetDeliveryResponse targetDeliveryResponse,
-            String viewName) {
+            String viewName,
+            boolean execute) {
         DeliveryResponse response = targetDeliveryResponse.getResponse();
         assertNotNull(response);
-        PrefetchResponse preResponse = response.getPrefetch();
-        assertNotNull(preResponse);
         List<Option> options;
-        if (viewName != null) {
-            List<View> views = preResponse.getViews();
-            assertNotNull(views);
-            options = new ArrayList<>();
-            for (View view : views) {
-                if (view.getName().equals(viewName)) {
-                    options.addAll(view.getOptions());
-                }
-            }
+        if (execute) {
+            ExecuteResponse executeResponse = response.getExecute();
+            assertNotNull(executeResponse);
+            options = executeResponse.getPageLoad().getOptions();
         }
         else {
-            options = preResponse.getPageLoad().getOptions();
+            PrefetchResponse preResponse = response.getPrefetch();
+            assertNotNull(preResponse);
+            if (viewName != null) {
+                List<View> views = preResponse.getViews();
+                assertNotNull(views);
+                options = new ArrayList<>();
+                for (View view : views) {
+                    if (view.getName().equals(viewName)) {
+                        options.addAll(view.getOptions());
+                    }
+                }
+            } else {
+                options = preResponse.getPageLoad().getOptions();
+            }
         }
         verify(defaultTargetHttpClient, never()).execute(any(Map.class), any(String.class),
                 eq(targetDeliveryRequest), any(Class.class));
