@@ -1100,6 +1100,7 @@ The `ClientConfigBuilder` object has the following structure:
 | localEnvironment     | String   | No      | production             | Can be used to specify a different local environment such as staging |
 | localConfigHostname  | String   | No      | assets.adobetarget.com | Can be used to specify a different host to use to download the local decisioning artifact file |
 | localDecisioningPollingIntSecs | int | No | 300 (5 min)            | Number of seconds between fetches of the local decisioning artifact file |
+| localArtifactPayload | byte[]   | No      | None                   | Provides local execution with previous artifact payload to allow immediate execution |
 | localExecutionHandler | LocalExecutionHandler | No | None          | Registers callbacks for local execution events      |
 
 The `LocationExecutionHandler` object contains the following callbacks which are called for certain local executionEvents:

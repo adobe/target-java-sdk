@@ -32,6 +32,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -119,9 +120,9 @@ class DefaultRuleLoaderTest {
                 mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 mapper.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true);
                 try {
-                    return mapper.readValue(ruleSet, new TypeReference<LocalDecisioningRuleSet>() {});
-                }
-                catch (IOException e) {
+                    return mapper.readValue(ruleSet, new TypeReference<LocalDecisioningRuleSet>() {
+                    });
+                } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -244,6 +245,39 @@ class DefaultRuleLoaderTest {
         verify(executionHandler, never()).localExecutionReady();
         verify(executionHandler, never()).artifactDownloadSucceeded(any());
         verify(executionHandler, timeout(1000)).artifactDownloadFailed(any());
+        defaultRuleLoader.stop();
+    }
+
+    @Test
+    void testRuleLoaderArtifactPayload() {
+        DefaultRuleLoader defaultRuleLoader = mock(DefaultRuleLoader.class, CALLS_REAL_METHODS);
+
+        String etag = "5b1cf3c050e1a0d16934922bf19ba6ea";
+        Mockito.doReturn(null)
+                .when(defaultRuleLoader).generateRequest(any(ClientConfig.class));
+        Mockito.doReturn(getTestResponse(TEST_RULE_SET, etag, HttpStatus.SC_OK))
+                .when(defaultRuleLoader).executeRequest(any());
+
+        ClientConfig payloadClientConfig = ClientConfig.builder()
+                .client("emeaprod4")
+                .organizationId(TEST_ORG_ID)
+                .localEnvironment("production")
+                .defaultExecutionMode(ExecutionMode.LOCAL)
+                .exceptionHandler(exceptionHandler)
+                .localExecutionHandler(executionHandler)
+                .localArtifactPayload(TEST_RULE_SET.getBytes(StandardCharsets.UTF_8))
+                .build();
+
+        defaultRuleLoader.start(payloadClientConfig);
+        verify(defaultRuleLoader, timeout(1000)).setLatestRules(any(LocalDecisioningRuleSet.class));
+        verify(executionHandler, timeout(1000)).localExecutionReady();
+        verify(executionHandler, never()).artifactDownloadSucceeded(any());
+        verify(executionHandler, never()).artifactDownloadFailed(any());
+        LocalDecisioningRuleSet rules = defaultRuleLoader.getLatestRules();
+        assertNotNull(rules);
+
+        defaultRuleLoader.refresh();
+        verify(exceptionHandler, never()).handleException(any(TargetClientException.class));
         defaultRuleLoader.stop();
     }
 }

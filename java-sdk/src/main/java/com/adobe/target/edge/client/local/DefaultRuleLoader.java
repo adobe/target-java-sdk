@@ -22,6 +22,7 @@ import kong.unirest.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -42,6 +43,7 @@ public class DefaultRuleLoader implements RuleLoader {
     private UnirestInstance unirestInstance = Unirest.spawnInstance();
     private Timer timer = new Timer(this.getClass().getCanonicalName());
     private boolean started = false;
+    private boolean succeeded = false;
     private int retries = 0;
     private int numFetches = 0;
     private Date lastFetch = null;
@@ -61,6 +63,28 @@ public class DefaultRuleLoader implements RuleLoader {
         if (started) {
             return;
         }
+        ObjectMapper mapper = new JacksonObjectMapper();
+        byte[] artifactPayload = clientConfig.getLocalArtifactPayload();
+        if (artifactPayload != null) {
+            String payload = new String(artifactPayload, StandardCharsets.UTF_8);
+            LocalDecisioningRuleSet ruleSet = mapper.readValue(payload, new GenericType<LocalDecisioningRuleSet>() {});
+            String invalidMessage = invalidRuleSetMessage(ruleSet, null);
+            if (invalidMessage == null) {
+                setLatestRules(ruleSet);
+                LocalExecutionHandler handler = clientConfig.getLocalExecutionHandler();
+                if (handler != null && !succeeded) {
+                    succeeded = true;
+                    handler.localExecutionReady();
+                }
+            }
+            else {
+                logger.warn(invalidMessage);
+                TargetExceptionHandler handler = clientConfig.getExceptionHandler();
+                if (handler != null) {
+                    handler.handleException(new TargetClientException(invalidMessage));
+                }
+            }
+        }
         started = true;
         retries = 0;
         if (unirestInstance != null) {
@@ -70,7 +94,7 @@ public class DefaultRuleLoader implements RuleLoader {
                 .concurrency(clientConfig.getMaxConnectionsTotal(), clientConfig.getMaxConnectionsPerHost())
                 .automaticRetries(clientConfig.isEnabledRetries())
                 .enableCookieManagement(false)
-                .setObjectMapper(new JacksonObjectMapper())
+                .setObjectMapper(mapper)
                 .setDefaultHeader("Accept", "application/json");
             if (clientConfig.isProxyEnabled()) {
                 ClientProxyConfig proxyConfig = clientConfig.getProxyConfig();
@@ -124,8 +148,8 @@ public class DefaultRuleLoader implements RuleLoader {
                     }
                 }
                 else {
-                    if (handler != null &&
-                            DefaultRuleLoader.this.numFetches == 0) {
+                    if (handler != null && !succeeded) {
+                        succeeded = true;
                         handler.localExecutionReady();
                     }
                     DefaultRuleLoader.this.numFetches++;
@@ -196,9 +220,8 @@ public class DefaultRuleLoader implements RuleLoader {
                 return false;
             }
             LocalDecisioningRuleSet ruleSet = response.getBody();
-            if (ruleSet != null && ruleSet.getRules() != null &&
-                    ruleSet.getVersion() != null &&
-                    ruleSet.getVersion().startsWith(MAJOR_VERSION + ".")) {
+            String invalidMessage = invalidRuleSetMessage(ruleSet, response);
+            if (invalidMessage == null) {
                 setLatestETag(response.getHeaders().getFirst("ETag"));
                 setLatestRules(ruleSet);
                 LocalExecutionHandler localHandler = clientConfig.getLocalExecutionHandler();
@@ -208,22 +231,13 @@ public class DefaultRuleLoader implements RuleLoader {
                 logger.trace("rulesList={}", latestRules);
                 return true;
             }
-            if (ruleSet != null && ruleSet.getVersion() != null) {
-                String message = "Unknown rules version: " + ruleSet.getVersion();
-                logger.warn(message);
+            else {
+                logger.warn(invalidMessage);
                 if (handler != null) {
-                    handler.handleException(new TargetClientException(message));
+                    handler.handleException(new TargetClientException(invalidMessage));
                 }
                 return false;
             }
-            String message = "Unable to parse local-decisioning rule set from: "
-                    + getLocalDecisioningUrl(clientConfig)
-                    + ", error: " + response.getParsingError();
-            logger.warn(message);
-            if (handler != null) {
-                handler.handleException(new TargetClientException(message));
-            }
-            return false;
         }
         catch (Throwable t) {
             String message = "Hit exception while getting local-decisioning rule set from: "
@@ -235,6 +249,22 @@ public class DefaultRuleLoader implements RuleLoader {
             }
             return false;
         }
+    }
+
+    private String invalidRuleSetMessage(LocalDecisioningRuleSet ruleSet,
+            HttpResponse<LocalDecisioningRuleSet> response) {
+        if (ruleSet == null || ruleSet.getRules() == null) {
+            String message = "Unable to parse local-decisioning rule set";
+            if (response != null) {
+                message += " from: " + getLocalDecisioningUrl(clientConfig) +
+                        ", error: " + response.getParsingError();
+            }
+            return message;
+        }
+        if (ruleSet.getVersion() == null || !ruleSet.getVersion().startsWith(MAJOR_VERSION + ".")) {
+            return "Unknown rules version: " + ruleSet.getVersion();
+        }
+        return null;
     }
 
     private String getLocalDecisioningUrl(ClientConfig clientConfig) {

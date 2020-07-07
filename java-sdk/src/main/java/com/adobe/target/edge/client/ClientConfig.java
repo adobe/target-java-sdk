@@ -44,6 +44,7 @@ public class ClientConfig {
     private String localEnvironment;
     private String localConfigHostname;
     private int localDecisioningPollingIntSecs;
+    private byte[] localArtifactPayload;
 
     public String getClient() {
         return client;
@@ -114,6 +115,8 @@ public class ClientConfig {
 
     public int getLocalDecisioningPollingIntSecs() { return localDecisioningPollingIntSecs; }
 
+    public byte[] getLocalArtifactPayload() { return localArtifactPayload; }
+
     public boolean isLocalExecutionEnabled() { return defaultExecutionMode != ExecutionMode.REMOTE;}
 
     public static ClientConfigBuilder builder() {
@@ -143,6 +146,7 @@ public class ClientConfig {
         private String localEnvironment = "production";
         private String localConfigHostname = "assets.adobetarget.com";
         private int localDecisioningPollingIntSecs = 300;
+        private byte[] localArtifactPayload;
 
         private ClientConfigBuilder() {
         }
@@ -246,6 +250,11 @@ public class ClientConfig {
             return this;
         }
 
+        public ClientConfigBuilder localArtifactPayload(byte[] payload) {
+            this.localArtifactPayload = payload;
+            return this;
+        }
+
         public ClientConfig build() {
             ClientConfig clientConfig = new ClientConfig();
             Objects.requireNonNull(client, "client id cannot be null");
@@ -272,6 +281,7 @@ public class ClientConfig {
             clientConfig.localEnvironment = this.localEnvironment;
             clientConfig.localConfigHostname = this.localConfigHostname;
             clientConfig.localDecisioningPollingIntSecs = this.localDecisioningPollingIntSecs;
+            clientConfig.localArtifactPayload = this.localArtifactPayload;
             return clientConfig;
         }
     }
