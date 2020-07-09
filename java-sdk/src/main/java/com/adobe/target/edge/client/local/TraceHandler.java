@@ -31,6 +31,13 @@ public final class TraceHandler {
     private static final String MATCHED_RULES_KEY = "matchedRuleConditions";
     private static final String UNMATCHED_RULES_KEY = "unmatchedRuleConditions";
 
+    public static final String ACTIVITY_ID = "activity.id";
+    public static final String ACTIVITY_NAME = "activity.name";
+    public static final String ACTIVITY_TYPE = "activity.type";
+    public static final String EXPERIENCE_ID = "experience.id";
+    public static final String AUDIENCE_IDS = "audience.ids";
+    public static final String OFFER_ID = "offer.id";
+
     private final TimeZone utc = TimeZone.getTimeZone("UTC");
 
     private final ObjectMapper mapper;
@@ -64,15 +71,14 @@ public final class TraceHandler {
     public void addCampaign(LocalDecisioningRule rule, Map<String, Object> context,
             boolean matched) {
         Map<String, Object> meta = rule.getMeta();
-        Number activityId = (Number)meta.get("activityId");
+        Number activityId = (Number)meta.get(ACTIVITY_ID);
         if (activityId == null) {
             return;
         }
         if (matched && !this.campaigns.containsKey(activityId)) {
             Map<String, Object> campaign = this.campaignTrace(rule);
-            campaign.put("branchId", meta.get("experienceId"));
-            campaign.put("offers", meta.get("offerIds"));
-            campaign.put("environmentId", meta.get("environmentId"));
+            campaign.put("branchId", meta.get(EXPERIENCE_ID));
+            campaign.put("offers", meta.get(OFFER_ID));
             this.campaigns.put(activityId, campaign);
         }
         Map<String, Object> target = this.evaluatedTargets.get(activityId);
@@ -80,7 +86,7 @@ public final class TraceHandler {
             target = this.campaignTargetTrace(rule, context);
             this.evaluatedTargets.put(activityId, target);
         }
-        List audienceIds = (List)meta.get("audienceIds");
+        List audienceIds = (List)meta.get(AUDIENCE_IDS);
         List ids;
         List rules;
         if (matched) {
@@ -97,7 +103,7 @@ public final class TraceHandler {
 
     public void addNotification(LocalDecisioningRule rule, Notification notification) {
         Map<String, Object> meta = rule.getMeta();
-        Number activityId = (Number) meta.get("activityId");
+        Number activityId = (Number) meta.get(ACTIVITY_ID);
         if (activityId == null) {
             return;
         }
@@ -208,9 +214,9 @@ public final class TraceHandler {
     private Map<String, Object> campaignTrace(LocalDecisioningRule rule) {
         Map<String, Object> campaign = new HashMap<>();
         Map<String, Object> meta = rule.getMeta();
-        campaign.put("id", meta.get("activityId"));
-        campaign.put("activityName", meta.get("activityName"));
-        campaign.put("activityType", meta.get("activityType"));
+        campaign.put("id", meta.get(ACTIVITY_ID));
+        campaign.put("activityName", meta.get(ACTIVITY_NAME));
+        campaign.put("activityType", meta.get(ACTIVITY_TYPE));
         return campaign;
     }
 }

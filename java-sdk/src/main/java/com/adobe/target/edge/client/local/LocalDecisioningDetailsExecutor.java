@@ -16,35 +16,33 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.model.local.LocalDecisioningRule;
 import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
-import com.adobe.target.edge.client.service.TargetClientException;
-import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import com.adobe.target.edge.client.utils.StringUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.jamsesso.jsonlogic.JsonLogic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class LocalDecisionHandler {
+public class LocalDecisioningDetailsExecutor {
 
-    private static final Logger logger = LoggerFactory.getLogger(LocalDecisionHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(LocalDecisioningDetailsExecutor.class);
 
     private final ClientConfig clientConfig;
     private final ObjectMapper mapper;
+    private final LocalDecisioningRuleExecutor ruleExecutor;
 
-    private final JsonLogic jsonLogic = new JsonLogic();
-
-    public LocalDecisionHandler(ClientConfig clientConfig, ObjectMapper mapper) {
+    public LocalDecisioningDetailsExecutor(ClientConfig clientConfig, ObjectMapper mapper) {
         this.clientConfig = clientConfig;
         this.mapper = mapper;
+        this.ruleExecutor = new LocalDecisioningRuleExecutor(clientConfig, mapper);
     }
 
-    public void handleDetails(TargetDeliveryRequest deliveryRequest,
+    public void executeDetails(TargetDeliveryRequest deliveryRequest,
             Map<String, Object> localContext,
             String visitorId,
+            Set<String> responseTokens,
             TraceHandler traceHandler,
             LocalDecisioningRuleSet ruleSet,
             RequestDetails details,
@@ -68,8 +66,8 @@ public class LocalDecisionHandler {
                 if (ruleKey != null && skipKeySet.contains(ruleKey)) {
                     continue;
                 }
-                Map<String, Object> consequence = executeRule(localContext,
-                        details, visitorId, rule, traceHandler);
+                Map<String, Object> consequence = this.ruleExecutor.executeRule(localContext,
+                        details, visitorId, rule, responseTokens, traceHandler);
                 boolean handled = handleResult(consequence, rule, details, prefetchResponse,
                         executeResponse, notifications, traceHandler);
                 if (handled) {
@@ -85,34 +83,6 @@ public class LocalDecisionHandler {
         }
         if (!handledAtLeastOnce) {
             unhandledResponse(details, prefetchResponse, executeResponse, traceHandler);
-        }
-    }
-
-    private Map<String, Object> executeRule(Map<String, Object> localContext,
-            RequestDetails details,
-            String visitorId,
-            LocalDecisioningRule rule,
-            TraceHandler traceHandler) {
-        localContext.put("allocation", computeAllocation(visitorId, rule));
-        Object condition = rule.getCondition();
-        logger.trace("details={}, context={}", details, localContext);
-        try {
-            String expression = this.mapper.writeValueAsString(condition);
-            logger.trace("expression={}", expression);
-            boolean matched = JsonLogic.truthy(jsonLogic.apply(expression, localContext));
-            if (traceHandler != null) {
-                traceHandler.addCampaign(rule, localContext, matched);
-            }
-            return matched ? rule.getConsequence() : null;
-        }
-        catch (Exception e) {
-            String message = "Hit exception while evaluating local-decisioning rule";
-            logger.warn(message, e);
-            TargetExceptionHandler handler = this.clientConfig.getExceptionHandler();
-            if (handler != null) {
-                handler.handleException(new TargetClientException(message, e));
-            }
-            return null;
         }
     }
 
@@ -286,18 +256,6 @@ public class LocalDecisionHandler {
                 executeResponse.setPageLoad(response);
             }
         }
-    }
-
-    private double computeAllocation(String vid, LocalDecisioningRule rule) {
-        String client = this.clientConfig.getClient();
-        String seed = rule.getActivityId();
-        int index = vid.indexOf(".");
-        if (index > 0) {
-            vid = vid.substring(0, index);
-        }
-        String input = client + "." + seed + "." + vid;
-        int output = MurmurHash.hash32(input);
-        return ((Math.abs(output) % 10000) / 10000D) * 100D;
     }
 
     private Notification createNotification(RequestDetails details, List<Option> options) {

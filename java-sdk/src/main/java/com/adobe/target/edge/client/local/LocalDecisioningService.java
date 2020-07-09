@@ -41,15 +41,21 @@ public class LocalDecisioningService {
 
     private static final Logger logger = LoggerFactory.getLogger(LocalDecisioningService.class);
 
+    public static final String CONTEXT_KEY_USER = "user";
+    public static final String CONTEXT_KEY_GEO = "geo";
+    public static final String CONTEXT_KEY_PAGE = "page";
+    public static final String CONTEXT_KEY_REFERRING = "referring";
+    public static final String CONTEXT_KEY_CUSTOM = "mbox";
+
     private final static Map<String, ParamsCollator> REQUEST_PARAMS_COLLATORS = new HashMap<String, ParamsCollator>() {{
-        put("user", new UserParamsCollator());
-        put("geo", new GeoParamsCollator());
+        put(CONTEXT_KEY_USER, new UserParamsCollator());
+        put(CONTEXT_KEY_GEO, new GeoParamsCollator());
     }};
 
     private final static Map<String, ParamsCollator> DETAILS_PARAMS_COLLATORS = new HashMap<String, ParamsCollator>() {{
-        put("page", new PageParamsCollator());
-        put("referring", new PageParamsCollator(true));
-        put("mbox", new CustomParamsCollator());
+        put(CONTEXT_KEY_PAGE, new PageParamsCollator());
+        put(CONTEXT_KEY_REFERRING, new PageParamsCollator(true));
+        put(CONTEXT_KEY_CUSTOM, new CustomParamsCollator());
     }};
 
     private ParamsCollator timeParamsCollator = new TimeParamsCollator();
@@ -59,7 +65,7 @@ public class LocalDecisioningService {
     private final RuleLoader ruleLoader;
     private final NotificationDeliveryService deliveryService;
     private final ClusterLocator clusterLocator;
-    private final LocalDecisionHandler decisionHandler;
+    private final LocalDecisioningDetailsExecutor decisionHandler;
     private final LocalExecutionEvaluator localExecutionEvaluator;
     private final GeoClient geoClient;
 
@@ -74,7 +80,7 @@ public class LocalDecisioningService {
         this.deliveryService.start(clientConfig);
         this.clusterLocator = services.getClusterLocator();
         this.clusterLocator.start(clientConfig, targetService);
-        this.decisionHandler = new LocalDecisionHandler(clientConfig, mapper);
+        this.decisionHandler = new LocalDecisioningDetailsExecutor(clientConfig, mapper);
         this.localExecutionEvaluator = new LocalExecutionEvaluator(this.ruleLoader);
         this.geoClient = new DefaultGeoClient();
         this.geoClient.start(clientConfig);
@@ -126,17 +132,18 @@ public class LocalDecisioningService {
             traceHandler = new TraceHandler(this.clientConfig, this.ruleLoader, this.mapper,
                     ruleSet, deliveryRequest);
         }
+        Set<String> responseTokens = new HashSet<>(ruleSet.getResponseTokens());
 
         TargetDeliveryResponse targetResponse = buildDeliveryResponse(deliveryRequest, requestId);
         String visitorId = getOrCreateVisitorId(deliveryRequest, targetResponse);
 
         List<RequestDetails> prefetchRequests = detailsFromPrefetch(delivRequest);
-        handleDetails(prefetchRequests, requestContext, deliveryRequest, visitorId, traceHandler,
+        handleDetails(prefetchRequests, requestContext, deliveryRequest, visitorId, responseTokens, traceHandler,
                 ruleSet, targetResponse.getResponse().getPrefetch(), null, null);
 
         List<RequestDetails> executeRequests = detailsFromExecute(delivRequest);
         List<Notification> notifications = new ArrayList<>();
-        handleDetails(executeRequests, requestContext, deliveryRequest, visitorId, traceHandler,
+        handleDetails(executeRequests, requestContext, deliveryRequest, visitorId, responseTokens, traceHandler,
                 ruleSet, null, targetResponse.getResponse().getExecute(), notifications);
 
         sendNotifications(deliveryRequest, targetResponse, notifications);
@@ -163,8 +170,8 @@ public class LocalDecisioningService {
 
     private List<RequestDetails> detailsFromExecute(DeliveryRequest deliveryRequest) {
         if (deliveryRequest.getExecute() != null) {
-            List<RequestDetails> executeRequests = new ArrayList<>();
-            executeRequests.addAll(new ArrayList<>(deliveryRequest.getExecute().getMboxes()));
+            List<RequestDetails> executeRequests =
+                    new ArrayList<>(new ArrayList<>(deliveryRequest.getExecute().getMboxes()));
             if (deliveryRequest.getExecute().getPageLoad() != null) {
                 executeRequests.add(deliveryRequest.getExecute().getPageLoad());
             }
@@ -285,6 +292,7 @@ public class LocalDecisioningService {
             Map<String, Object> requestContext,
             TargetDeliveryRequest deliveryRequest,
             String visitorId,
+            Set<String> responseTokens,
             TraceHandler traceHandler,
             LocalDecisioningRuleSet ruleSet,
             PrefetchResponse prefetchResponse,
@@ -293,8 +301,8 @@ public class LocalDecisioningService {
         for (RequestDetails details : detailsList) {
             Map<String, Object> detailsContext = new HashMap<>(requestContext);
             collateParams(detailsContext, DETAILS_PARAMS_COLLATORS, deliveryRequest, details);
-            this.decisionHandler.handleDetails(deliveryRequest, detailsContext, visitorId, traceHandler,
-                    ruleSet, details, prefetchResponse, executeResponse, notifications);
+            this.decisionHandler.executeDetails(deliveryRequest, detailsContext, visitorId, responseTokens,
+                    traceHandler, ruleSet, details, prefetchResponse, executeResponse, notifications);
         }
     }
 
