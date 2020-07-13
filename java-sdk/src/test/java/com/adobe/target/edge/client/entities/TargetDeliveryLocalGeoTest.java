@@ -140,6 +140,12 @@ public class TargetDeliveryLocalGeoTest {
         assertEquals("geo.b", content.get("exp"));
         verify(mockGeoClient, atMostOnce()).start(any());
         verify(mockGeoClient, never()).lookupGeo(any());
+        Map<String, Object> responseTokens = option.getResponseTokens();
+        assertEquals("SANFRANCISCO", responseTokens.get("geo.city"));
+        assertEquals("CA", responseTokens.get("geo.state"));
+        assertEquals("US", responseTokens.get("geo.country"));
+        assertEquals(37.74f, responseTokens.get("geo.latitude"));
+        assertEquals(-122.24f, responseTokens.get("geo.longitude"));
     }
 
     @Test

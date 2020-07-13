@@ -106,6 +106,16 @@ class TargetDeliveryRequestLocalMboxTest {
         }};
         verifyJSONContent(prefetchOptions, expectedContent,
                 "mWtD0yDAXMnesyQOa7/jS2qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
+        Option option = prefetchOptions.get(0);
+        Map<String, Object> responseTokens = option.getResponseTokens();
+        assertEquals(333312, responseTokens.get("activity.id"));
+        assertEquals("Form Based Activity - offer2 - Feb 19 2020, 10:34", responseTokens.get("activity.name"));
+        assertEquals(0, responseTokens.get("experience.id"));
+        assertEquals("Experience A", responseTokens.get("experience.name"));
+        assertEquals(630815, responseTokens.get("offer.id"));
+        assertEquals(2, responseTokens.get("option.id"));
+        assertEquals("Offer2", responseTokens.get("option.name"));
+        assertEquals("client-side", responseTokens.get("activity.executionType"));
     }
 
     @Test

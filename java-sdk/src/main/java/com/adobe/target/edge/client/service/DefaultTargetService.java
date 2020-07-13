@@ -12,6 +12,13 @@
 package com.adobe.target.edge.client.service;
 
 import com.adobe.target.delivery.v1.model.DeliveryResponse;
+import com.adobe.target.delivery.v1.model.ExecuteResponse;
+import com.adobe.target.delivery.v1.model.MboxResponse;
+import com.adobe.target.delivery.v1.model.Option;
+import com.adobe.target.delivery.v1.model.PageLoadResponse;
+import com.adobe.target.delivery.v1.model.PrefetchMboxResponse;
+import com.adobe.target.delivery.v1.model.PrefetchResponse;
+import com.adobe.target.delivery.v1.model.View;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.http.ResponseStatus;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
@@ -26,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -106,8 +114,44 @@ public class DefaultTargetService implements TargetService {
                                                              HttpResponse<DeliveryResponse> response) {
         DeliveryResponse deliveryResponse = retrieveDeliveryResponse(response);
         updateStickyLocationHint(deliveryResponse);
+        addResponseTokens(deliveryResponse);
         return new TargetDeliveryResponse(deliveryRequest, deliveryResponse, response.getStatus(),
                 response.getStatusText());
+    }
+
+    private void addResponseTokens(DeliveryResponse deliveryResponse) {
+        PrefetchResponse prefetch = deliveryResponse.getPrefetch();
+        if (prefetch != null) {
+            List<View> views = prefetch.getViews();
+            if (views != null) {
+                for (View view : views) {
+                    addRemoteResponseToken(view.getOptions());
+                }
+            }
+            List<PrefetchMboxResponse> mboxes = prefetch.getMboxes();
+            if (mboxes != null) {
+                for (PrefetchMboxResponse mbox : mboxes) {
+                    addRemoteResponseToken(mbox.getOptions());
+                }
+            }
+            PageLoadResponse pageLoad = prefetch.getPageLoad();
+            if (pageLoad != null) {
+                addRemoteResponseToken(pageLoad.getOptions());
+            }
+        }
+        ExecuteResponse execute = deliveryResponse.getExecute();
+        if (execute != null) {
+            List<MboxResponse> mboxes = execute.getMboxes();
+            if (mboxes != null) {
+                for (MboxResponse mbox : mboxes) {
+                    addRemoteResponseToken(mbox.getOptions());
+                }
+            }
+            PageLoadResponse pageLoad = execute.getPageLoad();
+            if (pageLoad != null) {
+                addRemoteResponseToken(pageLoad.getOptions());
+            }
+        }
     }
 
     private DeliveryResponse retrieveDeliveryResponse(HttpResponse<DeliveryResponse> response) {
@@ -143,5 +187,14 @@ public class DefaultTargetService implements TargetService {
             return deliveryRequest.getLocationHint();
         }
         return stickyLocationHint;
+    }
+
+    private void addRemoteResponseToken(List<Option> options) {
+        if (options != null) {
+            for (Option option : options) {
+                Map<String, Object> responseTokens = option.getResponseTokens();
+                responseTokens.put("activity.executionType", "server-side");
+            }
+        }
     }
 }

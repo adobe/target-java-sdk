@@ -13,7 +13,9 @@
     "experience.id",
     "geo.country",
     "geo.city",
-    "geo.state"
+    "geo.state",
+    "geo.latitude",
+    "geo.longitude"
   ],
   "remoteMboxes": [
   ],

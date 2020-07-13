@@ -2,18 +2,25 @@
   "version": "1.0.0",
   "meta": {
     "clientCode": "adobesummit2018",
-    "environment": "test",
-    "generatedAt": "2020-06-15T20:45:01.734Z"
+    "environment": "unittest",
+    "generatedAt": "2020-07-13T22:19:34.662Z"
   },
   "globalMbox": "target-global-mbox",
   "geoTargetingEnabled": false,
   "responseTokens": [
-    "activity.id",
-    "activity.name",
     "experience.id",
-    "geo.country",
+    "activity.name",
     "geo.city",
-    "geo.state"
+    "activity.id",
+    "geo.state",
+    "option.name",
+    "experience.name",
+    "experience.trafficAllocationId",
+    "option.id",
+    "geo.country",
+    "offer.name",
+    "experience.trafficAllocationType",
+    "offer.id"
   ],
   "remoteMboxes": [],
   "remoteViews": [],
@@ -26,17 +33,28 @@
       "offer2": [
         {
           "ruleKey": "333312",
-          "activityId": "333312",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
+          "activityId": 333312,
           "meta": {
+            "activity.id": 333312,
+            "activity.name": "Form Based Activity - offer2 - Feb 19 2020, 10:34",
+            "activity.type": "ab",
+            "experience.id": 0,
+            "experience.name": "Experience A",
+            "location.name": "offer2",
+            "location.type": "mbox",
+            "location.id": 0,
+            "audience.ids": [
+              5356811
+            ],
+            "offer.id": 630815,
+            "option.id": 2,
+            "option.name": "Offer2",
             "activityId": 333312,
             "activityType": "ab",
             "experienceId": 0,
+            "locationId": 0,
             "locationName": "offer2",
             "locationType": "mbox",
-            "locationId": 0,
             "audienceIds": [
               5356811
             ],
@@ -81,17 +99,28 @@
         },
         {
           "ruleKey": "333312",
-          "activityId": "333312",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
+          "activityId": 333312,
           "meta": {
+            "activity.id": 333312,
+            "activity.name": "Form Based Activity - offer2 - Feb 19 2020, 10:34",
+            "activity.type": "ab",
+            "experience.id": 1,
+            "experience.name": "Experience B",
+            "location.name": "offer2",
+            "location.type": "mbox",
+            "location.id": 0,
+            "audience.ids": [
+              5356811
+            ],
+            "offer.id": 630814,
+            "option.id": 3,
+            "option.name": "Offer3",
             "activityId": 333312,
             "activityType": "ab",
             "experienceId": 1,
+            "locationId": 0,
             "locationName": "offer2",
             "locationType": "mbox",
-            "locationId": 0,
             "audienceIds": [
               5356811
             ],
