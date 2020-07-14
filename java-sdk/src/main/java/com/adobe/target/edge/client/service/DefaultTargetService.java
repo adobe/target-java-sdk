@@ -114,12 +114,14 @@ public class DefaultTargetService implements TargetService {
                                                              HttpResponse<DeliveryResponse> response) {
         DeliveryResponse deliveryResponse = retrieveDeliveryResponse(response);
         updateStickyLocationHint(deliveryResponse);
-        addResponseTokens(deliveryResponse);
+        if (this.clientConfig.isLocalExecutionEnabled()) {
+            addRemoteResponseTokens(deliveryResponse);
+        }
         return new TargetDeliveryResponse(deliveryRequest, deliveryResponse, response.getStatus(),
                 response.getStatusText());
     }
 
-    private void addResponseTokens(DeliveryResponse deliveryResponse) {
+    private void addRemoteResponseTokens(DeliveryResponse deliveryResponse) {
         PrefetchResponse prefetch = deliveryResponse.getPrefetch();
         if (prefetch != null) {
             List<View> views = prefetch.getViews();
