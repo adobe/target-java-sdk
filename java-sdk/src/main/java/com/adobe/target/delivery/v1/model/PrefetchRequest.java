@@ -39,7 +39,11 @@ public class PrefetchRequest {
     private List<MboxRequest> mboxes = new ArrayList<>();
 
     public PrefetchRequest views(List<ViewRequest> views) {
-        this.views = views;
+        if (views == null) {
+            return this;
+        }
+        // wrap passed in list with our own ArrayList to make sure it is mutable
+        this.views = new ArrayList<>(views);
         return this;
     }
 
@@ -63,7 +67,13 @@ public class PrefetchRequest {
     }
 
     public void setViews(List<ViewRequest> views) {
-        this.views = views;
+        if (views != null) {
+            // wrap passed in list with our own ArrayList to make sure it is mutable
+            this.views = new ArrayList<>(views);
+        }
+        else {
+            this.views = views;
+        }
     }
 
     public PrefetchRequest pageLoad(RequestDetails pageLoad) {
@@ -86,7 +96,11 @@ public class PrefetchRequest {
     }
 
     public PrefetchRequest mboxes(List<MboxRequest> mboxes) {
-        this.mboxes = mboxes;
+        if (mboxes == null) {
+            return this;
+        }
+        // wrap passed in list with our own ArrayList to make sure it is mutable
+        this.mboxes = new ArrayList<>(mboxes);
         return this;
     }
 
@@ -109,7 +123,13 @@ public class PrefetchRequest {
     }
 
     public void setMboxes(List<MboxRequest> mboxes) {
-        this.mboxes = mboxes;
+        if (mboxes != null) {
+            // wrap passed in list with our own ArrayList to make sure it is mutable
+            this.mboxes = new ArrayList<>(mboxes);
+        }
+        else {
+            this.mboxes = mboxes;
+        }
     }
 
 

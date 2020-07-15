@@ -53,7 +53,11 @@ public class ExecuteRequest {
     }
 
     public ExecuteRequest mboxes(List<MboxRequest> mboxes) {
-        this.mboxes = mboxes;
+        if (mboxes == null) {
+            return this;
+        }
+        // wrap passed in list with our own ArrayList to make sure it is mutable
+        this.mboxes = new ArrayList<>(mboxes);
         return this;
     }
 
@@ -76,7 +80,13 @@ public class ExecuteRequest {
     }
 
     public void setMboxes(List<MboxRequest> mboxes) {
-        this.mboxes = mboxes;
+        if (mboxes != null) {
+            // wrap passed in list with our own ArrayList to make sure it is mutable
+            this.mboxes = new ArrayList<>(mboxes);
+        }
+        else {
+            this.mboxes = mboxes;
+        }
     }
 
 
