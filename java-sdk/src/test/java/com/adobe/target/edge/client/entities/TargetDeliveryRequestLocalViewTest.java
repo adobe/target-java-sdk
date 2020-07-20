@@ -32,7 +32,7 @@ import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.local.LocalDecisioningDetailsExecutor;
 import com.adobe.target.edge.client.local.LocalDecisioningService;
 import com.adobe.target.edge.client.local.collator.ParamsCollator;
-import com.adobe.target.edge.client.model.ExecutionMode;
+import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryRequestBuilder;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
@@ -726,7 +726,7 @@ class TargetDeliveryRequestLocalViewTest {
                 .context(context)
                 .prefetch(prefetchRequest)
                 .id(visitorId)
-                .executionMode(ExecutionMode.LOCAL);
+                .decisioningMethod(DecisioningMethod.ON_DEVICE);
         if (execute) {
             targetDeliveryRequestBuilder.execute(executeRequest);
         }

@@ -41,7 +41,7 @@ public class DefaultGeoClient implements GeoClient {
     }
 
     public void start(ClientConfig clientConfig) {
-        this.geoUrl = "https://" + clientConfig.getLocalConfigHostname() + GEO_PATH;
+        this.geoUrl = "https://" + clientConfig.getOnDeviceConfigHostname() + GEO_PATH;
 
         unirestInstance.config()
                 .socketTimeout(clientConfig.getSocketTimeout())

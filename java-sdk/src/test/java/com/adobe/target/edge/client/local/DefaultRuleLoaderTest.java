@@ -12,9 +12,9 @@
 package com.adobe.target.edge.client.local;
 
 import com.adobe.target.edge.client.ClientConfig;
-import com.adobe.target.edge.client.model.ExecutionMode;
+import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
-import com.adobe.target.edge.client.model.local.LocalExecutionHandler;
+import com.adobe.target.edge.client.model.local.OnDeviceDecisioningHandler;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -49,7 +49,7 @@ class DefaultRuleLoaderTest {
     static final String TEST_RULE_SET_HIGHER_VERSION = "{\"version\":\"2.0.0\",\"meta\":{\"generatedAt\":\"2020-03-17T22:29:29.115Z\",\"remoteMboxes\":[\"recommendations\"],\"globalMbox\":\"target-global-mbox\"},\"rules\":{\"mboxes\":{\"product\":[{\"condition\":{\"and\":[{\"<\":[0,{\"var\":\"allocation\"},50]},{\"<=\":[1580371200000,{\"var\":\"current_timestamp\"},1600585200000]}]},\"consequence\":{\"mboxes\":[{\"options\":[{\"content\":{\"product\":\"default\"},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"3eLgpLF+APtuSsE47wxq/mqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"product\"}]},\"meta\":{\"activityId\":317586,\"experienceId\":0,\"type\":\"ab\",\"mbox\":\"product\"}},{\"condition\":{\"and\":[{\"<\":[50,{\"var\":\"allocation\"},100]},{\"<=\":[1580371200000,{\"var\":\"current_timestamp\"},1600585200000]}]},\"consequence\":{\"mboxes\":[{\"options\":[{\"content\":{\"product\":\"new_layout\"},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"3eLgpLF+APtuSsE47wxq/pNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"product\"}]},\"meta\":{\"activityId\":317586,\"experienceId\":1,\"type\":\"ab\",\"mbox\":\"product\"}}]},\"views\":{}}}";
 
     private TargetExceptionHandler exceptionHandler;
-    private LocalExecutionHandler executionHandler;
+    private OnDeviceDecisioningHandler executionHandler;
     private ClientConfig clientConfig;
 
     @BeforeEach
@@ -61,9 +61,9 @@ class DefaultRuleLoaderTest {
             }
         });
 
-        executionHandler = spy(new LocalExecutionHandler() {
+        executionHandler = spy(new OnDeviceDecisioningHandler() {
             @Override
-            public void localExecutionReady() {
+            public void onDeviceDecisioningReady() {
 
             }
 
@@ -82,9 +82,9 @@ class DefaultRuleLoaderTest {
                 .client("emeaprod4")
                 .organizationId(TEST_ORG_ID)
                 .localEnvironment("production")
-                .defaultExecutionMode(ExecutionMode.LOCAL)
+                .defaultDecisioningMethod(DecisioningMethod.ON_DEVICE)
                 .exceptionHandler(exceptionHandler)
-                .localExecutionHandler(executionHandler)
+                .onDeviceDecisioningHandler(executionHandler)
                 .build();
     }
 
@@ -182,7 +182,7 @@ class DefaultRuleLoaderTest {
         defaultRuleLoader.start(clientConfig);
         verify(defaultRuleLoader, timeout(1000)).setLatestRules(any(LocalDecisioningRuleSet.class));
         verify(defaultRuleLoader, timeout(1000)).setLatestETag(eq(etag));
-        verify(executionHandler, timeout(1000)).localExecutionReady();
+        verify(executionHandler, timeout(1000)).onDeviceDecisioningReady();
         verify(executionHandler, timeout(1000)).artifactDownloadSucceeded(any());
         verify(executionHandler, never()).artifactDownloadFailed(any());
         LocalDecisioningRuleSet rules = defaultRuleLoader.getLatestRules();
@@ -207,7 +207,7 @@ class DefaultRuleLoaderTest {
 
         defaultRuleLoader.start(clientConfig);
         verify(exceptionHandler, timeout(1000)).handleException(any(TargetClientException.class));
-        verify(executionHandler, never()).localExecutionReady();
+        verify(executionHandler, never()).onDeviceDecisioningReady();
         verify(executionHandler, never()).artifactDownloadSucceeded(any());
         verify(executionHandler, timeout(1000)).artifactDownloadFailed(any());
         defaultRuleLoader.stop();
@@ -225,7 +225,7 @@ class DefaultRuleLoaderTest {
 
         defaultRuleLoader.start(clientConfig);
         verify(exceptionHandler, timeout(1000)).handleException(any(TargetClientException.class));
-        verify(executionHandler, never()).localExecutionReady();
+        verify(executionHandler, never()).onDeviceDecisioningReady();
         verify(executionHandler, never()).artifactDownloadSucceeded(any());
         verify(executionHandler, timeout(1000)).artifactDownloadFailed(any());
         defaultRuleLoader.stop();
@@ -242,7 +242,7 @@ class DefaultRuleLoaderTest {
 
         defaultRuleLoader.start(clientConfig);
         verify(exceptionHandler, timeout(1000)).handleException(any(TargetClientException.class));
-        verify(executionHandler, never()).localExecutionReady();
+        verify(executionHandler, never()).onDeviceDecisioningReady();
         verify(executionHandler, never()).artifactDownloadSucceeded(any());
         verify(executionHandler, timeout(1000)).artifactDownloadFailed(any());
         defaultRuleLoader.stop();
@@ -262,15 +262,15 @@ class DefaultRuleLoaderTest {
                 .client("emeaprod4")
                 .organizationId(TEST_ORG_ID)
                 .localEnvironment("production")
-                .defaultExecutionMode(ExecutionMode.LOCAL)
+                .defaultDecisioningMethod(DecisioningMethod.ON_DEVICE)
                 .exceptionHandler(exceptionHandler)
-                .localExecutionHandler(executionHandler)
-                .localArtifactPayload(TEST_RULE_SET.getBytes(StandardCharsets.UTF_8))
+                .onDeviceDecisioningHandler(executionHandler)
+                .onDeviceArtifactPayload(TEST_RULE_SET.getBytes(StandardCharsets.UTF_8))
                 .build();
 
         defaultRuleLoader.start(payloadClientConfig);
         verify(defaultRuleLoader, timeout(1000)).setLatestRules(any(LocalDecisioningRuleSet.class));
-        verify(executionHandler, timeout(1000)).localExecutionReady();
+        verify(executionHandler, timeout(1000)).onDeviceDecisioningReady();
         verify(executionHandler, never()).artifactDownloadSucceeded(any());
         verify(executionHandler, never()).artifactDownloadFailed(any());
         LocalDecisioningRuleSet rules = defaultRuleLoader.getLatestRules();

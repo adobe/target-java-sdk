@@ -19,7 +19,7 @@ import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.local.LocalDecisioningDetailsExecutor;
 import com.adobe.target.edge.client.local.LocalDecisioningService;
 import com.adobe.target.edge.client.local.collator.ParamsCollator;
-import com.adobe.target.edge.client.model.ExecutionMode;
+import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.service.DefaultTargetService;
@@ -94,7 +94,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryLocalRequestVisitor1() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_ADDRESS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID,
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", DecisioningMethod.HYBRID,
                         "offer2");
         targetDeliveryRequest.getDeliveryRequest().getContext().setAddress(
                 new Address().url("https://test.com?foo=bar"));
@@ -115,14 +115,14 @@ class TargetDeliveryRequestLocalMboxTest {
         assertEquals(630815, responseTokens.get("offer.id"));
         assertEquals(2, responseTokens.get("option.id"));
         assertEquals("Offer2", responseTokens.get("option.name"));
-        assertEquals("client-side", responseTokens.get("activity.executionType"));
+        assertEquals("on-device", responseTokens.get("activity.decisioningMethod"));
     }
 
     @Test
     void testTargetDeliveryLocalRequestVisitor2() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_ADDRESS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("58734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID,
+                localDeliveryRequest("58734fba-262c-4722-b4a3-ac0a93916874", DecisioningMethod.HYBRID,
                         "offer2");
         targetDeliveryRequest.getDeliveryRequest().getContext().setAddress(
                 new Address().url("https://test.com?foo=bar"));
@@ -140,7 +140,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryLocalRequestAddressMbox() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_ADDRESS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("58734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID,
+                localDeliveryRequest("58734fba-262c-4722-b4a3-ac0a93916874", DecisioningMethod.HYBRID,
                         "offer2");
         targetDeliveryRequest.getDeliveryRequest().getContext().setAddress(
                 new Address().url("https://test.com"));
@@ -160,7 +160,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryLocalRequestWrongURL() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_ADDRESS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("58734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID,
+                localDeliveryRequest("58734fba-262c-4722-b4a3-ac0a93916874", DecisioningMethod.HYBRID,
                         "offer2");
         targetDeliveryRequest.getDeliveryRequest().getContext().setAddress(
                 new Address().url("https://test.com?foo=baz"));
@@ -174,7 +174,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryLocalRequestBrowserChrome() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_BROWSER.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", DecisioningMethod.HYBRID,
                         "browser-mbox");
         targetDeliveryRequest.getDeliveryRequest().getContext().setUserAgent(
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.87 Safari/537.36");
@@ -189,7 +189,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryLocalRequestWrongBrowserFirefox() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_BROWSER.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", DecisioningMethod.HYBRID,
                         "browser-mbox");
         targetDeliveryRequest.getDeliveryRequest().getContext().setUserAgent(
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:73.0) Gecko/20100101 Firefox/71.0");
@@ -204,7 +204,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryLocalRequestBrowserNoMatch() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_BROWSER.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", DecisioningMethod.HYBRID,
                         "browser-mbox");
         targetDeliveryRequest.getDeliveryRequest().getContext().setUserAgent(
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36 Edge/17.17134");
@@ -219,7 +219,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryLocalRequestTimeRange() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_TIMEFRAME.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", DecisioningMethod.HYBRID,
                         "daterange-mbox");
         ParamsCollator specificTimeCollator =
                 TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1582830000000L);
@@ -236,7 +236,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryLocalRequestTimeRange2() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_TIMEFRAME.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", DecisioningMethod.HYBRID,
                         "daterange-mbox");
         ParamsCollator specificTimeCollator =
                 TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1583348400000L);
@@ -253,7 +253,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryLocalRequestFriday() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_TIMEFRAME.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", DecisioningMethod.HYBRID,
                         "daterange-mbox");
         ParamsCollator specificTimeCollator =
                 TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1583521200000L);
@@ -270,7 +270,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryLocalRequestOutTimeRange() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_TIMEFRAME.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", ExecutionMode.HYBRID,
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916873", DecisioningMethod.HYBRID,
                         "daterange-mbox");
         ParamsCollator specificTimeCollator =
                 TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1590516000000L);
@@ -287,7 +287,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryLocalRequestParams() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_PARAMS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("338e3c1e51f7416a8e1ccba4f81acea0.28_0", ExecutionMode.HYBRID,
+                localDeliveryRequest("338e3c1e51f7416a8e1ccba4f81acea0.28_0", DecisioningMethod.HYBRID,
                         "redundant-mbox");
         targetDeliveryRequest.getDeliveryRequest().getPrefetch().getMboxes().get(0).setParameters(
                 new HashMap<String, String>() {{
@@ -310,7 +310,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryLocalRequestParamsMismatch() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_PARAMS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("338e3c1e51f7416a8e1ccba4f81acea0.28_0", ExecutionMode.HYBRID,
+                localDeliveryRequest("338e3c1e51f7416a8e1ccba4f81acea0.28_0", DecisioningMethod.HYBRID,
                         "redundant-mbox");
         targetDeliveryRequest.getDeliveryRequest().getPrefetch().getMboxes().get(0).setParameters(
                 new HashMap<String, String>() {{
@@ -328,7 +328,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryLocalRequestPriority() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_PRIORITIES.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("338e3c1e51f7416a8e1ccba4f81acea0.28_0", ExecutionMode.HYBRID,
+                localDeliveryRequest("338e3c1e51f7416a8e1ccba4f81acea0.28_0", DecisioningMethod.HYBRID,
                         "kitty");
         targetDeliveryRequest.getDeliveryRequest().getContext().setUserAgent(
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:73.0) Gecko/20100101 Firefox/71.0");
@@ -344,7 +344,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryLocalRequestPriority2() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_PRIORITIES.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("238e3c1e51f7416a8e1ccba4f81acea0.28_0", ExecutionMode.HYBRID,
+                localDeliveryRequest("238e3c1e51f7416a8e1ccba4f81acea0.28_0", DecisioningMethod.HYBRID,
                         "kitty");
         targetDeliveryRequest.getDeliveryRequest().getContext().setUserAgent(
                 "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)");
@@ -360,7 +360,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryLocalRequestPageload() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_GLOBAL_MBOX.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.LOCAL,
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", DecisioningMethod.ON_DEVICE,
                         null);
         targetDeliveryRequest.getDeliveryRequest().getContext().setUserAgent(
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:73.0) Gecko/20100101 Firefox/71.0");
@@ -396,7 +396,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryLocalRequestPageload2() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_GLOBAL_MBOX.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.LOCAL,
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", DecisioningMethod.ON_DEVICE,
                         null);
         targetDeliveryRequest.getDeliveryRequest().getContext().setUserAgent(
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36");
@@ -444,7 +444,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryAttributesLocalOnlyPartial() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_RECOMMENDATIONS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.LOCAL,
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", DecisioningMethod.ON_DEVICE,
                         "daterange-mbox");
         targetDeliveryRequest.getDeliveryRequest().getPrefetch().addMboxesItem(
                 new MboxRequest().index(2).name("recommendations"));
@@ -462,7 +462,7 @@ class TargetDeliveryRequestLocalMboxTest {
     void testTargetDeliveryAttributesHybridRemote() throws IOException, NoSuchFieldException {
         fileRuleLoader("DECISIONING_PAYLOAD_RECOMMENDATIONS.json", localService);
         TargetDeliveryRequest targetDeliveryRequest =
-                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", ExecutionMode.HYBRID,
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", DecisioningMethod.HYBRID,
                         "daterange-mbox");
         targetDeliveryRequest.getDeliveryRequest().getPrefetch().addMboxesItem(
                 new MboxRequest().index(2).name("recommendations"));
@@ -474,7 +474,7 @@ class TargetDeliveryRequestLocalMboxTest {
     }
 
     private TargetDeliveryRequest localDeliveryRequest(String visitorIdStr,
-            ExecutionMode mode,
+            DecisioningMethod mode,
             String prefetchMbox) {
         Context context = getLocalContext();
         PrefetchRequest prefetchRequest = null;
@@ -487,7 +487,7 @@ class TargetDeliveryRequestLocalMboxTest {
                 .context(context)
                 .prefetch(prefetchRequest)
                 .id(visitorId)
-                .executionMode(mode)
+                .decisioningMethod(mode)
                 .build();
 
         assertEquals(prefetchRequest, targetDeliveryRequest.getDeliveryRequest().getPrefetch());

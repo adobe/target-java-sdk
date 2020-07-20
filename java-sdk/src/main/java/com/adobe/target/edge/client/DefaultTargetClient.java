@@ -15,7 +15,7 @@ import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.http.ResponseStatus;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.local.LocalDecisioningService;
-import com.adobe.target.edge.client.model.ExecutionMode;
+import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetAttributesResponse;
 import com.adobe.target.edge.client.service.TargetRequestException;
 import com.adobe.target.edge.client.service.TargetService;
@@ -39,14 +39,14 @@ public class DefaultTargetClient implements TargetClient {
     private final TargetService targetService;
     private final LocalDecisioningService localService;
     private final String defaultPropertyToken;
-    private final ExecutionMode defaultExecutionMode;
+    private final DecisioningMethod defaultDecisioningMethod;
 
     DefaultTargetClient(ClientConfig clientConfig) {
         this.targetService = new DefaultTargetService(clientConfig);
         VisitorProvider.init(clientConfig.getOrganizationId());
         this.localService = new LocalDecisioningService(clientConfig, this.targetService);
         this.defaultPropertyToken = clientConfig.getDefaultPropertyToken();
-        this.defaultExecutionMode = clientConfig.getDefaultExecutionMode();
+        this.defaultDecisioningMethod = clientConfig.getDefaultDecisioningMethod();
     }
 
     @Override
@@ -54,10 +54,10 @@ public class DefaultTargetClient implements TargetClient {
         try {
             Objects.requireNonNull(request, "request cannot be null");
             TargetDeliveryResponse targetDeliveryResponse;
-            ExecutionMode executionMode = getExecutionMode(request);
+            DecisioningMethod decisioningMethod = getDecisioningMethod(request);
             updatePropertyToken(request);
-            if (executionMode == ExecutionMode.LOCAL ||
-                    (executionMode == ExecutionMode.HYBRID &&
+            if (decisioningMethod == DecisioningMethod.ON_DEVICE ||
+                    (decisioningMethod == DecisioningMethod.HYBRID &&
                     localService.evaluateLocalExecution(request).isAllLocal())) {
                 targetDeliveryResponse = localService.executeRequest(request);
             }
@@ -75,10 +75,10 @@ public class DefaultTargetClient implements TargetClient {
         try {
             Objects.requireNonNull(request, "request cannot be null");
             CompletableFuture<TargetDeliveryResponse> targetDeliveryResponse;
-            ExecutionMode executionMode = getExecutionMode(request);
+            DecisioningMethod decisioningMethod = getDecisioningMethod(request);
             updatePropertyToken(request);
-            if (executionMode == ExecutionMode.LOCAL ||
-                    (executionMode == ExecutionMode.HYBRID &&
+            if (decisioningMethod == DecisioningMethod.ON_DEVICE ||
+                    (decisioningMethod == DecisioningMethod.HYBRID &&
                     localService.evaluateLocalExecution(request).isAllLocal())) {
                 targetDeliveryResponse = localService.executeRequestAsync(request);
             }
@@ -123,12 +123,12 @@ public class DefaultTargetClient implements TargetClient {
         }
     }
 
-    private ExecutionMode getExecutionMode(TargetDeliveryRequest targetRequest) {
-        ExecutionMode mode = targetRequest.getExecutionMode();
+    private DecisioningMethod getDecisioningMethod(TargetDeliveryRequest targetRequest) {
+        DecisioningMethod mode = targetRequest.getDecisioningMethod();
         if (mode != null) {
             return mode;
         }
-        return defaultExecutionMode;
+        return defaultDecisioningMethod;
     }
 
     private void updatePropertyToken(TargetDeliveryRequest targetRequest) {
@@ -149,7 +149,7 @@ public class DefaultTargetClient implements TargetClient {
 
     private static TargetDeliveryRequest addMBoxesToRequest(TargetDeliveryRequest targetRequest, String... mboxes) {
         if (targetRequest == null || targetRequest.getDeliveryRequest() == null) {
-            targetRequest = TargetDeliveryRequest.builder().executionMode(ExecutionMode.HYBRID).build();
+            targetRequest = TargetDeliveryRequest.builder().decisioningMethod(DecisioningMethod.HYBRID).build();
         }
         int idx = 0;
         Set<String> existingMBoxNames = new HashSet<>();

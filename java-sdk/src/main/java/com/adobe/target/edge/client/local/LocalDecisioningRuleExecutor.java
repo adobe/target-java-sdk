@@ -22,7 +22,7 @@ public class LocalDecisioningRuleExecutor {
 
     private static final String ALLOCATION = "allocation";
     private static final String OPTIONS = "options";
-    private static final String RT_EXECUTION_TYPE = "activity.executionType";
+    private static final String RESPONSE_TOKEN_EXECUTION_TYPE = "activity.decisioningMethod";
 
     private final ClientConfig clientConfig;
     private final ObjectMapper mapper;
@@ -104,7 +104,7 @@ public class LocalDecisioningRuleExecutor {
 
         Option option = optionsList.get(0);
         Map<String, Object> responseTokens = option.getResponseTokens();
-        responseTokens.put(RT_EXECUTION_TYPE, "client-side");
+        responseTokens.put(RESPONSE_TOKEN_EXECUTION_TYPE, "on-device");
         @SuppressWarnings("unchecked")
         Map<String, Object> geoContext =
                 (Map<String, Object>)localContext.get(LocalDecisioningService.CONTEXT_KEY_GEO);

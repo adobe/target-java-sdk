@@ -317,7 +317,7 @@ public class LocalDecisioningService {
                  .locationHint(locationHint)
                  .sessionId(deliveryRequest.getSessionId())
                  .visitor(deliveryRequest.getVisitor())
-                 .executionMode(ExecutionMode.REMOTE)
+                 .decisioningMethod(DecisioningMethod.SERVER_SIDE)
                  .requestId(UUID.randomUUID().toString())
                  .impressionId(UUID.randomUUID().toString())
                  .id(dreq.getId() != null ? dreq.getId() : deliveryResponse.getResponse().getId())

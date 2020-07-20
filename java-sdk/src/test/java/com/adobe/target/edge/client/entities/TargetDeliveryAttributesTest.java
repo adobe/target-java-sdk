@@ -19,7 +19,7 @@ import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.local.LocalDecisioningService;
 import com.adobe.target.edge.client.local.LocalExecutionEvaluator;
 import com.adobe.target.edge.client.local.RuleLoader;
-import com.adobe.target.edge.client.model.ExecutionMode;
+import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.service.DefaultTargetService;
 import org.junit.jupiter.api.BeforeEach;
@@ -134,7 +134,7 @@ class TargetDeliveryAttributesTest {
                 .prefetch(prefetchRequest)
                 .execute(executeRequest)
                 .id(visitorId)
-                .executionMode(ExecutionMode.HYBRID)
+                .decisioningMethod(DecisioningMethod.HYBRID)
                 .build();
 
         assertEquals(prefetchRequest, targetDeliveryRequest.getDeliveryRequest().getPrefetch());

@@ -18,7 +18,7 @@ import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.local.LocalDecisioningDetailsExecutor;
 import com.adobe.target.edge.client.local.LocalDecisioningService;
-import com.adobe.target.edge.client.model.ExecutionMode;
+import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryRequestBuilder;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
@@ -128,7 +128,7 @@ public class TargetDeliveryLocalPropertyTest {
                 .context(new Context().address(new Address().url("https://test.com")))
                 .prefetch(new PrefetchRequest().addMboxesItem(new MboxRequest().name("superfluous-mbox").index(0)))
                 .id(new VisitorId().tntId("38734fba-262c-4722-b4a3-ac0a93916874"))
-                .executionMode(ExecutionMode.HYBRID);
+                .decisioningMethod(DecisioningMethod.HYBRID);
         if (!noProperty) {
             builder.property(new Property().token(propertyToken));
         }

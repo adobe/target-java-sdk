@@ -40,7 +40,7 @@ public final class TargetDeliveryRequestBuilder {
     private List<CustomerId> targetCustomerIds;
     private String trackingServer;
     private String trackingServerSecure;
-    private ExecutionMode executionMode;
+    private DecisioningMethod decisioningMethod;
     private Map<String, String> requestCookies = new HashMap<>();
     private DeliveryRequest request;
 
@@ -163,8 +163,8 @@ public final class TargetDeliveryRequestBuilder {
         return this;
     }
 
-    public TargetDeliveryRequestBuilder executionMode(ExecutionMode executionMode) {
-        this.executionMode = executionMode;
+    public TargetDeliveryRequestBuilder decisioningMethod(DecisioningMethod decisioningMethod) {
+        this.decisioningMethod = decisioningMethod;
         return this;
     }
 
@@ -177,7 +177,7 @@ public final class TargetDeliveryRequestBuilder {
         targetDeliveryRequest.setLocationHint(locationHint);
         targetDeliveryRequest.setSessionId(sessionId);
         targetDeliveryRequest.setVisitor(visitor);
-        targetDeliveryRequest.setExecutionMode(executionMode);
+        targetDeliveryRequest.setDecisioningMethod(decisioningMethod);
         return targetDeliveryRequest;
     }
 

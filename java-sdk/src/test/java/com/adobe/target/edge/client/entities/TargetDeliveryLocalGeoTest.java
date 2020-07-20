@@ -19,7 +19,7 @@ import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.local.LocalDecisioningDetailsExecutor;
 import com.adobe.target.edge.client.local.LocalDecisioningService;
 import com.adobe.target.edge.client.local.client.geo.GeoClient;
-import com.adobe.target.edge.client.model.ExecutionMode;
+import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.service.DefaultTargetService;
@@ -177,7 +177,7 @@ public class TargetDeliveryLocalGeoTest {
                 .context(new Context().geo(ipGeo).address(new Address().url("https://test.com")))
                 .prefetch(new PrefetchRequest().addMboxesItem(new MboxRequest().name("geo").index(0)))
                 .id(new VisitorId().tntId("38734fba-262c-4722-b4a3-ac0a93916874"))
-                .executionMode(ExecutionMode.LOCAL)
+                .decisioningMethod(DecisioningMethod.ON_DEVICE)
                 .build();
         TargetDeliveryResponse response = targetJavaClient.getOffers(targetDeliveryRequest);
         assertNotNull(response);
@@ -271,7 +271,7 @@ public class TargetDeliveryLocalGeoTest {
                 .context(new Context().geo(geo).address(new Address().url("https://test.com")))
                 .prefetch(new PrefetchRequest().addMboxesItem(new MboxRequest().name("geo").index(0)))
                 .id(new VisitorId().tntId("38734fba-262c-4722-b4a3-ac0a93916874"))
-                .executionMode(ExecutionMode.HYBRID)
+                .decisioningMethod(DecisioningMethod.HYBRID)
                 .build();
         TargetDeliveryResponse response = targetJavaClient.getOffers(targetDeliveryRequest);
         assertNotNull(response);

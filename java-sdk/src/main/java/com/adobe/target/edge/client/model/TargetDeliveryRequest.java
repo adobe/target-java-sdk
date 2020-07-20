@@ -19,7 +19,7 @@ public class TargetDeliveryRequest {
     private String sessionId;
     private String locationHint;
     private Visitor visitor;
-    private ExecutionMode executionMode;
+    private DecisioningMethod decisioningMethod;
     private DeliveryRequest deliveryRequest = new DeliveryRequest();
 
     private TargetDeliveryRequest() {}
@@ -45,8 +45,8 @@ public class TargetDeliveryRequest {
         return this;
     }
 
-    TargetDeliveryRequest setExecutionMode(ExecutionMode executionMode) {
-        this.executionMode = executionMode;
+    TargetDeliveryRequest setDecisioningMethod(DecisioningMethod decisioningMethod) {
+        this.decisioningMethod = decisioningMethod;
         return this;
     }
 
@@ -66,7 +66,7 @@ public class TargetDeliveryRequest {
         return locationHint;
     }
 
-    public ExecutionMode getExecutionMode() { return executionMode; }
+    public DecisioningMethod getDecisioningMethod() { return decisioningMethod; }
 
     public static TargetDeliveryRequestBuilder builder() {
         return new TargetDeliveryRequestBuilder();
@@ -78,7 +78,7 @@ public class TargetDeliveryRequest {
                 "sessionId='" + sessionId + '\'' +
                 ", locationHint='" + locationHint + '\'' +
                 ", visitor=" + visitor +
-                ", executionMode=" + executionMode +
+                ", decisioningMethod=" + decisioningMethod +
                 ", deliveryRequest=" + deliveryRequest +
                 '}';
     }

@@ -36,7 +36,7 @@ public class ClusterLocator {
     private Timer timer = null;
 
     public void start(final ClientConfig clientConfig, final TargetService targetService) {
-        if (!clientConfig.isLocalExecutionEnabled()) {
+        if (!clientConfig.isOnDeviceDecisioningEnabled()) {
             return;
         }
         if (this.running) {

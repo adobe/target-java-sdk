@@ -15,7 +15,7 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.ClientProxyConfig;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
-import com.adobe.target.edge.client.model.local.LocalExecutionHandler;
+import com.adobe.target.edge.client.model.local.OnDeviceDecisioningHandler;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import kong.unirest.*;
@@ -57,24 +57,24 @@ public class DefaultRuleLoader implements RuleLoader {
 
     @Override
     public synchronized void start(final ClientConfig clientConfig) {
-        if (!clientConfig.isLocalExecutionEnabled()) {
+        if (!clientConfig.isOnDeviceDecisioningEnabled()) {
             return;
         }
         if (started) {
             return;
         }
         ObjectMapper mapper = new JacksonObjectMapper();
-        byte[] artifactPayload = clientConfig.getLocalArtifactPayload();
+        byte[] artifactPayload = clientConfig.getOnDeviceArtifactPayload();
         if (artifactPayload != null) {
             String payload = new String(artifactPayload, StandardCharsets.UTF_8);
             LocalDecisioningRuleSet ruleSet = mapper.readValue(payload, new GenericType<LocalDecisioningRuleSet>() {});
             String invalidMessage = invalidRuleSetMessage(ruleSet, null);
             if (invalidMessage == null) {
                 setLatestRules(ruleSet);
-                LocalExecutionHandler handler = clientConfig.getLocalExecutionHandler();
+                OnDeviceDecisioningHandler handler = clientConfig.getOnDeviceDecisioningHandler();
                 if (handler != null && !succeeded) {
                     succeeded = true;
-                    handler.localExecutionReady();
+                    handler.onDeviceDecisioningReady();
                 }
             }
             else {
@@ -129,7 +129,7 @@ public class DefaultRuleLoader implements RuleLoader {
             @Override
             public void run() {
                 boolean success = DefaultRuleLoader.this.loadRules(clientConfig);
-                LocalExecutionHandler handler = clientConfig.getLocalExecutionHandler();
+                OnDeviceDecisioningHandler handler = clientConfig.getOnDeviceDecisioningHandler();
                 if (!success && DefaultRuleLoader.this.latestRules == null) {
                     // retry if initial rules file download fails
                     String message;
@@ -150,7 +150,7 @@ public class DefaultRuleLoader implements RuleLoader {
                 else {
                     if (handler != null && !succeeded) {
                         succeeded = true;
-                        handler.localExecutionReady();
+                        handler.onDeviceDecisioningReady();
                     }
                     DefaultRuleLoader.this.numFetches++;
                     DefaultRuleLoader.this.lastFetch = new Date();
@@ -160,7 +160,7 @@ public class DefaultRuleLoader implements RuleLoader {
     }
 
     public long getPollingInterval() {
-        return Math.max(MIN_POLLING_INTERVAL, clientConfig.getLocalDecisioningPollingIntSecs() * 1000);
+        return Math.max(MIN_POLLING_INTERVAL, clientConfig.getOnDeviceDecisioningPollingIntSecs() * 1000);
     }
 
     public int getNumFetches() {
@@ -224,7 +224,7 @@ public class DefaultRuleLoader implements RuleLoader {
             if (invalidMessage == null) {
                 setLatestETag(response.getHeaders().getFirst("ETag"));
                 setLatestRules(ruleSet);
-                LocalExecutionHandler localHandler = clientConfig.getLocalExecutionHandler();
+                OnDeviceDecisioningHandler localHandler = clientConfig.getOnDeviceDecisioningHandler();
                 if (localHandler != null) {
                     localHandler.artifactDownloadSucceeded(request == null ? null : request.asBytes().getBody());
                 }
@@ -269,7 +269,7 @@ public class DefaultRuleLoader implements RuleLoader {
 
     private String getLocalDecisioningUrl(ClientConfig clientConfig) {
         return "https://" +
-                clientConfig.getLocalConfigHostname() + "/" +
+                clientConfig.getOnDeviceConfigHostname() + "/" +
                 clientConfig.getClient() + "/" +
                 clientConfig.getLocalEnvironment().toLowerCase() +
                 "/v" + MAJOR_VERSION +

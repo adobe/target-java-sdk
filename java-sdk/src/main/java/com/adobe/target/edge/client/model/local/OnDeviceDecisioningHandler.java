@@ -9,10 +9,19 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package com.adobe.target.edge.client.model;
+package com.adobe.target.edge.client.model.local;
 
-public enum ExecutionMode {
-    REMOTE,
-    LOCAL,
-    HYBRID
+import com.adobe.target.edge.client.service.TargetClientException;
+
+public interface OnDeviceDecisioningHandler {
+
+    /**
+     * This is called when local execution is ready. It is called only once.
+     */
+    void onDeviceDecisioningReady();
+
+    void artifactDownloadSucceeded(byte[] artifactData);
+
+    void artifactDownloadFailed(TargetClientException e);
+
 }
