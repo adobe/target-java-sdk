@@ -13,8 +13,8 @@ package com.adobe.target.edge.client.local;
 
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.model.DecisioningMethod;
-import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
-import com.adobe.target.edge.client.model.local.OnDeviceDecisioningHandler;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningHandler;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -88,8 +88,8 @@ class DefaultRuleLoaderTest {
                 .build();
     }
 
-    static HttpResponse<LocalDecisioningRuleSet> getTestResponse(final String ruleSet, final String etag, final int status) {
-        return new HttpResponse<LocalDecisioningRuleSet>() {
+    static HttpResponse<OnDeviceDecisioningRuleSet> getTestResponse(final String ruleSet, final String etag, final int status) {
+        return new HttpResponse<OnDeviceDecisioningRuleSet>() {
             @Override
             public int getStatus() {
                 return status;
@@ -110,7 +110,7 @@ class DefaultRuleLoaderTest {
             }
 
             @Override
-            public LocalDecisioningRuleSet getBody() {
+            public OnDeviceDecisioningRuleSet getBody() {
                 if (ruleSet == null) {
                     return null;
                 }
@@ -120,7 +120,7 @@ class DefaultRuleLoaderTest {
                 mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 mapper.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true);
                 try {
-                    return mapper.readValue(ruleSet, new TypeReference<LocalDecisioningRuleSet>() {
+                    return mapper.readValue(ruleSet, new TypeReference<OnDeviceDecisioningRuleSet>() {
                     });
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -133,27 +133,27 @@ class DefaultRuleLoaderTest {
             }
 
             @Override
-            public <V> V mapBody(Function<LocalDecisioningRuleSet, V> func) {
+            public <V> V mapBody(Function<OnDeviceDecisioningRuleSet, V> func) {
                 return null;
             }
 
             @Override
-            public <V> HttpResponse<V> map(Function<LocalDecisioningRuleSet, V> func) {
+            public <V> HttpResponse<V> map(Function<OnDeviceDecisioningRuleSet, V> func) {
                 return null;
             }
 
             @Override
-            public HttpResponse<LocalDecisioningRuleSet> ifSuccess(Consumer<HttpResponse<LocalDecisioningRuleSet>> consumer) {
+            public HttpResponse<OnDeviceDecisioningRuleSet> ifSuccess(Consumer<HttpResponse<OnDeviceDecisioningRuleSet>> consumer) {
                 return null;
             }
 
             @Override
-            public HttpResponse<LocalDecisioningRuleSet> ifFailure(Consumer<HttpResponse<LocalDecisioningRuleSet>> consumer) {
+            public HttpResponse<OnDeviceDecisioningRuleSet> ifFailure(Consumer<HttpResponse<OnDeviceDecisioningRuleSet>> consumer) {
                 return null;
             }
 
             @Override
-            public <E> HttpResponse<LocalDecisioningRuleSet> ifFailure(Class<? extends E> errorClass, Consumer<HttpResponse<E>> consumer) {
+            public <E> HttpResponse<OnDeviceDecisioningRuleSet> ifFailure(Class<? extends E> errorClass, Consumer<HttpResponse<E>> consumer) {
                 return null;
             }
 
@@ -180,12 +180,12 @@ class DefaultRuleLoaderTest {
                 .when(defaultRuleLoader).executeRequest(any());
 
         defaultRuleLoader.start(clientConfig);
-        verify(defaultRuleLoader, timeout(1000)).setLatestRules(any(LocalDecisioningRuleSet.class));
+        verify(defaultRuleLoader, timeout(1000)).setLatestRules(any(OnDeviceDecisioningRuleSet.class));
         verify(defaultRuleLoader, timeout(1000)).setLatestETag(eq(etag));
         verify(executionHandler, timeout(1000)).onDeviceDecisioningReady();
         verify(executionHandler, timeout(1000)).artifactDownloadSucceeded(any());
         verify(executionHandler, never()).artifactDownloadFailed(any());
-        LocalDecisioningRuleSet rules = defaultRuleLoader.getLatestRules();
+        OnDeviceDecisioningRuleSet rules = defaultRuleLoader.getLatestRules();
         assertNotNull(rules);
 
         Mockito.doReturn(getTestResponse(TEST_RULE_SET, "5b1cf3c050e1a0d16934922bf19ba6ea", HttpStatus.SC_NOT_MODIFIED))
@@ -269,11 +269,11 @@ class DefaultRuleLoaderTest {
                 .build();
 
         defaultRuleLoader.start(payloadClientConfig);
-        verify(defaultRuleLoader, timeout(1000)).setLatestRules(any(LocalDecisioningRuleSet.class));
+        verify(defaultRuleLoader, timeout(1000)).setLatestRules(any(OnDeviceDecisioningRuleSet.class));
         verify(executionHandler, timeout(1000)).onDeviceDecisioningReady();
         verify(executionHandler, never()).artifactDownloadSucceeded(any());
         verify(executionHandler, never()).artifactDownloadFailed(any());
-        LocalDecisioningRuleSet rules = defaultRuleLoader.getLatestRules();
+        OnDeviceDecisioningRuleSet rules = defaultRuleLoader.getLatestRules();
         assertNotNull(rules);
 
         defaultRuleLoader.refresh();

@@ -18,8 +18,8 @@ import com.adobe.target.delivery.v1.model.ViewRequest;
 import com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
-import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
-import com.adobe.target.edge.client.model.local.LocalExecutionEvaluation;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningEvaluation;
 import com.adobe.target.edge.client.service.VisitorProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,9 +36,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class LocalExecutionEvaluatorTest {
+public class OnDeviceDecisioningEvaluatorTest {
 
-    private LocalExecutionEvaluator evaluator;
+    private OnDeviceDecisioningEvaluator evaluator;
     private ObjectMapper objectMapper;
 
     @BeforeEach
@@ -49,11 +49,11 @@ public class LocalExecutionEvaluatorTest {
 
     @Test
     public void testNullRequest() throws JsonProcessingException {
-        LocalDecisioningRuleSet ruleSet = new LocalDecisioningRuleSet();
+        OnDeviceDecisioningRuleSet ruleSet = new OnDeviceDecisioningRuleSet();
         String serializedRuleSet = objectMapper.writeValueAsString(ruleSet);
         RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(serializedRuleSet);
-        evaluator = new LocalExecutionEvaluator(testRuleLoader);
-        LocalExecutionEvaluation evaluation = evaluator.evaluateLocalExecution(null);
+        evaluator = new OnDeviceDecisioningEvaluator(testRuleLoader);
+        OnDeviceDecisioningEvaluation evaluation = evaluator.evaluateLocalExecution(null);
         assertFalse(evaluation.isAllLocal());
         assertNull(evaluation.getRemoteMBoxes());
         assertNull(evaluation.getRemoteViews());
@@ -62,9 +62,9 @@ public class LocalExecutionEvaluatorTest {
     @Test
     public void testNoRuleSet() {
         RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(null);
-        evaluator = new LocalExecutionEvaluator(testRuleLoader);
+        evaluator = new OnDeviceDecisioningEvaluator(testRuleLoader);
         TargetDeliveryRequest request = TargetDeliveryRequest.builder().build();
-        LocalExecutionEvaluation evaluation = evaluator.evaluateLocalExecution(request);
+        OnDeviceDecisioningEvaluation evaluation = evaluator.evaluateLocalExecution(request);
         assertFalse(evaluation.isAllLocal());
         assertNull(evaluation.getRemoteMBoxes());
         assertNull(evaluation.getRemoteViews());
@@ -72,7 +72,7 @@ public class LocalExecutionEvaluatorTest {
 
     @Test
     public void testAllLocalNoRemoteMbox() throws JsonProcessingException, NoSuchFieldException {
-        LocalDecisioningRuleSet ruleSet = new LocalDecisioningRuleSet();
+        OnDeviceDecisioningRuleSet ruleSet = new OnDeviceDecisioningRuleSet();
         List<String> localMboxes = new ArrayList<>();
         localMboxes.add("test");
         localMboxes.add("test2");
@@ -82,13 +82,13 @@ public class LocalExecutionEvaluatorTest {
                 .getDeclaredField("remoteMboxes"), new ArrayList<String>());
         String serializedRuleSet = objectMapper.writeValueAsString(ruleSet);
         RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(serializedRuleSet);
-        evaluator = new LocalExecutionEvaluator(testRuleLoader);
+        evaluator = new OnDeviceDecisioningEvaluator(testRuleLoader);
         TargetDeliveryRequest request = TargetDeliveryRequest.builder()
                 .execute(new ExecuteRequest()
                         .addMboxesItem(new MboxRequest().name("test"))
                         .addMboxesItem(new MboxRequest().name("test2")))
                 .build();
-        LocalExecutionEvaluation evaluation = evaluator.evaluateLocalExecution(request);
+        OnDeviceDecisioningEvaluation evaluation = evaluator.evaluateLocalExecution(request);
         assertTrue(evaluation.isAllLocal());
         assertNull(evaluation.getRemoteMBoxes());
         assertNull(evaluation.getRemoteViews());
@@ -96,7 +96,7 @@ public class LocalExecutionEvaluatorTest {
 
     @Test
     public void testLocalAndRemoteMbox() throws JsonProcessingException, NoSuchFieldException {
-        LocalDecisioningRuleSet ruleSet = new LocalDecisioningRuleSet();
+        OnDeviceDecisioningRuleSet ruleSet = new OnDeviceDecisioningRuleSet();
         List<String> mboxes = new ArrayList<>();
         mboxes.add("test");
         mboxes.add("test2");
@@ -106,13 +106,13 @@ public class LocalExecutionEvaluatorTest {
                 .getDeclaredField("remoteMboxes"), mboxes);
         String serializedRuleSet = objectMapper.writeValueAsString(ruleSet);
         RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(serializedRuleSet);
-        evaluator = new LocalExecutionEvaluator(testRuleLoader);
+        evaluator = new OnDeviceDecisioningEvaluator(testRuleLoader);
         TargetDeliveryRequest request = TargetDeliveryRequest.builder()
                 .execute(new ExecuteRequest()
                         .addMboxesItem(new MboxRequest().name("test").index(0))
                         .addMboxesItem(new MboxRequest().name("test2").index(1)))
                 .build();
-        LocalExecutionEvaluation evaluation = evaluator.evaluateLocalExecution(request);
+        OnDeviceDecisioningEvaluation evaluation = evaluator.evaluateLocalExecution(request);
         assertFalse(evaluation.isAllLocal());
         List<String> remoteMboxes = evaluation.getRemoteMBoxes();
         remoteMboxes.sort(Comparator.naturalOrder());
@@ -122,7 +122,7 @@ public class LocalExecutionEvaluatorTest {
 
     @Test
     public void testUnknownMbox() throws JsonProcessingException, NoSuchFieldException {
-        LocalDecisioningRuleSet ruleSet = new LocalDecisioningRuleSet();
+        OnDeviceDecisioningRuleSet ruleSet = new OnDeviceDecisioningRuleSet();
         List<String> mboxes = new ArrayList<>();
         mboxes.add("test");
         FieldSetter.setField(ruleSet, ruleSet.getClass()
@@ -131,13 +131,13 @@ public class LocalExecutionEvaluatorTest {
                 .getDeclaredField("remoteMboxes"), new ArrayList<>());
         String serializedRuleSet = objectMapper.writeValueAsString(ruleSet);
         RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(serializedRuleSet);
-        evaluator = new LocalExecutionEvaluator(testRuleLoader);
+        evaluator = new OnDeviceDecisioningEvaluator(testRuleLoader);
         TargetDeliveryRequest request = TargetDeliveryRequest.builder()
                 .execute(new ExecuteRequest()
                         .addMboxesItem(new MboxRequest().name("test"))
                         .addMboxesItem(new MboxRequest().name("test2")))
                 .build();
-        LocalExecutionEvaluation evaluation = evaluator.evaluateLocalExecution(request);
+        OnDeviceDecisioningEvaluation evaluation = evaluator.evaluateLocalExecution(request);
         assertFalse(evaluation.isAllLocal());
         List<String> remoteMboxes = new ArrayList<>();
         remoteMboxes.add("test2");
@@ -147,7 +147,7 @@ public class LocalExecutionEvaluatorTest {
 
     @Test
     public void testAllLocalNoRemoteView() throws JsonProcessingException, NoSuchFieldException {
-        LocalDecisioningRuleSet ruleSet = new LocalDecisioningRuleSet();
+        OnDeviceDecisioningRuleSet ruleSet = new OnDeviceDecisioningRuleSet();
         List<String> localViews = new ArrayList<>();
         localViews.add("test");
         localViews.add("test2");
@@ -157,13 +157,13 @@ public class LocalExecutionEvaluatorTest {
                 .getDeclaredField("remoteViews"), new ArrayList<String>());
         String serializedRuleSet = objectMapper.writeValueAsString(ruleSet);
         RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(serializedRuleSet);
-        evaluator = new LocalExecutionEvaluator(testRuleLoader);
+        evaluator = new OnDeviceDecisioningEvaluator(testRuleLoader);
         TargetDeliveryRequest request = TargetDeliveryRequest.builder()
                 .prefetch(new PrefetchRequest()
                         .addViewsItem(new ViewRequest().name("test"))
                         .addViewsItem(new ViewRequest().name("test2")))
                 .build();
-        LocalExecutionEvaluation evaluation = evaluator.evaluateLocalExecution(request);
+        OnDeviceDecisioningEvaluation evaluation = evaluator.evaluateLocalExecution(request);
         assertTrue(evaluation.isAllLocal());
         assertNull(evaluation.getRemoteMBoxes());
         assertNull(evaluation.getRemoteViews());
@@ -171,7 +171,7 @@ public class LocalExecutionEvaluatorTest {
 
     @Test
     public void testAllLocalNoRemoteAllViews() throws JsonProcessingException, NoSuchFieldException {
-        LocalDecisioningRuleSet ruleSet = new LocalDecisioningRuleSet();
+        OnDeviceDecisioningRuleSet ruleSet = new OnDeviceDecisioningRuleSet();
         List<String> localViews = new ArrayList<>();
         localViews.add("test");
         localViews.add("test2");
@@ -181,12 +181,12 @@ public class LocalExecutionEvaluatorTest {
                 .getDeclaredField("remoteViews"), new ArrayList<String>());
         String serializedRuleSet = objectMapper.writeValueAsString(ruleSet);
         RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(serializedRuleSet);
-        evaluator = new LocalExecutionEvaluator(testRuleLoader);
+        evaluator = new OnDeviceDecisioningEvaluator(testRuleLoader);
         TargetDeliveryRequest request = TargetDeliveryRequest.builder()
                 .prefetch(new PrefetchRequest()
                         .addViewsItem(new ViewRequest()))
                 .build();
-        LocalExecutionEvaluation evaluation = evaluator.evaluateLocalExecution(request);
+        OnDeviceDecisioningEvaluation evaluation = evaluator.evaluateLocalExecution(request);
         assertTrue(evaluation.isAllLocal());
         assertNull(evaluation.getRemoteMBoxes());
         assertNull(evaluation.getRemoteViews());
@@ -194,7 +194,7 @@ public class LocalExecutionEvaluatorTest {
 
     @Test
     public void testLocalAndRemoteView() throws JsonProcessingException, NoSuchFieldException {
-        LocalDecisioningRuleSet ruleSet = new LocalDecisioningRuleSet();
+        OnDeviceDecisioningRuleSet ruleSet = new OnDeviceDecisioningRuleSet();
         List<String> views = new ArrayList<>();
         views.add("test");
         views.add("test2");
@@ -204,13 +204,13 @@ public class LocalExecutionEvaluatorTest {
                 .getDeclaredField("remoteViews"), views);
         String serializedRuleSet = objectMapper.writeValueAsString(ruleSet);
         RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(serializedRuleSet);
-        evaluator = new LocalExecutionEvaluator(testRuleLoader);
+        evaluator = new OnDeviceDecisioningEvaluator(testRuleLoader);
         TargetDeliveryRequest request = TargetDeliveryRequest.builder()
                 .prefetch(new PrefetchRequest()
                         .addViewsItem(new ViewRequest().name("test"))
                         .addViewsItem(new ViewRequest().name("test2")))
                 .build();
-        LocalExecutionEvaluation evaluation = evaluator.evaluateLocalExecution(request);
+        OnDeviceDecisioningEvaluation evaluation = evaluator.evaluateLocalExecution(request);
         assertFalse(evaluation.isAllLocal());
         List<String> remoteViews = evaluation.getRemoteViews();
         remoteViews.sort(Comparator.naturalOrder());
@@ -220,7 +220,7 @@ public class LocalExecutionEvaluatorTest {
 
     @Test
     public void testRemoteAllViews() throws JsonProcessingException, NoSuchFieldException {
-        LocalDecisioningRuleSet ruleSet = new LocalDecisioningRuleSet();
+        OnDeviceDecisioningRuleSet ruleSet = new OnDeviceDecisioningRuleSet();
         List<String> views = new ArrayList<>();
         views.add("test");
         views.add("test2");
@@ -230,12 +230,12 @@ public class LocalExecutionEvaluatorTest {
                 .getDeclaredField("remoteViews"), views);
         String serializedRuleSet = objectMapper.writeValueAsString(ruleSet);
         RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(serializedRuleSet);
-        evaluator = new LocalExecutionEvaluator(testRuleLoader);
+        evaluator = new OnDeviceDecisioningEvaluator(testRuleLoader);
         TargetDeliveryRequest request = TargetDeliveryRequest.builder()
                 .prefetch(new PrefetchRequest()
                         .addViewsItem(new ViewRequest()))
                 .build();
-        LocalExecutionEvaluation evaluation = evaluator.evaluateLocalExecution(request);
+        OnDeviceDecisioningEvaluation evaluation = evaluator.evaluateLocalExecution(request);
         assertFalse(evaluation.isAllLocal());
         List<String> remoteViews = evaluation.getRemoteViews();
         remoteViews.sort(Comparator.naturalOrder());
@@ -245,7 +245,7 @@ public class LocalExecutionEvaluatorTest {
 
     @Test
     public void testUnknownView() throws JsonProcessingException, NoSuchFieldException {
-        LocalDecisioningRuleSet ruleSet = new LocalDecisioningRuleSet();
+        OnDeviceDecisioningRuleSet ruleSet = new OnDeviceDecisioningRuleSet();
         List<String> views = new ArrayList<>();
         views.add("test");
         FieldSetter.setField(ruleSet, ruleSet.getClass()
@@ -254,13 +254,13 @@ public class LocalExecutionEvaluatorTest {
                 .getDeclaredField("remoteViews"), new ArrayList<>());
         String serializedRuleSet = objectMapper.writeValueAsString(ruleSet);
         RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoader(serializedRuleSet);
-        evaluator = new LocalExecutionEvaluator(testRuleLoader);
+        evaluator = new OnDeviceDecisioningEvaluator(testRuleLoader);
         TargetDeliveryRequest request = TargetDeliveryRequest.builder()
                 .prefetch(new PrefetchRequest()
                         .addViewsItem(new ViewRequest().name("test"))
                         .addViewsItem(new ViewRequest().name("test2")))
                 .build();
-        LocalExecutionEvaluation evaluation = evaluator.evaluateLocalExecution(request);
+        OnDeviceDecisioningEvaluation evaluation = evaluator.evaluateLocalExecution(request);
         assertFalse(evaluation.isAllLocal());
         List<String> remoteViews = new ArrayList<>();
         remoteViews.add("test2");

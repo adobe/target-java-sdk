@@ -14,7 +14,7 @@ package com.adobe.target.edge.client;
 import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.http.ResponseStatus;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
-import com.adobe.target.edge.client.local.LocalDecisioningService;
+import com.adobe.target.edge.client.local.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetAttributesResponse;
 import com.adobe.target.edge.client.service.TargetRequestException;
@@ -37,14 +37,14 @@ public class DefaultTargetClient implements TargetClient {
 
     private static final Logger logger = LoggerFactory.getLogger(DefaultTargetHttpClient.class);
     private final TargetService targetService;
-    private final LocalDecisioningService localService;
+    private final OnDeviceDecisioningService localService;
     private final String defaultPropertyToken;
     private final DecisioningMethod defaultDecisioningMethod;
 
     DefaultTargetClient(ClientConfig clientConfig) {
         this.targetService = new DefaultTargetService(clientConfig);
         VisitorProvider.init(clientConfig.getOrganizationId());
-        this.localService = new LocalDecisioningService(clientConfig, this.targetService);
+        this.localService = new OnDeviceDecisioningService(clientConfig, this.targetService);
         this.defaultPropertyToken = clientConfig.getDefaultPropertyToken();
         this.defaultDecisioningMethod = clientConfig.getDefaultDecisioningMethod();
     }

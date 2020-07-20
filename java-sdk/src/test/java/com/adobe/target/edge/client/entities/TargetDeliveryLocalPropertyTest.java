@@ -16,8 +16,8 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
-import com.adobe.target.edge.client.local.LocalDecisioningDetailsExecutor;
-import com.adobe.target.edge.client.local.LocalDecisioningService;
+import com.adobe.target.edge.client.local.OnDeviceDecisioningDetailsExecutor;
+import com.adobe.target.edge.client.local.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryRequestBuilder;
@@ -70,9 +70,9 @@ public class TargetDeliveryLocalPropertyTest {
                 .build();
 
         DefaultTargetService targetService = new DefaultTargetService(clientConfig);
-        LocalDecisioningService localService = new LocalDecisioningService(clientConfig, targetService);
+        OnDeviceDecisioningService localService = new OnDeviceDecisioningService(clientConfig, targetService);
         ObjectMapper mapper = new JacksonObjectMapper().getMapper();
-        LocalDecisioningDetailsExecutor decisionHandler = new LocalDecisioningDetailsExecutor(clientConfig, mapper);
+        OnDeviceDecisioningDetailsExecutor decisionHandler = new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);
 
         targetJavaClient = TargetClient.create(clientConfig);
 

@@ -9,12 +9,12 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package com.adobe.target.edge.client.model.local;
+package com.adobe.target.edge.client.model.ondevice;
 
 import java.util.List;
 import java.util.Map;
 
-public class LocalDecisioningRuleSet {
+public class OnDeviceDecisioningRuleSet {
 
     private String version;
     private String globalMbox;
@@ -24,10 +24,10 @@ public class LocalDecisioningRuleSet {
     private List<String> localMboxes;
     private List<String> localViews;
     private List<String> responseTokens;
-    private LocalDecisioningRules rules;
+    private OnDeviceDecisioningRules rules;
     private Map<String, Object> meta;
 
-    public LocalDecisioningRuleSet() { }
+    public OnDeviceDecisioningRuleSet() { }
 
     public String getVersion() {
         return version;
@@ -61,7 +61,7 @@ public class LocalDecisioningRuleSet {
         return localViews;
     }
 
-    public LocalDecisioningRules getRules() {
+    public OnDeviceDecisioningRules getRules() {
         return rules;
     }
 

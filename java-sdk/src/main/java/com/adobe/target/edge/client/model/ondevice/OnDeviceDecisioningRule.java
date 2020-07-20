@@ -9,12 +9,12 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package com.adobe.target.edge.client.model.local;
+package com.adobe.target.edge.client.model.ondevice;
 
 import java.util.List;
 import java.util.Map;
 
-public class LocalDecisioningRule {
+public class OnDeviceDecisioningRule {
 
     private String ruleKey;
     private String activityId;
@@ -23,7 +23,7 @@ public class LocalDecisioningRule {
     private Map<String, Object> consequence;
     private Map<String, Object> meta;
 
-    public LocalDecisioningRule() {
+    public OnDeviceDecisioningRule() {
     }
 
     public String getRuleKey() {

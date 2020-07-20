@@ -9,20 +9,20 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package com.adobe.target.edge.client.model.local;
+package com.adobe.target.edge.client.model.ondevice;
 
 import java.util.List;
 import java.util.Map;
 
-public class LocalDecisioningRules {
-    private Map<String, List<LocalDecisioningRule>> mboxes;
-    private Map<String, List<LocalDecisioningRule>> views;
+public class OnDeviceDecisioningRules {
+    private Map<String, List<OnDeviceDecisioningRule>> mboxes;
+    private Map<String, List<OnDeviceDecisioningRule>> views;
 
-    public Map<String, List<LocalDecisioningRule>> getMboxes() {
+    public Map<String, List<OnDeviceDecisioningRule>> getMboxes() {
         return mboxes;
     }
 
-    public Map<String, List<LocalDecisioningRule>> getViews() {
+    public Map<String, List<OnDeviceDecisioningRule>> getViews() {
         return views;
     }
 

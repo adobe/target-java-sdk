@@ -16,8 +16,8 @@ import com.adobe.target.edge.client.Attributes;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
-import com.adobe.target.edge.client.local.LocalDecisioningService;
-import com.adobe.target.edge.client.local.LocalExecutionEvaluator;
+import com.adobe.target.edge.client.local.OnDeviceDecisioningService;
+import com.adobe.target.edge.client.local.OnDeviceDecisioningEvaluator;
 import com.adobe.target.edge.client.local.RuleLoader;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
@@ -63,7 +63,7 @@ class TargetDeliveryAttributesTest {
                 .build();
 
         DefaultTargetService targetService = new DefaultTargetService(clientConfig);
-        LocalDecisioningService localService = new LocalDecisioningService(clientConfig, targetService);
+        OnDeviceDecisioningService localService = new OnDeviceDecisioningService(clientConfig, targetService);
 
         targetJavaClient = TargetClient.create(clientConfig);
 
@@ -76,11 +76,11 @@ class TargetDeliveryAttributesTest {
 
         RuleLoader testRuleLoader =
                 TargetTestDeliveryRequestUtils.getTestRuleLoaderFromFile("DECISIONING_PAYLOAD_ATTRIBUTES.json");
-        LocalExecutionEvaluator evaluator = new LocalExecutionEvaluator(testRuleLoader);
+        OnDeviceDecisioningEvaluator evaluator = new OnDeviceDecisioningEvaluator(testRuleLoader);
         FieldSetter.setField(localService, localService.getClass()
                 .getDeclaredField("ruleLoader"), testRuleLoader);
         FieldSetter.setField(localService, localService.getClass()
-                .getDeclaredField("localExecutionEvaluator"), evaluator);
+                .getDeclaredField("onDeviceDecisioningEvaluator"), evaluator);
     }
 
     @Test

@@ -13,8 +13,8 @@ package com.adobe.target.edge.client.local;
 
 import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.ClientConfig;
-import com.adobe.target.edge.client.model.local.LocalDecisioningRule;
-import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRule;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.utils.StringUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -25,18 +25,18 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class LocalDecisioningDetailsExecutor {
+public class OnDeviceDecisioningDetailsExecutor {
 
-    private static final Logger logger = LoggerFactory.getLogger(LocalDecisioningDetailsExecutor.class);
+    private static final Logger logger = LoggerFactory.getLogger(OnDeviceDecisioningDetailsExecutor.class);
 
     private final ClientConfig clientConfig;
     private final ObjectMapper mapper;
-    private final LocalDecisioningRuleExecutor ruleExecutor;
+    private final OnDeviceDecisioningRuleExecutor ruleExecutor;
 
-    public LocalDecisioningDetailsExecutor(ClientConfig clientConfig, ObjectMapper mapper) {
+    public OnDeviceDecisioningDetailsExecutor(ClientConfig clientConfig, ObjectMapper mapper) {
         this.clientConfig = clientConfig;
         this.mapper = mapper;
-        this.ruleExecutor = new LocalDecisioningRuleExecutor(clientConfig, mapper);
+        this.ruleExecutor = new OnDeviceDecisioningRuleExecutor(clientConfig, mapper);
     }
 
     public void executeDetails(TargetDeliveryRequest deliveryRequest,
@@ -44,7 +44,7 @@ public class LocalDecisioningDetailsExecutor {
             String visitorId,
             Set<String> responseTokens,
             TraceHandler traceHandler,
-            LocalDecisioningRuleSet ruleSet,
+            OnDeviceDecisioningRuleSet ruleSet,
             RequestDetails details,
             PrefetchResponse prefetchResponse,
             ExecuteResponse executeResponse,
@@ -53,12 +53,12 @@ public class LocalDecisioningDetailsExecutor {
             traceHandler.updateRequest(deliveryRequest, details,
                     executeResponse != null);
         }
-        List<LocalDecisioningRule> rules = detailsRules(details, ruleSet);
+        List<OnDeviceDecisioningRule> rules = detailsRules(details, ruleSet);
         String propertyToken = requestPropertyToken(deliveryRequest);
         boolean handledAtLeastOnce = false;
         Set<String> skipKeySet = new HashSet<>();
         if (rules != null) {
-            for (LocalDecisioningRule rule : rules) {
+            for (OnDeviceDecisioningRule rule : rules) {
                 if (propertyTokenMismatch(rule.getPropertyTokens(), propertyToken)) {
                     continue;
                 }
@@ -87,7 +87,7 @@ public class LocalDecisioningDetailsExecutor {
     }
 
     private boolean handleResult(Map<String, Object> consequence,
-            LocalDecisioningRule rule,
+            OnDeviceDecisioningRule rule,
             RequestDetails details,
             PrefetchResponse prefetchResponse,
             ExecuteResponse executeResponse,
@@ -281,7 +281,7 @@ public class LocalDecisioningDetailsExecutor {
         return notification;
     }
 
-    private List<LocalDecisioningRule> detailsRules(RequestDetails details, LocalDecisioningRuleSet ruleSet) {
+    private List<OnDeviceDecisioningRule> detailsRules(RequestDetails details, OnDeviceDecisioningRuleSet ruleSet) {
         if (details instanceof ViewRequest) {
             ViewRequest request = (ViewRequest) details;
             String name = request.getName();

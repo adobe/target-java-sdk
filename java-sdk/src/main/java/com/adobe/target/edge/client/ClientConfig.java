@@ -12,7 +12,7 @@
 package com.adobe.target.edge.client;
 
 import com.adobe.target.edge.client.model.DecisioningMethod;
-import com.adobe.target.edge.client.model.local.OnDeviceDecisioningHandler;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningHandler;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import org.apache.http.HttpRequestInterceptor;
 

@@ -3,7 +3,7 @@ package com.adobe.target.edge.client.local;
 import com.adobe.target.delivery.v1.model.Option;
 import com.adobe.target.delivery.v1.model.RequestDetails;
 import com.adobe.target.edge.client.ClientConfig;
-import com.adobe.target.edge.client.model.local.LocalDecisioningRule;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRule;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class LocalDecisioningRuleExecutor {
+public class OnDeviceDecisioningRuleExecutor {
 
-    private static final Logger logger = LoggerFactory.getLogger(LocalDecisioningRuleExecutor.class);
+    private static final Logger logger = LoggerFactory.getLogger(OnDeviceDecisioningRuleExecutor.class);
 
     private static final String ALLOCATION = "allocation";
     private static final String OPTIONS = "options";
@@ -29,7 +29,7 @@ public class LocalDecisioningRuleExecutor {
 
     private final JsonLogic jsonLogic = new JsonLogic();
 
-    public LocalDecisioningRuleExecutor(ClientConfig clientConfig, ObjectMapper mapper) {
+    public OnDeviceDecisioningRuleExecutor(ClientConfig clientConfig, ObjectMapper mapper) {
         this.clientConfig = clientConfig;
         this.mapper = mapper;
     }
@@ -37,7 +37,7 @@ public class LocalDecisioningRuleExecutor {
     public Map<String, Object> executeRule(Map<String, Object> localContext,
             RequestDetails details,
             String visitorId,
-            LocalDecisioningRule rule,
+            OnDeviceDecisioningRule rule,
             Set<String> responseTokens,
             TraceHandler traceHandler) {
         localContext.put(ALLOCATION, computeAllocation(visitorId, rule));
@@ -66,7 +66,7 @@ public class LocalDecisioningRuleExecutor {
         }
     }
 
-    private double computeAllocation(String vid, LocalDecisioningRule rule) {
+    private double computeAllocation(String vid, OnDeviceDecisioningRule rule) {
         String client = this.clientConfig.getClient();
         String seed = rule.getActivityId();
         int index = vid.indexOf(".");
@@ -79,7 +79,7 @@ public class LocalDecisioningRuleExecutor {
     }
 
     private Map<String, Object> consequenceWithResponseTokens(Set<String> responseTokenKeys,
-            LocalDecisioningRule rule,
+            OnDeviceDecisioningRule rule,
             Map<String, Object> localContext) {
         Map<String, Object> consequence = rule.getConsequence();
         if (consequence == null) {
@@ -107,16 +107,16 @@ public class LocalDecisioningRuleExecutor {
         responseTokens.put(RESPONSE_TOKEN_EXECUTION_TYPE, "on-device");
         @SuppressWarnings("unchecked")
         Map<String, Object> geoContext =
-                (Map<String, Object>)localContext.get(LocalDecisioningService.CONTEXT_KEY_GEO);
+                (Map<String, Object>)localContext.get(OnDeviceDecisioningService.CONTEXT_KEY_GEO);
         if (geoContext != null) {
             for (Map.Entry<String, Object> geoEntry : geoContext.entrySet()) {
                 String key = geoEntry.getKey();
                 String tokenKey;
                 if (key.equals("region")) {
-                    tokenKey = LocalDecisioningService.CONTEXT_KEY_GEO + ".state";
+                    tokenKey = OnDeviceDecisioningService.CONTEXT_KEY_GEO + ".state";
                 }
                 else {
-                    tokenKey = LocalDecisioningService.CONTEXT_KEY_GEO + "." + key;
+                    tokenKey = OnDeviceDecisioningService.CONTEXT_KEY_GEO + "." + key;
                 }
                 if (responseTokenKeys.contains(tokenKey)) {
                     responseTokens.put(tokenKey, geoEntry.getValue());

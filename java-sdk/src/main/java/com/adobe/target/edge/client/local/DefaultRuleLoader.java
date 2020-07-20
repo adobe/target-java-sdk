@@ -14,8 +14,8 @@ package com.adobe.target.edge.client.local;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.ClientProxyConfig;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
-import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
-import com.adobe.target.edge.client.model.local.OnDeviceDecisioningHandler;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningHandler;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import kong.unirest.*;
@@ -36,7 +36,7 @@ public class DefaultRuleLoader implements RuleLoader {
     private static final long MIN_POLLING_INTERVAL = 5 * 60 * 1000; // 5 minutes
     private static final int MAX_RETRIES = 10;
 
-    private LocalDecisioningRuleSet latestRules;
+    private OnDeviceDecisioningRuleSet latestRules;
     private String lastETag;
     private ClientConfig clientConfig;
 
@@ -51,7 +51,7 @@ public class DefaultRuleLoader implements RuleLoader {
     public DefaultRuleLoader() {}
 
     @Override
-    public LocalDecisioningRuleSet getLatestRules() {
+    public OnDeviceDecisioningRuleSet getLatestRules() {
         return latestRules;
     }
 
@@ -67,7 +67,7 @@ public class DefaultRuleLoader implements RuleLoader {
         byte[] artifactPayload = clientConfig.getOnDeviceArtifactPayload();
         if (artifactPayload != null) {
             String payload = new String(artifactPayload, StandardCharsets.UTF_8);
-            LocalDecisioningRuleSet ruleSet = mapper.readValue(payload, new GenericType<LocalDecisioningRuleSet>() {});
+            OnDeviceDecisioningRuleSet ruleSet = mapper.readValue(payload, new GenericType<OnDeviceDecisioningRuleSet>() {});
             String invalidMessage = invalidRuleSetMessage(ruleSet, null);
             if (invalidMessage == null) {
                 setLatestRules(ruleSet);
@@ -185,12 +185,12 @@ public class DefaultRuleLoader implements RuleLoader {
     }
 
     // For unit test mocking
-    protected HttpResponse<LocalDecisioningRuleSet> executeRequest(GetRequest getRequest) {
-        return getRequest.asObject(new GenericType<LocalDecisioningRuleSet>(){});
+    protected HttpResponse<OnDeviceDecisioningRuleSet> executeRequest(GetRequest getRequest) {
+        return getRequest.asObject(new GenericType<OnDeviceDecisioningRuleSet>(){});
     }
 
     // For unit test mocking
-    protected void setLatestRules(LocalDecisioningRuleSet ruleSet) {
+    protected void setLatestRules(OnDeviceDecisioningRuleSet ruleSet) {
         this.latestRules = ruleSet;
     }
 
@@ -204,7 +204,7 @@ public class DefaultRuleLoader implements RuleLoader {
         try {
             TargetExceptionHandler handler = clientConfig.getExceptionHandler();
             GetRequest request = generateRequest(clientConfig);
-            HttpResponse<LocalDecisioningRuleSet> response = executeRequest(request);
+            HttpResponse<OnDeviceDecisioningRuleSet> response = executeRequest(request);
             if (response.getStatus() != 200) {
                 if (response.getStatus() == 304) {
                     // Not updated, skip
@@ -219,7 +219,7 @@ public class DefaultRuleLoader implements RuleLoader {
                 }
                 return false;
             }
-            LocalDecisioningRuleSet ruleSet = response.getBody();
+            OnDeviceDecisioningRuleSet ruleSet = response.getBody();
             String invalidMessage = invalidRuleSetMessage(ruleSet, response);
             if (invalidMessage == null) {
                 setLatestETag(response.getHeaders().getFirst("ETag"));
@@ -251,8 +251,8 @@ public class DefaultRuleLoader implements RuleLoader {
         }
     }
 
-    private String invalidRuleSetMessage(LocalDecisioningRuleSet ruleSet,
-            HttpResponse<LocalDecisioningRuleSet> response) {
+    private String invalidRuleSetMessage(OnDeviceDecisioningRuleSet ruleSet,
+                                         HttpResponse<OnDeviceDecisioningRuleSet> response) {
         if (ruleSet == null || ruleSet.getRules() == null) {
             String message = "Unable to parse local-decisioning rule set";
             if (response != null) {

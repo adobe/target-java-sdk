@@ -24,8 +24,8 @@ import com.adobe.target.edge.client.local.collator.ParamsCollator;
 import com.adobe.target.edge.client.local.collator.TimeParamsCollator;
 import com.adobe.target.edge.client.local.collator.UserParamsCollator;
 import com.adobe.target.edge.client.model.*;
-import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
-import com.adobe.target.edge.client.model.local.LocalExecutionEvaluation;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningEvaluation;
 import com.adobe.target.edge.client.service.TargetService;
 import com.adobe.target.edge.client.utils.CookieUtils;
 import com.adobe.target.edge.client.utils.StringUtils;
@@ -37,9 +37,9 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
-public class LocalDecisioningService {
+public class OnDeviceDecisioningService {
 
-    private static final Logger logger = LoggerFactory.getLogger(LocalDecisioningService.class);
+    private static final Logger logger = LoggerFactory.getLogger(OnDeviceDecisioningService.class);
 
     public static final String CONTEXT_KEY_USER = "user";
     public static final String CONTEXT_KEY_GEO = "geo";
@@ -65,23 +65,23 @@ public class LocalDecisioningService {
     private final RuleLoader ruleLoader;
     private final NotificationDeliveryService deliveryService;
     private final ClusterLocator clusterLocator;
-    private final LocalDecisioningDetailsExecutor decisionHandler;
-    private final LocalExecutionEvaluator localExecutionEvaluator;
+    private final OnDeviceDecisioningDetailsExecutor decisionHandler;
+    private final OnDeviceDecisioningEvaluator onDeviceDecisioningEvaluator;
     private final GeoClient geoClient;
 
-    public LocalDecisioningService(ClientConfig clientConfig, TargetService targetService) {
+    public OnDeviceDecisioningService(ClientConfig clientConfig, TargetService targetService) {
         this.mapper = new JacksonObjectMapper().getMapper();
         this.clientConfig = clientConfig;
-        LocalDecisioningServicesManager.LocalDecisioningServices services =
-                LocalDecisioningServicesManager.getInstance().getServices(clientConfig, targetService);
+        OnDeviceDecisioningServicesManager.OnDeviceDecisioningServices services =
+                OnDeviceDecisioningServicesManager.getInstance().getServices(clientConfig, targetService);
         this.ruleLoader = services.getRuleLoader();
         this.ruleLoader.start(clientConfig);
         this.deliveryService = services.getNotificationDeliveryService();
         this.deliveryService.start(clientConfig);
         this.clusterLocator = services.getClusterLocator();
         this.clusterLocator.start(clientConfig, targetService);
-        this.decisionHandler = new LocalDecisioningDetailsExecutor(clientConfig, mapper);
-        this.localExecutionEvaluator = new LocalExecutionEvaluator(this.ruleLoader);
+        this.decisionHandler = new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);
+        this.onDeviceDecisioningEvaluator = new OnDeviceDecisioningEvaluator(this.ruleLoader);
         this.geoClient = new DefaultGeoClient();
         this.geoClient.start(clientConfig);
     }
@@ -96,8 +96,8 @@ public class LocalDecisioningService {
         this.ruleLoader.refresh();
     }
 
-    public LocalExecutionEvaluation evaluateLocalExecution(TargetDeliveryRequest deliveryRequest) {
-        return this.localExecutionEvaluator.evaluateLocalExecution(deliveryRequest);
+    public OnDeviceDecisioningEvaluation evaluateLocalExecution(TargetDeliveryRequest deliveryRequest) {
+        return this.onDeviceDecisioningEvaluator.evaluateLocalExecution(deliveryRequest);
     }
 
     public CompletableFuture<TargetDeliveryResponse> executeRequestAsync(TargetDeliveryRequest deliveryRequest) {
@@ -111,7 +111,7 @@ public class LocalDecisioningService {
             requestId = UUID.randomUUID().toString();
         }
 
-        LocalDecisioningRuleSet ruleSet = this.ruleLoader.getLatestRules();
+        OnDeviceDecisioningRuleSet ruleSet = this.ruleLoader.getLatestRules();
         if (ruleSet == null) {
             DeliveryResponse deliveryResponse = new DeliveryResponse()
                     .client(clientConfig.getClient())
@@ -181,7 +181,7 @@ public class LocalDecisioningService {
     }
 
     private TargetDeliveryResponse buildDeliveryResponse(TargetDeliveryRequest deliveryRequest, String requestId) {
-        LocalExecutionEvaluation localEvaluation = evaluateLocalExecution(deliveryRequest);
+        OnDeviceDecisioningEvaluation localEvaluation = evaluateLocalExecution(deliveryRequest);
         int status = localEvaluation.isAllLocal() ? HttpStatus.SC_OK : HttpStatus.SC_PARTIAL_CONTENT;
         DeliveryResponse deliveryResponse = new DeliveryResponse()
                 .client(clientConfig.getClient())
@@ -294,7 +294,7 @@ public class LocalDecisioningService {
             String visitorId,
             Set<String> responseTokens,
             TraceHandler traceHandler,
-            LocalDecisioningRuleSet ruleSet,
+            OnDeviceDecisioningRuleSet ruleSet,
             PrefetchResponse prefetchResponse,
             ExecuteResponse executeResponse,
             List<Notification> notifications) {

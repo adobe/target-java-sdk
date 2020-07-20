@@ -13,8 +13,8 @@ package com.adobe.target.edge.client.local;
 
 import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.ClientConfig;
-import com.adobe.target.edge.client.model.local.LocalDecisioningRule;
-import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRule;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -41,7 +41,7 @@ public final class TraceHandler {
     private final TimeZone utc = TimeZone.getTimeZone("UTC");
 
     private final ObjectMapper mapper;
-    private final LocalDecisioningRuleSet ruleSet;
+    private final OnDeviceDecisioningRuleSet ruleSet;
 
     private final Map<String, Object> trace;
     private final Map<Number, Map<String, Object>> campaigns;
@@ -50,7 +50,7 @@ public final class TraceHandler {
     public TraceHandler(ClientConfig clientConfig,
             RuleLoader ruleLoader,
             ObjectMapper mapper,
-            LocalDecisioningRuleSet ruleSet,
+            OnDeviceDecisioningRuleSet ruleSet,
             TargetDeliveryRequest request) {
         this.mapper = mapper;
         this.ruleSet = ruleSet;
@@ -68,8 +68,8 @@ public final class TraceHandler {
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public void addCampaign(LocalDecisioningRule rule, Map<String, Object> context,
-            boolean matched) {
+    public void addCampaign(OnDeviceDecisioningRule rule, Map<String, Object> context,
+                            boolean matched) {
         Map<String, Object> meta = rule.getMeta();
         Number activityId = (Number)meta.get(ACTIVITY_ID);
         if (activityId == null) {
@@ -101,7 +101,7 @@ public final class TraceHandler {
         rules.add(rule.getCondition());
     }
 
-    public void addNotification(LocalDecisioningRule rule, Notification notification) {
+    public void addNotification(OnDeviceDecisioningRule rule, Notification notification) {
         Map<String, Object> meta = rule.getMeta();
         Number activityId = (Number) meta.get(ACTIVITY_ID);
         if (activityId == null) {
@@ -123,7 +123,7 @@ public final class TraceHandler {
         return currentTrace;
     }
 
-    private Map<String, Object> artifactTrace(RuleLoader ruleLoader, LocalDecisioningRuleSet ruleSet) {
+    private Map<String, Object> artifactTrace(RuleLoader ruleLoader, OnDeviceDecisioningRuleSet ruleSet) {
         Map<String, Object> artifacts = new HashMap<>(ruleSet.getMeta());
         artifacts.put("artifactVersion", ruleSet.getVersion());
         artifacts.put("pollingInterval", ruleLoader.getPollingInterval());
@@ -200,8 +200,8 @@ public final class TraceHandler {
         return req;
     }
 
-    private Map<String, Object> campaignTargetTrace(LocalDecisioningRule rule,
-            Map<String, Object> context) {
+    private Map<String, Object> campaignTargetTrace(OnDeviceDecisioningRule rule,
+                                                    Map<String, Object> context) {
         Map<String, Object> target = campaignTrace(rule);
         target.put("context", context);
         target.put(MATCHED_IDS_KEY, new ArrayList<>());
@@ -211,7 +211,7 @@ public final class TraceHandler {
         return target;
     }
 
-    private Map<String, Object> campaignTrace(LocalDecisioningRule rule) {
+    private Map<String, Object> campaignTrace(OnDeviceDecisioningRule rule) {
         Map<String, Object> campaign = new HashMap<>();
         Map<String, Object> meta = rule.getMeta();
         campaign.put("id", meta.get(ACTIVITY_ID));

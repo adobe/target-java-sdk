@@ -17,9 +17,9 @@ import com.adobe.target.edge.client.service.TargetService;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LocalDecisioningServicesManager {
+public class OnDeviceDecisioningServicesManager {
 
-    public static class LocalDecisioningServices {
+    public static class OnDeviceDecisioningServices {
         private NotificationDeliveryService notificationDeliveryService;
         private RuleLoader ruleLoader;
         private ClusterLocator clusterLocator;
@@ -49,17 +49,17 @@ public class LocalDecisioningServicesManager {
         }
     }
 
-    private static final LocalDecisioningServicesManager sInstance = new LocalDecisioningServicesManager();
+    private static final OnDeviceDecisioningServicesManager sInstance = new OnDeviceDecisioningServicesManager();
 
-    private final Map<String, LocalDecisioningServices> servicesMap = new HashMap<>();
+    private final Map<String, OnDeviceDecisioningServices> servicesMap = new HashMap<>();
 
-    public static LocalDecisioningServicesManager getInstance() {
+    public static OnDeviceDecisioningServicesManager getInstance() {
         return sInstance;
     }
 
-    public LocalDecisioningServices getServices(ClientConfig clientConfig, TargetService targetService) {
+    public OnDeviceDecisioningServices getServices(ClientConfig clientConfig, TargetService targetService) {
         String serviceKey = clientConfig.getClient();
-        LocalDecisioningServices services = servicesMap.get(serviceKey);
+        OnDeviceDecisioningServices services = servicesMap.get(serviceKey);
         if (services != null) {
             return services;
         }
@@ -68,7 +68,7 @@ public class LocalDecisioningServicesManager {
             if (services != null) {
                 return services;
             }
-            services = new LocalDecisioningServices();
+            services = new OnDeviceDecisioningServices();
             services.setNotificationDeliveryService(new NotificationDeliveryService(targetService));
             services.setRuleLoader(new DefaultRuleLoader());
             services.setClusterLocator(new ClusterLocator());

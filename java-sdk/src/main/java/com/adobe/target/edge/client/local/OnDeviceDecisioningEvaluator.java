@@ -15,8 +15,8 @@ import com.adobe.target.delivery.v1.model.ExecuteRequest;
 import com.adobe.target.delivery.v1.model.MboxRequest;
 import com.adobe.target.delivery.v1.model.PrefetchRequest;
 import com.adobe.target.delivery.v1.model.ViewRequest;
-import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
-import com.adobe.target.edge.client.model.local.LocalExecutionEvaluation;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningEvaluation;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 
 import java.util.ArrayList;
@@ -26,11 +26,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class LocalExecutionEvaluator {
+public class OnDeviceDecisioningEvaluator {
 
     private final RuleLoader ruleLoader;
 
-    public LocalExecutionEvaluator(RuleLoader ruleLoader) {
+    public OnDeviceDecisioningEvaluator(RuleLoader ruleLoader) {
         this.ruleLoader = ruleLoader;
     }
 
@@ -40,15 +40,15 @@ public class LocalExecutionEvaluator {
      * @param deliveryRequest request to examine
      * @return LocalExecutionResult
      */
-    public LocalExecutionEvaluation evaluateLocalExecution(TargetDeliveryRequest deliveryRequest) {
+    public OnDeviceDecisioningEvaluation evaluateLocalExecution(TargetDeliveryRequest deliveryRequest) {
         if (deliveryRequest == null) {
-            return new LocalExecutionEvaluation(false,
+            return new OnDeviceDecisioningEvaluation(false,
                     "Given request cannot be null", null, null);
         }
 
-        LocalDecisioningRuleSet ruleSet = this.ruleLoader.getLatestRules();
+        OnDeviceDecisioningRuleSet ruleSet = this.ruleLoader.getLatestRules();
         if (ruleSet == null) {
-            return new LocalExecutionEvaluation(false,
+            return new OnDeviceDecisioningEvaluation(false,
                     "Local-decisioning rule set not yet available", null, null);
         }
 
@@ -67,16 +67,16 @@ public class LocalExecutionEvaluator {
                 }
                 reason.append(String.format("views %s", remoteViews));
             }
-            return new LocalExecutionEvaluation(false,
+            return new OnDeviceDecisioningEvaluation(false,
                     reason.toString(),
                     remoteMboxes.isEmpty() ? null : new ArrayList<>(remoteMboxes),
                     remoteViews.isEmpty() ? null : new ArrayList<>(remoteViews));
         }
 
-        return new LocalExecutionEvaluation(true, null, null, null);
+        return new OnDeviceDecisioningEvaluation(true, null, null, null);
     }
 
-    private List<String> computeRemoteMboxes(TargetDeliveryRequest deliveryRequest, LocalDecisioningRuleSet ruleSet) {
+    private List<String> computeRemoteMboxes(TargetDeliveryRequest deliveryRequest, OnDeviceDecisioningRuleSet ruleSet) {
         List<String> requestMboxNames = allMboxNames(deliveryRequest, ruleSet);
         if (requestMboxNames.isEmpty()) {
             return Collections.emptyList();
@@ -95,7 +95,7 @@ public class LocalExecutionEvaluator {
         return new ArrayList<>(remoteMboxes);
     }
 
-    private List<String> computeRemoteViews(TargetDeliveryRequest deliveryRequest, LocalDecisioningRuleSet ruleSet) {
+    private List<String> computeRemoteViews(TargetDeliveryRequest deliveryRequest, OnDeviceDecisioningRuleSet ruleSet) {
         List<String> requestViews = allViewNames(deliveryRequest);
         if (requestViews.isEmpty()) {
             return Collections.emptyList();
@@ -117,7 +117,7 @@ public class LocalExecutionEvaluator {
         return new ArrayList<>(remoteViews);
     }
 
-    private List<String> allMboxNames(TargetDeliveryRequest request, LocalDecisioningRuleSet ruleSet) {
+    private List<String> allMboxNames(TargetDeliveryRequest request, OnDeviceDecisioningRuleSet ruleSet) {
         if (request == null || ruleSet == null) {
             return Collections.emptyList();
         }

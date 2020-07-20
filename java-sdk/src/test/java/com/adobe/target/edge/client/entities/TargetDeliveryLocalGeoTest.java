@@ -16,8 +16,8 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
-import com.adobe.target.edge.client.local.LocalDecisioningDetailsExecutor;
-import com.adobe.target.edge.client.local.LocalDecisioningService;
+import com.adobe.target.edge.client.local.OnDeviceDecisioningDetailsExecutor;
+import com.adobe.target.edge.client.local.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.local.client.geo.GeoClient;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
@@ -59,7 +59,7 @@ public class TargetDeliveryLocalGeoTest {
 
     private GeoClient mockGeoClient;
     private TargetClient targetJavaClient;
-    private LocalDecisioningService localService;
+    private OnDeviceDecisioningService localService;
 
     @BeforeEach
     @SuppressWarnings("unchecked")
@@ -75,9 +75,9 @@ public class TargetDeliveryLocalGeoTest {
                 .build();
 
         DefaultTargetService targetService = new DefaultTargetService(clientConfig);
-        localService = new LocalDecisioningService(clientConfig, targetService);
+        localService = new OnDeviceDecisioningService(clientConfig, targetService);
         ObjectMapper mapper = new JacksonObjectMapper().getMapper();
-        LocalDecisioningDetailsExecutor decisionHandler = new LocalDecisioningDetailsExecutor(clientConfig, mapper);
+        OnDeviceDecisioningDetailsExecutor decisionHandler = new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);
 
         targetJavaClient = TargetClient.create(clientConfig);
 
