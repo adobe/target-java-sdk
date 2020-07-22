@@ -14,7 +14,7 @@ package com.adobe.target.edge.client;
 import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.http.ResponseStatus;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
-import com.adobe.target.edge.client.local.OnDeviceDecisioningService;
+import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetAttributesResponse;
 import com.adobe.target.edge.client.service.TargetRequestException;

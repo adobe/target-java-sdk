@@ -15,7 +15,7 @@ import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
-import com.adobe.target.edge.client.local.NotificationDeliveryService;
+import com.adobe.target.edge.client.ondevice.NotificationDeliveryService;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.service.DefaultTargetService;
 import org.junit.jupiter.api.AfterEach;

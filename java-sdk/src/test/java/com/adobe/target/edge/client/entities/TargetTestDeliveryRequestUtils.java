@@ -13,10 +13,10 @@ package com.adobe.target.edge.client.entities;
 
 import com.adobe.experiencecloud.ecid.visitor.CustomerState;
 import com.adobe.target.edge.client.ClientConfig;
-import com.adobe.target.edge.client.local.OnDeviceDecisioningService;
-import com.adobe.target.edge.client.local.OnDeviceDecisioningEvaluator;
-import com.adobe.target.edge.client.local.collator.ParamsCollator;
-import com.adobe.target.edge.client.local.RuleLoader;
+import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
+import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningEvaluator;
+import com.adobe.target.edge.client.ondevice.collator.ParamsCollator;
+import com.adobe.target.edge.client.ondevice.RuleLoader;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
 import com.adobe.target.edge.client.model.TargetCookie;
 import com.adobe.target.edge.client.utils.CookieUtils;
