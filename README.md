@@ -90,7 +90,7 @@ end client including browsers, mobiles, IOT devices or servers.
   * [Custom rendering of Target offers](#custom-rendering-of-target-offers)
   * [JSON offers simplified](#json-offers-simplified)
   * [Enterprise Permissions and Property Support](#enterprise-permissions-and-property-support)
-  * [Local execution mode](#local-execution-mode)
+  * [On-device decisioning method](#on-device-decisioning-method)
   * [Troubleshooting](#troubleshooting)
   * [Target Traces](#target-traces)
   * [Target Java SDK API](#target-java-sdk-api)
@@ -872,27 +872,27 @@ TargetDeliveryResponse targetResponse = targetClient.getOffers(targetDeliveryReq
 
 ---
 
-## Local execution mode
+## On-device decisioning mode
 
-The Target Java SDK can be configured to run in local execution mode. In this mode, the SDK loads a rules definition file on startup and uses it to determine the outcomes for subsequent `getOffers` calls instead of making repeat requests to the delivery API each time. This can greatly improve performance if you are concerned about network latency and would like to limit the number of requests made to target edge servers.
+The Target Java SDK can be configured to run in on-device decisioning mode. In this mode, the SDK loads a rules definition file on startup and uses it to determine the outcomes for subsequent `getOffers` calls instead of making repeat requests to the delivery API each time. This can greatly improve performance if you are concerned about network latency and would like to limit the number of requests made to target edge servers.
 
-By default, the SDK is configured to always make a request to the target delivery API for each `getOffers` call. But you can configure the SDK to use local execution mode instead.
+By default, the SDK is configured to always make a request to the target delivery API for each `getOffers` call. But you can configure the SDK to use on-device decisioning method instead.
  
-First, you need to configure the SDK properly in order to enable local execution. This is done by setting the defaultExecutionMode to either `ExecutionMode.LOCAL` or `ExecutionMode.HYBRID` in the `ClientConfig` object that is used to initialize the targetClient.
+First, you need to configure the SDK properly in order to enable on-device decisioning. This is done by setting the defaultDecisioningMethod to either `DecisioningMethod.ON_DEVICE` or `DecisioningMethod.HYBRID` in the `ClientConfig` object that is used to initialize the targetClient.
 
 ```java
 ClientConfig clientConfig = ClientConfig.builder()
     .client("emeaprod4")
     .organizationId("0DD934B85278256B0A490D44@AdobeOrg")
-    .defaultExecutionMode(ExecutionMode.HYBRID)
+    .defaultDecisioningMethod(DecisioningMethod.HYBRID)
     .build();
 
 TargetClient targetClient = TargetClient.create(clientConfig);
 ```
 
-This will set the `executionMode` in each getOffers request to whatever you specify as the `defaultExecutionMode` by default. 
+This will set the `decisioningMethod` in each getOffers request to whatever you specify as the `defaultDecisioningMethod` by default. 
 
-However, you can override the execution mode in any `getOffers` call by explicitly setting `executionMode` in the `TargetDeliveryRequest`.
+However, you can override the decisioning method in any `getOffers` call by explicitly setting `decisioningMethod` in the `TargetDeliveryRequest`.
 
 ```java
 ExecuteRequest executeRequest = new ExecuteRequest()
@@ -902,66 +902,66 @@ TargetDeliveryRequest targetRequest = TargetDeliveryRequest.builder()
     .context(getContext(request))    
     .cookies(getTargetCookies(cookies))
     .execute(executeRequest)
-    .executionMode(ExecutionMode.LOCAL)
+    .decisioningMethod(DecisioningMethod.ON_DEVICE)
     .build();
 
 TargetDeliveryResponse response = targetClient.getOffers(targetRequest);
 ```
 
-With executionMode set to ExecutionMode.LOCAL, your app will determine what offers the user qualifies for locally without hitting the target edge servers.
+With decisioningMethod set to DecisioningMethod.ON_DEVICE, your app will determine what offers the user qualifies for on-device decisioning without hitting the target edge servers.
 
-Note that it will take some time (usually less than 1 second) between when the targetClient is initialized until it will be able to execute requests locally. You can set a `LocalExecutionHandler` object in the `ClientConfig` and its `localExecutionReady` method will be called when the client is ready to handle local execution. Please see the documentation for the `LocalExecutionHandler` below for more details.
+Note that it will take some time (usually less than 1 second) between when the targetClient is initialized until it will be able to execute requests on device. You can set a `onDeviceDecisioningHandler` object in the `ClientConfig` and its `onDeviceDecisioningReady` method will be called when the client is ready to handle on-device decisioning. Please see the documentation for the `OnDeviceDecisioningHandler` below for more details.
 
 ### Limitations
 
-Not all target activities can be decided locally at this time.  
+Not all target activities can be decided on-device at this time.  
 
 #### Audience Rules
 
-Some activities are not supported due to audience rules. Below is a list of audience rules with an indication for they are supported by local decisioning or will require a request to target edge servers to fulfill:
+Some activities are not supported due to audience rules. Below is a list of audience rules with an indication for they are supported by on-device decisioning or will require a request to target edge servers to fulfill:
 
-| Audience Rule    | Local execution mode | Remote execution mode |
-|------------------|----------------------|-----------------------|
-| Geo              | Supported            | Supported             |
-| Network          | Not Supported        | Supported             |
-| Mobile           | Not Supported        | Supported             |
-| Custom           | Supported            | Supported             |
-| Operating System | Supported            | Supported             |
-| Site Pages       | Supported            | Supported             |
-| Browser          | Supported            | Supported             |
-| Visitor Profile  | Not Supported        | Supported             |
-| Traffic Sources  | Not Supported        | Supported             |
-| Time Frame       | Supported            | Supported             |
+| Audience Rule    | On-device decisioning | Server side decisioning |
+|------------------|-----------------------|------------------------|
+| Geo              | Supported             | Supported              |
+| Network          | Not Supported         | Supported              |
+| Mobile           | Not Supported         | Supported              |
+| Custom           | Supported             | Supported              |
+| Operating System | Supported             | Supported              |
+| Site Pages       | Supported             | Supported              |
+| Browser          | Supported             | Supported              |
+| Visitor Profile  | Not Supported         | Supported              |
+| Traffic Sources  | Not Supported         | Supported              |
+| Time Frame       | Supported             | Supported              |
 
 #### Response Types
 
-Most, but not all response types are supported by local decisioning:
+Most, but not all response types are supported by on-device decisioning:
 
-| Response Type    | Local execution mode | Remote execution mode |
-|------------------|----------------------|-----------------------|
-| Default Content  | Supported            | Supported             |
-| HTML             | Supported            | Supported             |
-| JSON             | Supported            | Supported             |
-| Recommendation   | Not Supported        | Supported             |
-| Redirect         | Supported            | Supported             |
-| Remote           | Not Supported        | Supported             |
-| Visual/VEC       | Supported            | Supported             |
+| Response Type    | On-device decisioning | Server side decisioning |
+|------------------|-----------------------|------------------------|
+| Default Content  | Supported             | Supported              |
+| HTML             | Supported             | Supported              |
+| JSON             | Supported             | Supported              |
+| Recommendation   | Not Supported         | Supported              |
+| Redirect         | Supported             | Supported              |
+| Remote           | Not Supported         | Supported              |
+| Visual/VEC       | Supported             | Supported              |
 
 #### Other Limitations
 
-Only A/B activities with Manual Traffic Allocation are supported in local-decisioning. Auto-allocate and Auto-target are not supported currently.
+Only A/B activities with Manual Traffic Allocation are supported in on-device decisioning. Auto-allocate and Auto-target are not supported currently.
 
-XT activities are supported in local-decisioning.
+XT activities are supported in on-device decisioning.
 
-Automated Personalization, Multi-variate and Recommendations activities are not currently supported in local-decisioning.
+Automated Personalization, Multi-variate and Recommendations activities are not currently supported in on-device decisioning.
 
 ### Hybrid Mode
 
-Although all activities are not yet supported by local execution mode, there is a way to get the best of both worlds. If you set `executionMode` to `ExecutionMode.HYBRID`, then the SDK will determine on its own whether to make decisions locally or remotely. This way, if a `getOffers` request can be completed locally, the SDK will do so. But if the request includes activities that are not supported, a request to the target delivery API will be made instead. This may be useful as you begin to adopt local decisioning.
+Although all activities are not yet supported by on-device decisioning method, there is a way to get the best of both worlds. If you set `decisioningMethod` to `DecisioningMethod.HYBRID`, then the SDK will determine on its own whether to make decisions on-device or on server side. This way, if a `getOffers` request can be completed on device, the SDK will do so. But if the request includes activities that are not supported, a request to the target delivery API will be made instead. This may be useful as you begin to adopt on-device decisioning.
 
-### Geo support in local execution
+### Geo support in on-device decisioning
 
-In order to maintain zero latency in local decisioned requests with geo-based audiences, we recommend that you provide the geo values yourself in each `TargetDeliveryRequest`. You can do this by setting the `Geo` object in the `Context` of the request.
+In order to maintain zero latency in on-device decisioning requests with geo-based audiences, we recommend that you provide the geo values yourself in each `TargetDeliveryRequest`. You can do this by setting the `Geo` object in the `Context` of the request.
 
 This means your server will need a way to determine the location of each end user, for instance by doing an IP-to-Geo lookup using a service you will need to set up yourself. Also, some hosting providers such as Google Cloud provide this functionality via custom headers in each `HttpServletRequest`.
 
@@ -988,11 +988,11 @@ public class TargetRequestUtils {
 }
 ```
 
-However, if you don't have the ability to perform IP-to-Geo lookups in your server and you still want to be able to perform local execution of `getOffers` requests that contain geo-based audiences, this is also supported.
+However, if you don't have the ability to perform IP-to-Geo lookups in your server and you still want to be able to perform on-device decisioning of `getOffers` requests that contain geo-based audiences, this is also supported.
 
 The downside of this approach is that it will use a remote IP-to-Geo lookup that will add latency to each `getOffers` call. This latency should be lower than a remote `getOffers` call since it hits a CDN that should be closer to the end user than the target server.
 
-You can signal to the targetClient that you want to perform an IP-to-Geo lookup in your local execution request by setting *only* the `ipAddress` object in the `Geo` object in the `Context` of your request. 
+You can signal to the targetClient that you want to perform an IP-to-Geo lookup in your on-device decisioning request by setting *only* the `ipAddress` object in the `Geo` object in the `Context` of your request. 
 
 ```java
 public class TargetRequestUtils {
@@ -1009,13 +1009,13 @@ public class TargetRequestUtils {
 }
 ```
 
-Note that if you specify the IP address in the `Geo` object in the `Context` and you don't currently have any local execution activities that use geo-based audiences then the IP-to-Geo lookup will be skipped as a latency optimization.
+Note that if you specify the IP address in the `Geo` object in the `Context` and you don't currently have any on-device decisioning activities that use geo-based audiences then the IP-to-Geo lookup will be skipped as a latency optimization.
 
 ---
 
 ### Example
 
-See the `localExecution` method in `TargetController` in the [Adobe Target Java SDK Samples](https://github.com/adobe/target-java-sdk-samples) for a working example.
+See the `onDeviceDecisioning` method in `TargetController` in the [Adobe Target Java SDK Samples](https://github.com/adobe/target-java-sdk-samples) for a working example.
 
 ---
 
@@ -1096,20 +1096,20 @@ The `ClientConfigBuilder` object has the following structure:
 | secure               |  Boolean | No      | true                   | Unset to enforce HTTP scheme                        |
 | requestInterceptor   |  HttpRequestInterceptor  | No      | Null   | Add custom request Interceptor                      |
 | defaultPropertyToken | String   | No      | None                   | Sets the default property token for every getOffers call |
-| defaultExecutionMode | ExecutionMode enum | No | REMOTE            | Must be set to LOCAL or HYBRID to enable local decisioning |
+| defaultDecisioningMethod | DecisioningMethod enum | No | REMOTE            | Must be set to ON_DEVICE or HYBRID to enable on-device decisioning |
 | localEnvironment     | String   | No      | production             | Can be used to specify a different local environment such as staging |
-| localConfigHostname  | String   | No      | assets.adobetarget.com | Can be used to specify a different host to use to download the local decisioning artifact file |
-| localDecisioningPollingIntSecs | int | No | 300 (5 min)            | Number of seconds between fetches of the local decisioning artifact file |
-| localArtifactPayload | byte[]   | No      | None                   | Provides local execution with previous artifact payload to allow immediate execution |
-| localExecutionHandler | LocalExecutionHandler | No | None          | Registers callbacks for local execution events      |
+| onDeviceConfigHostname  | String   | No      | assets.adobetarget.com | Can be used to specify a different host to use to download the on-device decisioning artifact file |
+| onDeviceDecisioningPollingIntSecs | int | No | 300 (5 min)            | Number of seconds between fetches of the on-device decisioning artifact file |
+| onDeviceArtifactPayload | byte[]   | No      | None                   | Provides on-device decisioning with previous artifact payload to allow immediate execution |
+| onDeviceDecisioningHandler | OnDeviceDecisioningHandler | No | None          | Registers callbacks for on-device decisioning events      |
 
-The `LocationExecutionHandler` object contains the following callbacks which are called for certain local executionEvents:
+The `OnDeviceDecisioningHandler` object contains the following callbacks which are called for certain events:
 
 | Name                 | Arguments | Description                                         |
 |----------------------|-----------|-----------------------------------------------------|
-| localExecutionReady  |  None     | Called only once the first time the client is ready for local execution |
-| artifactDownloadSucceeded | byte[] contents of artifact file | Called every time a local decisioning artifact is downloaded |
-| artifactDownloadFailed | Exception | Called every time there is a failure to download a local decisioning artifact |
+| onDeviceDecisioningReady  |  None     | Called only once the first time the client is ready for on-device decisioning |
+| artifactDownloadSucceeded | byte[] contents of artifact file | Called every time a on-device decisioning artifact is downloaded |
+| artifactDownloadFailed | Exception | Called every time there is a failure to download a on-device decisioning artifact |
 
 #### TargetClient.getOffers
 
@@ -1143,7 +1143,7 @@ The `TargetDeliveryRequestBuilder` object has the following structure:
 | mcId                     | String | No | Used to merge and share data between different Adobe solutions(ECID). Fetched from targetCookies. Auto-generated if not provided. |
 | trackingServer           | String | No | The Adobe Analaytics Server in order for Adobe Target and Adobe Analytics to correctly stitch the data together.
 | trackingServerSecure     | String | No | The Adobe Analaytics Secure Server in order for Adobe Target and Adobe Analytics to correctly stitch the data together.
-| executionMode            | ExecutionMode | No | Can be used to explicitly set LOCAL or HYBRID execution mode for local decisioning |
+| decisioningMethod        | DecisioningMethod | No | Can be used to explicitly set ON_DEVICE or HYBRID decisioning method for on-device decisioning |
 
 The values of each field should conform to [Target View Delivery API] request specification. 
 To learn more about the [Target View Delivery API], see http://developers.adobetarget.com/api/#view-delivery-overview
@@ -1164,8 +1164,8 @@ The `ResponseStatus` in the response contains the following fields:
 |--------------------------|-------------------|-------------------------------------------------------------|
 | status                   | int                         | HTTP status returned from Target          |
 | message                  | String                      | Status message in case HTTP status is not 200    |
-| remoteMboxes             | List of Strings             | Used for local-decisioning. Contains a list of mboxes that have remote activities that cannot be decided entirely locally. |
-| remoteViews              | List of Strings             | Used for local-decisioning. Contains a list of views that have remote activities that cannot be decided entirely locally. |
+| remoteMboxes             | List of Strings             | Used for on-device decisioning. Contains a list of mboxes that have remote activities that cannot be decided entirely on-device. |
+| remoteViews              | List of Strings             | Used for on-device decisioning. Contains a list of views that have remote activities that cannot be decided entirely on-device. |
 
 The `TargetCookie` object used for saving data for user session has the following structure:
 

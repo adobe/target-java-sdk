@@ -13,11 +13,11 @@ package com.adobe.target.edge.client.entities;
 
 import com.adobe.experiencecloud.ecid.visitor.CustomerState;
 import com.adobe.target.edge.client.ClientConfig;
-import com.adobe.target.edge.client.local.LocalDecisioningService;
-import com.adobe.target.edge.client.local.LocalExecutionEvaluator;
-import com.adobe.target.edge.client.local.collator.ParamsCollator;
-import com.adobe.target.edge.client.local.RuleLoader;
-import com.adobe.target.edge.client.model.local.LocalDecisioningRuleSet;
+import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
+import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningEvaluator;
+import com.adobe.target.edge.client.ondevice.collator.ParamsCollator;
+import com.adobe.target.edge.client.ondevice.RuleLoader;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
 import com.adobe.target.edge.client.model.TargetCookie;
 import com.adobe.target.edge.client.utils.CookieUtils;
 import com.adobe.target.delivery.v1.model.*;
@@ -278,7 +278,7 @@ public class TargetTestDeliveryRequestUtils {
             }
 
             @Override
-            public LocalDecisioningRuleSet getLatestRules() {
+            public OnDeviceDecisioningRuleSet getLatestRules() {
                 if (ruleSet == null) {
                     return null;
                 }
@@ -288,7 +288,7 @@ public class TargetTestDeliveryRequestUtils {
                 mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
                 mapper.configure(DeserializationFeature.READ_ENUMS_USING_TO_STRING, true);
                 try {
-                    return mapper.readValue(ruleSet, new TypeReference<LocalDecisioningRuleSet>() {});
+                    return mapper.readValue(ruleSet, new TypeReference<OnDeviceDecisioningRuleSet>() {});
                 }
                 catch (IOException e) {
                     throw new RuntimeException(e);
@@ -371,12 +371,12 @@ public class TargetTestDeliveryRequestUtils {
         };
     }
 
-    public static void fileRuleLoader(String fileName, LocalDecisioningService localService) throws IOException, NoSuchFieldException {
+    public static void fileRuleLoader(String fileName, OnDeviceDecisioningService localService) throws IOException, NoSuchFieldException {
         RuleLoader testRuleLoader = TargetTestDeliveryRequestUtils.getTestRuleLoaderFromFile(fileName);
-        LocalExecutionEvaluator evaluator = new LocalExecutionEvaluator(testRuleLoader);
+        OnDeviceDecisioningEvaluator evaluator = new OnDeviceDecisioningEvaluator(testRuleLoader);
         FieldSetter.setField(localService, localService.getClass()
                 .getDeclaredField("ruleLoader"), testRuleLoader);
         FieldSetter.setField(localService, localService.getClass()
-                .getDeclaredField("localExecutionEvaluator"), evaluator);
+                .getDeclaredField("onDeviceDecisioningEvaluator"), evaluator);
     }
 }

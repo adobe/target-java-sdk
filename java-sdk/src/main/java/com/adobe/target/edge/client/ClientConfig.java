@@ -11,8 +11,8 @@
  */
 package com.adobe.target.edge.client;
 
-import com.adobe.target.edge.client.model.ExecutionMode;
-import com.adobe.target.edge.client.model.local.LocalExecutionHandler;
+import com.adobe.target.edge.client.model.DecisioningMethod;
+import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningHandler;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import org.apache.http.HttpRequestInterceptor;
 
@@ -39,12 +39,12 @@ public class ClientConfig {
     private HttpRequestInterceptor requestInterceptor;
     private ClientProxyConfig proxyConfig;
     private TargetExceptionHandler exceptionHandler;
-    private LocalExecutionHandler localExecutionHandler;
-    private ExecutionMode defaultExecutionMode;
+    private OnDeviceDecisioningHandler onDeviceDecisioningHandler;
+    private DecisioningMethod defaultDecisioningMethod;
     private String localEnvironment;
-    private String localConfigHostname;
-    private int localDecisioningPollingIntSecs;
-    private byte[] localArtifactPayload;
+    private String onDeviceConfigHostname;
+    private int onDeviceDecisioningPollingIntSecs;
+    private byte[] onDeviceArtifactPayload;
 
     public String getClient() {
         return client;
@@ -105,19 +105,19 @@ public class ClientConfig {
 
     public TargetExceptionHandler getExceptionHandler() { return exceptionHandler; }
 
-    public LocalExecutionHandler getLocalExecutionHandler() { return localExecutionHandler; }
+    public OnDeviceDecisioningHandler getOnDeviceDecisioningHandler() { return onDeviceDecisioningHandler; }
 
-    public ExecutionMode getDefaultExecutionMode() { return defaultExecutionMode; }
+    public DecisioningMethod getDefaultDecisioningMethod() { return defaultDecisioningMethod; }
 
     public String getLocalEnvironment() { return localEnvironment; }
 
-    public String getLocalConfigHostname() { return localConfigHostname; }
+    public String getOnDeviceConfigHostname() { return onDeviceConfigHostname; }
 
-    public int getLocalDecisioningPollingIntSecs() { return localDecisioningPollingIntSecs; }
+    public int getOnDeviceDecisioningPollingIntSecs() { return onDeviceDecisioningPollingIntSecs; }
 
-    public byte[] getLocalArtifactPayload() { return localArtifactPayload; }
+    public byte[] getOnDeviceArtifactPayload() { return onDeviceArtifactPayload; }
 
-    public boolean isLocalExecutionEnabled() { return defaultExecutionMode != ExecutionMode.REMOTE;}
+    public boolean isOnDeviceDecisioningEnabled() { return defaultDecisioningMethod != DecisioningMethod.SERVER_SIDE;}
 
     public static ClientConfigBuilder builder() {
         return new ClientConfigBuilder();
@@ -141,12 +141,12 @@ public class ClientConfig {
         private HttpRequestInterceptor requestInterceptor;
         private ClientProxyConfig proxyConfig;
         private TargetExceptionHandler exceptionHandler;
-        private LocalExecutionHandler localExecutionHandler;
-        private ExecutionMode defaultExecutionMode = ExecutionMode.REMOTE;
+        private OnDeviceDecisioningHandler onDeviceDecisioningHandler;
+        private DecisioningMethod defaultDecisioningMethod = DecisioningMethod.SERVER_SIDE;
         private String localEnvironment = "production";
-        private String localConfigHostname = "assets.adobetarget.com";
-        private int localDecisioningPollingIntSecs = 300;
-        private byte[] localArtifactPayload;
+        private String onDeviceConfigHostname = "assets.adobetarget.com";
+        private int onDeviceDecisioningPollingIntSecs = 300;
+        private byte[] onDeviceArtifactPayload;
 
         private ClientConfigBuilder() {
         }
@@ -225,13 +225,13 @@ public class ClientConfig {
             return this;
         }
 
-        public ClientConfigBuilder localExecutionHandler(LocalExecutionHandler handler) {
-            this.localExecutionHandler = handler;
+        public ClientConfigBuilder onDeviceDecisioningHandler(OnDeviceDecisioningHandler handler) {
+            this.onDeviceDecisioningHandler = handler;
             return this;
         }
 
-        public ClientConfigBuilder defaultExecutionMode(ExecutionMode executionMode) {
-            this.defaultExecutionMode = executionMode;
+        public ClientConfigBuilder defaultDecisioningMethod(DecisioningMethod decisioningMethod) {
+            this.defaultDecisioningMethod = decisioningMethod;
             return this;
         }
 
@@ -240,18 +240,18 @@ public class ClientConfig {
             return this;
         }
 
-        public ClientConfigBuilder localConfigHostname(String hostname) {
-            this.localConfigHostname = hostname;
+        public ClientConfigBuilder onDeviceConfigHostname(String hostname) {
+            this.onDeviceConfigHostname = hostname;
             return this;
         }
 
-        public ClientConfigBuilder localDecisioningPollingIntSecs(int pollingInterval) {
-            this.localDecisioningPollingIntSecs = pollingInterval;
+        public ClientConfigBuilder onDeviceDecisioningPollingIntSecs(int pollingInterval) {
+            this.onDeviceDecisioningPollingIntSecs = pollingInterval;
             return this;
         }
 
-        public ClientConfigBuilder localArtifactPayload(byte[] payload) {
-            this.localArtifactPayload = payload;
+        public ClientConfigBuilder onDeviceArtifactPayload(byte[] payload) {
+            this.onDeviceArtifactPayload = payload;
             return this;
         }
 
@@ -276,12 +276,12 @@ public class ClientConfig {
             clientConfig.logRequestStatus = this.logRequestStatus;
             clientConfig.proxyConfig = this.proxyConfig;
             clientConfig.exceptionHandler = this.exceptionHandler;
-            clientConfig.localExecutionHandler = this.localExecutionHandler;
-            clientConfig.defaultExecutionMode = this.defaultExecutionMode;
+            clientConfig.onDeviceDecisioningHandler = this.onDeviceDecisioningHandler;
+            clientConfig.defaultDecisioningMethod = this.defaultDecisioningMethod;
             clientConfig.localEnvironment = this.localEnvironment;
-            clientConfig.localConfigHostname = this.localConfigHostname;
-            clientConfig.localDecisioningPollingIntSecs = this.localDecisioningPollingIntSecs;
-            clientConfig.localArtifactPayload = this.localArtifactPayload;
+            clientConfig.onDeviceConfigHostname = this.onDeviceConfigHostname;
+            clientConfig.onDeviceDecisioningPollingIntSecs = this.onDeviceDecisioningPollingIntSecs;
+            clientConfig.onDeviceArtifactPayload = this.onDeviceArtifactPayload;
             return clientConfig;
         }
     }

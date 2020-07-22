@@ -114,7 +114,7 @@ public class DefaultTargetService implements TargetService {
                                                              HttpResponse<DeliveryResponse> response) {
         DeliveryResponse deliveryResponse = retrieveDeliveryResponse(response);
         updateStickyLocationHint(deliveryResponse);
-        if (this.clientConfig.isLocalExecutionEnabled()) {
+        if (this.clientConfig.isOnDeviceDecisioningEnabled()) {
             addRemoteResponseTokens(deliveryResponse);
         }
         return new TargetDeliveryResponse(deliveryRequest, deliveryResponse, response.getStatus(),
@@ -166,7 +166,7 @@ public class DefaultTargetService implements TargetService {
     }
 
     private void updateStickyLocationHint(DeliveryResponse deliveryResponse) {
-        if (!clientConfig.isLocalExecutionEnabled() ||
+        if (!clientConfig.isOnDeviceDecisioningEnabled() ||
                 StringUtils.isNotEmpty(stickyLocationHint)) {
             return;
         }
@@ -195,7 +195,7 @@ public class DefaultTargetService implements TargetService {
         if (options != null) {
             for (Option option : options) {
                 Map<String, Object> responseTokens = option.getResponseTokens();
-                responseTokens.put("activity.executionType", "server-side");
+                responseTokens.put("activity.decisioningMethod", "server-side");
             }
         }
     }

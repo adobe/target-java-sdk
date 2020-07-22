@@ -16,10 +16,10 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
-import com.adobe.target.edge.client.local.LocalDecisioningDetailsExecutor;
-import com.adobe.target.edge.client.local.LocalDecisioningService;
-import com.adobe.target.edge.client.local.client.geo.GeoClient;
-import com.adobe.target.edge.client.model.ExecutionMode;
+import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningDetailsExecutor;
+import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
+import com.adobe.target.edge.client.ondevice.client.geo.GeoClient;
+import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.service.DefaultTargetService;
@@ -59,7 +59,7 @@ public class TargetDeliveryLocalGeoTest {
 
     private GeoClient mockGeoClient;
     private TargetClient targetJavaClient;
-    private LocalDecisioningService localService;
+    private OnDeviceDecisioningService localService;
 
     @BeforeEach
     @SuppressWarnings("unchecked")
@@ -75,9 +75,9 @@ public class TargetDeliveryLocalGeoTest {
                 .build();
 
         DefaultTargetService targetService = new DefaultTargetService(clientConfig);
-        localService = new LocalDecisioningService(clientConfig, targetService);
+        localService = new OnDeviceDecisioningService(clientConfig, targetService);
         ObjectMapper mapper = new JacksonObjectMapper().getMapper();
-        LocalDecisioningDetailsExecutor decisionHandler = new LocalDecisioningDetailsExecutor(clientConfig, mapper);
+        OnDeviceDecisioningDetailsExecutor decisionHandler = new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);
 
         targetJavaClient = TargetClient.create(clientConfig);
 
@@ -177,7 +177,7 @@ public class TargetDeliveryLocalGeoTest {
                 .context(new Context().geo(ipGeo).address(new Address().url("https://test.com")))
                 .prefetch(new PrefetchRequest().addMboxesItem(new MboxRequest().name("geo").index(0)))
                 .id(new VisitorId().tntId("38734fba-262c-4722-b4a3-ac0a93916874"))
-                .executionMode(ExecutionMode.LOCAL)
+                .decisioningMethod(DecisioningMethod.ON_DEVICE)
                 .build();
         TargetDeliveryResponse response = targetJavaClient.getOffers(targetDeliveryRequest);
         assertNotNull(response);
@@ -271,7 +271,7 @@ public class TargetDeliveryLocalGeoTest {
                 .context(new Context().geo(geo).address(new Address().url("https://test.com")))
                 .prefetch(new PrefetchRequest().addMboxesItem(new MboxRequest().name("geo").index(0)))
                 .id(new VisitorId().tntId("38734fba-262c-4722-b4a3-ac0a93916874"))
-                .executionMode(ExecutionMode.HYBRID)
+                .decisioningMethod(DecisioningMethod.HYBRID)
                 .build();
         TargetDeliveryResponse response = targetJavaClient.getOffers(targetDeliveryRequest);
         assertNotNull(response);

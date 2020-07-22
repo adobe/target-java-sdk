@@ -29,10 +29,10 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
-import com.adobe.target.edge.client.local.LocalDecisioningDetailsExecutor;
-import com.adobe.target.edge.client.local.LocalDecisioningService;
-import com.adobe.target.edge.client.local.collator.ParamsCollator;
-import com.adobe.target.edge.client.model.ExecutionMode;
+import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningDetailsExecutor;
+import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
+import com.adobe.target.edge.client.ondevice.collator.ParamsCollator;
+import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryRequestBuilder;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
@@ -112,7 +112,7 @@ class TargetDeliveryRequestLocalViewTest {
 
     private TargetClient targetJavaClient;
 
-    private LocalDecisioningService localService;
+    private OnDeviceDecisioningService localService;
 
     @BeforeEach
     @SuppressWarnings("unchecked")
@@ -128,9 +128,9 @@ class TargetDeliveryRequestLocalViewTest {
                 .build();
 
         DefaultTargetService targetService = new DefaultTargetService(clientConfig);
-        localService = new LocalDecisioningService(clientConfig, targetService);
+        localService = new OnDeviceDecisioningService(clientConfig, targetService);
         ObjectMapper mapper = new JacksonObjectMapper().getMapper();
-        LocalDecisioningDetailsExecutor decisionHandler = new LocalDecisioningDetailsExecutor(clientConfig, mapper);
+        OnDeviceDecisioningDetailsExecutor decisionHandler = new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);
 
         targetJavaClient = TargetClient.create(clientConfig);
 
@@ -726,7 +726,7 @@ class TargetDeliveryRequestLocalViewTest {
                 .context(context)
                 .prefetch(prefetchRequest)
                 .id(visitorId)
-                .executionMode(ExecutionMode.LOCAL);
+                .decisioningMethod(DecisioningMethod.ON_DEVICE);
         if (execute) {
             targetDeliveryRequestBuilder.execute(executeRequest);
         }
