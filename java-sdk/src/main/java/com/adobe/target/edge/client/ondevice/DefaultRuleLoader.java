@@ -112,7 +112,9 @@ public class DefaultRuleLoader implements RuleLoader {
 
     public void stop() {
         this.timer.cancel();
-        unirestInstance.shutDown();
+        if (this.unirestInstance != null) {
+            this.unirestInstance.shutDown();
+        }
         this.started = false;
     }
 
