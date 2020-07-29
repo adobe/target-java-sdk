@@ -187,6 +187,18 @@ class DefaultRuleLoaderTest {
         verify(executionHandler, never()).artifactDownloadFailed(any());
         OnDeviceDecisioningRuleSet rules = defaultRuleLoader.getLatestRules();
         assertNotNull(rules);
+        defaultRuleLoader.stop();
+
+        // do it again, make sure starting works again after a stop
+        reset(executionHandler);
+        defaultRuleLoader.start(clientConfig);
+        verify(defaultRuleLoader, timeout(1000)).setLatestRules(any(OnDeviceDecisioningRuleSet.class));
+        verify(defaultRuleLoader, timeout(1000)).setLatestETag(eq(etag));
+        verify(executionHandler, timeout(1000)).onDeviceDecisioningReady();
+        verify(executionHandler, timeout(1000)).artifactDownloadSucceeded(any());
+        verify(executionHandler, never()).artifactDownloadFailed(any());
+        rules = defaultRuleLoader.getLatestRules();
+        assertNotNull(rules);
 
         Mockito.doReturn(getTestResponse(TEST_RULE_SET, "5b1cf3c050e1a0d16934922bf19ba6ea", HttpStatus.SC_NOT_MODIFIED))
                 .when(defaultRuleLoader).executeRequest(any());
@@ -194,7 +206,7 @@ class DefaultRuleLoaderTest {
         defaultRuleLoader.refresh();
         verify(exceptionHandler, never()).handleException(any(TargetClientException.class));
         defaultRuleLoader.stop();
-    }
+     }
 
     @Test
     void testDefaultRuleLoaderNullResponse() {

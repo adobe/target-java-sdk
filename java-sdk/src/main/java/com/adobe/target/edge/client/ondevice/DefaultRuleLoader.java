@@ -115,12 +115,22 @@ public class DefaultRuleLoader implements RuleLoader {
         if (this.unirestInstance != null) {
             this.unirestInstance.shutDown();
         }
-        this.started = false;
+        this.reset();
     }
 
     public void refresh() {
         this.loadRules(this.clientConfig);
         this.scheduleTimer(getPollingInterval());
+    }
+
+    private void reset() {
+        this.started = false;
+        this.succeeded = false;
+        this.retries = 0;
+        this.numFetches = 0;
+        this.lastFetch = null;
+        this.lastETag = null;
+        this.latestRules = null;
     }
 
     private void scheduleTimer(long delay) {
