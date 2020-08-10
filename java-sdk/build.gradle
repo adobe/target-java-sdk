@@ -1,4 +1,5 @@
 plugins {
+    id 'jacoco'
     id 'maven-publish'
     id 'signing'
     id 'maven'
@@ -19,6 +20,14 @@ task javadocJar(type: Jar) {
     archiveClassifier = 'javadoc'
     from javadoc.destinationDir
     dependsOn javadoc
+}
+
+compileJava {
+    options.encoding = "UTF-8"
+}
+
+compileTestJava {
+    options.encoding = "UTF-8"
 }
 
 publishing {
@@ -92,3 +101,23 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+// JACOCO CONFIGURATION | HTML output is omitted in favour of just the XML output that Jenkins can parse
+jacocoTestReport {
+  reports {
+    xml.enabled = true
+    html.enabled = true
+  }
+}
+
+// JACOCO COVERAGE THRESHOLD | Builds will fail if the computed code coverage is less than the configured percentage
+jacocoTestCoverageVerification {
+  violationRules {
+    rule {
+      limit {
+        minimum = 0.43
+      }
+    }
+  }
+}
+
