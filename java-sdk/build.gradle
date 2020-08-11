@@ -40,6 +40,14 @@ publishing {
                 password = System.getenv('SONATYPE_PASS')
             }
         }
+        maven {
+            name = 'artifactory'
+            url = System.getenv('ARTIFACTORY_RELEASE_URL')
+            credentials() {
+                username = System.env.ARTIFACTORY_CICD_USER
+                password = System.env.ARTIFACTORY_CICD_PASSWORD
+            }
+        }
     }
     publications {
         external(MavenPublication) {
@@ -47,7 +55,7 @@ publishing {
             from components.java
 
             artifact sourcesJar
-            artifact javadocJar
+//            artifact javadocJar
 
             pom {
                 name = rootProject.name
@@ -75,14 +83,14 @@ publishing {
     }
 }
 
-signing {
-    required {
-        tasks.withType(PublishToMavenRepository).find {
-            gradle.taskGraph.hasTask it
-        }
-    }
-    sign publishing.publications
-}
+//signing {
+//    required {
+//        tasks.withType(PublishToMavenRepository).find {
+//            gradle.taskGraph.hasTask it
+//        }
+//    }
+//    sign publishing.publications
+//}
 
 dependencies {
     api "com.adobe.experiencecloud.ecid:ecid-service:1.0.0"
