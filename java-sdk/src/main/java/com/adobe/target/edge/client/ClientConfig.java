@@ -41,7 +41,7 @@ public class ClientConfig {
     private TargetExceptionHandler exceptionHandler;
     private OnDeviceDecisioningHandler onDeviceDecisioningHandler;
     private DecisioningMethod defaultDecisioningMethod;
-    private String localEnvironment;
+    private String onDeviceEnvironment;
     private String onDeviceConfigHostname;
     private int onDeviceDecisioningPollingIntSecs;
     private byte[] onDeviceArtifactPayload;
@@ -109,7 +109,7 @@ public class ClientConfig {
 
     public DecisioningMethod getDefaultDecisioningMethod() { return defaultDecisioningMethod; }
 
-    public String getLocalEnvironment() { return localEnvironment; }
+    public String getOnDeviceEnvironment() { return onDeviceEnvironment; }
 
     public String getOnDeviceConfigHostname() { return onDeviceConfigHostname; }
 
@@ -143,7 +143,7 @@ public class ClientConfig {
         private TargetExceptionHandler exceptionHandler;
         private OnDeviceDecisioningHandler onDeviceDecisioningHandler;
         private DecisioningMethod defaultDecisioningMethod = DecisioningMethod.SERVER_SIDE;
-        private String localEnvironment = "production";
+        private String onDeviceEnvironment = "production";
         private String onDeviceConfigHostname = "assets.adobetarget.com";
         private int onDeviceDecisioningPollingIntSecs = 300;
         private byte[] onDeviceArtifactPayload;
@@ -235,8 +235,8 @@ public class ClientConfig {
             return this;
         }
 
-        public ClientConfigBuilder localEnvironment(String environment) {
-            this.localEnvironment = environment;
+        public ClientConfigBuilder onDeviceEnvironment(String environment) {
+            this.onDeviceEnvironment = environment;
             return this;
         }
 
@@ -278,7 +278,7 @@ public class ClientConfig {
             clientConfig.exceptionHandler = this.exceptionHandler;
             clientConfig.onDeviceDecisioningHandler = this.onDeviceDecisioningHandler;
             clientConfig.defaultDecisioningMethod = this.defaultDecisioningMethod;
-            clientConfig.localEnvironment = this.localEnvironment;
+            clientConfig.onDeviceEnvironment = this.onDeviceEnvironment;
             clientConfig.onDeviceConfigHostname = this.onDeviceConfigHostname;
             clientConfig.onDeviceDecisioningPollingIntSecs = this.onDeviceDecisioningPollingIntSecs;
             clientConfig.onDeviceArtifactPayload = this.onDeviceArtifactPayload;

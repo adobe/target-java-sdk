@@ -1097,7 +1097,7 @@ The `ClientConfigBuilder` object has the following structure:
 | requestInterceptor   |  HttpRequestInterceptor  | No      | Null   | Add custom request Interceptor                      |
 | defaultPropertyToken | String   | No      | None                   | Sets the default property token for every getOffers call |
 | defaultDecisioningMethod | DecisioningMethod enum | No | REMOTE            | Must be set to ON_DEVICE or HYBRID to enable on-device decisioning |
-| localEnvironment     | String   | No      | production             | Can be used to specify a different local environment such as staging |
+| onDeviceEnvironment     | String   | No      | production             | Can be used to specify a different on-device environment such as staging |
 | onDeviceConfigHostname  | String   | No      | assets.adobetarget.com | Can be used to specify a different host to use to download the on-device decisioning artifact file |
 | onDeviceDecisioningPollingIntSecs | int | No | 300 (5 min)            | Number of seconds between fetches of the on-device decisioning artifact file |
 | onDeviceArtifactPayload | byte[]   | No      | None                   | Provides on-device decisioning with previous artifact payload to allow immediate execution |
