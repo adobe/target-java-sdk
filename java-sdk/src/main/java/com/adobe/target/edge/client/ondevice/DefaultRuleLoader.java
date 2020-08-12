@@ -284,7 +284,7 @@ public class DefaultRuleLoader implements RuleLoader {
         return "https://" +
                 clientConfig.getOnDeviceConfigHostname() + "/" +
                 clientConfig.getClient() + "/" +
-                clientConfig.getLocalEnvironment().toLowerCase() +
+                clientConfig.getOnDeviceEnvironment().toLowerCase() +
                 "/v" + MAJOR_VERSION +
                 "/rules.json";
     }
