@@ -27,7 +27,7 @@ public class TargetAttributesResponse implements Attributes {
     }
 
     @Override
-    public boolean getBoolean(String mbox, String key) {
+    public Boolean getBoolean(String mbox, String key, Boolean defaultValue) {
         Map<String, Object> map = toMboxMap(mbox);
         if (map != null) {
             Object value = map.get(key);
@@ -35,7 +35,7 @@ public class TargetAttributesResponse implements Attributes {
                 return ((Boolean) value);
             }
         }
-        return false;
+        return defaultValue;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class TargetAttributesResponse implements Attributes {
     }
 
     @Override
-    public int getInteger(String mbox, String key) {
+    public Integer getInteger(String mbox, String key, Integer defaultValue) {
         Map<String, Object> map = toMboxMap(mbox);
         if (map != null) {
             Object value = map.get(key);
@@ -62,11 +62,11 @@ public class TargetAttributesResponse implements Attributes {
                 return Double.valueOf((String)value).intValue();
             }
         }
-        return 0;
+        return defaultValue;
     }
 
     @Override
-    public double getDouble(String mbox, String key) {
+    public Double getDouble(String mbox, String key, Double defaultValue) {
         Map<String, Object> map = toMboxMap(mbox);
         if (map != null) {
             Object value = map.get(key);
@@ -77,7 +77,7 @@ public class TargetAttributesResponse implements Attributes {
                 return Double.parseDouble((String)value);
             }
         }
-        return 0d;
+        return defaultValue;
     }
 
     @Override
@@ -87,7 +87,7 @@ public class TargetAttributesResponse implements Attributes {
 
     @Override
     public Map<String, Object> toMboxMap(String mbox) {
-        Map<String, Object> mboxContent = this.content.get("mbox");
+        Map<String, Object> mboxContent = this.content.get(mbox);
         if (mboxContent != null) {
             return mboxContent;
         }
@@ -115,9 +115,10 @@ public class TargetAttributesResponse implements Attributes {
                 List<MboxResponse> executeMboxes = executeResponse.getMboxes();
                 allMboxes.addAll(executeMboxes);
             }
-            for (MboxResponse resp : allMboxes) {
+            for (int i = allMboxes.size() - 1; i >= 0; i--) {
+                MboxResponse resp = allMboxes.get(i);
                 String mbox = resp.getName();
-                Map<String, Object> mboxContent = new HashMap<>();
+                Map<String, Object> mboxContent = this.content.computeIfAbsent(mbox, k -> new HashMap<>());
                 List<Option> options = resp.getOptions();
                 for (Option option : options) {
                     Object contentMap = option.getContent();
@@ -127,7 +128,6 @@ public class TargetAttributesResponse implements Attributes {
                         mboxContent.putAll(contentObj);
                     }
                 }
-                this.content.put(mbox, mboxContent);
             }
             this.contentCreated = true;
         }

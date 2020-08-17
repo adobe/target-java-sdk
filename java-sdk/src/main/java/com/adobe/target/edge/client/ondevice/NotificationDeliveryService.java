@@ -42,12 +42,12 @@ public class NotificationDeliveryService {
                 50,
                 1,
                 TimeUnit.MINUTES,
-                new ArrayBlockingQueue<>(500),
+                new ArrayBlockingQueue<>(2000),
                 (r, executor) -> {
-                    RejectedExecutionException e = new RejectedExecutionException("Local-decisioning notification queue full");
+                    RejectedExecutionException e = new RejectedExecutionException("On-device-decisioning notification queue full");
                     TargetExceptionHandler handler = clientConfig.getExceptionHandler();
                     if (handler != null) {
-                        handler.handleException(new TargetClientException("Local-decisioning notification rejected", e));
+                        handler.handleException(new TargetClientException("On-device-decisioning notification rejected", e));
                     }
                     throw e;
                 });

@@ -40,6 +40,7 @@ public class OnDeviceDecisioningDetailsExecutor {
     }
 
     public void executeDetails(TargetDeliveryRequest deliveryRequest,
+            Set<String> onDeviceAllMatchingRulesMboxes,
             Map<String, Object> localContext,
             String visitorId,
             Set<String> responseTokens,
@@ -73,9 +74,11 @@ public class OnDeviceDecisioningDetailsExecutor {
                 if (handled) {
                     handledAtLeastOnce = true;
                     if (details instanceof MboxRequest) {
-                        break;
+                        if (!onDeviceAllMatchingRulesMboxes.contains(((MboxRequest) details).getName())) {
+                            break;
+                        }
                     }
-                    if (ruleKey != null) {
+                    else if (ruleKey != null) {
                         skipKeySet.add(ruleKey);
                     }
                 }

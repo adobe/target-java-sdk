@@ -16,6 +16,7 @@ import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningHandler;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import org.apache.http.HttpRequestInterceptor;
 
+import java.util.List;
 import java.util.Objects;
 
 import static com.adobe.target.edge.client.utils.StringUtils.isNotEmpty;
@@ -45,6 +46,7 @@ public class ClientConfig {
     private String onDeviceConfigHostname;
     private int onDeviceDecisioningPollingIntSecs;
     private byte[] onDeviceArtifactPayload;
+    private List<String> onDeviceAllMatchingRulesMboxes;
 
     public String getClient() {
         return client;
@@ -117,6 +119,10 @@ public class ClientConfig {
 
     public byte[] getOnDeviceArtifactPayload() { return onDeviceArtifactPayload; }
 
+    public List<String> getOnDeviceAllMatchingRulesMboxes() {
+        return onDeviceAllMatchingRulesMboxes;
+    }
+
     public boolean isOnDeviceDecisioningEnabled() { return defaultDecisioningMethod != DecisioningMethod.SERVER_SIDE;}
 
     public static ClientConfigBuilder builder() {
@@ -147,6 +153,7 @@ public class ClientConfig {
         private String onDeviceConfigHostname = "assets.adobetarget.com";
         private int onDeviceDecisioningPollingIntSecs = 300;
         private byte[] onDeviceArtifactPayload;
+        private List<String> onDeviceAllMatchingRulesMboxes;
 
         private ClientConfigBuilder() {
         }
@@ -255,6 +262,11 @@ public class ClientConfig {
             return this;
         }
 
+        public ClientConfigBuilder onDeviceAllMatchingRulesMboxes(List<String> mboxes) {
+            this.onDeviceAllMatchingRulesMboxes = mboxes;
+            return this;
+        }
+
         public ClientConfig build() {
             ClientConfig clientConfig = new ClientConfig();
             Objects.requireNonNull(client, "client id cannot be null");
@@ -282,6 +294,7 @@ public class ClientConfig {
             clientConfig.onDeviceConfigHostname = this.onDeviceConfigHostname;
             clientConfig.onDeviceDecisioningPollingIntSecs = this.onDeviceDecisioningPollingIntSecs;
             clientConfig.onDeviceArtifactPayload = this.onDeviceArtifactPayload;
+            clientConfig.onDeviceAllMatchingRulesMboxes = this.onDeviceAllMatchingRulesMboxes;
             return clientConfig;
         }
     }

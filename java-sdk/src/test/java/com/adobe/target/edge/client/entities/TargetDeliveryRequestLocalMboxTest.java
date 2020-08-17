@@ -34,8 +34,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -471,6 +473,79 @@ class TargetDeliveryRequestLocalMboxTest {
         assertEquals(200, response.getStatus());
         verify(defaultTargetHttpClient, atMostOnce()).execute(any(Map.class), any(String.class),
                 eq(targetDeliveryRequest), any(Class.class));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void testTargetDeliveryLocalRequestAllMatches() throws IOException, NoSuchFieldException {
+        String mbox = "allmatches";
+        Set<String> onDeviceAllMatchingRulesMboxes = new HashSet<String>() {{
+            add(mbox);
+        }};
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("onDeviceAllMatchingRulesMboxes"), onDeviceAllMatchingRulesMboxes);
+        fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", DecisioningMethod.ON_DEVICE,
+                        mbox);
+        PrefetchRequest prefetchRequest = targetDeliveryRequest.getDeliveryRequest().getPrefetch();
+        MboxRequest mboxRequest = prefetchRequest.getMboxes().get(0);
+        mboxRequest.setParameters(new HashMap<String, String>() {{
+            put("foo", "bar");
+        }});
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        DeliveryResponse response = targetDeliveryResponse.getResponse();
+        assertNotNull(response);
+        PrefetchResponse preResponse = response.getPrefetch();
+        assertNotNull(preResponse);
+        List<PrefetchMboxResponse> preMboxes = preResponse.getMboxes();
+        assertNotNull(preMboxes);
+        assertEquals(2, preMboxes.size());
+        PrefetchMboxResponse preMboxResponse1 = preMboxes.get(0);
+        List<Option> prefetchOptions1 = preMboxResponse1.getOptions();
+        assertEquals(1, prefetchOptions1.size());
+        Option option1 = prefetchOptions1.get(0);
+        assertEquals(OptionType.JSON, option1.getType());
+        Map<String, Object> preContent1 = (Map<String, Object>) option1.getContent();
+        assertEquals(2, preContent1.get("allmatches"));
+        assertEquals("a", preContent1.get("allmatches2_exp"));
+        assertEquals("aNT5qgpj/qd5U7cLpV7p02qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                option1.getEventToken());
+        PrefetchMboxResponse preMboxResponse2 = preMboxes.get(1);
+        List<Option> prefetchOptions2 = preMboxResponse2.getOptions();
+        assertEquals(1, prefetchOptions2.size());
+        Option option2 = prefetchOptions2.get(0);
+        assertEquals(OptionType.JSON, option2.getType());
+        Map<String, Object> preContent2 = (Map<String, Object>) option2.getContent();
+        assertEquals(1, preContent2.get("allmatches"));
+        assertEquals("a", preContent2.get("allmatches1_exp"));
+        assertEquals("+hItquQ2BQan0pYxdJmMcGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                option2.getEventToken());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void testTargetDeliveryLocalRequestAllMatchesNotOverriden() throws IOException, NoSuchFieldException {
+        fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874", DecisioningMethod.ON_DEVICE,
+                        "allmatches");
+        PrefetchRequest prefetchRequest = targetDeliveryRequest.getDeliveryRequest().getPrefetch();
+        MboxRequest mboxRequest = prefetchRequest.getMboxes().get(0);
+        mboxRequest.setParameters(new HashMap<String, String>() {{
+            put("foo", "bar");
+        }});
+        TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+        List<Option> prefetchOptions =
+                extractOptions(targetDeliveryRequest, targetDeliveryResponse, "allmatches");
+        assertEquals(1, prefetchOptions.size());
+        Option option1 = prefetchOptions.get(0);
+        assertEquals(OptionType.JSON, option1.getType());
+        Map<String, Object> preContent1 = (Map<String, Object>) option1.getContent();
+        assertEquals(2, preContent1.get("allmatches"));
+        assertEquals("a", preContent1.get("allmatches2_exp"));
+        assertEquals("aNT5qgpj/qd5U7cLpV7p02qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                option1.getEventToken());
     }
 
     private TargetDeliveryRequest localDeliveryRequest(String visitorIdStr,
