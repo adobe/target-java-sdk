@@ -17,6 +17,8 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
+import com.adobe.target.edge.client.ondevice.ClusterLocator;
+import com.adobe.target.edge.client.ondevice.NotificationDeliveryService;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningDetailsExecutor;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningEvaluator;
@@ -90,6 +92,10 @@ class TargetDeliveryAttributesTest {
                 .getDeclaredField("ruleLoader"), testRuleLoader);
         FieldSetter.setField(localService, localService.getClass()
                 .getDeclaredField("onDeviceDecisioningEvaluator"), evaluator);
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("deliveryService"), mock(NotificationDeliveryService.class));
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("clusterLocator"), mock(ClusterLocator.class));
 
         ObjectMapper mapper = new JacksonObjectMapper().getMapper();
         OnDeviceDecisioningDetailsExecutor decisionHandler = new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);

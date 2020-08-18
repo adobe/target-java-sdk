@@ -27,6 +27,8 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
+import com.adobe.target.edge.client.ondevice.ClusterLocator;
+import com.adobe.target.edge.client.ondevice.NotificationDeliveryService;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningDetailsExecutor;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.ondevice.client.geo.GeoClient;
@@ -56,6 +58,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.atMostOnce;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -101,6 +104,10 @@ public class TargetDeliveryLocalGeoTest {
 
         FieldSetter.setField(localService, localService.getClass()
                 .getDeclaredField("decisionHandler"), decisionHandler);
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("deliveryService"), mock(NotificationDeliveryService.class));
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("clusterLocator"), mock(ClusterLocator.class));
 
         fileRuleLoader(GEO_TEST_FILE, localService);
 

@@ -161,21 +161,23 @@ public class DefaultTargetClient implements TargetClient {
             }
         }
         ExecuteRequest executeRequest = deliveryRequest.getExecute();
-        if (executeRequest == null) {
-            executeRequest = new ExecuteRequest();
-            targetRequest.getDeliveryRequest().setExecute(executeRequest);
-        }
-        List<MboxRequest> existingMboxes = executeRequest.getMboxes();
-        if (existingMboxes != null) {
-            for (MboxRequest mb : existingMboxes) {
-                if (mb.getIndex() >= idx) {
-                    idx = mb.getIndex() + 1;
+        if (executeRequest != null) {
+            List<MboxRequest> executeMboxes = executeRequest.getMboxes();
+            if (executeMboxes != null) {
+                for (MboxRequest mb : executeMboxes) {
+                    if (mb.getIndex() >= idx) {
+                        idx = mb.getIndex() + 1;
+                    }
+                    existingMBoxNames.add(mb.getName());
                 }
-                existingMBoxNames.add(mb.getName());
             }
         }
         for (String mbox : mboxes) {
             if (!existingMBoxNames.contains(mbox)) {
+                if (executeRequest == null) {
+                    executeRequest = new ExecuteRequest();
+                    targetRequest.getDeliveryRequest().setExecute(executeRequest);
+                }
                 executeRequest.addMboxesItem(new MboxRequest().index(idx++).name(mbox));
             }
         }

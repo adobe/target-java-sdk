@@ -315,6 +315,9 @@ public class OnDeviceDecisioningService {
 
     private void sendNotifications(TargetDeliveryRequest deliveryRequest,
             TargetDeliveryResponse deliveryResponse, List<Notification> notifications) {
+        if (notifications == null || notifications.isEmpty()) {
+            return;
+        }
         DeliveryRequest dreq = deliveryRequest.getDeliveryRequest();
         String locationHint = deliveryRequest.getLocationHint() != null ?
                                       deliveryRequest.getLocationHint() :

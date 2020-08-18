@@ -16,6 +16,8 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
+import com.adobe.target.edge.client.ondevice.ClusterLocator;
+import com.adobe.target.edge.client.ondevice.NotificationDeliveryService;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningDetailsExecutor;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.ondevice.collator.ParamsCollator;
@@ -90,6 +92,10 @@ class TargetDeliveryRequestLocalMboxTest {
         ParamsCollator specificTimeCollator = TargetTestDeliveryRequestUtils.getSpecificTimeCollator(1582818503000L);
         FieldSetter.setField(localService, localService.getClass()
                 .getDeclaredField("timeParamsCollator"), specificTimeCollator);
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("deliveryService"), mock(NotificationDeliveryService.class));
+        FieldSetter.setField(localService, localService.getClass()
+                .getDeclaredField("clusterLocator"), mock(ClusterLocator.class));
     }
 
     @Test
