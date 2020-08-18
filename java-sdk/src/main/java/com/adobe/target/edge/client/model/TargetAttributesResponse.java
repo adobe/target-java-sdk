@@ -91,7 +91,13 @@ public class TargetAttributesResponse implements Attributes {
         if (mboxContent != null) {
             return mboxContent;
         }
-        return toMap().get(mbox);
+        synchronized (this.content) {
+            mboxContent = this.content.get(mbox);
+            if (mboxContent != null) {
+                return mboxContent;
+            }
+            return toMap().get(mbox);
+        }
     }
 
     @Override
