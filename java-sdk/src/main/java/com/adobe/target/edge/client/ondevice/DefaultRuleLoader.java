@@ -33,7 +33,6 @@ public class DefaultRuleLoader implements RuleLoader {
 
     private static final String MAJOR_VERSION = "1";
 
-    private static final long MIN_POLLING_INTERVAL = 5 * 60 * 1000; // 5 minutes
     private static final int MAX_RETRIES = 10;
 
     private OnDeviceDecisioningRuleSet latestRules;
@@ -173,7 +172,7 @@ public class DefaultRuleLoader implements RuleLoader {
     }
 
     public long getPollingInterval() {
-        return Math.max(MIN_POLLING_INTERVAL, clientConfig.getOnDeviceDecisioningPollingIntSecs() * 1000);
+        return clientConfig.getOnDeviceDecisioningPollingIntSecs() * 1000;
     }
 
     public int getNumFetches() {
