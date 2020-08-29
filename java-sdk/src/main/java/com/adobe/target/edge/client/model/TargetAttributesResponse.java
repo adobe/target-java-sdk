@@ -126,7 +126,8 @@ public class TargetAttributesResponse implements Attributes {
                 String mbox = resp.getName();
                 Map<String, Object> mboxContent = this.content.computeIfAbsent(mbox, k -> new HashMap<>());
                 List<Option> options = resp.getOptions();
-                for (Option option : options) {
+                for (int j = options.size() - 1; j >= 0; j--) {
+                    Option option = options.get(j);
                     Object contentMap = option.getContent();
                     if (option.getType() == OptionType.JSON && contentMap instanceof Map) {
                         @SuppressWarnings("unchecked")
