@@ -17,12 +17,15 @@ public class OnDeviceDecisioningEvaluation {
 
     private boolean allLocal;
     private String reason;
+    private String globalMbox;
     private List<String> remoteMBoxes;
     private List<String> remoteViews;
 
-    public OnDeviceDecisioningEvaluation(boolean allLocal, String reason, List<String> remoteMBoxes, List<String> remoteViews) {
+    public OnDeviceDecisioningEvaluation(boolean allLocal, String reason, String globalMbox,
+            List<String> remoteMBoxes, List<String> remoteViews) {
         this.allLocal = allLocal;
         this.reason = reason;
+        this.globalMbox = globalMbox;
         this.remoteMBoxes = remoteMBoxes;
         this.remoteViews = remoteViews;
     }
@@ -33,6 +36,10 @@ public class OnDeviceDecisioningEvaluation {
 
     public String getReason() {
         return reason;
+    }
+
+    public String getGlobalMbox() {
+        return globalMbox;
     }
 
     public List<String> getRemoteMBoxes() {

@@ -109,35 +109,58 @@ public class TargetAttributesResponse implements Attributes {
             return this.content;
         }
         synchronized (this.content) {
-            List<MboxResponse> allMboxes = new ArrayList<>();
+            String globalMbox = this.response.getResponseStatus().getGlobalMbox();
+            if (globalMbox == null) {
+                globalMbox = "target-global-mbox";
+            }
             DeliveryResponse response = this.response.getResponse();
             PrefetchResponse prefetchResponse = response.getPrefetch();
             if (prefetchResponse != null) {
-                List<PrefetchMboxResponse> prefectchMboxes = prefetchResponse.getMboxes();
-                allMboxes.addAll(prefectchMboxes);
+                PageLoadResponse pageloadResponse = prefetchResponse.getPageLoad();
+                if (pageloadResponse != null) {
+                    addOptions(pageloadResponse.getOptions(), globalMbox);
+                }
+                List<PrefetchMboxResponse> mboxes = prefetchResponse.getMboxes();
+                if (mboxes != null) {
+                    for (int i = mboxes.size() - 1; i >= 0; i--) {
+                        MboxResponse resp = mboxes.get(i);
+                        String mbox = resp.getName();
+                        List<Option> options = resp.getOptions();
+                        addOptions(options, mbox);
+                    }
+                }
             }
             ExecuteResponse executeResponse = response.getExecute();
             if (executeResponse != null) {
-                List<MboxResponse> executeMboxes = executeResponse.getMboxes();
-                allMboxes.addAll(executeMboxes);
-            }
-            for (int i = allMboxes.size() - 1; i >= 0; i--) {
-                MboxResponse resp = allMboxes.get(i);
-                String mbox = resp.getName();
-                Map<String, Object> mboxContent = this.content.computeIfAbsent(mbox, k -> new HashMap<>());
-                List<Option> options = resp.getOptions();
-                for (int j = options.size() - 1; j >= 0; j--) {
-                    Option option = options.get(j);
-                    Object contentMap = option.getContent();
-                    if (option.getType() == OptionType.JSON && contentMap instanceof Map) {
-                        @SuppressWarnings("unchecked")
-                        Map<String, Object> contentObj = (Map<String, Object>) contentMap;
-                        mboxContent.putAll(contentObj);
+                PageLoadResponse pageloadResponse = executeResponse.getPageLoad();
+                if (pageloadResponse != null) {
+                    addOptions(pageloadResponse.getOptions(), globalMbox);
+                }
+                List<MboxResponse> mboxes = executeResponse.getMboxes();
+                if (mboxes != null) {
+                    for (int i = mboxes.size() - 1; i >= 0; i--) {
+                        MboxResponse resp = mboxes.get(i);
+                        String mbox = resp.getName();
+                        List<Option> options = resp.getOptions();
+                        addOptions(options, mbox);
                     }
                 }
             }
             this.contentCreated = true;
         }
         return this.content;
+    }
+
+    private void addOptions(List<Option> options, String mbox) {
+        Map<String, Object> mboxContent = this.content.computeIfAbsent(mbox, k -> new HashMap<>());
+        for (int j = options.size() - 1; j >= 0; j--) {
+            Option option = options.get(j);
+            Object contentMap = option.getContent();
+            if (option.getType() == OptionType.JSON && contentMap instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> contentObj = (Map<String, Object>) contentMap;
+                mboxContent.putAll(contentObj);
+            }
+        }
     }
 }

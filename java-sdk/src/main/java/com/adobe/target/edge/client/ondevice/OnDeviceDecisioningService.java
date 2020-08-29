@@ -202,6 +202,7 @@ public class OnDeviceDecisioningService {
                 deliveryResponse, status,
                 localEvaluation.isAllLocal() ? "Local-decisioning response" : localEvaluation.getReason());
         ResponseStatus responseStatus = targetResponse.getResponseStatus();
+        responseStatus.setGlobalMbox(localEvaluation.getGlobalMbox());
         responseStatus.setRemoteMboxes(localEvaluation.getRemoteMBoxes());
         responseStatus.setRemoteViews(localEvaluation.getRemoteViews());
         return targetResponse;

@@ -19,7 +19,8 @@
   "remoteViews": [],
   "localMboxes": [
     "testoffer2",
-    "testoffer"
+    "testoffer",
+    "target-global-mbox"
   ],
   "localViews": [],
   "rules": {
@@ -171,6 +172,88 @@
           },
           "consequence": {
             "name": "testoffer",
+            "options": [
+              {
+                "type": "json",
+                "eventToken": "IbG2Jz2xmHaqX7Ml/YRxRJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": {
+                  "test": true,
+                  "experience": "b",
+                  "price": 9.99
+                }
+              }
+            ],
+            "metrics": []
+          }
+        }
+      ],
+      "target-global-mbox": [
+        {
+          "ruleKey": "334694",
+          "activityId": 334694,
+          "meta": {
+            "activityId": 334694,
+            "activityType": "ab",
+            "experienceId": 0,
+            "locationName": "target-global-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [],
+            "offerIds": [
+              632283
+            ]
+          },
+          "condition": {
+            "<": [
+              0,
+              {
+                "var": "allocation"
+              },
+              50
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "json",
+                "eventToken": "IbG2Jz2xmHaqX7Ml/YRxRGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": {
+                  "test": true,
+                  "experience": "a",
+                  "price": 12.99
+                }
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "334694",
+          "activityId": 334694,
+          "meta": {
+            "activityId": 334694,
+            "activityType": "ab",
+            "experienceId": 1,
+            "locationName": "target-global-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [],
+            "offerIds": [
+              632284
+            ]
+          },
+          "condition": {
+            "<": [
+              50,
+              {
+                "var": "allocation"
+              },
+              100
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
             "options": [
               {
                 "type": "json",

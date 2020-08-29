@@ -43,13 +43,14 @@ public class OnDeviceDecisioningEvaluator {
     public OnDeviceDecisioningEvaluation evaluateLocalExecution(TargetDeliveryRequest deliveryRequest) {
         if (deliveryRequest == null) {
             return new OnDeviceDecisioningEvaluation(false,
-                    "Given request cannot be null", null, null);
+                    "Given request cannot be null", null, null, null);
         }
 
         OnDeviceDecisioningRuleSet ruleSet = this.ruleLoader.getLatestRules();
         if (ruleSet == null) {
             return new OnDeviceDecisioningEvaluation(false,
-                    "Local-decisioning rule set not yet available", null, null);
+                    "Local-decisioning rule set not yet available",
+                    null, null, null);
         }
 
         List<String> remoteMboxes = computeRemoteMboxes(deliveryRequest, ruleSet);
@@ -68,12 +69,13 @@ public class OnDeviceDecisioningEvaluator {
                 reason.append(String.format("views %s", remoteViews));
             }
             return new OnDeviceDecisioningEvaluation(false,
-                    reason.toString(),
+                    reason.toString(), ruleSet.getGlobalMbox(),
                     remoteMboxes.isEmpty() ? null : new ArrayList<>(remoteMboxes),
                     remoteViews.isEmpty() ? null : new ArrayList<>(remoteViews));
         }
 
-        return new OnDeviceDecisioningEvaluation(true, null, null, null);
+        return new OnDeviceDecisioningEvaluation(true, null, ruleSet.getGlobalMbox(),
+                null, null);
     }
 
     private List<String> computeRemoteMboxes(TargetDeliveryRequest deliveryRequest, OnDeviceDecisioningRuleSet ruleSet) {

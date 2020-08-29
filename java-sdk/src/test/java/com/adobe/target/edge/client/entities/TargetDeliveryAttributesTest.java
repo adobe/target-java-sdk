@@ -39,6 +39,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 
 import static com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils.*;
@@ -145,6 +146,23 @@ class TargetDeliveryAttributesTest {
         assertTrue(attrs.toMboxMap("testoffer").containsKey("experience"));
         assertTrue(attrs.toMboxMap("testoffer").containsKey("price"));
         assertTrue(attrs.toMboxMap("testoffer2").containsKey("offer"));
+    }
+
+    @Test
+    void testTargetDeliveryAttributesPageload() {
+        TargetDeliveryRequest targetDeliveryRequest =
+                localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916874");
+        DeliveryRequest deliveryRequest = targetDeliveryRequest.getDeliveryRequest();
+        deliveryRequest.getPrefetch().setPageLoad(new RequestDetails());
+        deliveryRequest.getPrefetch().setMboxes(Collections.emptyList());
+        deliveryRequest.setExecute(null);
+        Attributes attrs = targetJavaClient.getAttributes(targetDeliveryRequest);
+        validateInitialResponse(targetDeliveryRequest, attrs);
+        assertTrue(attrs.getBoolean("target-global-mbox", "test", false));
+        assertEquals("a", attrs.getString("target-global-mbox", "experience"));
+        assertEquals(12.99, attrs.getDouble("target-global-mbox", "price", 0d), 0.0001);
+        assertEquals("a", attrs.toMboxMap("target-global-mbox").get("experience"));
+        assertEquals("a", attrs.toMap().get("target-global-mbox").get("experience"));
     }
 
     @Test

@@ -16,6 +16,7 @@ import java.util.List;
 public class ResponseStatus {
     private final int status;
     private final String message;
+    private String globalMbox;
     private List<String> remoteMboxes;
     private List<String> remoteViews;
 
@@ -32,6 +33,14 @@ public class ResponseStatus {
         return message;
     }
 
+    public String getGlobalMbox() {
+        return globalMbox;
+    }
+
+    public void setGlobalMbox(String globalMbox) {
+        this.globalMbox = globalMbox;
+    }
+
     public List<String> getRemoteMboxes() { return remoteMboxes; }
 
     public void setRemoteMboxes(List<String> mboxes) { remoteMboxes = mboxes; }
@@ -45,6 +54,7 @@ public class ResponseStatus {
         return "ResponseStatus{" +
                 "status=" + status +
                 ", message='" + message + '\'' +
+                ", globalMbox='" + globalMbox + '\'' +
                 ", remoteMboxes=" + remoteMboxes +
                 ", remoteViews=" + remoteViews +
                 '}';
