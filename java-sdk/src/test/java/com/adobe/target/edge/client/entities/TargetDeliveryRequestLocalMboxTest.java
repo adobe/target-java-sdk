@@ -34,11 +34,7 @@ import com.adobe.target.edge.client.ondevice.collator.ParamsCollator;
 import com.adobe.target.edge.client.service.DefaultTargetService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -568,6 +564,213 @@ class TargetDeliveryRequestLocalMboxTest {
       }
     }
     assertEquals(3, matches);
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void testTargetDeliveryLocalRequestPageloadMacros() throws IOException, NoSuchFieldException {
+    fileRuleLoader("DECISIONING_PAYLOAD_CAMPAIGN_MACROS.json", localService);
+    TargetDeliveryRequest targetDeliveryRequest =
+        localDeliveryRequest(
+            "38734fba-262c-4722-b4a3-ac0a93916874", DecisioningMethod.ON_DEVICE, null);
+    targetDeliveryRequest
+        .getDeliveryRequest()
+        .getContext()
+        .setUserAgent(
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36");
+    targetDeliveryRequest.getDeliveryRequest().getContext().setChannel(ChannelType.WEB);
+    targetDeliveryRequest
+        .getDeliveryRequest()
+        .getContext()
+        .setAddress(new Address().url("http://local-target-test/"));
+    targetDeliveryRequest
+        .getDeliveryRequest()
+        .getContext()
+        .setBrowser(new Browser().host("local-target-test"));
+
+    PrefetchRequest prefetchRequest = new PrefetchRequest();
+    RequestDetails pageLoad = new RequestDetails();
+    pageLoad.setParameters(
+        new HashMap<String, String>() {
+          {
+            put("user", "Mickey Mouse");
+            put("pgname", "blippi");
+            put("browserWidth", "1024");
+          }
+        });
+
+    prefetchRequest.setPageLoad(pageLoad);
+    targetDeliveryRequest.getDeliveryRequest().setPrefetch(prefetchRequest);
+    TargetDeliveryResponse targetDeliveryResponse =
+        targetJavaClient.getOffers(targetDeliveryRequest);
+    List<Option> pageLoadOptions =
+        targetDeliveryResponse.getResponse().getPrefetch().getPageLoad().getOptions();
+    assertNotNull(pageLoadOptions);
+
+    ArrayList<String> actionContents = new ArrayList<>();
+
+    for (Option option : pageLoadOptions) {
+      for (Map<String, String> action : (List<Map<String, String>>) option.getContent()) {
+        actionContents.add(action.get("content"));
+      }
+    }
+
+    Collections.sort(actionContents);
+
+    assertEquals(
+        actionContents,
+        new ArrayList<>(
+            Arrays.asList(
+                "${mbox.name}", // no mbox name available for pageLoad
+                "362225",
+                "Hello Mickey Mouse",
+                "macros pageLoad")));
+  }
+
+  @Test
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  void testTargetDeliveryLocalRequestMboxMacros() throws IOException, NoSuchFieldException {
+    fileRuleLoader("DECISIONING_PAYLOAD_CAMPAIGN_MACROS.json", localService);
+    TargetDeliveryRequest targetDeliveryRequest =
+        localDeliveryRequest(
+            "38734fba-262c-4722-b4a3-ac0a93916874", DecisioningMethod.ON_DEVICE, null);
+    targetDeliveryRequest
+        .getDeliveryRequest()
+        .getContext()
+        .setUserAgent(
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36");
+    targetDeliveryRequest.getDeliveryRequest().getContext().setChannel(ChannelType.WEB);
+    targetDeliveryRequest
+        .getDeliveryRequest()
+        .getContext()
+        .setAddress(new Address().url("http://local-target-test/"));
+    targetDeliveryRequest
+        .getDeliveryRequest()
+        .getContext()
+        .setBrowser(new Browser().host("local-target-test"));
+
+    PrefetchRequest prefetchRequest = new PrefetchRequest();
+
+    List<MboxRequest> mboxRequests =
+        new ArrayList() {
+          {
+            add(
+                new MboxRequest()
+                    .name("macros")
+                    .index(1)
+                    .parameters(
+                        new HashMap<String, String>() {
+                          {
+                            put("user", "Mickey Mouse");
+                            put("pgname", "blippi");
+                            put("browserWidth", "1024");
+                          }
+                        }));
+          }
+        };
+
+    prefetchRequest.setMboxes(mboxRequests);
+    targetDeliveryRequest.getDeliveryRequest().setPrefetch(prefetchRequest);
+    TargetDeliveryResponse targetDeliveryResponse =
+        targetJavaClient.getOffers(targetDeliveryRequest);
+
+    PrefetchMboxResponse mbox =
+        targetDeliveryResponse.getResponse().getPrefetch().getMboxes().get(0);
+    assertEquals("macros", mbox.getName());
+    Option option = mbox.getOptions().get(0);
+    assertEquals(OptionType.HTML, option.getType());
+
+    assertEquals(
+        "<ul>\n"
+            + "  <li>667871</li>\n"
+            + "  <li>/campaign_macros/experiences/0/pages/0/zones/0/1599065324791</li>\n"
+            + "  <li>362147</li>\n"
+            + "  <li>campaign macros</li>\n"
+            + "  <li>0</li>\n"
+            + "  <li>Experience A</li>\n"
+            + "  <li>362147</li>\n"
+            + "  <li>campaign macros</li>\n"
+            + "  <li>0</li>\n"
+            + "  <li>Experience A</li>\n"
+            + "  <li>macros</li>\n"
+            + "  <li>Mickey Mouse</li>\n"
+            + "  <li>blippi</li>\n"
+            + "  <li>1024</li>\n"
+            + "</ul>",
+        option.getContent());
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void testTargetDeliveryLocalRequestMboxMacrosMissingValues()
+      throws IOException, NoSuchFieldException {
+    fileRuleLoader("DECISIONING_PAYLOAD_CAMPAIGN_MACROS.json", localService);
+    TargetDeliveryRequest targetDeliveryRequest =
+        localDeliveryRequest(
+            "38734fba-262c-4722-b4a3-ac0a93916874", DecisioningMethod.ON_DEVICE, null);
+    targetDeliveryRequest
+        .getDeliveryRequest()
+        .getContext()
+        .setUserAgent(
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36");
+    targetDeliveryRequest.getDeliveryRequest().getContext().setChannel(ChannelType.WEB);
+    targetDeliveryRequest
+        .getDeliveryRequest()
+        .getContext()
+        .setAddress(new Address().url("http://local-target-test/"));
+    targetDeliveryRequest
+        .getDeliveryRequest()
+        .getContext()
+        .setBrowser(new Browser().host("local-target-test"));
+
+    PrefetchRequest prefetchRequest = new PrefetchRequest();
+
+    List<MboxRequest> mboxRequests =
+        new ArrayList<MboxRequest>() {
+          {
+            add(
+                (MboxRequest)
+                    new MboxRequest()
+                        .name("macros")
+                        .index(1)
+                        .parameters(
+                            new HashMap<String, String>() {
+                              {
+                                put("user", "Donald");
+                              }
+                            }));
+          }
+        };
+
+    prefetchRequest.setMboxes(mboxRequests);
+    targetDeliveryRequest.getDeliveryRequest().setPrefetch(prefetchRequest);
+    TargetDeliveryResponse targetDeliveryResponse =
+        targetJavaClient.getOffers(targetDeliveryRequest);
+
+    PrefetchMboxResponse mbox =
+        targetDeliveryResponse.getResponse().getPrefetch().getMboxes().get(0);
+    assertEquals("macros", mbox.getName());
+    Option option = mbox.getOptions().get(0);
+    assertEquals(OptionType.HTML, option.getType());
+
+    assertEquals(
+        "<ul>\n"
+            + "  <li>667871</li>\n"
+            + "  <li>/campaign_macros/experiences/0/pages/0/zones/0/1599065324791</li>\n"
+            + "  <li>362147</li>\n"
+            + "  <li>campaign macros</li>\n"
+            + "  <li>0</li>\n"
+            + "  <li>Experience A</li>\n"
+            + "  <li>362147</li>\n"
+            + "  <li>campaign macros</li>\n"
+            + "  <li>0</li>\n"
+            + "  <li>Experience A</li>\n"
+            + "  <li>macros</li>\n"
+            + "  <li>Donald</li>\n"
+            + "  <li>${mbox.pgname}</li>\n"
+            + "  <li>${mbox.browserWidth}</li>\n"
+            + "</ul>",
+        option.getContent());
   }
 
   @Test

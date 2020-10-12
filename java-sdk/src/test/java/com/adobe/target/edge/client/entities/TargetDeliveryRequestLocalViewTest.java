@@ -54,11 +54,7 @@ import com.adobe.target.edge.client.ondevice.collator.ParamsCollator;
 import com.adobe.target.edge.client.service.DefaultTargetService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -237,6 +233,41 @@ class TargetDeliveryRequestLocalViewTest {
           }
         };
     verifyContent(homeOptions, homeSelectors);
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void testTargetDeliveryLocalMacros() throws IOException, NoSuchFieldException {
+    fileRuleLoader("DECISIONING_PAYLOAD_CAMPAIGN_MACROS.json", localService);
+    TargetDeliveryRequest targetDeliveryRequest =
+        localDeliveryRequest(
+            "38734fba-262c-4722-b4a3-ac0a93916874", Collections.emptyList(), false);
+    TargetDeliveryResponse targetDeliveryResponse =
+        targetJavaClient.getOffers(targetDeliveryRequest);
+
+    List<Option> pageLoadOptions =
+        extractOptions(
+            targetDeliveryRequest,
+            targetDeliveryResponse,
+            "contact",
+            false); // targetDeliveryResponse.getResponse().getPrefetch().getPageLoad().getOptions();
+    assertNotNull(pageLoadOptions);
+
+    ArrayList<String> actionContents = new ArrayList<>();
+
+    for (Option option : pageLoadOptions) {
+      for (Object action : (List<Map<String, String>>) option.getContent()) {
+        actionContents.add(((Map<String, String>) action).get("content"));
+      }
+    }
+
+    Collections.sort(actionContents);
+
+    assertEquals(
+        actionContents,
+        new ArrayList<>(
+            Collections.singletonList(
+                "<div id=\"action_insert_1599086396006761\">campaign macros view</div>")));
   }
 
   @Test

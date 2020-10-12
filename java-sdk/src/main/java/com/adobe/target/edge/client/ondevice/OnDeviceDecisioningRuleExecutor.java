@@ -63,7 +63,8 @@ public class OnDeviceDecisioningRuleExecutor {
         traceHandler.addCampaign(rule, localContext, matched);
       }
       if (matched) {
-        return consequenceWithResponseTokens(responseTokens, rule, localContext);
+        return replaceCampaignMacros(
+            rule, consequenceWithResponseTokens(responseTokens, rule, localContext), details);
       }
       return null;
     } catch (Exception e) {
@@ -145,6 +146,16 @@ public class OnDeviceDecisioningRuleExecutor {
       }
     }
     return updateOptions(consequence, optionsList);
+  }
+
+  private Map<String, Object> replaceCampaignMacros(
+      OnDeviceDecisioningRule rule, Map<String, Object> consequence, RequestDetails details) {
+    if (consequence == null || consequence.get(OPTIONS) == null) {
+      return consequence;
+    }
+    CampaignMacroReplacer campaignMacroReplacer =
+        new CampaignMacroReplacer(rule, consequence, details, this.mapper);
+    return updateOptions(consequence, campaignMacroReplacer.getOptions());
   }
 
   private Map<String, Object> updateOptions(Map<String, Object> consequence, List<Option> options) {
