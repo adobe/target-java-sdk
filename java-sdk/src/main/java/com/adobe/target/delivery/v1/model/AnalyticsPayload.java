@@ -13,102 +13,93 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Objects;
 
-
 /**
- * Analytics payload for client side integration that should be sent to Analytics after content has been applied.
+ * Analytics payload for client side integration that should be sent to Analytics after content has
+ * been applied.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AnalyticsPayload {
-    @JsonProperty("pe")
-    private String pe;
+  @JsonProperty("pe")
+  private String pe;
 
-    @JsonProperty("tnta")
-    private String tnta;
+  @JsonProperty("tnta")
+  private String tnta;
 
-    public AnalyticsPayload pe(String pe) {
-        this.pe = pe;
-        return this;
+  public AnalyticsPayload pe(String pe) {
+    this.pe = pe;
+    return this;
+  }
+
+  /**
+   * Get pe
+   *
+   * @return pe
+   */
+  public String getPe() {
+    return pe;
+  }
+
+  public void setPe(String pe) {
+    this.pe = pe;
+  }
+
+  public AnalyticsPayload tnta(String tnta) {
+    this.tnta = tnta;
+    return this;
+  }
+
+  /**
+   * Get tnta
+   *
+   * @return tnta
+   */
+  public String getTnta() {
+    return tnta;
+  }
+
+  public void setTnta(String tnta) {
+    this.tnta = tnta;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
-
-    /**
-     * Get pe
-     *
-     * @return pe
-     **/
-
-    public String getPe() {
-        return pe;
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
+    AnalyticsPayload analyticsPayload = (AnalyticsPayload) o;
+    return Objects.equals(this.pe, analyticsPayload.pe)
+        && Objects.equals(this.tnta, analyticsPayload.tnta);
+  }
 
-    public void setPe(String pe) {
-        this.pe = pe;
+  @Override
+  public int hashCode() {
+    return Objects.hash(pe, tnta);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class AnalyticsPayload {\n");
+    sb.append("    pe: ").append(toIndentedString(pe)).append("\n");
+    sb.append("    tnta: ").append(toIndentedString(tnta)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
     }
-
-    public AnalyticsPayload tnta(String tnta) {
-        this.tnta = tnta;
-        return this;
-    }
-
-    /**
-     * Get tnta
-     *
-     * @return tnta
-     **/
-
-    public String getTnta() {
-        return tnta;
-    }
-
-    public void setTnta(String tnta) {
-        this.tnta = tnta;
-    }
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        AnalyticsPayload analyticsPayload = (AnalyticsPayload) o;
-        return Objects.equals(this.pe, analyticsPayload.pe) &&
-                Objects.equals(this.tnta, analyticsPayload.tnta);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(pe, tnta);
-    }
-
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class AnalyticsPayload {\n");
-        sb.append("    pe: ").append(toIndentedString(pe)).append("\n");
-        sb.append("    tnta: ").append(toIndentedString(tnta)).append("\n");
-        sb.append("}");
-        return sb.toString();
-    }
-
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
-
+    return o.toString().replace("\n", "\n    ");
+  }
 }
-

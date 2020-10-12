@@ -16,49 +16,57 @@ import java.util.Map;
 
 public class OnDeviceDecisioningRule {
 
-    private String ruleKey;
-    private String activityId;
-    private List<String> propertyTokens;
-    private Object condition;
-    private Map<String, Object> consequence;
-    private Map<String, Object> meta;
+  private String ruleKey;
+  private String activityId;
+  private List<String> propertyTokens;
+  private Object condition;
+  private Map<String, Object> consequence;
+  private Map<String, Object> meta;
 
-    public OnDeviceDecisioningRule() {
-    }
+  public OnDeviceDecisioningRule() {}
 
-    public String getRuleKey() {
-        return ruleKey;
-    }
+  public String getRuleKey() {
+    return ruleKey;
+  }
 
-    public String getActivityId() {
-        return activityId;
-    }
+  public String getActivityId() {
+    return activityId;
+  }
 
-    public List<String> getPropertyTokens() {
-        return propertyTokens;
-    }
+  public List<String> getPropertyTokens() {
+    return propertyTokens;
+  }
 
-    public Object getCondition() {
-        return condition;
-    }
+  public Object getCondition() {
+    return condition;
+  }
 
-    public Map<String, Object> getConsequence() {
-        return consequence;
-    }
+  public Map<String, Object> getConsequence() {
+    return consequence;
+  }
 
-    public Map<String, Object> getMeta() {
-        return meta;
-    }
+  public Map<String, Object> getMeta() {
+    return meta;
+  }
 
-    @Override
-    public String toString() {
-        return "LocalDecisioningRule{" +
-                "ruleKey='" + ruleKey + '\'' +
-                ", activityId='" + activityId + '\'' +
-                ", propertyTokens='" + propertyTokens + '\'' +
-                ", condition=" + condition +
-                ", consequence=" + consequence +
-                ", meta=" + meta +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "LocalDecisioningRule{"
+        + "ruleKey='"
+        + ruleKey
+        + '\''
+        + ", activityId='"
+        + activityId
+        + '\''
+        + ", propertyTokens='"
+        + propertyTokens
+        + '\''
+        + ", condition="
+        + condition
+        + ", consequence="
+        + consequence
+        + ", meta="
+        + meta
+        + '}';
+  }
 }

@@ -13,47 +13,44 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Field is mandatory when Mobile Platform is specified. Only activities that match the specified deviceType or have
- * the device type set to &#39;null&#39; will be evaluated. Ex if device type is &#39;phone&#39; in the delivery
- * request, then only activities that have the device type equal to &#39;phone&#39; or set to &#39;null&#39; will be
- * evaluated. An activity with &#39;null&#39; device type will be evaluated for requests for both, &#39;phone&#39;
- * and &#39;tablet&#39;.
+ * Field is mandatory when Mobile Platform is specified. Only activities that match the specified
+ * deviceType or have the device type set to &#39;null&#39; will be evaluated. Ex if device type is
+ * &#39;phone&#39; in the delivery request, then only activities that have the device type equal to
+ * &#39;phone&#39; or set to &#39;null&#39; will be evaluated. An activity with &#39;null&#39;
+ * device type will be evaluated for requests for both, &#39;phone&#39; and &#39;tablet&#39;.
  */
 public enum DeviceType {
+  PHONE("phone"),
 
-    PHONE("phone"),
+  TABLET("tablet");
 
-    TABLET("tablet");
+  private String value;
 
-    private String value;
+  DeviceType(String value) {
+    this.value = value;
+  }
 
-    DeviceType(String value) {
-        this.value = value;
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
+
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
+
+  @JsonCreator
+  public static DeviceType fromValue(String text) {
+    for (DeviceType b : DeviceType.values()) {
+      if (String.valueOf(b.value).equals(text)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static DeviceType fromValue(String text) {
-        for (DeviceType b : DeviceType.values()) {
-            if (String.valueOf(b.value).equals(text)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + text + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + text + "'");
+  }
 }
-

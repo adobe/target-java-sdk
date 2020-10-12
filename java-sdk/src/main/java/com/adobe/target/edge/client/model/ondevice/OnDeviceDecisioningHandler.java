@@ -15,13 +15,10 @@ import com.adobe.target.edge.client.service.TargetClientException;
 
 public interface OnDeviceDecisioningHandler {
 
-    /**
-     * This is called when local execution is ready. It is called only once.
-     */
-    void onDeviceDecisioningReady();
+  /** This is called when local execution is ready. It is called only once. */
+  void onDeviceDecisioningReady();
 
-    void artifactDownloadSucceeded(byte[] artifactData);
+  void artifactDownloadSucceeded(byte[] artifactData);
 
-    void artifactDownloadFailed(TargetClientException e);
-
+  void artifactDownloadFailed(TargetClientException e);
 }

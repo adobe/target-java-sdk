@@ -11,40 +11,40 @@
  */
 package com.adobe.target.edge.client.ondevice.collator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.adobe.target.delivery.v1.model.Context;
 import com.adobe.target.delivery.v1.model.ExecuteRequest;
 import com.adobe.target.delivery.v1.model.Geo;
 import com.adobe.target.delivery.v1.model.RequestDetails;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.service.VisitorProvider;
-import org.junit.jupiter.api.Test;
-
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class GeoParamsCollatorTest {
 
-    @Test
-    public void testCollator() {
-        VisitorProvider.init("testOrgId");
-        RequestDetails pageLoad = new RequestDetails();
-        Geo geo = new Geo();
-        geo.setCity("san francisco");
-        geo.setStateCode("ca");
-        geo.setCountryCode("us");
-        geo.setLatitude(37.74f);
-        geo.setLongitude(-122.24f);
-        TargetDeliveryRequest request = TargetDeliveryRequest.builder()
-                .execute(new ExecuteRequest().pageLoad(pageLoad))
-                .context(new Context().geo(geo))
-                .build();
-        GeoParamsCollator collator = new GeoParamsCollator();
-        Map<String, Object> result = collator.collateParams(request, pageLoad);
-        assertEquals("SANFRANCISCO", result.get(GeoParamsCollator.GEO_CITY));
-        assertEquals("CA", result.get(GeoParamsCollator.GEO_REGION));
-        assertEquals("US", result.get(GeoParamsCollator.GEO_COUNTRY));
-        assertEquals(37.74f, (Float)result.get(GeoParamsCollator.GEO_LATITUDE), 0.01);
-        assertEquals(-122.24f, (Float)result.get(GeoParamsCollator.GEO_LONGITUDE), 0.01);
-    }
+  @Test
+  public void testCollator() {
+    VisitorProvider.init("testOrgId");
+    RequestDetails pageLoad = new RequestDetails();
+    Geo geo = new Geo();
+    geo.setCity("san francisco");
+    geo.setStateCode("ca");
+    geo.setCountryCode("us");
+    geo.setLatitude(37.74f);
+    geo.setLongitude(-122.24f);
+    TargetDeliveryRequest request =
+        TargetDeliveryRequest.builder()
+            .execute(new ExecuteRequest().pageLoad(pageLoad))
+            .context(new Context().geo(geo))
+            .build();
+    GeoParamsCollator collator = new GeoParamsCollator();
+    Map<String, Object> result = collator.collateParams(request, pageLoad);
+    assertEquals("SANFRANCISCO", result.get(GeoParamsCollator.GEO_CITY));
+    assertEquals("CA", result.get(GeoParamsCollator.GEO_REGION));
+    assertEquals("US", result.get(GeoParamsCollator.GEO_COUNTRY));
+    assertEquals(37.74f, (Float) result.get(GeoParamsCollator.GEO_LATITUDE), 0.01);
+    assertEquals(-122.24f, (Float) result.get(GeoParamsCollator.GEO_LONGITUDE), 0.01);
+  }
 }

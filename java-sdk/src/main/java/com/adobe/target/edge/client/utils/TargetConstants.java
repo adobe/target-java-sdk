@@ -13,7 +13,7 @@ package com.adobe.target.edge.client.utils;
 
 public class TargetConstants {
 
-    public static final String COOKIE_NAME = "mbox";
-    public static final String CLUSTER_COOKIE_NAME = "mboxEdgeCluster";
-    public static final String SDK_VERSION = "1.0";
+  public static final String COOKIE_NAME = "mbox";
+  public static final String CLUSTER_COOKIE_NAME = "mboxEdgeCluster";
+  public static final String SDK_VERSION = "1.0";
 }

@@ -14,49 +14,64 @@ package com.adobe.target.edge.client.http;
 import java.util.List;
 
 public class ResponseStatus {
-    private final int status;
-    private final String message;
-    private String globalMbox;
-    private List<String> remoteMboxes;
-    private List<String> remoteViews;
+  private final int status;
+  private final String message;
+  private String globalMbox;
+  private List<String> remoteMboxes;
+  private List<String> remoteViews;
 
-    public ResponseStatus(int status, String message) {
-        this.status = status;
-        this.message = message;
-    }
+  public ResponseStatus(int status, String message) {
+    this.status = status;
+    this.message = message;
+  }
 
-    public int getStatus() {
-        return status;
-    }
+  public int getStatus() {
+    return status;
+  }
 
-    public String getMessage() {
-        return message;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public String getGlobalMbox() {
-        return globalMbox;
-    }
+  public String getGlobalMbox() {
+    return globalMbox;
+  }
 
-    public void setGlobalMbox(String globalMbox) {
-        this.globalMbox = globalMbox;
-    }
+  public void setGlobalMbox(String globalMbox) {
+    this.globalMbox = globalMbox;
+  }
 
-    public List<String> getRemoteMboxes() { return remoteMboxes; }
+  public List<String> getRemoteMboxes() {
+    return remoteMboxes;
+  }
 
-    public void setRemoteMboxes(List<String> mboxes) { remoteMboxes = mboxes; }
+  public void setRemoteMboxes(List<String> mboxes) {
+    remoteMboxes = mboxes;
+  }
 
-    public List<String> getRemoteViews() { return remoteViews; }
+  public List<String> getRemoteViews() {
+    return remoteViews;
+  }
 
-    public void setRemoteViews(List<String> views) { remoteViews = views; }
+  public void setRemoteViews(List<String> views) {
+    remoteViews = views;
+  }
 
-    @Override
-    public String toString() {
-        return "ResponseStatus{" +
-                "status=" + status +
-                ", message='" + message + '\'' +
-                ", globalMbox='" + globalMbox + '\'' +
-                ", remoteMboxes=" + remoteMboxes +
-                ", remoteViews=" + remoteViews +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "ResponseStatus{"
+        + "status="
+        + status
+        + ", message='"
+        + message
+        + '\''
+        + ", globalMbox='"
+        + globalMbox
+        + '\''
+        + ", remoteMboxes="
+        + remoteMboxes
+        + ", remoteViews="
+        + remoteViews
+        + '}';
+  }
 }

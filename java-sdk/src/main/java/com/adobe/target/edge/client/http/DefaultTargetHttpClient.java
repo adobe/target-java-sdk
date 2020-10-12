@@ -13,6 +13,8 @@ package com.adobe.target.edge.client.http;
 
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.ClientProxyConfig;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import kong.unirest.HttpResponse;
 import kong.unirest.ObjectMapper;
 import kong.unirest.Unirest;
@@ -20,77 +22,76 @@ import kong.unirest.UnirestInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
 public class DefaultTargetHttpClient implements TargetHttpClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultTargetHttpClient.class);
+  private static final Logger logger = LoggerFactory.getLogger(DefaultTargetHttpClient.class);
 
-    private UnirestInstance unirestInstance = Unirest.spawnInstance();
-    private ObjectMapper serializer = new JacksonObjectMapper();
+  private UnirestInstance unirestInstance = Unirest.spawnInstance();
+  private ObjectMapper serializer = new JacksonObjectMapper();
 
-    public DefaultTargetHttpClient(ClientConfig clientConfig) {
-        unirestInstance.config()
-                .socketTimeout(clientConfig.getSocketTimeout())
-                .connectTimeout(clientConfig.getConnectTimeout())
-                .concurrency(clientConfig.getMaxConnectionsTotal(), clientConfig.getMaxConnectionsPerHost())
-                .automaticRetries(clientConfig.isEnabledRetries())
-                .enableCookieManagement(false)
-                .setObjectMapper(getObjectMapper())
-                .setDefaultHeader("Accept", "application/json");
+  public DefaultTargetHttpClient(ClientConfig clientConfig) {
+    unirestInstance
+        .config()
+        .socketTimeout(clientConfig.getSocketTimeout())
+        .connectTimeout(clientConfig.getConnectTimeout())
+        .concurrency(clientConfig.getMaxConnectionsTotal(), clientConfig.getMaxConnectionsPerHost())
+        .automaticRetries(clientConfig.isEnabledRetries())
+        .enableCookieManagement(false)
+        .setObjectMapper(getObjectMapper())
+        .setDefaultHeader("Accept", "application/json");
 
-        if (clientConfig.isLogRequestStatus()) {
-            unirestInstance.config().instrumentWith(new TargetMetrics(new LoggingMetricConsumer()));
-        }
-
-        if (clientConfig.getRequestInterceptor() != null) {
-            unirestInstance.config().addInterceptor(clientConfig.getRequestInterceptor());
-        }
-        
-        if (clientConfig.isProxyEnabled()) {
-            ClientProxyConfig proxyConfig = clientConfig.getProxyConfig();
-            if(proxyConfig.isAuthProxy()) {
-                unirestInstance.config().proxy(proxyConfig.getHost(), proxyConfig.getPort(), proxyConfig.getUsername(), proxyConfig.getPassword());
-            } else {
-                unirestInstance.config().proxy(proxyConfig.getHost(), proxyConfig.getPort());
-            }
-        }
+    if (clientConfig.isLogRequestStatus()) {
+      unirestInstance.config().instrumentWith(new TargetMetrics(new LoggingMetricConsumer()));
     }
 
-    private ObjectMapper getObjectMapper() {
-        logger.debug("using json serializer: {}", serializer.getClass().getSimpleName());
-        return serializer;
+    if (clientConfig.getRequestInterceptor() != null) {
+      unirestInstance.config().addInterceptor(clientConfig.getRequestInterceptor());
     }
 
-    @Override
-    public void addDefaultHeader(String key, String value) {
-        unirestInstance.config().setDefaultHeader(key, value);
+    if (clientConfig.isProxyEnabled()) {
+      ClientProxyConfig proxyConfig = clientConfig.getProxyConfig();
+      if (proxyConfig.isAuthProxy()) {
+        unirestInstance
+            .config()
+            .proxy(
+                proxyConfig.getHost(),
+                proxyConfig.getPort(),
+                proxyConfig.getUsername(),
+                proxyConfig.getPassword());
+      } else {
+        unirestInstance.config().proxy(proxyConfig.getHost(), proxyConfig.getPort());
+      }
     }
+  }
 
-    @Override
-    public <T, R> HttpResponse<R> execute(Map<String, Object> queryParams, String url, T request, Class<R> response) {
-        return unirestInstance.post(url)
-                .queryString(queryParams)
-                .body(request)
-                .asObject(response);
-    }
+  private ObjectMapper getObjectMapper() {
+    logger.debug("using json serializer: {}", serializer.getClass().getSimpleName());
+    return serializer;
+  }
 
-    @Override
-    public <T, R> CompletableFuture<HttpResponse<R>> executeAsync(Map<String, Object> queryParams, String url,
-                                                                  T request, Class<R> response) {
-        return unirestInstance.post(url)
-                .queryString(queryParams)
-                .body(request)
-                .asObjectAsync(response);
-    }
+  @Override
+  public void addDefaultHeader(String key, String value) {
+    unirestInstance.config().setDefaultHeader(key, value);
+  }
 
-    @Override
-    public void close() {
-        unirestInstance.shutDown();
-    }
+  @Override
+  public <T, R> HttpResponse<R> execute(
+      Map<String, Object> queryParams, String url, T request, Class<R> response) {
+    return unirestInstance.post(url).queryString(queryParams).body(request).asObject(response);
+  }
 
-    UnirestInstance getUnirestInstance() {
-    	return unirestInstance;
-    }
+  @Override
+  public <T, R> CompletableFuture<HttpResponse<R>> executeAsync(
+      Map<String, Object> queryParams, String url, T request, Class<R> response) {
+    return unirestInstance.post(url).queryString(queryParams).body(request).asObjectAsync(response);
+  }
+
+  @Override
+  public void close() {
+    unirestInstance.shutDown();
+  }
+
+  UnirestInstance getUnirestInstance() {
+    return unirestInstance;
+  }
 }

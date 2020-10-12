@@ -13,102 +13,90 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Objects;
 
-
-/**
- * UnexpectedError
- */
+/** UnexpectedError */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UnexpectedError {
-    @JsonProperty("status")
-    private Integer status;
+  @JsonProperty("status")
+  private Integer status;
 
-    @JsonProperty("message")
-    private String message;
+  @JsonProperty("message")
+  private String message;
 
-    public UnexpectedError status(Integer status) {
-        this.status = status;
-        return this;
+  public UnexpectedError status(Integer status) {
+    this.status = status;
+    return this;
+  }
+
+  /**
+   * Get status
+   *
+   * @return status
+   */
+  public Integer getStatus() {
+    return status;
+  }
+
+  public void setStatus(Integer status) {
+    this.status = status;
+  }
+
+  public UnexpectedError message(String message) {
+    this.message = message;
+    return this;
+  }
+
+  /**
+   * Get message
+   *
+   * @return message
+   */
+  public String getMessage() {
+    return message;
+  }
+
+  public void setMessage(String message) {
+    this.message = message;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
-
-    /**
-     * Get status
-     *
-     * @return status
-     **/
-
-    public Integer getStatus() {
-        return status;
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
+    UnexpectedError unexpectedError = (UnexpectedError) o;
+    return Objects.equals(this.status, unexpectedError.status)
+        && Objects.equals(this.message, unexpectedError.message);
+  }
 
-    public void setStatus(Integer status) {
-        this.status = status;
+  @Override
+  public int hashCode() {
+    return Objects.hash(status, message);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class UnexpectedError {\n");
+    sb.append("    status: ").append(toIndentedString(status)).append("\n");
+    sb.append("    message: ").append(toIndentedString(message)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
     }
-
-    public UnexpectedError message(String message) {
-        this.message = message;
-        return this;
-    }
-
-    /**
-     * Get message
-     *
-     * @return message
-     **/
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        UnexpectedError unexpectedError = (UnexpectedError) o;
-        return Objects.equals(this.status, unexpectedError.status) &&
-                Objects.equals(this.message, unexpectedError.message);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(status, message);
-    }
-
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class UnexpectedError {\n");
-        sb.append("    status: ").append(toIndentedString(status)).append("\n");
-        sb.append("    message: ").append(toIndentedString(message)).append("\n");
-        sb.append("}");
-        return sb.toString();
-    }
-
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
-
+    return o.toString().replace("\n", "\n    ");
+  }
 }
-

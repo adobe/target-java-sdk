@@ -13,45 +13,40 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-/**
- * Gets or Sets AuthenticatedState
- */
+/** Gets or Sets AuthenticatedState */
 public enum AuthenticatedState {
+  UNKNOWN("unknown"),
 
-    UNKNOWN("unknown"),
+  AUTHENTICATED("authenticated"),
 
-    AUTHENTICATED("authenticated"),
+  LOGGED_OUT("logged_out");
 
-    LOGGED_OUT("logged_out");
+  private String value;
 
-    private String value;
+  AuthenticatedState(String value) {
+    this.value = value;
+  }
 
-    AuthenticatedState(String value) {
-        this.value = value;
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
+
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
+
+  @JsonCreator
+  public static AuthenticatedState fromValue(String text) {
+    for (AuthenticatedState b : AuthenticatedState.values()) {
+      if (String.valueOf(b.value).equals(text)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static AuthenticatedState fromValue(String text) {
-        for (AuthenticatedState b : AuthenticatedState.values()) {
-            if (String.valueOf(b.value).equals(text)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + text + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + text + "'");
+  }
 }
-

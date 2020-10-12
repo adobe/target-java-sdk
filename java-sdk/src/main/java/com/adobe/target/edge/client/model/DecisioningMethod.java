@@ -12,7 +12,22 @@
 package com.adobe.target.edge.client.model;
 
 public enum DecisioningMethod {
-    SERVER_SIDE,
-    ON_DEVICE,
-    HYBRID
+  SERVER_SIDE("server-side"),
+  ON_DEVICE("on-device"),
+  HYBRID("hybrid");
+
+  private final String name;
+
+  DecisioningMethod(String nameValue) {
+    name = nameValue;
+  }
+
+  @Override
+  public String toString() {
+    return this.name;
+  }
+
+  public String getName() {
+    return this.name;
+  }
 }

@@ -15,22 +15,19 @@ import java.util.List;
 import java.util.Map;
 
 public class OnDeviceDecisioningRules {
-    private Map<String, List<OnDeviceDecisioningRule>> mboxes;
-    private Map<String, List<OnDeviceDecisioningRule>> views;
+  private Map<String, List<OnDeviceDecisioningRule>> mboxes;
+  private Map<String, List<OnDeviceDecisioningRule>> views;
 
-    public Map<String, List<OnDeviceDecisioningRule>> getMboxes() {
-        return mboxes;
-    }
+  public Map<String, List<OnDeviceDecisioningRule>> getMboxes() {
+    return mboxes;
+  }
 
-    public Map<String, List<OnDeviceDecisioningRule>> getViews() {
-        return views;
-    }
+  public Map<String, List<OnDeviceDecisioningRule>> getViews() {
+    return views;
+  }
 
-    @Override
-    public String toString() {
-        return "LocalDecisioningRules{" +
-                "mboxes=" + mboxes +
-                ", views=" + views +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "LocalDecisioningRules{" + "mboxes=" + mboxes + ", views=" + views + '}';
+  }
 }

@@ -17,23 +17,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ServerState {
 
-    @JsonProperty("request")
-    private final DeliveryRequest request;
+  @JsonProperty("request")
+  private final DeliveryRequest request;
 
-    @JsonProperty("response")
-    private final DeliveryResponse response;
+  @JsonProperty("response")
+  private final DeliveryResponse response;
 
-    public ServerState(DeliveryRequest request, DeliveryResponse response) {
-        this.request = request;
-        this.response = response;
-    }
+  public ServerState(DeliveryRequest request, DeliveryResponse response) {
+    this.request = request;
+    this.response = response;
+  }
 
-    public DeliveryRequest getRequest() {
-        return request;
-    }
+  public DeliveryRequest getRequest() {
+    return request;
+  }
 
-    public DeliveryResponse getResponse() {
-        return response;
-    }
-
+  public DeliveryResponse getResponse() {
+    return response;
+  }
 }

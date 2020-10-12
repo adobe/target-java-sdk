@@ -13,28 +13,26 @@ package com.adobe.target.edge.client.ondevice.collator;
 
 import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
-
 import java.util.*;
 
 public class CustomParamsCollator implements ParamsCollator {
 
-    protected static final String LOWER_CASE_POSTFIX = "_lc";
+  protected static final String LOWER_CASE_POSTFIX = "_lc";
 
-    public Map<String, Object> collateParams(TargetDeliveryRequest deliveryRequest,
-                                             RequestDetails requestDetails) {
-        Map<String, Object> custom = new HashMap<>();
-        addAllParameters(custom, requestDetails);
-        return custom;
+  public Map<String, Object> collateParams(
+      TargetDeliveryRequest deliveryRequest, RequestDetails requestDetails) {
+    Map<String, Object> custom = new HashMap<>();
+    addAllParameters(custom, requestDetails);
+    return custom;
+  }
+
+  private void addAllParameters(Map<String, Object> custom, RequestDetails details) {
+    if (details != null) {
+      Map<String, String> params = details.getParameters();
+      if (params != null) {
+        custom.putAll(params);
+        params.forEach((key, value) -> custom.put(key + LOWER_CASE_POSTFIX, value.toLowerCase()));
+      }
     }
-
-    private void addAllParameters(Map<String, Object> custom, RequestDetails details) {
-        if (details != null) {
-            Map<String, String> params = details.getParameters();
-            if (params != null) {
-                custom.putAll(params);
-                params.forEach((key, value) -> custom.put(key + LOWER_CASE_POSTFIX, value.toLowerCase()));
-            }
-        }
-    }
-
+  }
 }

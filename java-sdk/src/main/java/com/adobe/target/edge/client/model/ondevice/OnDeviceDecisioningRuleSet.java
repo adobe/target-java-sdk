@@ -16,71 +16,84 @@ import java.util.Map;
 
 public class OnDeviceDecisioningRuleSet {
 
-    private String version;
-    private String globalMbox;
-    private boolean geoTargetingEnabled;
-    private List<String> remoteMboxes;
-    private List<String> remoteViews;
-    private List<String> localMboxes;
-    private List<String> localViews;
-    private List<String> responseTokens;
-    private OnDeviceDecisioningRules rules;
-    private Map<String, Object> meta;
+  private String version;
+  private String globalMbox;
+  private boolean geoTargetingEnabled;
+  private List<String> remoteMboxes;
+  private List<String> remoteViews;
+  private List<String> localMboxes;
+  private List<String> localViews;
+  private List<String> responseTokens;
+  private OnDeviceDecisioningRules rules;
+  private Map<String, Object> meta;
 
-    public OnDeviceDecisioningRuleSet() { }
+  public OnDeviceDecisioningRuleSet() {}
 
-    public String getVersion() {
-        return version;
-    }
+  public String getVersion() {
+    return version;
+  }
 
-    public String getGlobalMbox() {
-        return globalMbox;
-    }
+  public String getGlobalMbox() {
+    return globalMbox;
+  }
 
-    public boolean isGeoTargetingEnabled() {
-        return geoTargetingEnabled;
-    }
+  public boolean isGeoTargetingEnabled() {
+    return geoTargetingEnabled;
+  }
 
-    public List<String> getRemoteMboxes() {
-        return remoteMboxes;
-    }
+  public List<String> getRemoteMboxes() {
+    return remoteMboxes;
+  }
 
-    public List<String> getRemoteViews() {
-        return remoteViews;
-    }
+  public List<String> getRemoteViews() {
+    return remoteViews;
+  }
 
-    public List<String> getResponseTokens() {
-        return responseTokens;
-    }
+  public List<String> getResponseTokens() {
+    return responseTokens;
+  }
 
-    public List<String> getLocalMboxes() {
-        return localMboxes;
-    }
+  public List<String> getLocalMboxes() {
+    return localMboxes;
+  }
 
-    public List<String> getLocalViews() {
-        return localViews;
-    }
+  public List<String> getLocalViews() {
+    return localViews;
+  }
 
-    public OnDeviceDecisioningRules getRules() {
-        return rules;
-    }
+  public OnDeviceDecisioningRules getRules() {
+    return rules;
+  }
 
-    public Map<String, Object> getMeta() { return meta; }
+  public Map<String, Object> getMeta() {
+    return meta;
+  }
 
-    @Override
-    public String toString() {
-        return "LocalDecisioningRuleSet{" +
-                "version='" + version + '\'' +
-                ", globalMbox='" + globalMbox + '\'' +
-                ", geoTargetingEnabled=" + geoTargetingEnabled +
-                ", remoteMboxes=" + remoteMboxes +
-                ", remoteViews=" + remoteViews +
-                ", localMboxes=" + localMboxes +
-                ", localViews=" + localViews +
-                ", responseTokens=" + responseTokens +
-                ", rules=" + rules +
-                ", meta=" + meta +
-                '}';
-    }
-
+  @Override
+  public String toString() {
+    return "LocalDecisioningRuleSet{"
+        + "version='"
+        + version
+        + '\''
+        + ", globalMbox='"
+        + globalMbox
+        + '\''
+        + ", geoTargetingEnabled="
+        + geoTargetingEnabled
+        + ", remoteMboxes="
+        + remoteMboxes
+        + ", remoteViews="
+        + remoteViews
+        + ", localMboxes="
+        + localMboxes
+        + ", localViews="
+        + localViews
+        + ", responseTokens="
+        + responseTokens
+        + ", rules="
+        + rules
+        + ", meta="
+        + meta
+        + '}';
+  }
 }

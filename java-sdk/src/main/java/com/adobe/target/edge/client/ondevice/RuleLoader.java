@@ -13,25 +13,23 @@ package com.adobe.target.edge.client.ondevice;
 
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
-
 import java.util.Date;
 
 public interface RuleLoader {
 
-    void start(ClientConfig clientConfig);
+  void start(ClientConfig clientConfig);
 
-    void stop();
+  void stop();
 
-    void refresh();
+  void refresh();
 
-    OnDeviceDecisioningRuleSet getLatestRules();
+  OnDeviceDecisioningRuleSet getLatestRules();
 
-    long getPollingInterval();
+  long getPollingInterval();
 
-    int getNumFetches();
+  int getNumFetches();
 
-    Date getLastFetch();
+  Date getLastFetch();
 
-    String getLocation();
-
+  String getLocation();
 }

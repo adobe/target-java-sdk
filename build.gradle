@@ -1,3 +1,11 @@
+plugins {
+	id "com.diffplug.spotless" version "5.6.1"
+}
+
+build.dependsOn spotlessApply
+
+defaultTasks 'spotlessApply', 'build'
+
 dependencies {
 }
 allprojects {
@@ -16,4 +24,21 @@ subprojects {
         mavenLocal()
         mavenCentral()
     }
+}
+
+spotless {
+	java {
+		target 'java-sdk/src/*/java/**/*.java'
+		googleJavaFormat()
+		removeUnusedImports() // removes any unused imports
+		licenseHeaderFile 'config/formatter/adobe.header.txt'
+		endWithNewline()
+	}
+}
+
+spotless {
+	format 'javaGeneratedFiles', com.diffplug.gradle.spotless.JavaExtension, {
+		target 'java-sdk/src/**/delivery/**/*.java'
+		licenseHeaderFile 'config/formatter/adobe.header.generated.txt'
+	}
 }

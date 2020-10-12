@@ -11,36 +11,36 @@
  */
 package com.adobe.target.edge.client.ondevice.collator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.adobe.target.delivery.v1.model.ExecuteRequest;
 import com.adobe.target.delivery.v1.model.RequestDetails;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.service.VisitorProvider;
-import org.junit.jupiter.api.Test;
-
 import java.util.HashMap;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class CustomParamsCollatorTest {
 
-    @Test
-    public void testCollator() {
-        VisitorProvider.init("testOrgId");
-        Map<String, String> params = new HashMap<String, String>() {{
+  @Test
+  public void testCollator() {
+    VisitorProvider.init("testOrgId");
+    Map<String, String> params =
+        new HashMap<String, String>() {
+          {
             put("foo", "bar");
             put("BAZ", "BUZ");
-        }};
-        RequestDetails pageLoad = new RequestDetails()
-                .parameters(params);
-        TargetDeliveryRequest request = TargetDeliveryRequest.builder()
-                .execute(new ExecuteRequest().pageLoad(pageLoad))
-                .build();
-        CustomParamsCollator collator = new CustomParamsCollator();
-        Map<String, Object> result = collator.collateParams(request, pageLoad);
-        assertEquals("bar", result.get("foo"));
-        assertEquals("bar", result.get("foo" + CustomParamsCollator.LOWER_CASE_POSTFIX));
-        assertEquals("BUZ", result.get("BAZ"));
-        assertEquals("buz", result.get("BAZ" + CustomParamsCollator.LOWER_CASE_POSTFIX));
-    }
+          }
+        };
+    RequestDetails pageLoad = new RequestDetails().parameters(params);
+    TargetDeliveryRequest request =
+        TargetDeliveryRequest.builder().execute(new ExecuteRequest().pageLoad(pageLoad)).build();
+    CustomParamsCollator collator = new CustomParamsCollator();
+    Map<String, Object> result = collator.collateParams(request, pageLoad);
+    assertEquals("bar", result.get("foo"));
+    assertEquals("bar", result.get("foo" + CustomParamsCollator.LOWER_CASE_POSTFIX));
+    assertEquals("BUZ", result.get("BAZ"));
+    assertEquals("buz", result.get("BAZ" + CustomParamsCollator.LOWER_CASE_POSTFIX));
+  }
 }

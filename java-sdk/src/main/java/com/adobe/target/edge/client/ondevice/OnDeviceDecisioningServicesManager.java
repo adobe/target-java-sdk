@@ -13,68 +13,69 @@ package com.adobe.target.edge.client.ondevice;
 
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.service.TargetService;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public class OnDeviceDecisioningServicesManager {
 
-    public static class OnDeviceDecisioningServices {
-        private NotificationDeliveryService notificationDeliveryService;
-        private RuleLoader ruleLoader;
-        private ClusterLocator clusterLocator;
+  public static class OnDeviceDecisioningServices {
+    private NotificationDeliveryService notificationDeliveryService;
+    private RuleLoader ruleLoader;
+    private ClusterLocator clusterLocator;
 
-        private void setNotificationDeliveryService(NotificationDeliveryService notificationDeliveryService) {
-            this.notificationDeliveryService = notificationDeliveryService;
-        }
-
-        private void setRuleLoader(RuleLoader ruleLoader) {
-            this.ruleLoader = ruleLoader;
-        }
-
-        private void setClusterLocator(ClusterLocator clusterLocator) {
-            this.clusterLocator = clusterLocator;
-        }
-
-        public NotificationDeliveryService getNotificationDeliveryService() {
-            return notificationDeliveryService;
-        }
-
-        public RuleLoader getRuleLoader() {
-            return ruleLoader;
-        }
-
-        public ClusterLocator getClusterLocator() {
-            return clusterLocator;
-        }
+    private void setNotificationDeliveryService(
+        NotificationDeliveryService notificationDeliveryService) {
+      this.notificationDeliveryService = notificationDeliveryService;
     }
 
-    private static final OnDeviceDecisioningServicesManager sInstance = new OnDeviceDecisioningServicesManager();
-
-    private final Map<String, OnDeviceDecisioningServices> servicesMap = new HashMap<>();
-
-    public static OnDeviceDecisioningServicesManager getInstance() {
-        return sInstance;
+    private void setRuleLoader(RuleLoader ruleLoader) {
+      this.ruleLoader = ruleLoader;
     }
 
-    public OnDeviceDecisioningServices getServices(ClientConfig clientConfig, TargetService targetService) {
-        String serviceKey = clientConfig.getClient();
-        OnDeviceDecisioningServices services = servicesMap.get(serviceKey);
-        if (services != null) {
-            return services;
-        }
-        synchronized (servicesMap) {
-            services = servicesMap.get(serviceKey);
-            if (services != null) {
-                return services;
-            }
-            services = new OnDeviceDecisioningServices();
-            services.setNotificationDeliveryService(new NotificationDeliveryService(targetService));
-            services.setRuleLoader(new DefaultRuleLoader());
-            services.setClusterLocator(new ClusterLocator());
-            servicesMap.put(serviceKey, services);
-            return services;
-        }
+    private void setClusterLocator(ClusterLocator clusterLocator) {
+      this.clusterLocator = clusterLocator;
     }
 
+    public NotificationDeliveryService getNotificationDeliveryService() {
+      return notificationDeliveryService;
+    }
+
+    public RuleLoader getRuleLoader() {
+      return ruleLoader;
+    }
+
+    public ClusterLocator getClusterLocator() {
+      return clusterLocator;
+    }
+  }
+
+  private static final OnDeviceDecisioningServicesManager sInstance =
+      new OnDeviceDecisioningServicesManager();
+
+  private final Map<String, OnDeviceDecisioningServices> servicesMap = new HashMap<>();
+
+  public static OnDeviceDecisioningServicesManager getInstance() {
+    return sInstance;
+  }
+
+  public OnDeviceDecisioningServices getServices(
+      ClientConfig clientConfig, TargetService targetService) {
+    String serviceKey = clientConfig.getClient();
+    OnDeviceDecisioningServices services = servicesMap.get(serviceKey);
+    if (services != null) {
+      return services;
+    }
+    synchronized (servicesMap) {
+      services = servicesMap.get(serviceKey);
+      if (services != null) {
+        return services;
+      }
+      services = new OnDeviceDecisioningServices();
+      services.setNotificationDeliveryService(new NotificationDeliveryService(targetService));
+      services.setRuleLoader(new DefaultRuleLoader());
+      services.setClusterLocator(new ClusterLocator());
+      servicesMap.put(serviceKey, services);
+      return services;
+    }
+  }
 }

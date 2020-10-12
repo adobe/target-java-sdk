@@ -13,102 +13,90 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Objects;
 
-
-/**
- * Integrations with Audience Manager and Analytics
- */
+/** Integrations with Audience Manager and Analytics */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExperienceCloud {
-    @JsonProperty("audienceManager")
-    private AudienceManager audienceManager = null;
+  @JsonProperty("audienceManager")
+  private AudienceManager audienceManager = null;
 
-    @JsonProperty("analytics")
-    private AnalyticsRequest analytics = null;
+  @JsonProperty("analytics")
+  private AnalyticsRequest analytics = null;
 
-    public ExperienceCloud audienceManager(AudienceManager audienceManager) {
-        this.audienceManager = audienceManager;
-        return this;
+  public ExperienceCloud audienceManager(AudienceManager audienceManager) {
+    this.audienceManager = audienceManager;
+    return this;
+  }
+
+  /**
+   * Get audienceManager
+   *
+   * @return audienceManager
+   */
+  public AudienceManager getAudienceManager() {
+    return audienceManager;
+  }
+
+  public void setAudienceManager(AudienceManager audienceManager) {
+    this.audienceManager = audienceManager;
+  }
+
+  public ExperienceCloud analytics(AnalyticsRequest analytics) {
+    this.analytics = analytics;
+    return this;
+  }
+
+  /**
+   * Get analytics
+   *
+   * @return analytics
+   */
+  public AnalyticsRequest getAnalytics() {
+    return analytics;
+  }
+
+  public void setAnalytics(AnalyticsRequest analytics) {
+    this.analytics = analytics;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
-
-    /**
-     * Get audienceManager
-     *
-     * @return audienceManager
-     **/
-
-    public AudienceManager getAudienceManager() {
-        return audienceManager;
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
+    ExperienceCloud experienceCloud = (ExperienceCloud) o;
+    return Objects.equals(this.audienceManager, experienceCloud.audienceManager)
+        && Objects.equals(this.analytics, experienceCloud.analytics);
+  }
 
-    public void setAudienceManager(AudienceManager audienceManager) {
-        this.audienceManager = audienceManager;
+  @Override
+  public int hashCode() {
+    return Objects.hash(audienceManager, analytics);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class ExperienceCloud {\n");
+    sb.append("    audienceManager: ").append(toIndentedString(audienceManager)).append("\n");
+    sb.append("    analytics: ").append(toIndentedString(analytics)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
     }
-
-    public ExperienceCloud analytics(AnalyticsRequest analytics) {
-        this.analytics = analytics;
-        return this;
-    }
-
-    /**
-     * Get analytics
-     *
-     * @return analytics
-     **/
-
-    public AnalyticsRequest getAnalytics() {
-        return analytics;
-    }
-
-    public void setAnalytics(AnalyticsRequest analytics) {
-        this.analytics = analytics;
-    }
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        ExperienceCloud experienceCloud = (ExperienceCloud) o;
-        return Objects.equals(this.audienceManager, experienceCloud.audienceManager) &&
-                Objects.equals(this.analytics, experienceCloud.analytics);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(audienceManager, analytics);
-    }
-
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class ExperienceCloud {\n");
-        sb.append("    audienceManager: ").append(toIndentedString(audienceManager)).append("\n");
-        sb.append("    analytics: ").append(toIndentedString(analytics)).append("\n");
-        sb.append("}");
-        return sb.toString();
-    }
-
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
-
+    return o.toString().replace("\n", "\n    ");
+  }
 }
-

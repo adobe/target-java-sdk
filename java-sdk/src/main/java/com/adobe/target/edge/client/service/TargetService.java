@@ -12,19 +12,18 @@
 package com.adobe.target.edge.client.service;
 
 import com.adobe.target.edge.client.http.ResponseStatus;
-import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
-
+import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import java.util.concurrent.CompletableFuture;
 
 public interface TargetService extends AutoCloseable {
 
-    TargetDeliveryResponse executeRequest(TargetDeliveryRequest deliveryRequest);
+  TargetDeliveryResponse executeRequest(TargetDeliveryRequest deliveryRequest);
 
-    CompletableFuture<TargetDeliveryResponse> executeRequestAsync(TargetDeliveryRequest deliveryRequest);
+  CompletableFuture<TargetDeliveryResponse> executeRequestAsync(
+      TargetDeliveryRequest deliveryRequest);
 
-    ResponseStatus executeNotification(TargetDeliveryRequest deliveryRequest);
+  ResponseStatus executeNotification(TargetDeliveryRequest deliveryRequest);
 
-    CompletableFuture<ResponseStatus> executeNotificationAsync(TargetDeliveryRequest deliveryRequest);
-
+  CompletableFuture<ResponseStatus> executeNotificationAsync(TargetDeliveryRequest deliveryRequest);
 }

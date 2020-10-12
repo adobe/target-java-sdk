@@ -16,70 +16,79 @@ import com.adobe.target.delivery.v1.model.DeliveryRequest;
 
 public class TargetDeliveryRequest {
 
-    private String sessionId;
-    private String locationHint;
-    private Visitor visitor;
-    private DecisioningMethod decisioningMethod;
-    private DeliveryRequest deliveryRequest = new DeliveryRequest();
+  private String sessionId;
+  private String locationHint;
+  private Visitor visitor;
+  private DecisioningMethod decisioningMethod;
+  private DeliveryRequest deliveryRequest = new DeliveryRequest();
 
-    private TargetDeliveryRequest() {}
+  private TargetDeliveryRequest() {}
 
-    public static TargetDeliveryRequest fromRequest(DeliveryRequest deliveryRequest) {
-        TargetDeliveryRequest targetDeliveryRequest = new TargetDeliveryRequest();
-        targetDeliveryRequest.deliveryRequest = deliveryRequest;
-        return targetDeliveryRequest;
-    }
+  public static TargetDeliveryRequest fromRequest(DeliveryRequest deliveryRequest) {
+    TargetDeliveryRequest targetDeliveryRequest = new TargetDeliveryRequest();
+    targetDeliveryRequest.deliveryRequest = deliveryRequest;
+    return targetDeliveryRequest;
+  }
 
-    TargetDeliveryRequest setVisitor(Visitor visitor) {
-        this.visitor = visitor;
-        return this;
-    }
+  TargetDeliveryRequest setVisitor(Visitor visitor) {
+    this.visitor = visitor;
+    return this;
+  }
 
-    TargetDeliveryRequest setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-        return this;
-    }
+  TargetDeliveryRequest setSessionId(String sessionId) {
+    this.sessionId = sessionId;
+    return this;
+  }
 
-    TargetDeliveryRequest setLocationHint(String locationHint) {
-        this.locationHint = locationHint;
-        return this;
-    }
+  TargetDeliveryRequest setLocationHint(String locationHint) {
+    this.locationHint = locationHint;
+    return this;
+  }
 
-    TargetDeliveryRequest setDecisioningMethod(DecisioningMethod decisioningMethod) {
-        this.decisioningMethod = decisioningMethod;
-        return this;
-    }
+  TargetDeliveryRequest setDecisioningMethod(DecisioningMethod decisioningMethod) {
+    this.decisioningMethod = decisioningMethod;
+    return this;
+  }
 
-    public String getSessionId() {
-        return sessionId;
-    }
+  public String getSessionId() {
+    return sessionId;
+  }
 
-    public DeliveryRequest getDeliveryRequest() {
-        return deliveryRequest;
-    }
+  public DeliveryRequest getDeliveryRequest() {
+    return deliveryRequest;
+  }
 
-    public Visitor getVisitor() {
-        return visitor;
-    }
+  public Visitor getVisitor() {
+    return visitor;
+  }
 
-    public String getLocationHint() {
-        return locationHint;
-    }
+  public String getLocationHint() {
+    return locationHint;
+  }
 
-    public DecisioningMethod getDecisioningMethod() { return decisioningMethod; }
+  public DecisioningMethod getDecisioningMethod() {
+    return decisioningMethod;
+  }
 
-    public static TargetDeliveryRequestBuilder builder() {
-        return new TargetDeliveryRequestBuilder();
-    }
+  public static TargetDeliveryRequestBuilder builder() {
+    return new TargetDeliveryRequestBuilder();
+  }
 
-    @Override
-    public String toString() {
-        return "TargetDeliveryRequest{" +
-                "sessionId='" + sessionId + '\'' +
-                ", locationHint='" + locationHint + '\'' +
-                ", visitor=" + visitor +
-                ", decisioningMethod=" + decisioningMethod +
-                ", deliveryRequest=" + deliveryRequest +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "TargetDeliveryRequest{"
+        + "sessionId='"
+        + sessionId
+        + '\''
+        + ", locationHint='"
+        + locationHint
+        + '\''
+        + ", visitor="
+        + visitor
+        + ", decisioningMethod="
+        + decisioningMethod
+        + ", deliveryRequest="
+        + deliveryRequest
+        + '}';
+  }
 }

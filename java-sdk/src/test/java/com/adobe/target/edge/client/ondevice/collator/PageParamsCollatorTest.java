@@ -11,47 +11,46 @@
  */
 package com.adobe.target.edge.client.ondevice.collator;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.adobe.target.delivery.v1.model.Address;
 import com.adobe.target.delivery.v1.model.Context;
 import com.adobe.target.delivery.v1.model.ExecuteRequest;
 import com.adobe.target.delivery.v1.model.RequestDetails;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.service.VisitorProvider;
-import org.junit.jupiter.api.Test;
-
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
 
 public class PageParamsCollatorTest {
 
-    @Test
-    public void testCollator() {
-        VisitorProvider.init("testOrgId");
-        String url = "http://WWW.TARGET.ADOBE.COM/ABOUT/?foo=bar&name=JimmyG#Part1";
+  @Test
+  public void testCollator() {
+    VisitorProvider.init("testOrgId");
+    String url = "http://WWW.TARGET.ADOBE.COM/ABOUT/?foo=bar&name=JimmyG#Part1";
 
-        RequestDetails pageLoad = new RequestDetails();
-        TargetDeliveryRequest request = TargetDeliveryRequest.builder()
-                .execute(new ExecuteRequest().pageLoad(pageLoad))
-                .context(new Context().address(new Address().url(url)))
-                .build();
-        PageParamsCollator collator = new PageParamsCollator();
-        Map<String, Object> result = collator.collateParams(request, pageLoad);
+    RequestDetails pageLoad = new RequestDetails();
+    TargetDeliveryRequest request =
+        TargetDeliveryRequest.builder()
+            .execute(new ExecuteRequest().pageLoad(pageLoad))
+            .context(new Context().address(new Address().url(url)))
+            .build();
+    PageParamsCollator collator = new PageParamsCollator();
+    Map<String, Object> result = collator.collateParams(request, pageLoad);
 
-        assertEquals(url, result.get(PageParamsCollator.PAGE_URL));
-        assertEquals(url.toLowerCase(), result.get(PageParamsCollator.PAGE_URL_LOWER));
-        assertEquals("/ABOUT/", result.get(PageParamsCollator.PAGE_PATH));
-        assertEquals("/about/", result.get(PageParamsCollator.PAGE_PATH_LOWER));
-        assertEquals("WWW.TARGET.ADOBE.COM", result.get(PageParamsCollator.PAGE_DOMAIN));
-        assertEquals("www.target.adobe.com", result.get(PageParamsCollator.PAGE_DOMAIN_LOWER));
-        assertEquals("TARGET", result.get(PageParamsCollator.PAGE_SUBDOMAIN));
-        assertEquals("target", result.get(PageParamsCollator.PAGE_SUBDOMAIN_LOWER));
-        assertEquals("COM", result.get(PageParamsCollator.PAGE_TOP_LEVEL_DOMAIN));
-        assertEquals("com", result.get(PageParamsCollator.PAGE_TOP_LEVEL_DOMAIN_LOWER));
-        assertEquals("foo=bar&name=JimmyG", result.get(PageParamsCollator.PAGE_QUERY));
-        assertEquals("foo=bar&name=jimmyg", result.get(PageParamsCollator.PAGE_QUERY_LOWER));
-        assertEquals("Part1", result.get(PageParamsCollator.PAGE_FRAGMENT));
-        assertEquals("part1", result.get(PageParamsCollator.PAGE_FRAGMENT_LOWER));
-    }
-
+    assertEquals(url, result.get(PageParamsCollator.PAGE_URL));
+    assertEquals(url.toLowerCase(), result.get(PageParamsCollator.PAGE_URL_LOWER));
+    assertEquals("/ABOUT/", result.get(PageParamsCollator.PAGE_PATH));
+    assertEquals("/about/", result.get(PageParamsCollator.PAGE_PATH_LOWER));
+    assertEquals("WWW.TARGET.ADOBE.COM", result.get(PageParamsCollator.PAGE_DOMAIN));
+    assertEquals("www.target.adobe.com", result.get(PageParamsCollator.PAGE_DOMAIN_LOWER));
+    assertEquals("TARGET", result.get(PageParamsCollator.PAGE_SUBDOMAIN));
+    assertEquals("target", result.get(PageParamsCollator.PAGE_SUBDOMAIN_LOWER));
+    assertEquals("COM", result.get(PageParamsCollator.PAGE_TOP_LEVEL_DOMAIN));
+    assertEquals("com", result.get(PageParamsCollator.PAGE_TOP_LEVEL_DOMAIN_LOWER));
+    assertEquals("foo=bar&name=JimmyG", result.get(PageParamsCollator.PAGE_QUERY));
+    assertEquals("foo=bar&name=jimmyg", result.get(PageParamsCollator.PAGE_QUERY_LOWER));
+    assertEquals("Part1", result.get(PageParamsCollator.PAGE_FRAGMENT));
+    assertEquals("part1", result.get(PageParamsCollator.PAGE_FRAGMENT_LOWER));
+  }
 }
