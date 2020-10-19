@@ -85,7 +85,6 @@ public class OnDeviceDecisioningService {
     this.ruleLoader = services.getRuleLoader();
     this.ruleLoader.start(clientConfig);
     this.deliveryService = services.getNotificationDeliveryService();
-    this.deliveryService.start(clientConfig);
     this.clusterLocator = services.getClusterLocator();
     this.clusterLocator.start(clientConfig, targetService);
     this.decisionHandler = new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);
@@ -101,7 +100,6 @@ public class OnDeviceDecisioningService {
 
   public void stop() {
     this.ruleLoader.stop();
-    this.deliveryService.stop();
     this.clusterLocator.stop();
   }
 
