@@ -32,7 +32,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -71,7 +70,6 @@ class TargetTelemetryTest {
 
     targetService = new DefaultTargetService(clientConfig);
     notificationDeliveryService = new NotificationDeliveryService(targetService);
-    notificationDeliveryService.start(clientConfig);
 
     localService = new OnDeviceDecisioningService(clientConfig, targetService);
     ObjectMapper mapper = new JacksonObjectMapper().getMapper();
@@ -103,11 +101,6 @@ class TargetTelemetryTest {
         localService,
         localService.getClass().getDeclaredField("clusterLocator"),
         mock(ClusterLocator.class));
-  }
-
-  @AfterEach
-  void tearDown() {
-    notificationDeliveryService.stop();
   }
 
   @Test

@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -73,7 +72,6 @@ class NotificationDeliveryServiceTest {
 
     targetService = new DefaultTargetService(clientConfig);
     notificationDeliveryService = new NotificationDeliveryService(targetService);
-    notificationDeliveryService.start(clientConfig);
 
     localService = new OnDeviceDecisioningService(clientConfig, targetService);
     ObjectMapper mapper = new JacksonObjectMapper().getMapper();
@@ -105,11 +103,6 @@ class NotificationDeliveryServiceTest {
         localService,
         localService.getClass().getDeclaredField("clusterLocator"),
         mock(ClusterLocator.class));
-  }
-
-  @AfterEach
-  void tearDown() {
-    notificationDeliveryService.stop();
   }
 
   @Test
