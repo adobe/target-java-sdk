@@ -65,8 +65,7 @@ public class OnDeviceDecisioningService {
         }
       };
 
-  private ParamsCollator timeParamsCollator = new TimeParamsCollator();
-
+  private final ParamsCollator timeParamsCollator = new TimeParamsCollator();
   private final ClientConfig clientConfig;
   private final ObjectMapper mapper;
   private final RuleLoader ruleLoader;
@@ -377,8 +376,8 @@ public class OnDeviceDecisioningService {
       TargetDeliveryRequest targetDeliveryRequest,
       TargetDeliveryResponse targetDeliveryResponse,
       double executionTime) {
-    TelemetryFeatures telemetryFeatures =
-        new TelemetryFeatures().decisioningMethod(targetDeliveryRequest.getDecisioningMethod());
+    TelemetryFeatures telemetryFeatures = new TelemetryFeatures()
+        .decisioningMethod(getDecisioningMethod(targetDeliveryRequest));
 
     return new TelemetryEntry()
         .requestId(targetDeliveryResponse.getResponse().getRequestId())
@@ -425,5 +424,21 @@ public class OnDeviceDecisioningService {
             .trace(dreq.getTrace())
             .build();
     this.deliveryService.sendNotification(notifRequest);
+  }
+
+  private DecisioningMethod getDecisioningMethod(TargetDeliveryRequest request) {
+    DecisioningMethod requestDecisioning = request.getDecisioningMethod();
+
+    if (requestDecisioning != null) {
+      return requestDecisioning;
+    }
+
+    DecisioningMethod configDecisioning = clientConfig.getDefaultDecisioningMethod();
+
+    if (configDecisioning != null) {
+      return configDecisioning;
+    }
+
+    return DecisioningMethod.SERVER_SIDE;
   }
 }
