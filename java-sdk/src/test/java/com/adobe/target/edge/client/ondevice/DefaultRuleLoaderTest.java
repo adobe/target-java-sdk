@@ -166,6 +166,11 @@ class DefaultRuleLoaderTest {
       public <E> E mapError(Class<? extends E> errorClass) {
         return null;
       }
+
+      @Override
+      public Cookies getCookies() {
+        return null;
+      }
     };
   }
 
