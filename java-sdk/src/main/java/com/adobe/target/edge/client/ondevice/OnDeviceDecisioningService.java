@@ -376,8 +376,8 @@ public class OnDeviceDecisioningService {
       TargetDeliveryRequest targetDeliveryRequest,
       TargetDeliveryResponse targetDeliveryResponse,
       double executionTime) {
-    TelemetryFeatures telemetryFeatures = new TelemetryFeatures()
-        .decisioningMethod(getDecisioningMethod(targetDeliveryRequest));
+    TelemetryFeatures telemetryFeatures =
+        new TelemetryFeatures().decisioningMethod(getDecisioningMethod(targetDeliveryRequest));
 
     return new TelemetryEntry()
         .requestId(targetDeliveryResponse.getResponse().getRequestId())

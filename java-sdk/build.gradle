@@ -40,14 +40,6 @@ publishing {
                 password = System.getenv('SONATYPE_PASS')
             }
         }
-        maven {
-            name = 'artifactory'
-            url = System.getenv('ARTIFACTORY_RELEASE_URL')
-            credentials() {
-                username = System.env.ARTIFACTORY_CICD_USER
-                password = System.env.ARTIFACTORY_CICD_PASSWORD
-            }
-        }
     }
     publications {
         external(MavenPublication) {
@@ -55,7 +47,7 @@ publishing {
             from components.java
 
             artifact sourcesJar
-//            artifact javadocJar
+            artifact javadocJar
 
             pom {
                 name = rootProject.name
@@ -83,25 +75,25 @@ publishing {
     }
 }
 
-//signing {
-//    required {
-//        tasks.withType(PublishToMavenRepository).find {
-//            gradle.taskGraph.hasTask it
-//        }
-//    }
-//    sign publishing.publications
-//}
+signing {
+    required {
+        tasks.withType(PublishToMavenRepository).find {
+            gradle.taskGraph.hasTask it
+        }
+    }
+    sign publishing.publications
+}
 
 dependencies {
     api "com.adobe.experiencecloud.ecid:ecid-service:1.0.0"
-    implementation "org.slf4j:slf4j-api:2.0.0-alpha0"
-    implementation "com.fasterxml.jackson.core:jackson-annotations:2.10.0.pr3"
-    implementation "com.fasterxml.jackson.core:jackson-core:2.9.8"
-    implementation "com.fasterxml.jackson.core:jackson-databind:2.9.8"
-    implementation "com.konghq:unirest-java:3.0.00"
-    implementation "io.github.jamsesso:json-logic-java:1.0.3"
+    implementation "org.slf4j:slf4j-api:1.7.30"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:2.11.3"
+    implementation "com.fasterxml.jackson.core:jackson-core:2.11.3"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.11.3"
+    implementation "com.konghq:unirest-java:3.11.02"
+    implementation "io.github.jamsesso:json-logic-java:1.0.5"
 
-    testImplementation "org.slf4j:slf4j-simple:2.0.0-alpha0"
+    testImplementation "org.slf4j:slf4j-simple:1.7.30"
     testImplementation "org.junit.jupiter:junit-jupiter-engine:5.5.2"
     testImplementation "org.mockito:mockito-junit-jupiter:3.0.0"
 }
@@ -112,20 +104,20 @@ test {
 
 // JACOCO CONFIGURATION | HTML output is omitted in favour of just the XML output that Jenkins can parse
 jacocoTestReport {
-  reports {
-    xml.enabled = true
-    html.enabled = true
-  }
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
 }
 
 // JACOCO COVERAGE THRESHOLD | Builds will fail if the computed code coverage is less than the configured percentage
 jacocoTestCoverageVerification {
-  violationRules {
-    rule {
-      limit {
-        minimum = 0.43
-      }
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.43
+            }
+        }
     }
-  }
 }
 
