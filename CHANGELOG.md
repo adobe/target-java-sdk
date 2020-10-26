@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] - 2020-10-27
+### Added
+- Support for on-device decisioning
+- New parameters added in create() when initializing the Java SDK
+  - decisioningMethod
+  - pollingInterval
+  - artifactLocation
+  - artifactPayload
+  - events
+-New method getAttributes() to fetch experimentation and personalized experiences from Target and extract attribute values.
+ 
 ## [1.1.0] - 2019-12-16
 ### Added
 - Added support for proxy config. Thanks @hisham-hassan for contribution.
