@@ -19,11 +19,10 @@ import org.slf4j.LoggerFactory;
 
 public class DebuggingInterceptor implements HttpRequestInterceptor {
 
-    private static final Logger logger = LoggerFactory.getLogger(TargetMetrics.class);
+  private static final Logger logger = LoggerFactory.getLogger(TargetMetrics.class);
 
-    @Override
-    public void process(HttpRequest request, HttpContext context) {
-        logger.info(request.getRequestLine().getUri());
-    }
-
+  @Override
+  public void process(HttpRequest request, HttpContext context) {
+    logger.info(request.getRequestLine().getUri());
+  }
 }

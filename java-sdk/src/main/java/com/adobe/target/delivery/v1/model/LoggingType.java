@@ -13,43 +13,41 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Indicates whether integraion will be done via client side (from the client) or server side (edge servers)
+ * Indicates whether integraion will be done via client side (from the client) or server side (edge
+ * servers)
  */
 public enum LoggingType {
+  SERVER_SIDE("server_side"),
 
-    SERVER_SIDE("server_side"),
+  CLIENT_SIDE("client_side");
 
-    CLIENT_SIDE("client_side");
+  private String value;
 
-    private String value;
+  LoggingType(String value) {
+    this.value = value;
+  }
 
-    LoggingType(String value) {
-        this.value = value;
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
+
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
+
+  @JsonCreator
+  public static LoggingType fromValue(String text) {
+    for (LoggingType b : LoggingType.values()) {
+      if (String.valueOf(b.value).equals(text)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static LoggingType fromValue(String text) {
-        for (LoggingType b : LoggingType.values()) {
-            if (String.valueOf(b.value).equals(text)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + text + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + text + "'");
+  }
 }
-

@@ -13,102 +13,208 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Objects;
 
-
 /**
- * Geo data. If not specified, and Geo is enabled for the client, it will be resolved via user&#39;s IP.
+ * Geo data. If not specified, and Geo is enabled for the client, it will be resolved via user&#39;s
+ * IP.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Geo {
-    @JsonProperty("latitude")
-    private Float latitude;
+  @JsonProperty("ipAddress")
+  private String ipAddress;
 
-    @JsonProperty("longitude")
-    private Float longitude;
+  @JsonProperty("latitude")
+  private Float latitude;
 
-    public Geo latitude(Float latitude) {
-        this.latitude = latitude;
-        return this;
+  @JsonProperty("longitude")
+  private Float longitude;
+
+  @JsonProperty("countryCode")
+  private String countryCode;
+
+  @JsonProperty("stateCode")
+  private String stateCode;
+
+  @JsonProperty("city")
+  private String city;
+
+  @JsonProperty("zip")
+  private String zip;
+
+  public Geo ipAddress(String ipAddress) {
+    this.ipAddress = ipAddress;
+    return this;
+  }
+
+  /**
+   * IPv4 or IPv6 address for Geo resolution
+   *
+   * @return ipAddress
+   */
+  public String getIpAddress() {
+    return ipAddress;
+  }
+
+  public void setIpAddress(String ipAddress) {
+    this.ipAddress = ipAddress;
+  }
+
+  public Geo latitude(Float latitude) {
+    this.latitude = latitude;
+    return this;
+  }
+
+  /**
+   * Latitude
+   *
+   * @return latitude
+   */
+  public Float getLatitude() {
+    return latitude;
+  }
+
+  public void setLatitude(Float latitude) {
+    this.latitude = latitude;
+  }
+
+  public Geo longitude(Float longitude) {
+    this.longitude = longitude;
+    return this;
+  }
+
+  /**
+   * Longitude
+   *
+   * @return longitude
+   */
+  public Float getLongitude() {
+    return longitude;
+  }
+
+  public void setLongitude(Float longitude) {
+    this.longitude = longitude;
+  }
+
+  public Geo countryCode(String countryCode) {
+    this.countryCode = countryCode;
+    return this;
+  }
+
+  /**
+   * Country code in ISO 3166-1 alpha-2 format
+   *
+   * @return countryCode
+   */
+  public String getCountryCode() {
+    return countryCode;
+  }
+
+  public void setCountryCode(String countryCode) {
+    this.countryCode = countryCode;
+  }
+
+  public Geo stateCode(String stateCode) {
+    this.stateCode = stateCode;
+    return this;
+  }
+
+  /**
+   * Alphanumeric characters representing the subdivision part from ISO 3166-2
+   *
+   * @return stateCode
+   */
+  public String getStateCode() {
+    return stateCode;
+  }
+
+  public void setStateCode(String stateCode) {
+    this.stateCode = stateCode;
+  }
+
+  public Geo city(String city) {
+    this.city = city;
+    return this;
+  }
+
+  /**
+   * City
+   *
+   * @return city
+   */
+  public String getCity() {
+    return city;
+  }
+
+  public void setCity(String city) {
+    this.city = city;
+  }
+
+  public Geo zip(String zip) {
+    this.zip = zip;
+    return this;
+  }
+
+  /**
+   * Zip/Postal Code
+   *
+   * @return zip
+   */
+  public String getZip() {
+    return zip;
+  }
+
+  public void setZip(String zip) {
+    this.zip = zip;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
-
-    /**
-     * Get latitude
-     *
-     * @return latitude
-     **/
-
-    public Float getLatitude() {
-        return latitude;
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
+    Geo geo = (Geo) o;
+    return Objects.equals(this.ipAddress, geo.ipAddress)
+        && Objects.equals(this.latitude, geo.latitude)
+        && Objects.equals(this.longitude, geo.longitude)
+        && Objects.equals(this.countryCode, geo.countryCode)
+        && Objects.equals(this.stateCode, geo.stateCode)
+        && Objects.equals(this.city, geo.city)
+        && Objects.equals(this.zip, geo.zip);
+  }
 
-    public void setLatitude(Float latitude) {
-        this.latitude = latitude;
+  @Override
+  public int hashCode() {
+    return Objects.hash(ipAddress, latitude, longitude, countryCode, stateCode, city, zip);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class Geo {\n");
+    sb.append("    ipAddress: ").append(toIndentedString(ipAddress)).append("\n");
+    sb.append("    latitude: ").append(toIndentedString(latitude)).append("\n");
+    sb.append("    longitude: ").append(toIndentedString(longitude)).append("\n");
+    sb.append("    countryCode: ").append(toIndentedString(countryCode)).append("\n");
+    sb.append("    stateCode: ").append(toIndentedString(stateCode)).append("\n");
+    sb.append("    city: ").append(toIndentedString(city)).append("\n");
+    sb.append("    zip: ").append(toIndentedString(zip)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
     }
-
-    public Geo longitude(Float longitude) {
-        this.longitude = longitude;
-        return this;
-    }
-
-    /**
-     * Get longitude
-     *
-     * @return longitude
-     **/
-
-    public Float getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Float longitude) {
-        this.longitude = longitude;
-    }
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Geo geo = (Geo) o;
-        return Objects.equals(this.latitude, geo.latitude) &&
-                Objects.equals(this.longitude, geo.longitude);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(latitude, longitude);
-    }
-
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class Geo {\n");
-        sb.append("    latitude: ").append(toIndentedString(latitude)).append("\n");
-        sb.append("    longitude: ").append(toIndentedString(longitude)).append("\n");
-        sb.append("}");
-        return sb.toString();
-    }
-
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
-
+    return o.toString().replace("\n", "\n    ");
+  }
 }
-

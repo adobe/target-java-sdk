@@ -13,12 +13,11 @@ package com.adobe.target.edge.client.service;
 
 public class TargetRequestException extends RuntimeException {
 
-    public TargetRequestException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public TargetRequestException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    public TargetRequestException(String message) {
-        super(message);
-    }
-
+  public TargetRequestException(String message) {
+    super(message);
+  }
 }

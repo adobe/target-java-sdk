@@ -11,64 +11,67 @@
  */
 package com.adobe.target.edge.client.http;
 
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import kong.unirest.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-
 public class TargetHttpClientLoggingDecorator implements TargetHttpClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefaultTargetHttpClient.class);
-    private final TargetHttpClient delegate;
+  private static final Logger logger = LoggerFactory.getLogger(DefaultTargetHttpClient.class);
+  private final TargetHttpClient delegate;
 
-    public TargetHttpClientLoggingDecorator(TargetHttpClient delegate) {
-        this.delegate = delegate;
-    }
+  public TargetHttpClientLoggingDecorator(TargetHttpClient delegate) {
+    this.delegate = delegate;
+  }
 
-    @Override
-    public <T, R> HttpResponse<R> execute(Map<String, Object> queryParams, String url, T request, Class<R> response) {
-        logger.debug("Request: Url:{} QueryParams:{} RequestBody:{}", url, queryParams, request);
-        HttpResponse<R> execute = delegate.execute(queryParams, url, request, response);
-        logResponse(execute);
-        return execute;
-    }
+  @Override
+  public <T, R> HttpResponse<R> execute(
+      Map<String, Object> queryParams, String url, T request, Class<R> response) {
+    logger.debug("Request: Url:{} QueryParams:{} RequestBody:{}", url, queryParams, request);
+    HttpResponse<R> execute = delegate.execute(queryParams, url, request, response);
+    logResponse(execute);
+    return execute;
+  }
 
-    @Override
-    public <T, R> CompletableFuture<HttpResponse<R>> executeAsync(Map<String, Object> queryParams, String url,
-                                                                  T request, Class<R> response) {
-        logger.debug("AsyncRequest: Url:{} QueryParams:{} RequestBody:{}", url, queryParams, request);
-        CompletableFuture<HttpResponse<R>> executeAsync = delegate.executeAsync(queryParams, url,
-                request, response);
-        executeAsync.thenAccept(execute -> {
-            logResponse(execute);
+  @Override
+  public <T, R> CompletableFuture<HttpResponse<R>> executeAsync(
+      Map<String, Object> queryParams, String url, T request, Class<R> response) {
+    logger.debug("AsyncRequest: Url:{} QueryParams:{} RequestBody:{}", url, queryParams, request);
+    CompletableFuture<HttpResponse<R>> executeAsync =
+        delegate.executeAsync(queryParams, url, request, response);
+    executeAsync.thenAccept(
+        execute -> {
+          logResponse(execute);
         });
-        return executeAsync;
-    }
+    return executeAsync;
+  }
 
-    private <R> void logResponse(HttpResponse<R> execute) {
-        R body = execute.getBody();
-        if (execute.getStatus() == HttpStatus.SC_OK && body != null) {
-            logger.debug("Response: ResponseBody:{}", body);
-            return;
-        }
-        logger.error("Error occurred while fetching response from target: " +
-                        "Status: {} Message: {} ParsingError: {} ResponseBody:{} ",
-                execute.getStatus(),
-                execute.getStatusText(),
-                execute.getParsingError(), body);
+  private <R> void logResponse(HttpResponse<R> execute) {
+    R body = execute.getBody();
+    if (execute.getStatus() == HttpStatus.SC_OK && body != null) {
+      logger.debug("Response: ResponseBody:{}", body);
+      return;
     }
+    logger.error(
+        "Error occurred while fetching response from target: "
+            + "Status: {} Message: {} ParsingError: {} ResponseBody:{} ",
+        execute.getStatus(),
+        execute.getStatusText(),
+        execute.getParsingError(),
+        body);
+  }
 
-    @Override
-    public void addDefaultHeader(String key, String value) {
-        logger.debug("Adding default header: key:{}, value:{}", key, value);
-        delegate.addDefaultHeader(key, value);
-    }
+  @Override
+  public void addDefaultHeader(String key, String value) {
+    logger.debug("Adding default header: key:{}, value:{}", key, value);
+    delegate.addDefaultHeader(key, value);
+  }
 
-    @Override
-    public void close() throws Exception {
-        delegate.close();
-    }
+  @Override
+  public void close() throws Exception {
+    delegate.close();
+  }
 }

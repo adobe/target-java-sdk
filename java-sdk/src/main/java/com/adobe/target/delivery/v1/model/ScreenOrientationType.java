@@ -13,44 +13,41 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * If not specified, all activities with any screen orientation will be evaluated. If specified, only the activities
- * with the matching screen orientation will evaluated.
+ * If not specified, all activities with any screen orientation will be evaluated. If specified,
+ * only the activities with the matching screen orientation will evaluated.
  */
 public enum ScreenOrientationType {
+  PORTRAIT("portrait"),
 
-    PORTRAIT("portrait"),
+  LANDSCAPE("landscape");
 
-    LANDSCAPE("landscape");
+  private String value;
 
-    private String value;
+  ScreenOrientationType(String value) {
+    this.value = value;
+  }
 
-    ScreenOrientationType(String value) {
-        this.value = value;
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
+
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
+
+  @JsonCreator
+  public static ScreenOrientationType fromValue(String text) {
+    for (ScreenOrientationType b : ScreenOrientationType.values()) {
+      if (String.valueOf(b.value).equals(text)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static ScreenOrientationType fromValue(String text) {
-        for (ScreenOrientationType b : ScreenOrientationType.values()) {
-            if (String.valueOf(b.value).equals(text)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + text + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + text + "'");
+  }
 }
-

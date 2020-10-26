@@ -12,8 +12,8 @@
 package com.adobe.target.edge.client.utils;
 
 public class VisitorConstants {
-    public static final String MARKETING_CLOUD_VISITOR_ID = "MCMID";
-    public static final String LOCATION_HINT = "MCAAMLH";
-    public static final String BLOB = "MCAAMB";
-    public static final String SDID_CONSUMER_ID = "target-global-mbox";
+  public static final String MARKETING_CLOUD_VISITOR_ID = "MCMID";
+  public static final String LOCATION_HINT = "MCAAMLH";
+  public static final String BLOB = "MCAAMB";
+  public static final String SDID_CONSUMER_ID = "target-global-mbox";
 }

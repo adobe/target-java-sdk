@@ -1,0 +1,499 @@
+{
+  "version": "1.0.0",
+  "meta": {
+    "clientCode": "adobesummit2018",
+    "environment": "test",
+    "generatedAt": "2020-06-15T20:51:50.887Z"
+  },
+  "globalMbox": "target-global-mbox",
+  "geoTargetingEnabled": false,
+  "responseTokens": [
+    "activity.id",
+    "activity.name",
+    "experience.id",
+    "geo.country",
+    "geo.city",
+    "geo.state"
+  ],
+  "remoteMboxes": [
+    "target-global-mbox"
+  ],
+  "remoteViews": [],
+  "localMboxes": [
+    "target-global-mbox"
+  ],
+  "localViews": [],
+  "rules": {
+    "mboxes": {
+      "target-global-mbox": [
+        {
+          "ruleKey": "337795",
+          "activityId": "337795",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 337795,
+            "activityType": "landing",
+            "experienceId": 0,
+            "locationName": "target-global-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              2170460
+            ],
+            "offerIds": [
+              635716
+            ]
+          },
+          "condition": {
+            "==": [
+              {
+                "var": "user.browserType"
+              },
+              "chrome"
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "9FNM3ikASssS+sVoFXNulGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<div>Chrometastic</div>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "337795",
+          "activityId": "337795",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 337795,
+            "activityType": "landing",
+            "experienceId": 1,
+            "locationName": "target-global-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              4873452
+            ],
+            "offerIds": [
+              635715
+            ]
+          },
+          "condition": {
+            "==": [
+              {
+                "var": "user.browserType"
+              },
+              "firefox"
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "9FNM3ikASssS+sVoFXNulJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<div>Firetime</div>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "337795",
+          "activityId": "337795",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 337795,
+            "activityType": "landing",
+            "experienceId": 2,
+            "locationName": "target-global-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              4957566
+            ],
+            "offerIds": [
+              635713
+            ]
+          },
+          "condition": {
+            "==": [
+              {
+                "var": "user.browserType"
+              },
+              "safari"
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "9FNM3ikASssS+sVoFXNulAreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<div>Safari Run</div>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "337795",
+          "activityId": "337795",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 337795,
+            "activityType": "landing",
+            "experienceId": 3,
+            "locationName": "target-global-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [],
+            "offerIds": [
+              635714
+            ]
+          },
+          "condition": true,
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "9FNM3ikASssS+sVoFXNulJZBXFCzaoRRABbzIA9EnZOCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<div>Srsly, who dis?</div>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "337797",
+          "activityId": "337797",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 337797,
+            "activityType": "ab",
+            "experienceId": 0,
+            "locationName": "target-global-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              5272024
+            ],
+            "offerIds": [
+              635719
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "<": [
+                  0,
+                  {
+                    "var": "allocation"
+                  },
+                  34
+                ]
+              },
+              {
+                "==": [
+                  "bar",
+                  {
+                    "var": "mbox.foo"
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "0L1rCkDps3F+UEAm1B9A4GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<div>foo=bar experience A</div>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "337797",
+          "activityId": "337797",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 337797,
+            "activityType": "ab",
+            "experienceId": 1,
+            "locationName": "target-global-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              5272024
+            ],
+            "offerIds": [
+              635718
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "<": [
+                  34,
+                  {
+                    "var": "allocation"
+                  },
+                  67
+                ]
+              },
+              {
+                "==": [
+                  "bar",
+                  {
+                    "var": "mbox.foo"
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "0L1rCkDps3F+UEAm1B9A4JNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<div>foo=bar experience B</div>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "337797",
+          "activityId": "337797",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 337797,
+            "activityType": "ab",
+            "experienceId": 2,
+            "locationName": "target-global-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              5272024
+            ],
+            "offerIds": [
+              635717
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "<": [
+                  67,
+                  {
+                    "var": "allocation"
+                  },
+                  100
+                ]
+              },
+              {
+                "==": [
+                  "bar",
+                  {
+                    "var": "mbox.foo"
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "0L1rCkDps3F+UEAm1B9A4AreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<div>foo=bar experience C</div>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "337888",
+          "activityId": "337888",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 337888,
+            "activityType": "ab",
+            "experienceId": 0,
+            "locationName": "target-global-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [],
+            "offerIds": [
+              635778
+            ]
+          },
+          "condition": {
+            "<": [
+              0,
+              {
+                "var": "allocation"
+              },
+              25
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "5C2cbrGD+bQ5qOATNGy1AWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<div>whale</div>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "337888",
+          "activityId": "337888",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 337888,
+            "activityType": "ab",
+            "experienceId": 1,
+            "locationName": "target-global-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [],
+            "offerIds": [
+              635776
+            ]
+          },
+          "condition": {
+            "<": [
+              25,
+              {
+                "var": "allocation"
+              },
+              50
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "5C2cbrGD+bQ5qOATNGy1AZNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<div>mouse</div>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "337888",
+          "activityId": "337888",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 337888,
+            "activityType": "ab",
+            "experienceId": 2,
+            "locationName": "target-global-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [],
+            "offerIds": [
+              635779
+            ]
+          },
+          "condition": {
+            "<": [
+              50,
+              {
+                "var": "allocation"
+              },
+              75
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "5C2cbrGD+bQ5qOATNGy1AQreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<div>lion</div>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "337888",
+          "activityId": "337888",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 337888,
+            "activityType": "ab",
+            "experienceId": 3,
+            "locationName": "target-global-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [],
+            "offerIds": [
+              635777
+            ]
+          },
+          "condition": {
+            "<": [
+              75,
+              {
+                "var": "allocation"
+              },
+              100
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "5C2cbrGD+bQ5qOATNGy1AZZBXFCzaoRRABbzIA9EnZOCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<div>owl</div>"
+              }
+            ],
+            "metrics": []
+          }
+        }
+      ]
+    },
+    "views": {}
+  }
+}

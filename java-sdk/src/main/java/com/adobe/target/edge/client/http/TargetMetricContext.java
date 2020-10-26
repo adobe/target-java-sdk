@@ -13,12 +13,11 @@ package com.adobe.target.edge.client.http;
 
 public interface TargetMetricContext {
 
-    String getUrl();
+  String getUrl();
 
-    int getStatus();
+  int getStatus();
 
-    String getStatusMessage();
+  String getStatusMessage();
 
-    int getExecutionTime();
-
+  int getExecutionTime();
 }

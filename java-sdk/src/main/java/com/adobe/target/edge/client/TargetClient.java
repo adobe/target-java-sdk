@@ -12,23 +12,44 @@
 package com.adobe.target.edge.client;
 
 import com.adobe.target.edge.client.http.ResponseStatus;
-import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
-
+import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import java.util.concurrent.CompletableFuture;
 
 public interface TargetClient extends AutoCloseable {
 
-    TargetDeliveryResponse getOffers(TargetDeliveryRequest request);
+  TargetDeliveryResponse getOffers(TargetDeliveryRequest request);
 
-    CompletableFuture<TargetDeliveryResponse> getOffersAsync(TargetDeliveryRequest request);
+  CompletableFuture<TargetDeliveryResponse> getOffersAsync(TargetDeliveryRequest request);
 
-    ResponseStatus sendNotifications(TargetDeliveryRequest request);
+  ResponseStatus sendNotifications(TargetDeliveryRequest request);
 
-    CompletableFuture<ResponseStatus> sendNotificationsAsync(TargetDeliveryRequest request);
+  CompletableFuture<ResponseStatus> sendNotificationsAsync(TargetDeliveryRequest request);
 
-    static TargetClient create(ClientConfig config) {
-        return new DefaultTargetClient(config);
-    }
+  /**
+   * Makes a getOffers() call and converts all returned JSON offers into Attributes.
+   *
+   * @param targetRequest optional TargetDeliveryRequest that can be used to set specific request
+   *     items such as Visitor, Context, etc. If null, one will be generated. Request for given mbox
+   *     will be added automatically.
+   * @param mboxes Name of mboxes to use to retrieve attributes.
+   * @return Attributes object
+   */
+  Attributes getAttributes(TargetDeliveryRequest targetRequest, String... mboxes);
 
+  /**
+   * Makes an async getOffers() call and converts all returned JSON offers into Attributes.
+   *
+   * @param targetRequest optional TargetDeliveryRequest that can be used to set specific request
+   *     items such as Visitor, Context, etc. If null, one will be generated. Request for given mbox
+   *     will be added automatically.
+   * @param mboxes Name of mboxes to use to retrieve attributes.
+   * @return CompletableFuture<Attributes></Attributes> object
+   */
+  CompletableFuture<Attributes> getAttributesAsync(
+      TargetDeliveryRequest targetRequest, String... mboxes);
+
+  static TargetClient create(ClientConfig config) {
+    return new DefaultTargetClient(config);
+  }
 }

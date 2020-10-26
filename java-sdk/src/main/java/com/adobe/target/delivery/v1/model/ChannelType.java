@@ -13,43 +13,41 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
- * Specifies the channel for the request. Only activities with the matching channel will be evaluated.
+ * Specifies the channel for the request. Only activities with the matching channel will be
+ * evaluated.
  */
 public enum ChannelType {
+  MOBILE("mobile"),
 
-    MOBILE("mobile"),
+  WEB("web");
 
-    WEB("web");
+  private String value;
 
-    private String value;
+  ChannelType(String value) {
+    this.value = value;
+  }
 
-    ChannelType(String value) {
-        this.value = value;
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
+
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
+
+  @JsonCreator
+  public static ChannelType fromValue(String text) {
+    for (ChannelType b : ChannelType.values()) {
+      if (String.valueOf(b.value).equals(text)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static ChannelType fromValue(String text) {
-        for (ChannelType b : ChannelType.values()) {
-            if (String.valueOf(b.value).equals(text)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + text + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + text + "'");
+  }
 }
-

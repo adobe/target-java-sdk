@@ -12,46 +12,44 @@
 package com.adobe.target.edge.client.service;
 
 import com.adobe.experiencecloud.ecid.visitor.Visitor;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 public class VisitorProvider {
 
-    private static VisitorProvider INSTANCE = null;
+  private static VisitorProvider INSTANCE = null;
 
-    private final String VISITOR_COOKIE_PREFIX = "AMCV_";
-    private String visitorCookieName;
-    private String orgId;
+  private final String VISITOR_COOKIE_PREFIX = "AMCV_";
+  private String visitorCookieName;
+  private String orgId;
 
-    private VisitorProvider(String orgId) throws UnsupportedEncodingException {
-        this.orgId = orgId;
-        this.visitorCookieName = VISITOR_COOKIE_PREFIX + URLEncoder.encode(orgId, "UTF-8");
+  private VisitorProvider(String orgId) throws UnsupportedEncodingException {
+    this.orgId = orgId;
+    this.visitorCookieName = VISITOR_COOKIE_PREFIX + URLEncoder.encode(orgId, "UTF-8");
+  }
+
+  public Visitor createVisitor(String visitorCookie) {
+    return new Visitor(orgId, visitorCookie);
+  }
+
+  public String getVisitorCookieName() {
+    return visitorCookieName;
+  }
+
+  public static VisitorProvider getInstance() {
+    if (INSTANCE == null) {
+      throw new TargetRequestException("VisitorProvider instance is not initialized");
     }
 
-    public Visitor createVisitor(String visitorCookie) {
-        return new Visitor(orgId, visitorCookie);
+    return INSTANCE;
+  }
+
+  public static VisitorProvider init(String orgId) {
+    try {
+      INSTANCE = new VisitorProvider(orgId);
+    } catch (UnsupportedEncodingException e) {
+      throw new TargetClientException("Error occurred while initializing VisitorProvider", e);
     }
-
-    public String getVisitorCookieName() {
-        return visitorCookieName;
-    }
-
-    public static VisitorProvider getInstance() {
-        if (INSTANCE == null) {
-            throw new TargetRequestException("VisitorProvider instance is not initialized");
-        }
-
-        return INSTANCE;
-    }
-
-    public static VisitorProvider init(String orgId) {
-        try {
-            INSTANCE = new VisitorProvider(orgId);
-        } catch (UnsupportedEncodingException e) {
-            throw new TargetClientException("Error occurred while initializing VisitorProvider", e);
-        }
-        return INSTANCE;
-    }
-
+    return INSTANCE;
+  }
 }

@@ -13,49 +13,46 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-/**
- * Gets or Sets OptionType
- */
+/** Gets or Sets OptionType */
 public enum OptionType {
+  HTML("html"),
 
-    HTML("html"),
+  JSON("json"),
 
-    JSON("json"),
+  REDIRECT("redirect"),
 
-    REDIRECT("redirect"),
+  DYNAMIC("dynamic"),
 
-    DYNAMIC("dynamic"),
+  DEFAULT("default"),
 
-    ACTIONS("actions");
+  ACTIONS("actions");
 
-    private String value;
+  private String value;
 
-    OptionType(String value) {
-        this.value = value;
+  OptionType(String value) {
+    this.value = value;
+  }
+
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
+
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
+
+  @JsonCreator
+  public static OptionType fromValue(String text) {
+    for (OptionType b : OptionType.values()) {
+      if (String.valueOf(b.value).equals(text)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static OptionType fromValue(String text) {
-        for (OptionType b : OptionType.values()) {
-            if (String.valueOf(b.value).equals(text)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + text + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + text + "'");
+  }
 }
-

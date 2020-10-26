@@ -1,0 +1,825 @@
+{
+  "version": "1.0.0",
+  "meta": {
+    "clientCode": "adobesummit2018",
+    "environment": "test",
+    "generatedAt": "2020-06-15T20:54:08.328Z"
+  },
+  "globalMbox": "target-global-mbox",
+  "geoTargetingEnabled": false,
+  "responseTokens": [
+    "activity.id",
+    "activity.name",
+    "experience.id",
+    "geo.country",
+    "geo.city",
+    "geo.state"
+  ],
+  "remoteMboxes": [],
+  "remoteViews": [],
+  "localMboxes": [
+    "target-global-mbox"
+  ],
+  "localViews": [],
+  "rules": {
+    "mboxes": {
+      "target-global-mbox": [
+        {
+          "ruleKey": "345717-0",
+          "activityId": "345717",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 345717,
+            "activityType": "landing",
+            "experienceId": 0,
+            "locationName": "target-global-mbox",
+            "locationType": "view",
+            "locationId": 0,
+            "audienceIds": [
+              5634157,
+              5652249
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  "correct",
+                  {
+                    "var": "mbox.greg"
+                  }
+                ]
+              },
+              {
+                "and": [
+                  {
+                    "==": [
+                      "local-target-test",
+                      {
+                        "var": "page.domain"
+                      }
+                    ]
+                  },
+                  {
+                    "==": [
+                      "/",
+                      {
+                        "var": "page.path"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "actions",
+                "eventToken": "39UdigzDfmb97ogXP1PN62qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": [
+                  {
+                    "type": "setHtml",
+                    "selector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(1)",
+                    "cssSelector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(1)",
+                    "content": "greg is correct"
+                  }
+                ]
+              }
+            ],
+            "metrics": [
+              {
+                "type": "click",
+                "selector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                "eventToken": "Esqg0GnzqW0Y/GMvVyT7lg=="
+              }
+            ]
+          }
+        },
+        {
+          "ruleKey": "345717-1",
+          "activityId": "345717",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 345717,
+            "activityType": "landing",
+            "experienceId": 0,
+            "locationName": "target-global-mbox",
+            "locationType": "view",
+            "locationId": 1,
+            "audienceIds": [
+              5634157,
+              5652249
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  "correct",
+                  {
+                    "var": "mbox.greg"
+                  }
+                ]
+              },
+              {
+                "and": [
+                  {
+                    "==": [
+                      "local-target-test",
+                      {
+                        "var": "page.domain"
+                      }
+                    ]
+                  },
+                  {
+                    "==": [
+                      "/",
+                      {
+                        "var": "page.path"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "actions",
+                "eventToken": "39UdigzDfmb97ogXP1PN62qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": [
+                  {
+                    "type": "setHtml",
+                    "selector": "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                    "cssSelector": "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                    "content": "Hello greg"
+                  }
+                ]
+              }
+            ],
+            "metrics": [
+              {
+                "type": "click",
+                "selector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                "eventToken": "Esqg0GnzqW0Y/GMvVyT7lg=="
+              }
+            ]
+          }
+        },
+        {
+          "ruleKey": "345717-2",
+          "activityId": "345717",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 345717,
+            "activityType": "landing",
+            "experienceId": 0,
+            "locationName": "target-global-mbox",
+            "locationType": "view",
+            "locationId": 2,
+            "audienceIds": [
+              5634157,
+              5652249
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  "correct",
+                  {
+                    "var": "mbox.greg"
+                  }
+                ]
+              },
+              {
+                "and": [
+                  {
+                    "==": [
+                      "local-target-test",
+                      {
+                        "var": "page.domain"
+                      }
+                    ]
+                  },
+                  {
+                    "==": [
+                      "/",
+                      {
+                        "var": "page.path"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "eventToken": "39UdigzDfmb97ogXP1PN62qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="
+              }
+            ],
+            "metrics": [
+              {
+                "type": "click",
+                "selector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                "eventToken": "Esqg0GnzqW0Y/GMvVyT7lg=="
+              }
+            ]
+          }
+        },
+        {
+          "ruleKey": "345717-3",
+          "activityId": "345717",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 345717,
+            "activityType": "landing",
+            "experienceId": 0,
+            "locationName": "target-global-mbox",
+            "locationType": "view",
+            "locationId": 3,
+            "audienceIds": [
+              5634157,
+              5652249
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  "correct",
+                  {
+                    "var": "mbox.greg"
+                  }
+                ]
+              },
+              {
+                "and": [
+                  {
+                    "==": [
+                      "local-target-test",
+                      {
+                        "var": "page.domain"
+                      }
+                    ]
+                  },
+                  {
+                    "==": [
+                      "/",
+                      {
+                        "var": "page.path"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "eventToken": "39UdigzDfmb97ogXP1PN62qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="
+              }
+            ],
+            "metrics": [
+              {
+                "type": "click",
+                "selector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                "eventToken": "Esqg0GnzqW0Y/GMvVyT7lg=="
+              }
+            ]
+          }
+        },
+        {
+          "ruleKey": "345717-0",
+          "activityId": "345717",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 345717,
+            "activityType": "landing",
+            "experienceId": 1,
+            "locationName": "target-global-mbox",
+            "locationType": "view",
+            "locationId": 0,
+            "audienceIds": [
+              5634562,
+              5652249
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  "correct",
+                  {
+                    "var": "mbox.jason"
+                  }
+                ]
+              },
+              {
+                "and": [
+                  {
+                    "==": [
+                      "local-target-test",
+                      {
+                        "var": "page.domain"
+                      }
+                    ]
+                  },
+                  {
+                    "==": [
+                      "/",
+                      {
+                        "var": "page.path"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "eventToken": "39UdigzDfmb97ogXP1PN65NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="
+              }
+            ],
+            "metrics": [
+              {
+                "type": "click",
+                "selector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                "eventToken": "Esqg0GnzqW0Y/GMvVyT7lg=="
+              }
+            ]
+          }
+        },
+        {
+          "ruleKey": "345717-1",
+          "activityId": "345717",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 345717,
+            "activityType": "landing",
+            "experienceId": 1,
+            "locationName": "target-global-mbox",
+            "locationType": "view",
+            "locationId": 1,
+            "audienceIds": [
+              5634562,
+              5652249
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  "correct",
+                  {
+                    "var": "mbox.jason"
+                  }
+                ]
+              },
+              {
+                "and": [
+                  {
+                    "==": [
+                      "local-target-test",
+                      {
+                        "var": "page.domain"
+                      }
+                    ]
+                  },
+                  {
+                    "==": [
+                      "/",
+                      {
+                        "var": "page.path"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "actions",
+                "eventToken": "39UdigzDfmb97ogXP1PN65NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": [
+                  {
+                    "type": "setHtml",
+                    "selector": "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                    "cssSelector": "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                    "content": "Hello jason"
+                  }
+                ]
+              }
+            ],
+            "metrics": [
+              {
+                "type": "click",
+                "selector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                "eventToken": "Esqg0GnzqW0Y/GMvVyT7lg=="
+              }
+            ]
+          }
+        },
+        {
+          "ruleKey": "345717-2",
+          "activityId": "345717",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 345717,
+            "activityType": "landing",
+            "experienceId": 1,
+            "locationName": "target-global-mbox",
+            "locationType": "view",
+            "locationId": 2,
+            "audienceIds": [
+              5634562,
+              5652249
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  "correct",
+                  {
+                    "var": "mbox.jason"
+                  }
+                ]
+              },
+              {
+                "and": [
+                  {
+                    "==": [
+                      "local-target-test",
+                      {
+                        "var": "page.domain"
+                      }
+                    ]
+                  },
+                  {
+                    "==": [
+                      "/",
+                      {
+                        "var": "page.path"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "actions",
+                "eventToken": "39UdigzDfmb97ogXP1PN65NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": [
+                  {
+                    "type": "setHtml",
+                    "selector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(2)",
+                    "cssSelector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(2)",
+                    "content": "jason is correct"
+                  }
+                ]
+              }
+            ],
+            "metrics": [
+              {
+                "type": "click",
+                "selector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                "eventToken": "Esqg0GnzqW0Y/GMvVyT7lg=="
+              }
+            ]
+          }
+        },
+        {
+          "ruleKey": "345717-3",
+          "activityId": "345717",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 345717,
+            "activityType": "landing",
+            "experienceId": 1,
+            "locationName": "target-global-mbox",
+            "locationType": "view",
+            "locationId": 3,
+            "audienceIds": [
+              5634562,
+              5652249
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  "correct",
+                  {
+                    "var": "mbox.jason"
+                  }
+                ]
+              },
+              {
+                "and": [
+                  {
+                    "==": [
+                      "local-target-test",
+                      {
+                        "var": "page.domain"
+                      }
+                    ]
+                  },
+                  {
+                    "==": [
+                      "/",
+                      {
+                        "var": "page.path"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "eventToken": "39UdigzDfmb97ogXP1PN65NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="
+              }
+            ],
+            "metrics": [
+              {
+                "type": "click",
+                "selector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                "eventToken": "Esqg0GnzqW0Y/GMvVyT7lg=="
+              }
+            ]
+          }
+        },
+        {
+          "ruleKey": "345717-0",
+          "activityId": "345717",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 345717,
+            "activityType": "landing",
+            "experienceId": 2,
+            "locationName": "target-global-mbox",
+            "locationType": "view",
+            "locationId": 0,
+            "audienceIds": [
+              5652249
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  "local-target-test",
+                  {
+                    "var": "page.domain"
+                  }
+                ]
+              },
+              {
+                "==": [
+                  "/",
+                  {
+                    "var": "page.path"
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "eventToken": "39UdigzDfmb97ogXP1PN6wreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="
+              }
+            ],
+            "metrics": [
+              {
+                "type": "click",
+                "selector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                "eventToken": "Esqg0GnzqW0Y/GMvVyT7lg=="
+              }
+            ]
+          }
+        },
+        {
+          "ruleKey": "345717-1",
+          "activityId": "345717",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 345717,
+            "activityType": "landing",
+            "experienceId": 2,
+            "locationName": "target-global-mbox",
+            "locationType": "view",
+            "locationId": 1,
+            "audienceIds": [
+              5652249
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  "local-target-test",
+                  {
+                    "var": "page.domain"
+                  }
+                ]
+              },
+              {
+                "==": [
+                  "/",
+                  {
+                    "var": "page.path"
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "actions",
+                "eventToken": "39UdigzDfmb97ogXP1PN6wreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": [
+                  {
+                    "type": "setHtml",
+                    "selector": "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                    "cssSelector": "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
+                    "content": "Hello everyone"
+                  }
+                ]
+              }
+            ],
+            "metrics": [
+              {
+                "type": "click",
+                "selector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                "eventToken": "Esqg0GnzqW0Y/GMvVyT7lg=="
+              }
+            ]
+          }
+        },
+        {
+          "ruleKey": "345717-2",
+          "activityId": "345717",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 345717,
+            "activityType": "landing",
+            "experienceId": 2,
+            "locationName": "target-global-mbox",
+            "locationType": "view",
+            "locationId": 2,
+            "audienceIds": [
+              5652249
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  "local-target-test",
+                  {
+                    "var": "page.domain"
+                  }
+                ]
+              },
+              {
+                "==": [
+                  "/",
+                  {
+                    "var": "page.path"
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "eventToken": "39UdigzDfmb97ogXP1PN6wreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="
+              }
+            ],
+            "metrics": [
+              {
+                "type": "click",
+                "selector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                "eventToken": "Esqg0GnzqW0Y/GMvVyT7lg=="
+              }
+            ]
+          }
+        },
+        {
+          "ruleKey": "345717-3",
+          "activityId": "345717",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 345717,
+            "activityType": "landing",
+            "experienceId": 2,
+            "locationName": "target-global-mbox",
+            "locationType": "view",
+            "locationId": 3,
+            "audienceIds": [
+              5652249
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  "local-target-test",
+                  {
+                    "var": "page.domain"
+                  }
+                ]
+              },
+              {
+                "==": [
+                  "/",
+                  {
+                    "var": "page.path"
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "target-global-mbox",
+            "options": [
+              {
+                "type": "actions",
+                "eventToken": "39UdigzDfmb97ogXP1PN6wreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": [
+                  {
+                    "type": "setHtml",
+                    "selector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                    "cssSelector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                    "content": "all visitors"
+                  }
+                ]
+              }
+            ],
+            "metrics": [
+              {
+                "type": "click",
+                "selector": "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(3)",
+                "eventToken": "Esqg0GnzqW0Y/GMvVyT7lg=="
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "views": {}
+  }
+}

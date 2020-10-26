@@ -11,47 +11,46 @@
  */
 package com.adobe.target.edge.client.model;
 
-
 import java.io.Serializable;
 import java.util.Objects;
 
 public class TargetCookie implements Serializable {
-    private final String name;
-    private final String value;
-    private final int maxAge;
+  private final String name;
+  private final String value;
+  private final int maxAge;
 
-    public TargetCookie(String name, String value, int maxAge) {
-        this.name = name;
-        this.value = value;
-        this.maxAge = maxAge;
-    }
+  public TargetCookie(String name, String value, int maxAge) {
+    this.name = name;
+    this.value = value;
+    this.maxAge = maxAge;
+  }
 
-    public String getName() {
-        return name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getValue() {
-        return value;
-    }
+  public String getValue() {
+    return value;
+  }
 
-    public int getMaxAge() {
-        return maxAge;
-    }
+  public int getMaxAge() {
+    return maxAge;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        TargetCookie that = (TargetCookie) o;
-        return Objects.equals(name, that.name) && Objects.equals(value, that.value);
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    TargetCookie that = (TargetCookie) o;
+    return Objects.equals(name, that.name) && Objects.equals(value, that.value);
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, value);
-    }
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, value);
+  }
 }

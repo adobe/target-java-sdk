@@ -1,0 +1,222 @@
+{
+  "version": "1.0.0",
+  "meta": {
+    "clientCode": "adobesummit2018",
+    "environment": "test",
+    "generatedAt": "2020-06-15T20:47:48.187Z"
+  },
+  "globalMbox": "target-global-mbox",
+  "geoTargetingEnabled": false,
+  "responseTokens": [
+    "activity.id",
+    "activity.name",
+    "experience.id",
+    "geo.country",
+    "geo.city",
+    "geo.state"
+  ],
+  "remoteMboxes": [],
+  "remoteViews": [],
+  "localMboxes": [
+    "browser-mbox"
+  ],
+  "localViews": [],
+  "rules": {
+    "mboxes": {
+      "browser-mbox": [
+        {
+          "ruleKey": "334845",
+          "activityId": "334845",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 334845,
+            "activityType": "landing",
+            "experienceId": 1,
+            "locationName": "browser-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              4873452
+            ],
+            "offerIds": [
+              632439
+            ]
+          },
+          "condition": {
+            "==": [
+              {
+                "var": "user.browserType"
+              },
+              "firefox"
+            ]
+          },
+          "consequence": {
+            "name": "browser-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "B8C2FP2IuBgmeJcDfXHjGpNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<h1>it's firefox</h1>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "334845",
+          "activityId": "334845",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 334845,
+            "activityType": "landing",
+            "experienceId": 2,
+            "locationName": "browser-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              4957566
+            ],
+            "offerIds": [
+              632440
+            ]
+          },
+          "condition": {
+            "==": [
+              {
+                "var": "user.browserType"
+              },
+              "safari"
+            ]
+          },
+          "consequence": {
+            "name": "browser-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "B8C2FP2IuBgmeJcDfXHjGgreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<h1>it's safari</h1>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "334845",
+          "activityId": "334845",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 334845,
+            "activityType": "landing",
+            "experienceId": 3,
+            "locationName": "browser-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              2170460
+            ],
+            "offerIds": [
+              632438
+            ]
+          },
+          "condition": {
+            "==": [
+              {
+                "var": "user.browserType"
+              },
+              "chrome"
+            ]
+          },
+          "consequence": {
+            "name": "browser-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "B8C2FP2IuBgmeJcDfXHjGpZBXFCzaoRRABbzIA9EnZOCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<h1>it's chrome</h1>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "334845",
+          "activityId": "334845",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 334845,
+            "activityType": "landing",
+            "experienceId": 4,
+            "locationName": "browser-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              5372368
+            ],
+            "offerIds": [
+              632446
+            ]
+          },
+          "condition": {
+            "==": [
+              {
+                "var": "user.browserType"
+              },
+              "ie"
+            ]
+          },
+          "consequence": {
+            "name": "browser-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "B8C2FP2IuBgmeJcDfXHjGhB3JWElmEno9qwHyGr0QvSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<h1>it's internet explorer</h1>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "334845",
+          "activityId": "334845",
+          "propertyTokens": [
+            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
+          ],
+          "meta": {
+            "activityId": 334845,
+            "activityType": "landing",
+            "experienceId": 0,
+            "locationName": "browser-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [],
+            "offerIds": [
+              632437
+            ]
+          },
+          "condition": true,
+          "consequence": {
+            "name": "browser-mbox",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "B8C2FP2IuBgmeJcDfXHjGmqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<h1>not firefox, safari or chrome</h1>"
+              }
+            ],
+            "metrics": []
+          }
+        }
+      ]
+    },
+    "views": {}
+  }
+}

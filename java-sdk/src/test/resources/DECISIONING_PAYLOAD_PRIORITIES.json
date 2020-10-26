@@ -1,0 +1,249 @@
+{
+  "version": "1.0.0",
+  "meta": {
+    "clientCode": "adobesummit2018",
+    "environment": "test",
+    "generatedAt": "2020-06-23T23:56:53.093Z"
+  },
+  "globalMbox": "target-global-mbox",
+  "geoTargetingEnabled": false,
+  "responseTokens": [
+    "activity.id",
+    "activity.name",
+    "experience.id",
+    "geo.country",
+    "geo.city",
+    "geo.state"
+  ],
+  "remoteMboxes": [],
+  "remoteViews": [],
+  "localMboxes": [
+    "kitty"
+  ],
+  "localViews": [],
+  "rules": {
+    "mboxes": {
+      "kitty": [
+        {
+          "ruleKey": "336973",
+          "activityId": 336973,
+          "meta": {
+            "activityId": 336973,
+            "activityType": "landing",
+            "experienceId": 0,
+            "locationName": "kitty",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              4873452
+            ],
+            "offerIds": [
+              634862
+            ]
+          },
+          "condition": {
+            "==": [
+              {
+                "var": "user.browserType"
+              },
+              "firefox"
+            ]
+          },
+          "consequence": {
+            "name": "kitty",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "/DhjxnVDh9heBZ0MrYFLF2qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<div>kitty high with targeting: Firefox</div>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "336973",
+          "activityId": 336973,
+          "meta": {
+            "activityId": 336973,
+            "activityType": "landing",
+            "experienceId": 1,
+            "locationName": "kitty",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              4957566
+            ],
+            "offerIds": [
+              634861
+            ]
+          },
+          "condition": {
+            "==": [
+              {
+                "var": "user.browserType"
+              },
+              "safari"
+            ]
+          },
+          "consequence": {
+            "name": "kitty",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "/DhjxnVDh9heBZ0MrYFLF5NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<div>kitty high with targeting: Safari</div>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "336951",
+          "activityId": 336951,
+          "meta": {
+            "activityId": 336951,
+            "activityType": "ab",
+            "experienceId": 0,
+            "locationName": "kitty",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [],
+            "offerIds": [
+              634836
+            ]
+          },
+          "condition": {
+            "<": [
+              0,
+              {
+                "var": "allocation"
+              },
+              50
+            ]
+          },
+          "consequence": {
+            "name": "kitty",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "ruhwp7VESR7F74TJL2DV5WqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<div>kitty high A</div>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "336951",
+          "activityId": 336951,
+          "meta": {
+            "activityId": 336951,
+            "activityType": "ab",
+            "experienceId": 1,
+            "locationName": "kitty",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [],
+            "offerIds": [
+              634837
+            ]
+          },
+          "condition": {
+            "<": [
+              50,
+              {
+                "var": "allocation"
+              },
+              100
+            ]
+          },
+          "consequence": {
+            "name": "kitty",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "ruhwp7VESR7F74TJL2DV5ZNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<div>kitty high B</div>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "336950",
+          "activityId": 336950,
+          "meta": {
+            "activityId": 336950,
+            "activityType": "ab",
+            "experienceId": 0,
+            "locationName": "kitty",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [],
+            "offerIds": [
+              634834
+            ]
+          },
+          "condition": {
+            "<": [
+              0,
+              {
+                "var": "allocation"
+              },
+              50
+            ]
+          },
+          "consequence": {
+            "name": "kitty",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "Ww1ZcMj/ShY5tUV/rUzSjGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<div>kitty low A</div>"
+              }
+            ],
+            "metrics": []
+          }
+        },
+        {
+          "ruleKey": "336950",
+          "activityId": 336950,
+          "meta": {
+            "activityId": 336950,
+            "activityType": "ab",
+            "experienceId": 1,
+            "locationName": "kitty",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [],
+            "offerIds": [
+              634835
+            ]
+          },
+          "condition": {
+            "<": [
+              50,
+              {
+                "var": "allocation"
+              },
+              100
+            ]
+          },
+          "consequence": {
+            "name": "kitty",
+            "options": [
+              {
+                "type": "html",
+                "eventToken": "Ww1ZcMj/ShY5tUV/rUzSjJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": "<div>kitty low B</div>"
+              }
+            ],
+            "metrics": []
+          }
+        }
+      ]
+    },
+    "views": {}
+  }
+}

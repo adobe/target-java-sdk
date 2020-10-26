@@ -13,36 +13,35 @@ package com.adobe.target.edge.client.http;
 
 public class DefaultTargetMetricContext implements TargetMetricContext {
 
-    private final String url;
-    private final String message;
-    private final int status;
-    private final int executionTime;
+  private final String url;
+  private final String message;
+  private final int status;
+  private final int executionTime;
 
-    public DefaultTargetMetricContext(String url, int status, String message, int executionTime) {
-        this.url = url;
-        this.status = status;
-        this.message = message;
-        this.executionTime = executionTime;
-    }
+  public DefaultTargetMetricContext(String url, int status, String message, int executionTime) {
+    this.url = url;
+    this.status = status;
+    this.message = message;
+    this.executionTime = executionTime;
+  }
 
-    @Override
-    public String getUrl() {
-        return url;
-    }
+  @Override
+  public String getUrl() {
+    return url;
+  }
 
-    @Override
-    public int getStatus() {
-        return status;
-    }
+  @Override
+  public int getStatus() {
+    return status;
+  }
 
-    @Override
-    public String getStatusMessage() {
-        return message;
-    }
+  @Override
+  public String getStatusMessage() {
+    return message;
+  }
 
-    @Override
-    public int getExecutionTime() {
-        return executionTime;
-    }
-
+  @Override
+  public int getExecutionTime() {
+    return executionTime;
+  }
 }

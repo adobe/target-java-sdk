@@ -13,43 +13,38 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-/**
- * Notification type. Currently only click and display are supported.
- */
+/** Notification type. Currently only click and display are supported. */
 public enum MetricType {
+  CLICK("click"),
 
-    CLICK("click"),
+  DISPLAY("display");
 
-    DISPLAY("display");
+  private String value;
 
-    private String value;
+  MetricType(String value) {
+    this.value = value;
+  }
 
-    MetricType(String value) {
-        this.value = value;
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
+
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
+
+  @JsonCreator
+  public static MetricType fromValue(String text) {
+    for (MetricType b : MetricType.values()) {
+      if (String.valueOf(b.value).equals(text)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static MetricType fromValue(String text) {
-        for (MetricType b : MetricType.values()) {
-            if (String.valueOf(b.value).equals(text)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + text + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + text + "'");
+  }
 }
-

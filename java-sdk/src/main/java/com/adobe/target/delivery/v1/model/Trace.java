@@ -13,111 +13,103 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 /**
- * Enables the trace for delivery API. At present it is not be possible to set the metrics and packages for the trace.
+ * Enables the trace for delivery API. At present it is not be possible to set the metrics and
+ * packages for the trace.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Trace {
-    @JsonProperty("authorizationToken")
-    private String authorizationToken;
+  @JsonProperty("authorizationToken")
+  private String authorizationToken;
 
-    @JsonProperty("usage")
-    private Map<String, String> usage = new HashMap<>();
+  @JsonProperty("usage")
+  private Map<String, String> usage = new HashMap<>();
 
-    public Trace authorizationToken(String authorizationToken) {
-        this.authorizationToken = authorizationToken;
-        return this;
+  public Trace authorizationToken(String authorizationToken) {
+    this.authorizationToken = authorizationToken;
+    return this;
+  }
+
+  /**
+   * Get authorizationToken
+   *
+   * @return authorizationToken
+   */
+  public String getAuthorizationToken() {
+    return authorizationToken;
+  }
+
+  public void setAuthorizationToken(String authorizationToken) {
+    this.authorizationToken = authorizationToken;
+  }
+
+  public Trace usage(Map<String, String> usage) {
+    this.usage = usage;
+    return this;
+  }
+
+  public Trace putUsageItem(String key, String usageItem) {
+    if (this.usage == null) {
+      this.usage = new HashMap<>();
     }
+    this.usage.put(key, usageItem);
+    return this;
+  }
 
-    /**
-     * Get authorizationToken
-     *
-     * @return authorizationToken
-     **/
+  /**
+   * A String dictionary of client SDK usage tracking and internal diagnostics metadata.
+   *
+   * @return usage
+   */
+  public Map<String, String> getUsage() {
+    return usage;
+  }
 
-    public String getAuthorizationToken() {
-        return authorizationToken;
+  public void setUsage(Map<String, String> usage) {
+    this.usage = usage;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
-
-    public void setAuthorizationToken(String authorizationToken) {
-        this.authorizationToken = authorizationToken;
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
+    Trace trace = (Trace) o;
+    return Objects.equals(this.authorizationToken, trace.authorizationToken)
+        && Objects.equals(this.usage, trace.usage);
+  }
 
-    public Trace usage(Map<String, String> usage) {
-        this.usage = usage;
-        return this;
+  @Override
+  public int hashCode() {
+    return Objects.hash(authorizationToken, usage);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("class Trace {\n");
+    sb.append("    authorizationToken: ").append(toIndentedString(authorizationToken)).append("\n");
+    sb.append("    usage: ").append(toIndentedString(usage)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
     }
-
-    public Trace putUsageItem(String key, String usageItem) {
-        if (this.usage == null) {
-            this.usage = new HashMap<>();
-        }
-        this.usage.put(key, usageItem);
-        return this;
-    }
-
-    /**
-     * A String dictionary of client SDK usage tracking and internal diagnostics metadata.
-     *
-     * @return usage
-     **/
-
-    public Map<String, String> getUsage() {
-        return usage;
-    }
-
-    public void setUsage(Map<String, String> usage) {
-        this.usage = usage;
-    }
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Trace trace = (Trace) o;
-        return Objects.equals(this.authorizationToken, trace.authorizationToken) &&
-                Objects.equals(this.usage, trace.usage);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(authorizationToken, usage);
-    }
-
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("class Trace {\n");
-        sb.append("    authorizationToken: ").append(toIndentedString(authorizationToken)).append("\n");
-        sb.append("    usage: ").append(toIndentedString(usage)).append("\n");
-        sb.append("}");
-        return sb.toString();
-    }
-
-    /**
-     * Convert the given object to string with each line indented by 4 spaces
-     * (except the first line).
-     */
-    private String toIndentedString(Object o) {
-        if (o == null) {
-            return "null";
-        }
-        return o.toString().replace("\n", "\n    ");
-    }
-
+    return o.toString().replace("\n", "\n    ");
+  }
 }
-

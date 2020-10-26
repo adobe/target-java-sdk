@@ -11,21 +11,21 @@
  */
 package com.adobe.target.edge.client.http;
 
-import kong.unirest.HttpResponse;
-
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import kong.unirest.HttpResponse;
 
 public interface TargetHttpClient extends AutoCloseable {
 
-    <T, R> HttpResponse<R> execute(Map<String, Object> queryParams, String url, T request, Class<R> response);
+  <T, R> HttpResponse<R> execute(
+      Map<String, Object> queryParams, String url, T request, Class<R> response);
 
-    <T, R> CompletableFuture<HttpResponse<R>> executeAsync(Map<String, Object> queryParams, String url,
-                                                           T request, Class<R> response);
-    void addDefaultHeader(String key, String value);
+  <T, R> CompletableFuture<HttpResponse<R>> executeAsync(
+      Map<String, Object> queryParams, String url, T request, Class<R> response);
 
-    static TargetHttpClient createLoggingHttpClient(TargetHttpClient targetHttpClient) {
-        return new TargetHttpClientLoggingDecorator(targetHttpClient);
-    }
+  void addDefaultHeader(String key, String value);
 
+  static TargetHttpClient createLoggingHttpClient(TargetHttpClient targetHttpClient) {
+    return new TargetHttpClientLoggingDecorator(targetHttpClient);
+  }
 }

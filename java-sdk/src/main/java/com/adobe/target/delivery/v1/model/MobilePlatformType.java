@@ -13,43 +13,38 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-/**
- * Only activities with the specified mobile platform type will be evaluated.
- */
+/** Only activities with the specified mobile platform type will be evaluated. */
 public enum MobilePlatformType {
+  ANDROID("android"),
 
-    ANDROID("android"),
+  IOS("ios");
 
-    IOS("ios");
+  private String value;
 
-    private String value;
+  MobilePlatformType(String value) {
+    this.value = value;
+  }
 
-    MobilePlatformType(String value) {
-        this.value = value;
+  @JsonValue
+  public String getValue() {
+    return value;
+  }
+
+  @Override
+  public String toString() {
+    return String.valueOf(value);
+  }
+
+  @JsonCreator
+  public static MobilePlatformType fromValue(String text) {
+    for (MobilePlatformType b : MobilePlatformType.values()) {
+      if (String.valueOf(b.value).equals(text)) {
+        return b;
+      }
     }
-
-    @JsonValue
-    public String getValue() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
-    }
-
-    @JsonCreator
-    public static MobilePlatformType fromValue(String text) {
-        for (MobilePlatformType b : MobilePlatformType.values()) {
-            if (String.valueOf(b.value).equals(text)) {
-                return b;
-            }
-        }
-        throw new IllegalArgumentException("Unexpected value '" + text + "'");
-    }
+    throw new IllegalArgumentException("Unexpected value '" + text + "'");
+  }
 }
-

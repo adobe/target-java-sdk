@@ -11,31 +11,31 @@
  */
 package com.adobe.target.edge.client.http;
 
+import java.util.function.Consumer;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.function.Consumer;
-
 public class LoggingMetricConsumer implements Consumer<TargetMetricContext> {
-    private static final Logger logger = LoggerFactory.getLogger(TargetMetrics.class);
+  private static final Logger logger = LoggerFactory.getLogger(TargetMetrics.class);
 
-    @Override
-    public void accept(TargetMetricContext targetMetricContext) {
+  @Override
+  public void accept(TargetMetricContext targetMetricContext) {
 
-        if (targetMetricContext.getStatus() == HttpStatus.SC_OK) {
-            logger.debug("Target Request Status: {} Time: {}ms Url: {} ",
-                    targetMetricContext.getUrl(),
-                    targetMetricContext.getStatus(),
-                    targetMetricContext.getExecutionTime());
-            return;
-        }
-
-        logger.error("Target Request Status: Status: {} Message: {} Time: {}ms Url: {} ",
-                targetMetricContext.getUrl(),
-                targetMetricContext.getStatus(),
-                targetMetricContext.getStatusMessage(),
-                targetMetricContext.getExecutionTime());
-
+    if (targetMetricContext.getStatus() == HttpStatus.SC_OK) {
+      logger.debug(
+          "Target Request Status: {} Time: {}ms Url: {} ",
+          targetMetricContext.getUrl(),
+          targetMetricContext.getStatus(),
+          targetMetricContext.getExecutionTime());
+      return;
     }
+
+    logger.error(
+        "Target Request Status: Status: {} Message: {} Time: {}ms Url: {} ",
+        targetMetricContext.getUrl(),
+        targetMetricContext.getStatus(),
+        targetMetricContext.getStatusMessage(),
+        targetMetricContext.getExecutionTime());
+  }
 }

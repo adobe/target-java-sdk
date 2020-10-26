@@ -13,12 +13,23 @@ package com.adobe.target.edge.client.utils;
 
 public class StringUtils {
 
-    public static boolean isEmpty(CharSequence cs) {
-        return cs == null || cs.length() == 0;
-    }
+  public static boolean isEmpty(CharSequence cs) {
+    return cs == null || cs.length() == 0;
+  }
 
-    public static boolean isNotEmpty(CharSequence cs) {
-        return !isEmpty(cs);
-    }
+  public static boolean isNotEmpty(CharSequence cs) {
+    return !isEmpty(cs);
+  }
 
+  public static String firstNonBlank(String... values) {
+    if (values.length == 0) {
+      return null;
+    }
+    for (String value : values) {
+      if (isNotEmpty(value)) {
+        return value;
+      }
+    }
+    return null;
+  }
 }

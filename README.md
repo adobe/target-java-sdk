@@ -88,11 +88,15 @@ end client including browsers, mobiles, IOT devices or servers.
   * [ECID and Analytics Integration](#ecid-and-analytics-integration)
   * [at.js integration via serverState](#atjs-integration-via-serverstate)
   * [Custom rendering of Target offers](#custom-rendering-of-target-offers)
+  * [JSON offers simplified](#json-offers-simplified)
+  * [Enterprise Permissions and Property Support](#enterprise-permissions-and-property-support)
+  * [On-device decisioning method](#on-device-decisioning-method)
   * [Troubleshooting](#troubleshooting)
   * [Target Traces](#target-traces)
   * [Target Java SDK API](#target-java-sdk-api)
       - [TargetClient.create](#targetclientcreate)
       - [TargetClient.getOffers](#targetclientgetoffers)
+      - [TargetClient.getAttributes](#targetclientgetattributes)
       - [TargetClient.sendNotifications](#targetclientsendnotifications)
       - [Target SDK utility accessors](#targetsdk-utility-accessors)
   * [Multiple API requests](#multiple-api-requests)
@@ -788,6 +792,233 @@ counterpart `sendNotificationsAsync`.
 
 ---
 
+## JSON offers simplified
+
+The Target Java SDK provides a simplified way to to retrieve JSON offers from target and access the attributes of the offer. This is done using the `getAttributes` method.
+
+In the code sample below, take a look at the `getAttributes` call.  A `TargetDeliveryRequest` and a var-args array of mbox names is passed in. The result is an `Attributes` object with a few methods that can be used to get offer details. 
+
+Let's say that the JSON content for an offer for mbox `demo-engineering-flags` is the following:
+
+```json
+{
+    "cdnHostname": "cdn.cloud.corp.net",
+    "searchProviderId": 143,
+    "hasLegacyAccess": false
+}
+```
+
+There are various methods that can be used to get the values from the `demo-engineering-flags` mbox offer, depending on their type such as `getString(mbox)` and `getBoolean(mbox)`.
+
+And the `toMboxMap(mbox)` method can be used to get a Map representation of the mbox offer.
+
+```java
+
+Attributes attrs = targetJavaClient.getAttributes(targetRequest, "demo-engineering-flags");
+
+String searchProviderId = attrs.getString("demo-engineering-flags", "searchProviderId");
+boolean hasLegacyAccess = attrs.getBoolean("demo-engineering-flags", hasLegacyAccess");
+
+Map<String, Object> mboxMap = attrs.toMboxMap("demo-engineering-flags");
+String cdnHostname = (String) mboxMap.get("cdnHostname");
+
+```
+
+Note that you don't have to add the attribute mboxes into the `TargetDeliveryRequest` that is passed into `getAttributes`. If you don't add them yourself, they will be added for you. However, if you would like to add custom parameters or customize the mbox request in any way, you can do that in the `TargetDeliveryRequest` parameter. 
+
+#### Example
+
+See the `localGetAttributes` method in `TargetController` in the [Adobe Target Java SDK Samples](https://github.com/adobe/target-java-sdk-samples) for a working example.
+
+---
+
+## Enterprise Permissions and Property Support
+
+The Target Java SDK includes support for Target Properties.  If you are unfamiliar with how Adobe Target handles enterprise permissions via workspaces and properties, you can [read more about it here](https://docs.adobe.com/content/help/en/target/using/administer/manage-users/enterprise/properties-overview.html).
+
+The client can make use of a property token in one of two ways.
+
+### Global Property Token
+
+If you want all getOffers calls to use the same propertyToken, you can specify a `defaultPropertyToken` in the ClientConfig object passed in during initialization.  When configured in this way all getOffers calls will automatically include the property token.
+
+```java
+ClientConfig clientConfig = ClientConfig.builder()
+	.client("emeaprod4")
+	.organizationId("0DD934B85278256B0A490D44@AdobeOrg")
+	.defaultPropertyToken("8c4630b1-16db-e2fc-3391-8b3d81436cfb")
+	.build();
+
+TargetClient targetClient = TargetClient.create(clientConfig);
+```
+
+### Incidental Property Token in getOffers call
+
+A property token can also be specified in an individual getOffers call.  This is done by [adding a property object with token to the request](https://developers.adobetarget.com/api/delivery-api/#section/User-Permissions-(Premium)).  A property token specified in this way takes precedent over one set in the config.  
+
+```java
+ExecuteRequest executeRequest = new ExecuteRequest()
+    .mboxes(getMboxRequests(mbox));
+
+TargetDeliveryRequest targetDeliveryRequest = TargetDeliveryRequest.builder()
+    .context(getContext(request))
+    .execute(executeRequest)
+    .cookies(getTargetCookies(request.getCookies()))
+    .property(new Property().token("8c4630b1-16db-e2fc-3391-8b3d81436cfb"))
+    .build();
+
+TargetDeliveryResponse targetResponse = targetClient.getOffers(targetDeliveryRequest);
+```
+
+---
+
+## On-device decisioning mode
+
+The Target Java SDK can be configured to run in on-device decisioning mode. In this mode, the SDK loads a rules definition file on startup and uses it to determine the outcomes for subsequent `getOffers` calls instead of making repeat requests to the delivery API each time. This can greatly improve performance if you are concerned about network latency and would like to limit the number of requests made to target edge servers.
+
+By default, the SDK is configured to always make a request to the target delivery API for each `getOffers` call. But you can configure the SDK to use on-device decisioning method instead.
+ 
+First, you need to configure the SDK properly in order to enable on-device decisioning. This is done by setting the defaultDecisioningMethod to either `DecisioningMethod.ON_DEVICE` or `DecisioningMethod.HYBRID` in the `ClientConfig` object that is used to initialize the targetClient.
+
+```java
+ClientConfig clientConfig = ClientConfig.builder()
+    .client("emeaprod4")
+    .organizationId("0DD934B85278256B0A490D44@AdobeOrg")
+    .defaultDecisioningMethod(DecisioningMethod.HYBRID)
+    .build();
+
+TargetClient targetClient = TargetClient.create(clientConfig);
+```
+
+This will set the `decisioningMethod` in each getOffers request to whatever you specify as the `defaultDecisioningMethod` by default. 
+
+However, you can override the decisioning method in any `getOffers` call by explicitly setting `decisioningMethod` in the `TargetDeliveryRequest`.
+
+```java
+ExecuteRequest executeRequest = new ExecuteRequest()
+    .mboxes(getMboxRequests("local-mbox"));
+
+TargetDeliveryRequest targetRequest = TargetDeliveryRequest.builder()
+    .context(getContext(request))    
+    .cookies(getTargetCookies(cookies))
+    .execute(executeRequest)
+    .decisioningMethod(DecisioningMethod.ON_DEVICE)
+    .build();
+
+TargetDeliveryResponse response = targetClient.getOffers(targetRequest);
+```
+
+With decisioningMethod set to DecisioningMethod.ON_DEVICE, your app will determine what offers the user qualifies for on-device decisioning without hitting the target edge servers.
+
+Note that it will take some time (usually less than 1 second) between when the targetClient is initialized until it will be able to execute requests on device. You can set a `onDeviceDecisioningHandler` object in the `ClientConfig` and its `onDeviceDecisioningReady` method will be called when the client is ready to handle on-device decisioning. Please see the documentation for the `OnDeviceDecisioningHandler` below for more details.
+
+### Limitations
+
+Not all target activities can be decided on-device at this time.  
+
+#### Audience Rules
+
+Some activities are not supported due to audience rules. Below is a list of audience rules with an indication for they are supported by on-device decisioning or will require a request to target edge servers to fulfill:
+
+| Audience Rule    | On-device decisioning | Server side decisioning |
+|------------------|-----------------------|------------------------|
+| Geo              | Supported             | Supported              |
+| Network          | Not Supported         | Supported              |
+| Mobile           | Not Supported         | Supported              |
+| Custom           | Supported             | Supported              |
+| Operating System | Supported             | Supported              |
+| Site Pages       | Supported             | Supported              |
+| Browser          | Supported             | Supported              |
+| Visitor Profile  | Not Supported         | Supported              |
+| Traffic Sources  | Not Supported         | Supported              |
+| Time Frame       | Supported             | Supported              |
+
+#### Response Types
+
+Most, but not all response types are supported by on-device decisioning:
+
+| Response Type    | On-device decisioning | Server side decisioning |
+|------------------|-----------------------|------------------------|
+| Default Content  | Supported             | Supported              |
+| HTML             | Supported             | Supported              |
+| JSON             | Supported             | Supported              |
+| Recommendation   | Not Supported         | Supported              |
+| Redirect         | Supported             | Supported              |
+| Remote           | Not Supported         | Supported              |
+| Visual/VEC       | Supported             | Supported              |
+
+#### Other Limitations
+
+Only A/B activities with Manual Traffic Allocation are supported in on-device decisioning. Auto-allocate and Auto-target are not supported currently.
+
+XT activities are supported in on-device decisioning.
+
+Automated Personalization, Multi-variate and Recommendations activities are not currently supported in on-device decisioning.
+
+### Hybrid Mode
+
+Although all activities are not yet supported by on-device decisioning method, there is a way to get the best of both worlds. If you set `decisioningMethod` to `DecisioningMethod.HYBRID`, then the SDK will determine on its own whether to make decisions on-device or on server side. This way, if a `getOffers` request can be completed on device, the SDK will do so. But if the request includes activities that are not supported, a request to the target delivery API will be made instead. This may be useful as you begin to adopt on-device decisioning.
+
+### Geo support in on-device decisioning
+
+In order to maintain zero latency in on-device decisioning requests with geo-based audiences, we recommend that you provide the geo values yourself in each `TargetDeliveryRequest`. You can do this by setting the `Geo` object in the `Context` of the request.
+
+This means your server will need a way to determine the location of each end user, for instance by doing an IP-to-Geo lookup using a service you will need to set up yourself. Also, some hosting providers such as Google Cloud provide this functionality via custom headers in each `HttpServletRequest`.
+
+```java
+public class TargetRequestUtils {
+
+    public static Context getContext(HttpServletRequest request) {
+        Context context = new Context()
+            .geo(ipToGeoLookup(request.getRemoteAddr()))
+            .channel(ChannelType.WEB)
+            .timeOffsetInMinutes(330.0)
+            .address(getAddress(request));
+        return context;
+    }
+    
+    public static Geo ipToGeoLookup(String ip) {
+        GeoResult geoResult = geoLookupService.lookup(ip);
+        return new Geo()
+            .city(geoResult.getCity())
+            .stateCode(geoResult.getStateCode())
+            .countryCode(geoResult.getCountryCode());
+    }
+
+}
+```
+
+However, if you don't have the ability to perform IP-to-Geo lookups in your server and you still want to be able to perform on-device decisioning of `getOffers` requests that contain geo-based audiences, this is also supported.
+
+The downside of this approach is that it will use a remote IP-to-Geo lookup that will add latency to each `getOffers` call. This latency should be lower than a remote `getOffers` call since it hits a CDN that should be closer to the end user than the target server.
+
+You can signal to the targetClient that you want to perform an IP-to-Geo lookup in your on-device decisioning request by setting *only* the `ipAddress` object in the `Geo` object in the `Context` of your request. 
+
+```java
+public class TargetRequestUtils {
+
+    public static Context getContext(HttpServletRequest request) {
+        Context context = new Context()
+            .geo(new Geo().ipAddress(request.getRemoteAddr()))
+            .channel(ChannelType.WEB)
+            .timeOffsetInMinutes(330.0)
+            .address(getAddress(request));
+        return context;
+    }
+
+}
+```
+
+Note that if you specify the IP address in the `Geo` object in the `Context` and you don't currently have any on-device decisioning activities that use geo-based audiences then the IP-to-Geo lookup will be skipped as a latency optimization.
+
+---
+
+### Example
+
+See the `onDeviceDecisioning` method in `TargetController` in the [Adobe Target Java SDK Samples](https://github.com/adobe/target-java-sdk-samples) for a working example.
+
+---
+
 ## Troubleshooting
 
 In order to understand what is happening on the wire, you have 3 options when instantiating the Java SDK.  
@@ -864,6 +1095,21 @@ The `ClientConfigBuilder` object has the following structure:
 | serverDomain         |  String  | No      | `client`.tt.omtrdc.net | Overrides default hostname                          |
 | secure               |  Boolean | No      | true                   | Unset to enforce HTTP scheme                        |
 | requestInterceptor   |  HttpRequestInterceptor  | No      | Null   | Add custom request Interceptor                      |
+| defaultPropertyToken | String   | No      | None                   | Sets the default property token for every getOffers call |
+| defaultDecisioningMethod | DecisioningMethod enum | No | REMOTE            | Must be set to ON_DEVICE or HYBRID to enable on-device decisioning |
+| onDeviceEnvironment     | String   | No      | production             | Can be used to specify a different on-device environment such as staging |
+| onDeviceConfigHostname  | String   | No      | assets.adobetarget.com | Can be used to specify a different host to use to download the on-device decisioning artifact file |
+| onDeviceDecisioningPollingIntSecs | int | No | 300 (5 min)            | Number of seconds between fetches of the on-device decisioning artifact file |
+| onDeviceArtifactPayload | byte[]   | No      | None                   | Provides on-device decisioning with previous artifact payload to allow immediate execution |
+| onDeviceDecisioningHandler | OnDeviceDecisioningHandler | No | None          | Registers callbacks for on-device decisioning events      |
+
+The `OnDeviceDecisioningHandler` object contains the following callbacks which are called for certain events:
+
+| Name                 | Arguments | Description                                         |
+|----------------------|-----------|-----------------------------------------------------|
+| onDeviceDecisioningReady  |  None     | Called only once the first time the client is ready for on-device decisioning |
+| artifactDownloadSucceeded | byte[] contents of artifact file | Called every time a on-device decisioning artifact is downloaded |
+| artifactDownloadFailed | Exception | Called every time there is a failure to download a on-device decisioning artifact |
 
 #### TargetClient.getOffers
 
@@ -897,6 +1143,7 @@ The `TargetDeliveryRequestBuilder` object has the following structure:
 | mcId                     | String | No | Used to merge and share data between different Adobe solutions(ECID). Fetched from targetCookies. Auto-generated if not provided. |
 | trackingServer           | String | No | The Adobe Analaytics Server in order for Adobe Target and Adobe Analytics to correctly stitch the data together.
 | trackingServerSecure     | String | No | The Adobe Analaytics Secure Server in order for Adobe Target and Adobe Analytics to correctly stitch the data together.
+| decisioningMethod        | DecisioningMethod | No | Can be used to explicitly set ON_DEVICE or HYBRID decisioning method for on-device decisioning |
 
 The values of each field should conform to [Target View Delivery API] request specification. 
 To learn more about the [Target View Delivery API], see http://developers.adobetarget.com/api/#view-delivery-overview
@@ -909,18 +1156,44 @@ The `TargetDeliveryResponse` returned by `TargetClient.getOffers()` has the foll
 | response                 | DeliveryResponse            | [Target View Delivery API] response                         |
 | cookies                  | List<TargetCookies>         | List of session metadata for this user. Need to be passed in next target request for this user.  |
 | visitorState             | Map<String, VisitorState>   | Visitor state to be set on client side to be used by Visitor API|
-| status                   | inr                         | HTTP status returned from Target          |
+| responseStatus           | ResponseStatus              | An object representing the status of the resposne |
+
+The `ResponseStatus` in the response contains the following fields:
+
+| Name                     | Type              | Description                                                 |
+|--------------------------|-------------------|-------------------------------------------------------------|
+| status                   | int                         | HTTP status returned from Target          |
 | message                  | String                      | Status message in case HTTP status is not 200    |
+| remoteMboxes             | List of Strings             | Used for on-device decisioning. Contains a list of mboxes that have remote activities that cannot be decided entirely on-device. |
+| remoteViews              | List of Strings             | Used for on-device decisioning. Contains a list of views that have remote activities that cannot be decided entirely on-device. |
 
 The `TargetCookie` object used for saving data for user session has the following structure:
 
 | Name   | Type   | Description                                                                                               |
 |--------|--------|-----------------------------------------------------------------------------------------------------------|
 | name   | String | Cookie name                                                                                               |
-| value  | String    | Cookie value, the value will be converted to string                                                       |
+| value  | String | Cookie value, the value will be converted to string                                                       |
 | maxAge | Number | The `maxAge` option is a convenience for setting `expires` relative to the current time in seconds        |
 
 You don't have to worry about expiring the cookies. Target handles maxAge inside the Sdk.
+
+#### TargetClient.getAttributes
+
+`Attributes TargetClient.getAttributes(TargetDeliveryRequest request, String ...mboxes)` is used to fetch JSON offers for the given mboes from Target. It 
+also has an async counterpart `getAttributesAsync`.
+`TargetDeliveryRequest` is created using `TargetDeliveryRequestBuilder TargetDeliveryRequest.builder()`. See `getOffers` documentation above for details.
+
+The `Attributes` object returned by `TargetClient.getAttributes()` has the following methods:
+
+| Name                     | Type                   | Description                                                 |
+|--------------------------|------------------------|-------------------------------------------------------------|
+| toMboxMap(mbox)          | Map<String, Object>    | Map representation of JSON offer for given mbox. |
+| toMap()                  | Map<String, Map<String, Object>>   | Map representation of all JSON offers for all mboxes, keyed by mbox. |
+| getString(mbox, key)     | String                 | String representation of value for given key in JSON offer. |
+| getBoolean(mbox, key)    | boolean                | Boolean representation of value for given key in JSON offer. Returns false if not present. |
+| getInteger(mbox, key)    | int                    | Integer representation of value for given key in JSON offer. Returns 0 if not present. |
+| getDouble(mbox, key)     | double                 | Double representation of value for given key in JSON offer. Returns 0 if not present. |
+| getResponse()            | TargetDeliveryResponse | See `TargetDeliveryResponse` above in `getOffers()` documentation. |
 
 #### TargetClient.sendNotifications
 
