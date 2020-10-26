@@ -34,18 +34,13 @@ or `maven` as:
 
 Please take a look at our [documentation](https://adobetarget-sdks.gitbook.io/docs/sdk-reference-guides/java-sdk) to learn how to use the Java SDK.
 
+## Samples
+
+The Adobe Target Java SDK Samples can be found [here](https://github.com/adobe/target-java-sdk-samples).
+
 ## Development
 
 Check out our [Contribution guidelines](.github/CONTRIBUTING.md) as well as [Code of Conduct](CODE_OF_CONDUCT.md) prior
 to contributing to Target Java SDK development.  
 1. To build the project: `./gradlew build`  
-2. To install `java-sdk` locally: `./gradle install`  
-3. To run samples: Run `ClientSampleApplication` and it'll start the application on port 8080.
-
----
-
-[back to top](#table-of-contents)
-
-[Target View Delivery API]: https://developers.adobetarget.com/api/delivery-api/
-[created the client]: #creating-client
-[utility methods]: #utility-methods
+2. To install `java-sdk` locally: `./gradle install`

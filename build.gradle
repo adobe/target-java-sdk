@@ -1,44 +1,163 @@
+import com.diffplug.gradle.spotless.JavaExtension
+
 plugins {
-	id "com.diffplug.spotless" version "5.6.1"
+    id "idea"
+    id "jacoco"
+    id "maven-publish"
+    id "signing"
+    id "com.diffplug.spotless" version "5.6.1"
 }
+
+apply plugin: "java"
+apply plugin: "java-library"
+
+ext."signing.keyId" = System.getenv('GPG_KEY_ID')
+ext."signing.password" = System.getenv('GPG_PASSPHRASE')
+ext."signing.secretKeyRingFile" = System.getenv('GPG_KEY_RING')
 
 build.dependsOn spotlessApply
 
-defaultTasks 'spotlessApply', 'build'
+defaultTasks "spotlessApply", "build"
 
-dependencies {
-}
-allprojects {
-    apply plugin: 'idea'
-
-    ext."signing.keyId" = System.getenv('GPG_KEY_ID')
-    ext."signing.password" = System.getenv('GPG_PASSPHRASE')
-    ext."signing.secretKeyRingFile" = System.getenv('GPG_KEY_RING')
+repositories {
+    mavenLocal()
+    mavenCentral()
 }
 
-subprojects {
-    apply plugin: 'java'
-    apply plugin: 'java-library'
-    sourceCompatibility = 1.8
-    repositories {
-        mavenLocal()
-        mavenCentral()
+javadoc {
+    source = sourceSets.main.allJava
+    classpath = configurations.compile
+    exclude "com/fasterxml/jackson/**"
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier = "sources"
+    from sourceSets.main.allJava
+}
+
+task javadocJar(type: Jar) {
+    archiveClassifier = "javadoc"
+    from javadoc.destinationDir
+    dependsOn javadoc
+}
+
+compileJava {
+    options.encoding = "UTF-8"
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
+}
+
+compileTestJava {
+    options.encoding = "UTF-8"
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
+}
+
+spotless {
+    java {
+        target "src/*/java/**/*.java"
+        googleJavaFormat()
+        removeUnusedImports() // removes any unused imports
+        licenseHeaderFile "config/formatter/adobe.header.txt"
+        endWithNewline()
     }
 }
 
 spotless {
-	java {
-		target 'java-sdk/src/*/java/**/*.java'
-		googleJavaFormat()
-		removeUnusedImports() // removes any unused imports
-		licenseHeaderFile 'config/formatter/adobe.header.txt'
-		endWithNewline()
-	}
+    format "javaGeneratedFiles", JavaExtension, {
+        target "src/**/delivery/**/*.java"
+        licenseHeaderFile "config/formatter/adobe.header.generated.txt"
+    }
 }
 
-spotless {
-	format 'javaGeneratedFiles', com.diffplug.gradle.spotless.JavaExtension, {
-		target 'java-sdk/src/**/delivery/**/*.java'
-		licenseHeaderFile 'config/formatter/adobe.header.generated.txt'
-	}
+
+publishing {
+    repositories {
+        maven {
+            name = "mvnCentral"
+            url = mavenCentralUrl
+            credentials {
+                username = System.getenv("SONATYPE_USER")
+                password = System.getenv("SONATYPE_PASS")
+            }
+        }
+    }
+    publications {
+        external(MavenPublication) {
+            artifactId = rootProject.name
+            from components.java
+
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom {
+                name = rootProject.name
+                description = pomDescription
+                url = pomURL
+                scm {
+                    url = pomScmURL
+                }
+                developers {
+                    developer {
+                        id = pomDevId
+                        name = pomDevName
+                        organization = pomDevName
+                        organizationUrl = pomDevOrgURL
+                    }
+                }
+                licenses {
+                    license {
+                        name = pomLicenseName
+                        url = pomLicenseUrl
+                    }
+                }
+            }
+        }
+    }
+}
+
+signing {
+    required {
+        tasks.withType(PublishToMavenRepository).find {
+            gradle.taskGraph.hasTask it
+        }
+    }
+    sign publishing.publications
+}
+
+dependencies {
+    api "com.adobe.experiencecloud.ecid:ecid-service:1.0.0"
+    implementation "org.slf4j:slf4j-api:1.7.30"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:2.11.3"
+    implementation "com.fasterxml.jackson.core:jackson-core:2.11.3"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.11.3"
+    implementation "com.konghq:unirest-java:3.11.02"
+    implementation "io.github.jamsesso:json-logic-java:1.0.5"
+
+    testImplementation "org.slf4j:slf4j-simple:1.7.30"
+    testImplementation "org.junit.jupiter:junit-jupiter-engine:5.5.2"
+    testImplementation "org.mockito:mockito-junit-jupiter:3.0.0"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+// JACOCO CONFIGURATION | HTML output is omitted in favour of just the XML output that Jenkins can parse
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+}
+
+// JACOCO COVERAGE THRESHOLD | Builds will fail if the computed code coverage is less than the configured percentage
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.43
+            }
+        }
+    }
 }
