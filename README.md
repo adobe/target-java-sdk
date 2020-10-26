@@ -34,6 +34,7 @@ or `maven` as:
 
 Please take a look at our [documentation](https://adobetarget-sdks.gitbook.io/docs/sdk-reference-guides/java-sdk) to learn how to use the Java SDK.
 
+
 ## Development
 
 Check out our [Contribution guidelines](.github/CONTRIBUTING.md) as well as [Code of Conduct](CODE_OF_CONDUCT.md) prior
