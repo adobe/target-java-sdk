@@ -10,7 +10,7 @@ All notable changes to this project will be documented in this file.
   - artifactLocation
   - artifactPayload
   - events
--New method getAttributes() to fetch experimentation and personalized experiences from Target and extract attribute values.
+- New method getAttributes() to fetch experimentation and personalized experiences from Target and extract attribute values.
  
 ## [1.1.0] - 2019-12-16
 ### Added
