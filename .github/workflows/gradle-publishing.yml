@@ -52,7 +52,7 @@ jobs:
           git config user.name "${X_GITHUB_USERNAME}"
 
       - name: Publish to the Maven Central Repository
-        run: gradle publish
+        run: gradle --info publish
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           ADOBE_BOT_GITHUB_USERNAME: ${{ secrets.ADOBE_BOT_GITHUB_USERNAME  }}
