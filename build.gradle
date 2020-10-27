@@ -11,10 +11,6 @@ plugins {
 apply plugin: "java"
 apply plugin: "java-library"
 
-ext."signing.keyId" = System.getenv('GPG_KEY_ID')
-ext."signing.password" = System.getenv('GPG_PASSPHRASE')
-ext."signing.secretKeyRingFile" = System.getenv('GPG_KEY_RING')
-
 build.dependsOn spotlessApply
 
 defaultTasks "spotlessApply", "build"
@@ -70,15 +66,14 @@ spotless {
     }
 }
 
-
 publishing {
     repositories {
         maven {
             name = "mvnCentral"
             url = mavenCentralUrl
             credentials {
-                username = System.getenv("SONATYPE_USER")
-                password = System.getenv("SONATYPE_PASS")
+                username = System.getenv("SONATYPE_USERNAME")
+                password = System.getenv("SONATYPE_PASSWORD")
             }
         }
     }
