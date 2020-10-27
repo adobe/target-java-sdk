@@ -32,6 +32,13 @@ jobs:
         with:
           java-version: 1.8
 
+      - name: Configure git user for release commits
+        env:
+          X_GITHUB_USERNAME: ${{ secrets.ADOBE_BOT_GITHUB_USERNAME  }}
+        run: |
+          git config user.email "Grp-opensourceoffice@adobe.com"
+          git config user.name "${X_GITHUB_USERNAME}"
+
       # Import GPG key used during the release to sign the artifacts (required by Sonatype)
       - name: Import GPG key
         env:
@@ -40,19 +47,13 @@ jobs:
         run: |
           echo $GPG_SECRET_KEYS | base64 --decode | gpg --import --no-tty --batch --yes
           echo $GPG_OWNERTRUST | base64 --decode | gpg --import-ownertrust --no-tty --batch --yes
-          gpg --keyring secring.gpg --export-secret-keys > ~/.gnupg/secring.gpg
           echo "GPG_KEY_ID=$(gpg -k --with-colons | grep 'pub' | cut -d':' -f5 | tail -c 8)" >> $GITHUB_ENV
+          echo $GPG_KEY_ID
+          gpg --keyring secring.gpg --export-secret-keys > ~/.gnupg/secring.gpg
           echo "GPG_KEY_RING=~/.gnupg/secring.gpg" >> $GITHUB_ENV
 
-      - name: Configure git user for release commits
-        env:
-          X_GITHUB_USERNAME: ${{ secrets.ADOBE_BOT_GITHUB_USERNAME  }}
-        run: |
-          git config user.email "Grp-opensourceoffice@adobe.com"
-          git config user.name "${X_GITHUB_USERNAME}"
-
       - name: Publish to the Maven Central Repository
-        run: gradle --info publish
+        run: gradle --info sign
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           ADOBE_BOT_GITHUB_USERNAME: ${{ secrets.ADOBE_BOT_GITHUB_USERNAME  }}
