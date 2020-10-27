@@ -48,7 +48,6 @@ jobs:
           echo $GPG_SECRET_KEYS | base64 --decode | gpg --import --no-tty --batch --yes
           echo $GPG_OWNERTRUST | base64 --decode | gpg --import-ownertrust --no-tty --batch --yes
           echo "GPG_KEY_ID=$(gpg -k --with-colons | grep 'pub' | cut -d':' -f5 | tail -c 8)" >> $GITHUB_ENV
-          gpg --keyring secring.gpg --export-secret-keys > ~/.gnupg/secring.gpg
           echo "GPG_KEY_RING=~/.gnupg/secring.gpg" >> $GITHUB_ENV
       - name: Test
         run: |
