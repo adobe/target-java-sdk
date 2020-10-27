@@ -44,7 +44,7 @@ public interface TargetClient extends AutoCloseable {
    *     items such as Visitor, Context, etc. If null, one will be generated. Request for given mbox
    *     will be added automatically.
    * @param mboxes Name of mboxes to use to retrieve attributes.
-   * @return CompletableFuture<Attributes></Attributes> object
+   * @return CompletableFuture&lt;Attributes&gt; object
    */
   CompletableFuture<Attributes> getAttributesAsync(
       TargetDeliveryRequest targetRequest, String... mboxes);
