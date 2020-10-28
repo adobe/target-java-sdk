@@ -111,7 +111,13 @@ publishing {
     }
 }
 
+ext."signing.gnupg.executable"="gpg"
+ext."signing.gnupg.keyName"=System.getenv("GPG_KEY_ID")
+ext."signing.gnupg.passphrase"=System.getenv("GPG_PASSPHRASE")
+
 signing {
+    useGpgCmd()
+
     required {
         tasks.withType(PublishToMavenRepository).find {
             gradle.taskGraph.hasTask it
