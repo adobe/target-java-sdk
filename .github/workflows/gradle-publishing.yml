@@ -48,12 +48,9 @@ jobs:
           echo $GPG_SECRET_KEYS | base64 --decode | gpg --import --no-tty --batch --yes
           echo $GPG_OWNERTRUST | base64 --decode | gpg --import-ownertrust --no-tty --batch --yes
           echo "GPG_KEY_ID=$(gpg -k --with-colons | grep 'pub' | cut -d':' -f5 | tail -c 9)" >> $GITHUB_ENV
-      - name: Test
-        run: |
-          echo "KEY ID: $GPG_KEY_ID"
 
       - name: Publish to the Maven Central Repository
-        run: gradle --info sign
+        run: gradle publish
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           ADOBE_BOT_GITHUB_USERNAME: ${{ secrets.ADOBE_BOT_GITHUB_USERNAME  }}
