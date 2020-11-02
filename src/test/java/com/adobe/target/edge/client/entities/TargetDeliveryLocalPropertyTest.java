@@ -78,7 +78,7 @@ public class TargetDeliveryLocalPropertyTest {
         .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
 
     ClientConfig clientConfig =
-        ClientConfig.builder().client("adobesummit2018").organizationId("org").build();
+        ClientConfig.builder().organizationId("org").build();
 
     DefaultTargetService targetService = new DefaultTargetService(clientConfig);
     OnDeviceDecisioningService localService =

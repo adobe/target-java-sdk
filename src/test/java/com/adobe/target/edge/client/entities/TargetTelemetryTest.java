@@ -63,7 +63,6 @@ class TargetTelemetryTest {
 
     clientConfig =
         ClientConfig.builder()
-            .client("emeaprod4")
             .organizationId(TEST_ORG_ID)
             .telemetryEnabled(telemetryEnabled)
             .build();

@@ -76,7 +76,6 @@ class DefaultRuleLoaderTest {
 
     clientConfig =
         ClientConfig.builder()
-            .client("emeaprod4")
             .organizationId(TEST_ORG_ID)
             .onDeviceEnvironment("production")
             .defaultDecisioningMethod(DecisioningMethod.ON_DEVICE)
@@ -284,7 +283,6 @@ class DefaultRuleLoaderTest {
 
     ClientConfig payloadClientConfig =
         ClientConfig.builder()
-            .client("emeaprod4")
             .organizationId(TEST_ORG_ID)
             .onDeviceEnvironment("production")
             .defaultDecisioningMethod(DecisioningMethod.ON_DEVICE)

@@ -296,7 +296,6 @@ public class ClientConfig {
 
     public ClientConfig build() {
       ClientConfig clientConfig = new ClientConfig();
-      Objects.requireNonNull(client, "client id cannot be null");
       Objects.requireNonNull(organizationId, "organization id cannot be null");
       clientConfig.client = client;
       clientConfig.organizationId = this.organizationId;
