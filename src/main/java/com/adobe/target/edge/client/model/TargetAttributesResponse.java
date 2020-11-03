@@ -33,7 +33,7 @@ public class TargetAttributesResponse implements Attributes {
 
   public TargetAttributesResponse(TargetDeliveryResponse response) {
     this.response = response;
-    this.content = Collections.unmodifiableMap(toMap(response));
+    this.content = toMap(response);
   }
 
   @Override
@@ -137,7 +137,7 @@ public class TargetAttributesResponse implements Attributes {
     processPrefetch(result, prefetchResponse, globalMbox);
     processExecute(result, executeResponse, globalMbox);
 
-    return result;
+    return toReadOnlyMap(result);
   }
 
   private static String getGlobalMbox(TargetDeliveryResponse response) {
@@ -209,5 +209,13 @@ public class TargetAttributesResponse implements Attributes {
   private static boolean isJsonOption(Option option) {
     Object contentMap = option.getContent();
     return option.getType() == OptionType.JSON && contentMap instanceof Map;
+  }
+
+  private static Map<String, Map<String, Object>> toReadOnlyMap(Map<String, Map<String, Object>> map) {
+    Map<String, Map<String, Object>> result = new HashMap<>(map.size());
+
+    map.keySet().forEach(key -> result.put(key, Collections.unmodifiableMap(map.get(key))));
+
+    return Collections.unmodifiableMap(result);
   }
 }
