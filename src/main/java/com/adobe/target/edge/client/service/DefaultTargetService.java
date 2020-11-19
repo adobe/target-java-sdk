@@ -41,7 +41,7 @@ public class DefaultTargetService implements TargetService {
   public static final String SDK_USER_VALUE = "AdobeTargetJava";
   public static final String SDK_VERSION_KEY = "X-EXC-SDK-Version";
   public static final String SESSION_ID = "sessionId";
-  public static final String CLIENT = "client";
+  public static final String ORGANIZATION_ID = "organizationId";
   private final TargetHttpClient targetHttpClient;
   private final ClientConfig clientConfig;
   private String stickyLocationHint;
@@ -117,7 +117,7 @@ public class DefaultTargetService implements TargetService {
   private Map<String, Object> getQueryParams(TargetDeliveryRequest deliveryRequest) {
     Map<String, Object> queryParams = new HashMap<>();
     queryParams.put(SESSION_ID, deliveryRequest.getSessionId());
-    queryParams.put(CLIENT, clientConfig.getClient());
+    queryParams.put(ORGANIZATION_ID, clientConfig.getOrganizationId());
     return queryParams;
   }
 
