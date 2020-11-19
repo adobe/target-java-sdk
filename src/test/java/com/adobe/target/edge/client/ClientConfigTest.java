@@ -33,7 +33,7 @@ public class ClientConfigTest {
   @Test
   void testProxyConfigNotSet() {
     ClientConfig clientConfig =
-        ClientConfig.builder().client("emeaprod4").organizationId(TEST_ORG_ID).build();
+        ClientConfig.builder().organizationId(TEST_ORG_ID).build();
     assertFalse(clientConfig.isProxyEnabled());
     assertNull(clientConfig.getProxyConfig());
   }
@@ -42,7 +42,6 @@ public class ClientConfigTest {
   void testProxyConfigSetWithNoAuthentication() {
     ClientConfig clientConfig =
         ClientConfig.builder()
-            .client("emeaprod4")
             .organizationId(TEST_ORG_ID)
             .proxyConfig(new ClientProxyConfig(PROXY_HOST, PROXY_PORT))
             .build();
@@ -60,7 +59,6 @@ public class ClientConfigTest {
   void testProxyConfigSetWithAuthentication() {
     ClientConfig clientConfig =
         ClientConfig.builder()
-            .client("emeaprod4")
             .organizationId(TEST_ORG_ID)
             .proxyConfig(
                 new ClientProxyConfig(PROXY_HOST, PROXY_PORT, PROXY_USERNAME, PROXY_PASSWORD))

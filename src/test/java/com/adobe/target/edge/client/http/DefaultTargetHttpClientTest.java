@@ -34,7 +34,7 @@ public class DefaultTargetHttpClientTest {
   @Test
   void testProxyConfigNotSet() {
     ClientConfig clientConfig =
-        ClientConfig.builder().client("emeaprod4").organizationId(TEST_ORG_ID).build();
+        ClientConfig.builder().organizationId(TEST_ORG_ID).build();
     DefaultTargetHttpClient targetClient = new DefaultTargetHttpClient(clientConfig);
     UnirestInstance unirestInstance = targetClient.getUnirestInstance();
     Proxy unirestProxy = unirestInstance.config().getProxy();
@@ -46,7 +46,6 @@ public class DefaultTargetHttpClientTest {
   void testProxyConfigSetWithNoAuthentication() {
     ClientConfig clientConfig =
         ClientConfig.builder()
-            .client("emeaprod4")
             .organizationId(TEST_ORG_ID)
             .proxyConfig(new ClientProxyConfig(PROXY_HOST, PROXY_PORT))
             .build();
@@ -65,7 +64,6 @@ public class DefaultTargetHttpClientTest {
   void testProxyConfigSetWithAuthentication() {
     ClientConfig clientConfig =
         ClientConfig.builder()
-            .client("emeaprod4")
             .organizationId(TEST_ORG_ID)
             .proxyConfig(
                 new ClientProxyConfig(PROXY_HOST, PROXY_PORT, PROXY_USERNAME, PROXY_PASSWORD))

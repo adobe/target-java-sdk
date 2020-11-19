@@ -33,7 +33,6 @@ public class DefaultGeoClientTest {
     String domain = "test.com";
     ClientConfig clientConfig =
         ClientConfig.builder()
-            .client("testclient")
             .organizationId("testOrgId")
             .onDeviceConfigHostname(domain)
             .build();

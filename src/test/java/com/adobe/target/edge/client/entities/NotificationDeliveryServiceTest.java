@@ -65,7 +65,6 @@ class NotificationDeliveryServiceTest {
 
     clientConfig =
         ClientConfig.builder()
-            .client("emeaprod4")
             .organizationId(TEST_ORG_ID)
             .telemetryEnabled(false)
             .build();
