@@ -262,10 +262,9 @@ public class OnDeviceDecisioningService {
     if (visitorId != null) {
       vid =
           StringUtils.firstNonBlank(
-              visitorId.getThirdPartyId(),
-              firstAuthenticatedCustomerId(visitorId),
               visitorId.getMarketingCloudVisitorId(),
-              visitorId.getTntId());
+              visitorId.getTntId(),
+              visitorId.getThirdPartyId());
     }
     // If no vid found in request, check response in case we have already
     // set our own tntId there in an earlier call
