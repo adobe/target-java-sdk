@@ -145,58 +145,6 @@ public class TargetDeliveryLocalGeoTest {
   }
 
   @Test
-  void testTargetDeliveryLocalRequestGeoPasses() {
-    Geo sf =
-        new Geo()
-            .ipAddress("127.0.0.1")
-            .city("san francisco")
-            .stateCode("ca")
-            .countryCode("us")
-            .latitude(37.74f)
-            .longitude(-122.24f);
-    List<Option> options = optionsForGeo(sf);
-    assertNotNull(options);
-    assertEquals(1, options.size());
-    Option option = options.get(0);
-    assertNotNull(option);
-    assertEquals(OptionType.JSON, option.getType());
-    assertNotNull(option.getContent());
-    assertTrue(option.getContent() instanceof Map);
-    @SuppressWarnings("unchecked")
-    Map<String, Object> content = (Map<String, Object>) option.getContent();
-    assertEquals(true, content.get("geo"));
-    assertEquals("geo.b", content.get("exp"));
-    verify(mockGeoClient, atMostOnce()).start(any());
-    verify(mockGeoClient, never()).lookupGeo(any());
-    Map<String, Object> responseTokens = option.getResponseTokens();
-    assertEquals("SANFRANCISCO", responseTokens.get("geo.city"));
-    assertEquals("CA", responseTokens.get("geo.state"));
-    assertEquals("US", responseTokens.get("geo.country"));
-    assertEquals(37.74f, responseTokens.get("geo.latitude"));
-    assertEquals(-122.24f, responseTokens.get("geo.longitude"));
-  }
-
-  @Test
-  void testTargetDeliveryLocalRequestGeoIP() {
-    String ip = "127.0.0.1";
-    Geo ipGeo = new Geo().ipAddress(ip);
-    List<Option> options = optionsForGeo(ipGeo);
-    assertNotNull(options);
-    assertEquals(1, options.size());
-    Option option = options.get(0);
-    assertNotNull(option);
-    assertEquals(OptionType.JSON, option.getType());
-    assertNotNull(option.getContent());
-    assertTrue(option.getContent() instanceof Map);
-    @SuppressWarnings("unchecked")
-    Map<String, Object> content = (Map<String, Object>) option.getContent();
-    assertEquals(true, content.get("geo"));
-    assertEquals("geo.b", content.get("exp"));
-    verify(mockGeoClient, atMostOnce()).start(any());
-    verify(mockGeoClient, atLeastOnce()).lookupGeo(eq(ip));
-  }
-
-  @Test
   void testTargetDeliveryLocalRequestGeoNoIPLookup() throws IOException, NoSuchFieldException {
     fileRuleLoader(GEO_TEST_FAKE_FILE, localService);
     String ip = "127.0.0.1";

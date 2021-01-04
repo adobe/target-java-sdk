@@ -468,8 +468,8 @@ class TargetDeliveryRequestLocalMboxTest {
         extractOptions(targetDeliveryRequest, targetDeliveryResponse, "kitty");
     verifyHTMLContent(
         prefetchOptions,
-        "<div>kitty high A</div>",
-        "ruhwp7VESR7F74TJL2DV5WqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
+        "<div>kitty high B</div>",
+        "ruhwp7VESR7F74TJL2DV5ZNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
   }
 
   @Test
@@ -503,7 +503,12 @@ class TargetDeliveryRequestLocalMboxTest {
         matches++;
       } else if (preContent.equals("<div>mouse</div>")) {
         assertEquals(
-            "5C2cbrGD+bQ5qOATNGy1AZNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+            "5C2cbrGD+bQ5qOATNGy1AWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+            option.getEventToken());
+        matches++;
+      } else if (preContent.equals("<div>whale</div>")) {
+        assertEquals(
+            "5C2cbrGD+bQ5qOATNGy1AWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
             option.getEventToken());
         matches++;
       } else {
@@ -556,7 +561,12 @@ class TargetDeliveryRequestLocalMboxTest {
         matches++;
       } else if (preContent.equals("<div>mouse</div>")) {
         assertEquals(
-            "5C2cbrGD+bQ5qOATNGy1AZNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+            "5C2cbrGD+bQ5qOATNGy1AWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+            option.getEventToken());
+        matches++;
+      } else if (preContent.equals("<div>whale</div>")) {
+        assertEquals(
+            "5C2cbrGD+bQ5qOATNGy1AWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
             option.getEventToken());
         matches++;
       } else {
@@ -623,7 +633,7 @@ class TargetDeliveryRequestLocalMboxTest {
             Arrays.asList(
                 "${mbox.name}", // no mbox name available for pageLoad
                 "362225",
-                "Hello Mickey Mouse",
+                "What Up Mickey Mouse",
                 "macros pageLoad")));
   }
 
@@ -681,22 +691,22 @@ class TargetDeliveryRequestLocalMboxTest {
     assertEquals(OptionType.HTML, option.getType());
 
     assertEquals(
-        "<ul>\n"
-            + "  <li>667871</li>\n"
-            + "  <li>/campaign_macros/experiences/0/pages/0/zones/0/1599065324791</li>\n"
+        "<ol>\n"
+            + "  <li>667870</li>\n"
+            + "  <li>/campaign_macros/experiences/1/pages/0/zones/0/1599065324776</li>\n"
             + "  <li>362147</li>\n"
             + "  <li>campaign macros</li>\n"
-            + "  <li>0</li>\n"
-            + "  <li>Experience A</li>\n"
+            + "  <li>1</li>\n"
+            + "  <li>Experience B</li>\n"
             + "  <li>362147</li>\n"
             + "  <li>campaign macros</li>\n"
-            + "  <li>0</li>\n"
-            + "  <li>Experience A</li>\n"
+            + "  <li>1</li>\n"
+            + "  <li>Experience B</li>\n"
             + "  <li>macros</li>\n"
             + "  <li>Mickey Mouse</li>\n"
             + "  <li>blippi</li>\n"
             + "  <li>1024</li>\n"
-            + "</ul>",
+            + "</ol>",
         option.getContent());
   }
 
@@ -754,22 +764,22 @@ class TargetDeliveryRequestLocalMboxTest {
     assertEquals(OptionType.HTML, option.getType());
 
     assertEquals(
-        "<ul>\n"
-            + "  <li>667871</li>\n"
-            + "  <li>/campaign_macros/experiences/0/pages/0/zones/0/1599065324791</li>\n"
+        "<ol>\n"
+            + "  <li>667870</li>\n"
+            + "  <li>/campaign_macros/experiences/1/pages/0/zones/0/1599065324776</li>\n"
             + "  <li>362147</li>\n"
             + "  <li>campaign macros</li>\n"
-            + "  <li>0</li>\n"
-            + "  <li>Experience A</li>\n"
+            + "  <li>1</li>\n"
+            + "  <li>Experience B</li>\n"
             + "  <li>362147</li>\n"
             + "  <li>campaign macros</li>\n"
-            + "  <li>0</li>\n"
-            + "  <li>Experience A</li>\n"
+            + "  <li>1</li>\n"
+            + "  <li>Experience B</li>\n"
             + "  <li>macros</li>\n"
             + "  <li>Donald</li>\n"
             + "  <li>${mbox.pgname}</li>\n"
             + "  <li>${mbox.browserWidth}</li>\n"
-            + "</ul>",
+            + "</ol>",
         option.getContent());
   }
 
@@ -854,9 +864,9 @@ class TargetDeliveryRequestLocalMboxTest {
     assertEquals(OptionType.JSON, option1.getType());
     Map<String, Object> preContent1 = (Map<String, Object>) option1.getContent();
     assertEquals(2, preContent1.get("allmatches"));
-    assertEquals("a", preContent1.get("allmatches2_exp"));
+    assertEquals("b", preContent1.get("allmatches2_exp"));
     assertEquals(
-        "aNT5qgpj/qd5U7cLpV7p02qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+        "aNT5qgpj/qd5U7cLpV7p05NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
         option1.getEventToken());
     PrefetchMboxResponse preMboxResponse2 = preMboxes.get(1);
     List<Option> prefetchOptions2 = preMboxResponse2.getOptions();
@@ -865,9 +875,9 @@ class TargetDeliveryRequestLocalMboxTest {
     assertEquals(OptionType.JSON, option2.getType());
     Map<String, Object> preContent2 = (Map<String, Object>) option2.getContent();
     assertEquals(1, preContent2.get("allmatches"));
-    assertEquals("a", preContent2.get("allmatches1_exp"));
+    assertEquals("b", preContent2.get("allmatches1_exp"));
     assertEquals(
-        "+hItquQ2BQan0pYxdJmMcGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+        "+hItquQ2BQan0pYxdJmMcJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
         option2.getEventToken());
   }
 
@@ -896,9 +906,9 @@ class TargetDeliveryRequestLocalMboxTest {
     assertEquals(OptionType.JSON, option1.getType());
     Map<String, Object> preContent1 = (Map<String, Object>) option1.getContent();
     assertEquals(2, preContent1.get("allmatches"));
-    assertEquals("a", preContent1.get("allmatches2_exp"));
+    assertEquals("b", preContent1.get("allmatches2_exp"));
     assertEquals(
-        "aNT5qgpj/qd5U7cLpV7p02qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+        "aNT5qgpj/qd5U7cLpV7p05NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
         option1.getEventToken());
   }
 
