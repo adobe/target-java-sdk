@@ -79,17 +79,17 @@ public class OnDeviceDecisioningRuleExecutor {
     }
   }
 
-  private double computeAllocation(String vid, OnDeviceDecisioningRule rule, String salt) {
+  private double computeAllocation(String visitorId, OnDeviceDecisioningRule rule, String salt) {
     String client = this.clientConfig.getClient();
     String seed = rule.getActivityId();
-    int index = vid.indexOf(".");
+    int index = visitorId.indexOf(".");
     if (index > 0) {
-      vid = vid.substring(0, index);
+      visitorId = visitorId.substring(0, index);
     }
     if (salt == null) {
       salt = CAMPAIGN_BUCKET_SALT;
     }
-    String input = client + "." + seed + "." + vid + "." + salt;
+    String input = client + "." + seed + "." + visitorId + "." + salt;
     int output = MurmurHash.hash32(input);
     return ((Math.abs(output) % 10000) / 10000D) * 100D;
   }
