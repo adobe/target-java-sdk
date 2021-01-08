@@ -32,6 +32,7 @@ public class OnDeviceDecisioningRuleExecutor {
       LoggerFactory.getLogger(OnDeviceDecisioningRuleExecutor.class);
 
   private static final String ALLOCATION = "allocation";
+  private static final String CAMPAIGN_BUCKET_SALT = "campaign";
   private static final String OPTIONS = "options";
   private static final String RESPONSE_TOKEN_EXECUTION_TYPE = "activity.decisioningMethod";
 
@@ -52,7 +53,7 @@ public class OnDeviceDecisioningRuleExecutor {
       OnDeviceDecisioningRule rule,
       Set<String> responseTokens,
       TraceHandler traceHandler) {
-    localContext.put(ALLOCATION, computeAllocation(visitorId, rule));
+    localContext.put(ALLOCATION, computeAllocation(visitorId, rule, null));
     Object condition = rule.getCondition();
     logger.trace("details={}, context={}", details, localContext);
     try {
@@ -78,14 +79,17 @@ public class OnDeviceDecisioningRuleExecutor {
     }
   }
 
-  private double computeAllocation(String vid, OnDeviceDecisioningRule rule) {
+  private double computeAllocation(String visitorId, OnDeviceDecisioningRule rule, String salt) {
     String client = this.clientConfig.getClient();
     String seed = rule.getActivityId();
-    int index = vid.indexOf(".");
+    int index = visitorId.indexOf(".");
     if (index > 0) {
-      vid = vid.substring(0, index);
+      visitorId = visitorId.substring(0, index);
     }
-    String input = client + "." + seed + "." + vid;
+    if (salt == null) {
+      salt = CAMPAIGN_BUCKET_SALT;
+    }
+    String input = client + "." + seed + "." + visitorId + "." + salt;
     int output = MurmurHash.hash32(input);
     return ((Math.abs(output) % 10000) / 10000D) * 100D;
   }
