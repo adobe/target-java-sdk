@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2021-01-11
+### Changed
+- (On Device Decisioning) Updated allocation calculation to be identical to Target Delivery API ( Allocation is determined using the first non-null visitor id in this order 1. ECID, 2. TNTID, 3. Third Party ID )
+- Updated DefaultTargetService to pass imsOrgId the the Delivery API instead of the client query string parameter. 
+
 ## [2.0.0] - 2020-10-27
 ### Added
 - Support for [on-device decisioning](https://adobetarget-sdks.gitbook.io/docs/on-device-decisioning/introduction-to-on-device-decisioning)
