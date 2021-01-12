@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [2.1.0] - 2021-01-11
 ### Changed
 - (On Device Decisioning) Updated allocation calculation to be identical to Target Delivery API ( Allocation is determined using the first non-null visitor id in this order 1. ECID, 2. TNTID, 3. Third Party ID )
-- Updated DefaultTargetService to pass imsOrgId the the Delivery API instead of the client query string parameter. 
+- (server-side decisioning) Support for using imsOrgId in the config. This can be used instead of client for calls to Delivery API.
 
 ## [2.0.0] - 2020-10-27
 ### Added
