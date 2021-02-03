@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.1] - 2021-02-03
+### Changed
+- Updating ECID Service version
+
 ## [2.1.0] - 2021-01-11
 ### Changed
 - (On Device Decisioning) Updated allocation calculation to be identical to Target Delivery API ( Allocation is determined using the first non-null visitor id in this order 1. ECID, 2. TNTID, 3. Third Party ID )
