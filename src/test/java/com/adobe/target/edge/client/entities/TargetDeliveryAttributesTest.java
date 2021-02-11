@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -62,9 +63,10 @@ class TargetDeliveryAttributesTest {
   void init() throws IOException, NoSuchFieldException {
 
     Mockito.lenient()
-        .doReturn(getTestDeliveryResponse())
+        .doReturn(CompletableFuture.completedFuture(getTestDeliveryResponse()))
         .when(defaultTargetHttpClient)
-        .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
+        .executeAsync(
+            any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
 
     ClientConfig clientConfig =
         ClientConfig.builder().client("emeaprod4").organizationId(TEST_ORG_ID).build();

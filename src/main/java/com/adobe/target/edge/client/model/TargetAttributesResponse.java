@@ -211,7 +211,8 @@ public class TargetAttributesResponse implements Attributes {
     return option.getType() == OptionType.JSON && contentMap instanceof Map;
   }
 
-  private static Map<String, Map<String, Object>> toReadOnlyMap(Map<String, Map<String, Object>> map) {
+  private static Map<String, Map<String, Object>> toReadOnlyMap(
+      Map<String, Map<String, Object>> map) {
     Map<String, Map<String, Object>> result = new HashMap<>(map.size());
 
     map.keySet().forEach(key -> result.put(key, Collections.unmodifiableMap(map.get(key))));

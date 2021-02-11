@@ -33,8 +33,7 @@ public class DefaultTargetHttpClientTest {
 
   @Test
   void testProxyConfigNotSet() {
-    ClientConfig clientConfig =
-        ClientConfig.builder().organizationId(TEST_ORG_ID).build();
+    ClientConfig clientConfig = ClientConfig.builder().organizationId(TEST_ORG_ID).build();
     DefaultTargetHttpClient targetClient = new DefaultTargetHttpClient(clientConfig);
     UnirestInstance unirestInstance = targetClient.getUnirestInstance();
     Proxy unirestProxy = unirestInstance.config().getProxy();

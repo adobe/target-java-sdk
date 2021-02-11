@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,15 +60,13 @@ class NotificationDeliveryServiceTest {
   void init() throws NoSuchFieldException {
 
     Mockito.lenient()
-        .doReturn(getTestDeliveryResponse())
+        .doReturn(CompletableFuture.completedFuture(getTestDeliveryResponse()))
         .when(defaultTargetHttpClient)
-        .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
+        .executeAsync(
+            any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
 
     clientConfig =
-        ClientConfig.builder()
-            .organizationId(TEST_ORG_ID)
-            .telemetryEnabled(false)
-            .build();
+        ClientConfig.builder().organizationId(TEST_ORG_ID).telemetryEnabled(false).build();
 
     targetService = new DefaultTargetService(clientConfig);
     notificationDeliveryService = new NotificationDeliveryService(targetService);
@@ -110,7 +109,7 @@ class NotificationDeliveryServiceTest {
     TargetDeliveryRequest localDeliveryRequest = localDeliveryRequest();
     notificationDeliveryService.sendNotification(localDeliveryRequest);
     verify(defaultTargetHttpClient, timeout(1000))
-        .execute(
+        .executeAsync(
             any(Map.class),
             any(String.class),
             eq(localDeliveryRequest.getDeliveryRequest()),

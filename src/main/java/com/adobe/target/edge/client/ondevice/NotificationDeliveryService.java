@@ -23,6 +23,6 @@ public class NotificationDeliveryService {
   }
 
   public void sendNotification(final TargetDeliveryRequest deliveryRequest) {
-    this.targetService.executeNotification(deliveryRequest);
+    this.targetService.executeNotificationAsync(deliveryRequest);
   }
 }
