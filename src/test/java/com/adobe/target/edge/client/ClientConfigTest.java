@@ -32,8 +32,7 @@ public class ClientConfigTest {
 
   @Test
   void testProxyConfigNotSet() {
-    ClientConfig clientConfig =
-        ClientConfig.builder().organizationId(TEST_ORG_ID).build();
+    ClientConfig clientConfig = ClientConfig.builder().organizationId(TEST_ORG_ID).build();
     assertFalse(clientConfig.isProxyEnabled());
     assertNull(clientConfig.getProxyConfig());
   }

@@ -77,8 +77,7 @@ public class TargetDeliveryLocalPropertyTest {
         .when(defaultTargetHttpClient)
         .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
 
-    ClientConfig clientConfig =
-        ClientConfig.builder().organizationId("org").build();
+    ClientConfig clientConfig = ClientConfig.builder().organizationId("org").build();
 
     DefaultTargetService targetService = new DefaultTargetService(clientConfig);
     OnDeviceDecisioningService localService =

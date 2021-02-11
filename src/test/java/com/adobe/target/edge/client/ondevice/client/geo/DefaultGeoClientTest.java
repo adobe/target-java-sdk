@@ -32,10 +32,7 @@ public class DefaultGeoClientTest {
   void testDefaultGeoClient() {
     String domain = "test.com";
     ClientConfig clientConfig =
-        ClientConfig.builder()
-            .organizationId("testOrgId")
-            .onDeviceConfigHostname(domain)
-            .build();
+        ClientConfig.builder().organizationId("testOrgId").onDeviceConfigHostname(domain).build();
     DefaultGeoClient geoClient = spy(DefaultGeoClient.class);
     geoClient.start(clientConfig);
 
