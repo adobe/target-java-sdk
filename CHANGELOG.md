@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.2] - 2021-02-11
+### Changed
+- (On Device Decisioning) Replace blocking notification call with an async call
+
 ## [2.1.1] - 2021-02-03
 ### Changed
 - Updating ECID Service version
