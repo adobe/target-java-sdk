@@ -122,23 +122,23 @@ class TargetDeliveryRequestLocalMboxTest {
     Map<String, Object> expectedContent =
         new HashMap<String, Object>() {
           {
-            put("baz", 1);
+            put("baz", 2);
           }
         };
     verifyJSONContent(
         prefetchOptions,
         expectedContent,
-        "mWtD0yDAXMnesyQOa7/jS2qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
+        "mWtD0yDAXMnesyQOa7/jS5NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
     Option option = prefetchOptions.get(0);
     Map<String, Object> responseTokens = option.getResponseTokens();
     assertEquals(333312, responseTokens.get("activity.id"));
     assertEquals(
         "Form Based Activity - offer2 - Feb 19 2020, 10:34", responseTokens.get("activity.name"));
-    assertEquals(0, responseTokens.get("experience.id"));
-    assertEquals("Experience A", responseTokens.get("experience.name"));
-    assertEquals(630815, responseTokens.get("offer.id"));
-    assertEquals(2, responseTokens.get("option.id"));
-    assertEquals("Offer2", responseTokens.get("option.name"));
+    assertEquals(1, responseTokens.get("experience.id"));
+    assertEquals("Experience B", responseTokens.get("experience.name"));
+    assertEquals(630814, responseTokens.get("offer.id"));
+    assertEquals(3, responseTokens.get("option.id"));
+    assertEquals("Offer3", responseTokens.get("option.name"));
     assertEquals("on-device", responseTokens.get("activity.decisioningMethod"));
   }
 
@@ -159,13 +159,13 @@ class TargetDeliveryRequestLocalMboxTest {
     Map<String, Object> expectedContent =
         new HashMap<String, Object>() {
           {
-            put("baz", 2);
+            put("baz", 1);
           }
         };
     verifyJSONContent(
         prefetchOptions,
         expectedContent,
-        "mWtD0yDAXMnesyQOa7/jS5NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
+        "mWtD0yDAXMnesyQOa7/jS2qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
   }
 
   @Test
@@ -191,13 +191,13 @@ class TargetDeliveryRequestLocalMboxTest {
     Map<String, Object> expectedContent =
         new HashMap<String, Object>() {
           {
-            put("baz", 2);
+            put("baz", 1);
           }
         };
     verifyJSONContent(
         prefetchOptions,
         expectedContent,
-        "mWtD0yDAXMnesyQOa7/jS5NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
+        "mWtD0yDAXMnesyQOa7/jS2qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
   }
 
   @Test
@@ -395,13 +395,13 @@ class TargetDeliveryRequestLocalMboxTest {
           {
             put("foo", "bar");
             put("isFooBar", true);
-            put("experience", "B");
+            put("experience", "A");
           }
         };
     verifyJSONContent(
         prefetchOptions,
         expectedContent,
-        "Zhwxeqy1O2r9Ske1YDA9bJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
+        "Zhwxeqy1O2r9Ske1YDA9bGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
   }
 
   @Test
@@ -501,9 +501,9 @@ class TargetDeliveryRequestLocalMboxTest {
             "9FNM3ikASssS+sVoFXNulJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
             option.getEventToken());
         matches++;
-      } else if (preContent.equals("<div>mouse</div>")) {
+      } else if (preContent.equals("<div>lion</div>")) {
         assertEquals(
-            "5C2cbrGD+bQ5qOATNGy1AWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+            "5C2cbrGD+bQ5qOATNGy1AQreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
             option.getEventToken());
         matches++;
       } else if (preContent.equals("<div>whale</div>")) {
@@ -554,14 +554,14 @@ class TargetDeliveryRequestLocalMboxTest {
             "9FNM3ikASssS+sVoFXNulGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
             option.getEventToken());
         matches++;
-      } else if (preContent.equals("<div>foo=bar experience A</div>")) {
+      } else if (preContent.equals("<div>foo=bar experience C</div>")) {
         assertEquals(
-            "0L1rCkDps3F+UEAm1B9A4GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+            "0L1rCkDps3F+UEAm1B9A4AreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
             option.getEventToken());
         matches++;
-      } else if (preContent.equals("<div>mouse</div>")) {
+      } else if (preContent.equals("<div>lion</div>")) {
         assertEquals(
-            "5C2cbrGD+bQ5qOATNGy1AWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+            "5C2cbrGD+bQ5qOATNGy1AQreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
             option.getEventToken());
         matches++;
       } else if (preContent.equals("<div>whale</div>")) {
@@ -628,13 +628,13 @@ class TargetDeliveryRequestLocalMboxTest {
     Collections.sort(actionContents);
 
     assertEquals(
-        actionContents,
         new ArrayList<>(
             Arrays.asList(
                 "${mbox.name}", // no mbox name available for pageLoad
                 "362225",
-                "What Up Mickey Mouse",
-                "macros pageLoad")));
+                "Hello Mickey Mouse",
+                "macros pageLoad")),
+        actionContents);
   }
 
   @Test
@@ -875,9 +875,9 @@ class TargetDeliveryRequestLocalMboxTest {
     assertEquals(OptionType.JSON, option2.getType());
     Map<String, Object> preContent2 = (Map<String, Object>) option2.getContent();
     assertEquals(1, preContent2.get("allmatches"));
-    assertEquals("b", preContent2.get("allmatches1_exp"));
+    assertEquals("a", preContent2.get("allmatches1_exp"));
     assertEquals(
-        "+hItquQ2BQan0pYxdJmMcJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+        "+hItquQ2BQan0pYxdJmMcGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
         option2.getEventToken());
   }
 

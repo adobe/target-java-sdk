@@ -189,7 +189,7 @@ public class TargetDeliveryLocalPropertyTest {
     assertTrue(option.getContent() instanceof Map);
     @SuppressWarnings("unchecked")
     Map<String, Object> content = (Map<String, Object>) option.getContent();
-    assertEquals(false, content.get("doMagic"));
-    assertEquals(75, content.get("importantValue"));
+    assertEquals(true, content.get("doMagic"));
+    assertEquals(150, content.get("importantValue"));
   }
 }
