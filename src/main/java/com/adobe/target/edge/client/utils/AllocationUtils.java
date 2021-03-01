@@ -11,8 +11,6 @@
  */
 package com.adobe.target.edge.client.utils;
 
-import com.google.common.hash.Hashing;
-
 public class AllocationUtils {
   private static final int TOTAL_BUCKETS = 10_000;
   private static final int MAX_PERCENTAGE = 100;
@@ -33,7 +31,7 @@ public class AllocationUtils {
   }
 
   public static double calculateAllocation(String deviceId) {
-    int hashValue = Hashing.murmur3_32().hashUnencodedChars(deviceId).asInt();
+    int hashValue = HashingUtils.hashUnencodedChars(deviceId);
 
     int hashFixedBucket = Math.abs(hashValue) % TOTAL_BUCKETS;
     float allocationValue = ((float) hashFixedBucket / TOTAL_BUCKETS) * MAX_PERCENTAGE;
