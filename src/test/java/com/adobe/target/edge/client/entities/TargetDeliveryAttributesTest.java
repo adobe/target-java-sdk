@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Adobe. All rights reserved.
+ * Copyright 2021 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -141,11 +141,11 @@ class TargetDeliveryAttributesTest {
         targetJavaClient.getAttributes(targetDeliveryRequest, "testoffer", "testoffer2");
     validateInitialResponse(targetDeliveryRequest, attrs);
     assertTrue(attrs.getBoolean("testoffer", "test", false));
-    assertEquals("a", attrs.getString("testoffer", "experience"));
-    assertEquals(12.99, attrs.getDouble("testoffer", "price", 0d), 0.0001);
-    assertEquals("a", attrs.toMboxMap("testoffer").get("experience"));
-    assertEquals("a", attrs.toMap().get("testoffer").get("experience"));
-    assertEquals(1, attrs.getInteger("testoffer2", "offer", 0));
+    assertEquals("b", attrs.getString("testoffer", "experience"));
+    assertEquals(9.99, attrs.getDouble("testoffer", "price", 0d), 0.0001);
+    assertEquals("b", attrs.toMboxMap("testoffer").get("experience"));
+    assertEquals("b", attrs.toMap().get("testoffer").get("experience"));
+    assertEquals(2, attrs.getInteger("testoffer2", "offer", 0));
   }
 
   @Test
@@ -175,10 +175,10 @@ class TargetDeliveryAttributesTest {
     Attributes attrs = targetJavaClient.getAttributes(targetDeliveryRequest);
     validateInitialResponse(targetDeliveryRequest, attrs);
     assertTrue(attrs.getBoolean("target-global-mbox", "test", false));
-    assertEquals("b", attrs.getString("target-global-mbox", "experience"));
-    assertEquals(9.99, attrs.getDouble("target-global-mbox", "price", 0d), 0.0001);
-    assertEquals("b", attrs.toMboxMap("target-global-mbox").get("experience"));
-    assertEquals("b", attrs.toMap().get("target-global-mbox").get("experience"));
+    assertEquals("a", attrs.getString("target-global-mbox", "experience"));
+    assertEquals(12.99, attrs.getDouble("target-global-mbox", "price", 0d), 0.0001);
+    assertEquals("a", attrs.toMboxMap("target-global-mbox").get("experience"));
+    assertEquals("a", attrs.toMap().get("target-global-mbox").get("experience"));
   }
 
   @Test
@@ -235,7 +235,7 @@ class TargetDeliveryAttributesTest {
             any(Map.class), any(String.class), any(TargetDeliveryRequest.class), any(Class.class));
     assertEquals(2, attrs.getInteger(mbox, "allmatches", 0));
     assertEquals("a", attrs.getString(mbox, "allmatches1_exp"));
-    assertEquals("b", attrs.getString(mbox, "allmatches2_exp"));
+    assertEquals("a", attrs.getString(mbox, "allmatches2_exp"));
   }
 
   private TargetDeliveryRequest localDeliveryRequest(String visitorIdStr) {
@@ -274,10 +274,10 @@ class TargetDeliveryAttributesTest {
 
   private void validateResultA(Attributes attrs) {
     assertTrue(attrs.getBoolean("testoffer", "test", false));
-    assertEquals("b", attrs.getString("testoffer", "experience"));
-    assertEquals(9.99, attrs.getDouble("testoffer", "price", 0d), 0.0001);
-    assertEquals("b", attrs.toMboxMap("testoffer").get("experience"));
-    assertEquals("b", attrs.toMap().get("testoffer").get("experience"));
-    assertEquals(2, attrs.getInteger("testoffer2", "offer", 0));
+    assertEquals("a", attrs.getString("testoffer", "experience"));
+    assertEquals(12.99, attrs.getDouble("testoffer", "price", 0d), 0.0001);
+    assertEquals("a", attrs.toMboxMap("testoffer").get("experience"));
+    assertEquals("a", attrs.toMap().get("testoffer").get("experience"));
+    assertEquals(1, attrs.getInteger("testoffer2", "offer", 0));
   }
 }

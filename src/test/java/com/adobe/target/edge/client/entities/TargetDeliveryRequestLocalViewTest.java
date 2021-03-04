@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Adobe. All rights reserved.
+ * Copyright 2021 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -264,10 +264,10 @@ class TargetDeliveryRequestLocalViewTest {
     Collections.sort(actionContents);
 
     assertEquals(
-        actionContents,
         new ArrayList<>(
             Collections.singletonList(
-                "<div id=\"action_insert_1599086448339872\">campaign macros view</div>")));
+                "<div id=\"action_insert_1599086396006761\">campaign macros view</div>")),
+        actionContents);
   }
 
   @Test
@@ -550,27 +550,29 @@ class TargetDeliveryRequestLocalViewTest {
                     "insertAfter",
                     "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
                     "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
-                    "<p id=\"action_insert_15882853393943012\">Life moves pretty fast. If you don’t stop and look around once in a while, you could miss it.</p>",
-                    "6Na6eWan1u0HrN32JDT54JNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-            add(
-                new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
-                    "6Na6eWan1u0HrN32JDT54JNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+                    "<p id=\"action_insert_15882850825432970\">Better to remain silent and be thought a fool than to speak out and remove all doubt.</p>",
+                    "6Na6eWan1u0HrN32JDT54GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+
             add(
                 new SelectorContent(
                     "setStyle",
-                    "#action_insert_15882853393943012",
-                    "#action_insert_15882853393943012",
+                    "#action_insert_15882850825432970",
+                    "#action_insert_15882850825432970",
                     new HashMap<String, String>() {
                       {
-                        put("background-color", "rgba(86,255,86,1)");
+                        put("background-color", "rgba(255,255,170,1)");
                         put("priority", "important");
                       }
                     },
-                    "6Na6eWan1u0HrN32JDT54JNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+                    "6Na6eWan1u0HrN32JDT54GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+
+            add(
+                new SelectorContent(
+                    null,
+                    null,
+                    null,
+                    null,
+                    "6Na6eWan1u0HrN32JDT54GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
           }
         };
     verifyContent(options, selectors);
@@ -640,27 +642,27 @@ class TargetDeliveryRequestLocalViewTest {
                     "insertAfter",
                     "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
                     "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
-                    "<p id=\"action_insert_15882853393943012\">Life moves pretty fast. If you don’t stop and look around once in a while, you could miss it.</p>",
-                    "6Na6eWan1u0HrN32JDT54JNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-            add(
-                new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
-                    "6Na6eWan1u0HrN32JDT54JNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+                    "<p id=\"action_insert_15882850825432970\">Better to remain silent and be thought a fool than to speak out and remove all doubt.</p>",
+                    "6Na6eWan1u0HrN32JDT54GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
             add(
                 new SelectorContent(
                     "setStyle",
-                    "#action_insert_15882853393943012",
-                    "#action_insert_15882853393943012",
+                    "#action_insert_15882850825432970",
+                    "#action_insert_15882850825432970",
                     new HashMap<String, String>() {
                       {
-                        put("background-color", "rgba(86,255,86,1)");
+                        put("background-color", "rgba(255,255,170,1)");
                         put("priority", "important");
                       }
                     },
-                    "6Na6eWan1u0HrN32JDT54JNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+                    "6Na6eWan1u0HrN32JDT54GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+            add(
+                new SelectorContent(
+                    null,
+                    null,
+                    null,
+                    null,
+                    "6Na6eWan1u0HrN32JDT54GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
           }
         };
     verifyContent(options, selectors);
@@ -764,27 +766,27 @@ class TargetDeliveryRequestLocalViewTest {
                     "insertAfter",
                     "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
                     "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
-                    "<p id=\"action_insert_15882853393943012\">Life moves pretty fast. If you don’t stop and look around once in a while, you could miss it.</p>",
-                    "6Na6eWan1u0HrN32JDT54JNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-            add(
-                new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
-                    "6Na6eWan1u0HrN32JDT54JNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+                    "<p id=\"action_insert_15882850825432970\">Better to remain silent and be thought a fool than to speak out and remove all doubt.</p>",
+                    "6Na6eWan1u0HrN32JDT54GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
             add(
                 new SelectorContent(
                     "setStyle",
-                    "#action_insert_15882853393943012",
-                    "#action_insert_15882853393943012",
+                    "#action_insert_15882850825432970",
+                    "#action_insert_15882850825432970",
                     new HashMap<String, String>() {
                       {
-                        put("background-color", "rgba(86,255,86,1)");
+                        put("background-color", "rgba(255,255,170,1)");
                         put("priority", "important");
                       }
                     },
-                    "6Na6eWan1u0HrN32JDT54JNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+                    "6Na6eWan1u0HrN32JDT54GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
+            add(
+                new SelectorContent(
+                    null,
+                    null,
+                    null,
+                    null,
+                    "6Na6eWan1u0HrN32JDT54GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
           }
         };
     verifyContent(options, selectors);

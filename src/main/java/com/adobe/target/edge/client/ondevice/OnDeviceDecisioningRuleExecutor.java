@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Adobe. All rights reserved.
+ * Copyright 2021 Adobe. All rights reserved.
  * This file is licensed to you under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License. You may obtain a copy
  * of the License at http://www.apache.org/licenses/LICENSE-2.0
@@ -17,6 +17,7 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRule;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
+import com.adobe.target.edge.client.utils.AllocationUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.jamsesso.jsonlogic.JsonLogic;
@@ -32,7 +33,7 @@ public class OnDeviceDecisioningRuleExecutor {
       LoggerFactory.getLogger(OnDeviceDecisioningRuleExecutor.class);
 
   private static final String ALLOCATION = "allocation";
-  private static final String CAMPAIGN_BUCKET_SALT = "campaign";
+  private static final String CAMPAIGN_BUCKET_SALT = "0";
   private static final String OPTIONS = "options";
   private static final String RESPONSE_TOKEN_EXECUTION_TYPE = "activity.decisioningMethod";
 
@@ -80,18 +81,11 @@ public class OnDeviceDecisioningRuleExecutor {
   }
 
   private double computeAllocation(String visitorId, OnDeviceDecisioningRule rule, String salt) {
-    String client = this.clientConfig.getClient();
-    String seed = rule.getActivityId();
-    int index = visitorId.indexOf(".");
-    if (index > 0) {
-      visitorId = visitorId.substring(0, index);
-    }
-    if (salt == null) {
-      salt = CAMPAIGN_BUCKET_SALT;
-    }
-    String input = client + "." + seed + "." + visitorId + "." + salt;
-    int output = MurmurHash.hash32(input);
-    return ((Math.abs(output) % 10000) / 10000D) * 100D;
+    return AllocationUtils.calculateAllocation(
+        this.clientConfig.getClient(),
+        rule.getActivityId(),
+        visitorId,
+        salt == null ? CAMPAIGN_BUCKET_SALT : salt);
   }
 
   private Map<String, Object> consequenceWithResponseTokens(
