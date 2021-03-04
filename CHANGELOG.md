@@ -1,7 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.3] - 2021-03-04
+### Changed
+- (On Device Decisioning) Updated the bucketing algorithm to be consistent across all platforms
+
 ## [2.1.2] - 2021-02-11
+
 ### Changed
 - (On Device Decisioning) Replace blocking notification call with an async call
 
