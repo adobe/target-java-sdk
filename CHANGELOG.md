@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.4] - 2021-04-20
+### Changed
+- Fix incorrect handling of error scenario in `TargetMetrics.begin()`
+- Updating ECID Service version
+
 ## [2.1.3] - 2021-03-04
 ### Changed
 - (On Device Decisioning) Updated the bucketing algorithm to be consistent across all platforms
