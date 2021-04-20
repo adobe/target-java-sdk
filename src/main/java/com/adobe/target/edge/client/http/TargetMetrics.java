@@ -13,10 +13,15 @@ package com.adobe.target.edge.client.http;
 
 import java.util.function.Consumer;
 import kong.unirest.HttpRequestSummary;
+import kong.unirest.HttpResponseSummary;
 import kong.unirest.MetricContext;
 import kong.unirest.UniMetric;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TargetMetrics implements UniMetric {
+
+  private static final Logger LOG = LoggerFactory.getLogger(TargetMetrics.class);
 
   private final Consumer<TargetMetricContext> metricContextConsumer;
 
@@ -26,15 +31,26 @@ public class TargetMetrics implements UniMetric {
 
   @Override
   public MetricContext begin(HttpRequestSummary request) {
-    final long millis = System.currentTimeMillis();
-    return (responseSummary, exception) -> {
-      DefaultTargetMetricContext metricContext =
-          new DefaultTargetMetricContext(
-              request.getUrl(),
-              responseSummary.getStatus(),
-              responseSummary.getStatusText(),
-              (int) (System.currentTimeMillis() - millis));
-      this.metricContextConsumer.accept(metricContext);
+    final long startMillis = System.currentTimeMillis();
+
+    return (response, exception) -> {
+      if (exception != null) {
+        LOG.error("Response processing failed", exception);
+        return;
+      }
+
+      this.metricContextConsumer.accept(createMetricContext(request, response, startMillis));
     };
   }
+
+  private static TargetMetricContext createMetricContext(HttpRequestSummary request, HttpResponseSummary response,
+    long startMillis) {
+
+    return new DefaultTargetMetricContext(
+        request.getUrl(),
+        response.getStatus(),
+        response.getStatusText(),
+        (int) (System.currentTimeMillis() - startMillis));
+  }
+
 }
