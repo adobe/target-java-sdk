@@ -37,6 +37,8 @@ public class CampaignMacroReplacer {
         }
       };
 
+  private final List<String> LOCATION_NAME_REPLACEMENTS = Arrays.asList("mbox.name", "view.name");
+
   private final List<String> MACRO_NAME_REMOVALS = Arrays.asList("mbox");
 
   private final Map<String, Object> consequence;
@@ -109,6 +111,9 @@ public class CampaignMacroReplacer {
   }
 
   private String sanitizedMacroKey(String macroKey) {
+    if (LOCATION_NAME_REPLACEMENTS.contains(macroKey)) {
+      macroKey = "location.name";
+    }
     for (String legacyKey : MACRO_NAME_REPLACEMENTS.keySet()) {
       macroKey = macroKey.replaceAll(legacyKey, MACRO_NAME_REPLACEMENTS.get(legacyKey));
     }

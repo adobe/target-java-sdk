@@ -15,6 +15,7 @@ import com.adobe.target.delivery.v1.model.Option;
 import com.adobe.target.delivery.v1.model.RequestDetails;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRule;
+import com.adobe.target.edge.client.ondevice.collator.GeoParamsCollator;
 import com.adobe.target.edge.client.service.TargetClientException;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import com.adobe.target.edge.client.utils.AllocationUtils;
@@ -127,7 +128,7 @@ public class OnDeviceDecisioningRuleExecutor {
         } else {
           tokenKey = OnDeviceDecisioningService.CONTEXT_KEY_GEO + "." + key;
         }
-        if (responseTokenKeys.contains(tokenKey)) {
+        if (responseTokenKeys.contains(tokenKey) && geoEntry.getValue() != GeoParamsCollator.DEFAULT_GEO_PARAMS.get(geoEntry.getKey())) {
           responseTokens.put(tokenKey, geoEntry.getValue());
         }
       }

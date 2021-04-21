@@ -221,15 +221,6 @@ class TargetTelemetryTest {
             .decisioningMethod(DecisioningMethod.ON_DEVICE)
             .build();
     targetJavaClient.getOffers(targetDeliveryRequest);
-
-    ArgumentCaptor<TargetDeliveryRequest> captor =
-        ArgumentCaptor.forClass(TargetDeliveryRequest.class);
-    verify(mockNotificationDeliveryService, timeout(1000)).sendNotification(captor.capture());
-
-    Telemetry telemetry = captor.getValue().getDeliveryRequest().getTelemetry();
-    List<Notification> notifications = captor.getValue().getDeliveryRequest().getNotifications();
-
-    assertNull(telemetry);
-    assertEquals(notifications.size(), 1);
+    verify(mockNotificationDeliveryService, never()).sendNotification(any());
   }
 }

@@ -31,7 +31,7 @@ public class AllocationUtilsTest {
 
     assertEquals(
         AllocationUtils.calculateAllocation("someClientId", "123456", "tntId123.28_0", "salty"),
-        21.94);
+        32.94);
 
     assertEquals(
         AllocationUtils.calculateAllocation("someClientId", "123456", "thirtPartyId123", "salty"),

@@ -43,8 +43,8 @@ public class TargetMetrics implements UniMetric {
     };
   }
 
-  private static TargetMetricContext createMetricContext(HttpRequestSummary request, HttpResponseSummary response,
-    long startMillis) {
+  private static TargetMetricContext createMetricContext(
+      HttpRequestSummary request, HttpResponseSummary response, long startMillis) {
 
     return new DefaultTargetMetricContext(
         request.getUrl(),
@@ -52,5 +52,4 @@ public class TargetMetrics implements UniMetric {
         response.getStatusText(),
         (int) (System.currentTimeMillis() - startMillis));
   }
-
 }
