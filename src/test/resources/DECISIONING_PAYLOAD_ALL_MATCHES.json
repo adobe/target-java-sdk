@@ -79,10 +79,7 @@
               }
             ],
             "metrics": []
-          },
-          "propertyTokens": [
-            "adb7ab32-c9a6-3688-c117-5dec30a922e1"
-          ]
+          }
         },
         {
           "ruleKey": "120179",
@@ -134,10 +131,7 @@
               }
             ],
             "metrics": []
-          },
-          "propertyTokens": [
-            "adb7ab32-c9a6-3688-c117-5dec30a922e1"
-          ]
+          }
         },
         {
           "ruleKey": "120178",
@@ -189,10 +183,7 @@
               }
             ],
             "metrics": []
-          },
-          "propertyTokens": [
-            "adb7ab32-c9a6-3688-c117-5dec30a922e1"
-          ]
+          }
         },
         {
           "ruleKey": "120178",
@@ -244,10 +235,7 @@
               }
             ],
             "metrics": []
-          },
-          "propertyTokens": [
-            "adb7ab32-c9a6-3688-c117-5dec30a922e1"
-          ]
+          }
         }
       ]
     },

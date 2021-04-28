@@ -41,6 +41,7 @@ public class OnDeviceDecisioningDetailsExecutor {
 
   public void executeDetails(
       TargetDeliveryRequest deliveryRequest,
+      Set<String> onDeviceAllMatchingRulesMboxes,
       Map<String, Object> localContext,
       String visitorId,
       Set<String> responseTokens,
@@ -81,11 +82,12 @@ public class OnDeviceDecisioningDetailsExecutor {
                 traceHandler);
         if (handled) {
           handledAtLeastOnce = true;
-          if (ruleKey != null) {
-            skipKeySet.add(ruleKey);
-          }
           if (details instanceof MboxRequest) {
-            break;
+            if (!onDeviceAllMatchingRulesMboxes.contains(((MboxRequest) details).getName())) {
+              break;
+            }
+          } else if (ruleKey != null) {
+            skipKeySet.add(ruleKey);
           }
         }
       }

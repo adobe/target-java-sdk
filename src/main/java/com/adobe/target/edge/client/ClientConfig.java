@@ -16,6 +16,7 @@ import static com.adobe.target.edge.client.utils.StringUtils.isNotEmpty;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningHandler;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
+import java.util.List;
 import java.util.Objects;
 import org.apache.http.HttpRequestInterceptor;
 
@@ -45,6 +46,7 @@ public class ClientConfig {
   private int onDeviceDecisioningPollingIntSecs;
   private byte[] onDeviceArtifactPayload;
   private boolean telemetryEnabled;
+  private List<String> onDeviceAllMatchingRulesMboxes;
 
   public String getClient() {
     return client;
@@ -133,6 +135,10 @@ public class ClientConfig {
     return onDeviceArtifactPayload;
   }
 
+  public List<String> getOnDeviceAllMatchingRulesMboxes() {
+    return onDeviceAllMatchingRulesMboxes;
+  }
+
   public boolean isOnDeviceDecisioningEnabled() {
     return defaultDecisioningMethod != DecisioningMethod.SERVER_SIDE;
   }
@@ -170,6 +176,7 @@ public class ClientConfig {
     private int onDeviceDecisioningPollingIntSecs = 300;
     private byte[] onDeviceArtifactPayload;
     private boolean telemetryEnabled = true;
+    private List<String> onDeviceAllMatchingRulesMboxes;
 
     private ClientConfigBuilder() {}
 
@@ -282,6 +289,11 @@ public class ClientConfig {
       return this;
     }
 
+    public ClientConfigBuilder onDeviceAllMatchingRulesMboxes(List<String> mboxes) {
+      this.onDeviceAllMatchingRulesMboxes = mboxes;
+      return this;
+    }
+
     public ClientConfig build() {
       ClientConfig clientConfig = new ClientConfig();
       Objects.requireNonNull(organizationId, "organization id cannot be null");
@@ -309,6 +321,7 @@ public class ClientConfig {
       clientConfig.onDeviceConfigHostname = this.onDeviceConfigHostname;
       clientConfig.onDeviceDecisioningPollingIntSecs = this.onDeviceDecisioningPollingIntSecs;
       clientConfig.onDeviceArtifactPayload = this.onDeviceArtifactPayload;
+      clientConfig.onDeviceAllMatchingRulesMboxes = this.onDeviceAllMatchingRulesMboxes;
       clientConfig.telemetryEnabled = this.telemetryEnabled;
       return clientConfig;
     }

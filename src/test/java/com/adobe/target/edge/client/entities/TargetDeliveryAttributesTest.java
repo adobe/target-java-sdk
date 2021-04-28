@@ -36,6 +36,7 @@ import com.adobe.target.edge.client.service.DefaultTargetService;
 import com.adobe.target.edge.client.service.VisitorProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -178,6 +179,63 @@ class TargetDeliveryAttributesTest {
     assertEquals(12.99, attrs.getDouble("target-global-mbox", "price", 0d), 0.0001);
     assertEquals("a", attrs.toMboxMap("target-global-mbox").get("experience"));
     assertEquals("a", attrs.toMap().get("target-global-mbox").get("experience"));
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  void testTargetDeliveryAttributesAllMatches() throws IOException, NoSuchFieldException {
+    String mbox = "allmatches";
+    ArrayList<String> mboxes =
+        new ArrayList<String>() {
+          {
+            add(mbox);
+          }
+        };
+    ClientConfig clientConfig =
+        ClientConfig.builder()
+            .client("targettesting")
+            .organizationId(TEST_ORG_ID)
+            .onDeviceEnvironment("test")
+            .defaultDecisioningMethod(DecisioningMethod.ON_DEVICE)
+            .onDeviceAllMatchingRulesMboxes(mboxes)
+            .build();
+    DefaultTargetService targetService = new DefaultTargetService(clientConfig);
+    localService = new OnDeviceDecisioningService(clientConfig, targetService);
+    fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
+    FieldSetter.setField(
+        targetJavaClient,
+        targetJavaClient.getClass().getDeclaredField("localService"),
+        localService);
+    FieldSetter.setField(
+        targetService,
+        targetService.getClass().getDeclaredField("targetHttpClient"),
+        defaultTargetHttpClient);
+    FieldSetter.setField(
+        targetJavaClient,
+        targetJavaClient.getClass().getDeclaredField("targetService"),
+        targetService);
+
+    Context context = getLocalContext();
+    PrefetchRequest prefetchRequest = getMboxPrefetchLocalRequest(mbox);
+    VisitorId visitorId = new VisitorId().tntId("38734fba-262c-4722-b4a3-ac0a93916873");
+    TargetDeliveryRequest targetDeliveryRequest =
+        TargetDeliveryRequest.builder()
+            .context(context)
+            .prefetch(prefetchRequest)
+            .id(visitorId)
+            .decisioningMethod(DecisioningMethod.ON_DEVICE)
+            .build();
+
+    Attributes attrs = targetJavaClient.getAttributes(targetDeliveryRequest, mbox);
+    assertNotNull(attrs);
+    assertNotNull(attrs.getResponse());
+    assertEquals(200, attrs.getResponse().getStatus());
+    verify(defaultTargetHttpClient, atMostOnce())
+        .execute(
+            any(Map.class), any(String.class), any(TargetDeliveryRequest.class), any(Class.class));
+    assertEquals(2, attrs.getInteger(mbox, "allmatches", 0));
+    assertEquals("a", attrs.getString(mbox, "allmatches1_exp"));
+    assertEquals("a", attrs.getString(mbox, "allmatches2_exp"));
   }
 
   private TargetDeliveryRequest localDeliveryRequest(String visitorIdStr) {

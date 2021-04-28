@@ -74,6 +74,7 @@ public class OnDeviceDecisioningService {
   private final OnDeviceDecisioningDetailsExecutor decisionHandler;
   private final OnDeviceDecisioningEvaluator onDeviceDecisioningEvaluator;
   private final GeoClient geoClient;
+  private final Set<String> onDeviceAllMatchingRulesMboxes;
 
   public OnDeviceDecisioningService(ClientConfig clientConfig, TargetService targetService) {
     this.mapper = new JacksonObjectMapper().getMapper();
@@ -89,6 +90,11 @@ public class OnDeviceDecisioningService {
     this.onDeviceDecisioningEvaluator = new OnDeviceDecisioningEvaluator(this.ruleLoader);
     this.geoClient = new DefaultGeoClient();
     this.geoClient.start(clientConfig);
+    this.onDeviceAllMatchingRulesMboxes = new HashSet<>();
+    List<String> onDeviceAllMatchingRulesMboxes = clientConfig.getOnDeviceAllMatchingRulesMboxes();
+    if (onDeviceAllMatchingRulesMboxes != null) {
+      this.onDeviceAllMatchingRulesMboxes.addAll(onDeviceAllMatchingRulesMboxes);
+    }
   }
 
   public void stop() {
@@ -361,6 +367,7 @@ public class OnDeviceDecisioningService {
       collateParams(detailsContext, DETAILS_PARAMS_COLLATORS, deliveryRequest, details);
       this.decisionHandler.executeDetails(
           deliveryRequest,
+          this.onDeviceAllMatchingRulesMboxes,
           detailsContext,
           visitorId,
           responseTokens,

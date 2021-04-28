@@ -117,6 +117,26 @@ class NotificationDeliveryServiceTest {
   }
 
   @Test
+  void testNotificationDeliveryServiceCalled() throws NoSuchFieldException, IOException {
+    NotificationDeliveryService mockNotificationDeliveryService =
+        mock(NotificationDeliveryService.class, RETURNS_DEFAULTS);
+    FieldSetter.setField(
+        localService,
+        localService.getClass().getDeclaredField("deliveryService"),
+        mockNotificationDeliveryService);
+    fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
+    TargetDeliveryRequest targetDeliveryRequest =
+        TargetDeliveryRequest.builder()
+            .context(new Context().channel(ChannelType.WEB))
+            .execute(
+                new ExecuteRequest().addMboxesItem(new MboxRequest().index(0).name("allmatches")))
+            .decisioningMethod(DecisioningMethod.ON_DEVICE)
+            .build();
+    targetJavaClient.getOffers(targetDeliveryRequest);
+    verify(mockNotificationDeliveryService, timeout(1000)).sendNotification(any());
+  }
+
+  @Test
   void testNotificationDeliveryServiceNotCalled() throws NoSuchFieldException, IOException {
     NotificationDeliveryService mockNotificationDeliveryService =
         mock(NotificationDeliveryService.class, RETURNS_DEFAULTS);
