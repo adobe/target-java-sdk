@@ -565,14 +565,6 @@ class TargetDeliveryRequestLocalViewTest {
                       }
                     },
                     "6Na6eWan1u0HrN32JDT54GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-
-            add(
-                new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
-                    "6Na6eWan1u0HrN32JDT54GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
           }
         };
     verifyContent(options, selectors);
@@ -625,20 +617,6 @@ class TargetDeliveryRequestLocalViewTest {
                     "/SXLXTYTqMY5xlnwaQZrEWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
             add(
                 new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
-                    "/SXLXTYTqMY5xlnwaQZrEWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-            add(
-                new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
-                    "/SXLXTYTqMY5xlnwaQZrEWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-            add(
-                new SelectorContent(
                     "insertAfter",
                     "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
                     "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
@@ -655,13 +633,6 @@ class TargetDeliveryRequestLocalViewTest {
                         put("priority", "important");
                       }
                     },
-                    "6Na6eWan1u0HrN32JDT54GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-            add(
-                new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
                     "6Na6eWan1u0HrN32JDT54GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
           }
         };
@@ -735,34 +706,6 @@ class TargetDeliveryRequestLocalViewTest {
                     "/SXLXTYTqMY5xlnwaQZrEWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
             add(
                 new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
-                    "/SXLXTYTqMY5xlnwaQZrEWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-            add(
-                new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
-                    "/SXLXTYTqMY5xlnwaQZrEWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-            add(
-                new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
-                    "/SXLXTYTqMY5xlnwaQZrEWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-            add(
-                new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
-                    "/SXLXTYTqMY5xlnwaQZrEWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-            add(
-                new SelectorContent(
                     "insertAfter",
                     "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
                     "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
@@ -779,13 +722,6 @@ class TargetDeliveryRequestLocalViewTest {
                         put("priority", "important");
                       }
                     },
-                    "6Na6eWan1u0HrN32JDT54GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-            add(
-                new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
                     "6Na6eWan1u0HrN32JDT54GqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
           }
         };
@@ -826,20 +762,6 @@ class TargetDeliveryRequestLocalViewTest {
                     "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
                     "Hello greg",
                     "39UdigzDfmb97ogXP1PN62qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-            add(
-                new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
-                    "39UdigzDfmb97ogXP1PN62qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-            add(
-                new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
-                    "39UdigzDfmb97ogXP1PN62qipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
           }
         };
     verifyContent(options, selectors);
@@ -866,13 +788,6 @@ class TargetDeliveryRequestLocalViewTest {
           {
             add(
                 new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
-                    "39UdigzDfmb97ogXP1PN65NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-            add(
-                new SelectorContent(
                     "setHtml",
                     "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
                     "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
@@ -884,13 +799,6 @@ class TargetDeliveryRequestLocalViewTest {
                     "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(2)",
                     "HTML > BODY > UL:nth-of-type(1) > LI:nth-of-type(2)",
                     "jason is correct",
-                    "39UdigzDfmb97ogXP1PN65NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-            add(
-                new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
                     "39UdigzDfmb97ogXP1PN65NWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
           }
         };
@@ -911,24 +819,10 @@ class TargetDeliveryRequestLocalViewTest {
           {
             add(
                 new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
-                    "39UdigzDfmb97ogXP1PN6wreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-            add(
-                new SelectorContent(
                     "setHtml",
                     "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
                     "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
                     "Hello everyone",
-                    "39UdigzDfmb97ogXP1PN6wreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
-            add(
-                new SelectorContent(
-                    null,
-                    null,
-                    null,
-                    null,
                     "39UdigzDfmb97ogXP1PN6wreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q=="));
             add(
                 new SelectorContent(
@@ -954,7 +848,6 @@ class TargetDeliveryRequestLocalViewTest {
     List<SelectorContent> selectors =
         new ArrayList<SelectorContent>() {
           {
-            add(new SelectorContent(null, null, null, null, null));
             add(
                 new SelectorContent(
                     "setHtml",
@@ -962,7 +855,6 @@ class TargetDeliveryRequestLocalViewTest {
                     "HTML > BODY > DIV:nth-of-type(1) > H1:nth-of-type(1)",
                     "Hello everyone",
                     null));
-            add(new SelectorContent(null, null, null, null, null));
             add(
                 new SelectorContent(
                     "setHtml",

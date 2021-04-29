@@ -263,25 +263,34 @@ public class OnDeviceDecisioningService {
       vid =
           StringUtils.firstNonBlank(
               visitorId.getMarketingCloudVisitorId(),
-              visitorId.getTntId(),
+              removeLocationHint(visitorId.getTntId()),
               visitorId.getThirdPartyId());
     }
     // If no vid found in request, check response in case we have already
     // set our own tntId there in an earlier call
     if (vid == null && targetResponse.getResponse().getId() != null) {
-      vid = targetResponse.getResponse().getId().getTntId();
+      vid = removeLocationHint(targetResponse.getResponse().getId().getTntId());
+    }
+    if (vid != null) {
+      return vid;
     }
     // If vid still null, create new tntId and use that and set it in the response
-    if (vid == null) {
-      vid = generateTntId();
-      if (visitorId == null) {
-        visitorId = new VisitorId().tntId(vid);
-      } else {
-        visitorId.setTntId(vid);
-      }
-      targetResponse.getResponse().setId(visitorId);
+    String newTntId = generateTntId();
+    if (visitorId == null) {
+      visitorId = new VisitorId().tntId(newTntId);
+    } else {
+      visitorId.setTntId(newTntId);
     }
-    return vid;
+    targetResponse.getResponse().setId(visitorId);
+    return removeLocationHint(newTntId);
+  }
+
+  private static String removeLocationHint(String tntId) {
+    if (StringUtils.isEmpty(tntId)) {
+      return tntId;
+    }
+    int index = tntId.indexOf(".");
+    return index <= 0 ? tntId : tntId.substring(0, index);
   }
 
   private String generateTntId() {

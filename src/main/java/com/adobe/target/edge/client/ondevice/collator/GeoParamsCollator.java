@@ -15,10 +15,22 @@ import com.adobe.target.delivery.v1.model.Context;
 import com.adobe.target.delivery.v1.model.Geo;
 import com.adobe.target.delivery.v1.model.RequestDetails;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
+import com.adobe.target.edge.client.utils.StringUtils;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class GeoParamsCollator implements ParamsCollator {
+
+  public static final Map<String, Object> DEFAULT_GEO_PARAMS = new HashMap<String, Object>(){
+    {
+      put(GEO_LATITUDE, null);
+      put(GEO_LONGITUDE, null);
+      put(GEO_CITY, "");
+      put(GEO_REGION, "");
+      put(GEO_COUNTRY, "");
+    }
+  };
 
   protected static final String GEO_LATITUDE = "latitude";
   protected static final String GEO_LONGITUDE = "longitude";
@@ -26,39 +38,23 @@ public class GeoParamsCollator implements ParamsCollator {
   protected static final String GEO_REGION = "region";
   protected static final String GEO_COUNTRY = "country";
 
+
   public Map<String, Object> collateParams(
       TargetDeliveryRequest deliveryRequest, RequestDetails requestDetails) {
     Map<String, Object> params = new HashMap<>();
     Context context = deliveryRequest.getDeliveryRequest().getContext();
-    if (context != null) {
-      Geo geo = context.getGeo();
-      updateGeoParams(params, geo);
+    if (context == null || context.getGeo() == null) {
+      params.putAll(DEFAULT_GEO_PARAMS);
+      return params;
     }
-    return params;
-  }
 
-  public void updateGeoParams(Map<String, Object> params, Geo geo) {
-    if (geo != null) {
-      Float latitude = geo.getLatitude();
-      if (latitude != null) {
-        params.put(GEO_LATITUDE, latitude);
-      }
-      Float longitude = geo.getLongitude();
-      if (longitude != null) {
-        params.put(GEO_LONGITUDE, longitude);
-      }
-      String city = geo.getCity();
-      if (city != null) {
-        params.put(GEO_CITY, city.toUpperCase().replace(" ", ""));
-      }
-      String region = geo.getStateCode();
-      if (region != null) {
-        params.put(GEO_REGION, region.toUpperCase());
-      }
-      String country = geo.getCountryCode();
-      if (country != null) {
-        params.put(GEO_COUNTRY, country.toUpperCase());
-      }
-    }
+    Geo geo = context.getGeo();
+    params.put(GEO_LATITUDE, geo.getLatitude());
+    params.put(GEO_LONGITUDE, geo.getLongitude());
+    params.put(GEO_CITY, StringUtils.isEmpty(geo.getCity()) ? "" : geo.getCity().toUpperCase().replace(" ", ""));
+    params.put(GEO_REGION, StringUtils.isEmpty(geo.getStateCode()) ? "" : geo.getStateCode().toUpperCase());
+    params.put(GEO_COUNTRY, StringUtils.isEmpty(geo.getCountryCode()) ? "" : geo.getCountryCode().toUpperCase());
+
+    return params;
   }
 }

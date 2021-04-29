@@ -118,19 +118,22 @@ public class TargetDeliveryLocalPropertyTest {
   @Test
   void testTargetDeliveryLocalRequestNoPropertyPasses() {
     List<Option> options = optionsForProperty(null, true);
-    verifyPropertyResult(options);
+    assertNotNull(options);
+    assertEquals(0, options.size());
   }
 
   @Test
   void testTargetDeliveryLocalRequestNullPropertyPasses() {
     List<Option> options = optionsForProperty(null, false);
-    verifyPropertyResult(options);
+    assertNotNull(options);
+    assertEquals(0, options.size());
   }
 
   @Test
   void testTargetDeliveryLocalRequestBlankPropertyPasses() {
     List<Option> options = optionsForProperty("", false);
-    verifyPropertyResult(options);
+    assertNotNull(options);
+    assertEquals(0, options.size());
   }
 
   @Test

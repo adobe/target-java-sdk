@@ -32,9 +32,6 @@
         {
           "ruleKey": "345798-0",
           "activityId": "345798",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345798,
             "activityType": "landing",
@@ -101,9 +98,6 @@
         {
           "ruleKey": "345798-1",
           "activityId": "345798",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345798,
             "activityType": "landing",
@@ -173,9 +167,6 @@
         {
           "ruleKey": "345798-0",
           "activityId": "345798",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345798,
             "activityType": "landing",
@@ -242,9 +233,6 @@
         {
           "ruleKey": "345798-1",
           "activityId": "345798",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345798,
             "activityType": "landing",
@@ -314,9 +302,6 @@
         {
           "ruleKey": "345798-0",
           "activityId": "345798",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345798,
             "activityType": "landing",
@@ -370,9 +355,6 @@
         {
           "ruleKey": "345798-1",
           "activityId": "345798",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345798,
             "activityType": "landing",
@@ -431,9 +413,6 @@
         {
           "ruleKey": "345782-0",
           "activityId": "345782",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345782,
             "activityType": "ab",
@@ -515,9 +494,6 @@
         {
           "ruleKey": "345782-1",
           "activityId": "345782",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345782,
             "activityType": "ab",
@@ -599,9 +575,6 @@
         {
           "ruleKey": "345782-2",
           "activityId": "345782",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345782,
             "activityType": "ab",
@@ -683,9 +656,6 @@
         {
           "ruleKey": "345782-3",
           "activityId": "345782",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345782,
             "activityType": "ab",
@@ -767,9 +737,6 @@
         {
           "ruleKey": "345782-4",
           "activityId": "345782",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345782,
             "activityType": "ab",
@@ -842,9 +809,6 @@
         {
           "ruleKey": "345782-5",
           "activityId": "345782",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345782,
             "activityType": "ab",
@@ -917,9 +881,6 @@
         {
           "ruleKey": "345782-0",
           "activityId": "345782",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345782,
             "activityType": "ab",
@@ -1001,9 +962,6 @@
         {
           "ruleKey": "345782-1",
           "activityId": "345782",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345782,
             "activityType": "ab",
@@ -1085,9 +1043,6 @@
         {
           "ruleKey": "345782-2",
           "activityId": "345782",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345782,
             "activityType": "ab",
@@ -1169,9 +1124,6 @@
         {
           "ruleKey": "345782-3",
           "activityId": "345782",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345782,
             "activityType": "ab",
@@ -1253,9 +1205,6 @@
         {
           "ruleKey": "345782-4",
           "activityId": "345782",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345782,
             "activityType": "ab",
@@ -1328,9 +1277,6 @@
         {
           "ruleKey": "345782-5",
           "activityId": "345782",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345782,
             "activityType": "ab",
@@ -1403,9 +1349,6 @@
         {
           "ruleKey": "345779-0",
           "activityId": "345779",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345779,
             "activityType": "ab",
@@ -1472,9 +1415,6 @@
         {
           "ruleKey": "345779-1",
           "activityId": "345779",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345779,
             "activityType": "ab",
@@ -1541,9 +1481,6 @@
         {
           "ruleKey": "345779-0",
           "activityId": "345779",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345779,
             "activityType": "ab",
@@ -1610,9 +1547,6 @@
         {
           "ruleKey": "345779-1",
           "activityId": "345779",
-          "propertyTokens": [
-            "09d97cf9-eb35-4efd-6c40-1dd3b6204e62"
-          ],
           "meta": {
             "activityId": 345779,
             "activityType": "ab",

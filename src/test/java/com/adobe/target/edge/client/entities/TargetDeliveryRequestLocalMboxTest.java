@@ -630,10 +630,10 @@ class TargetDeliveryRequestLocalMboxTest {
     assertEquals(
         new ArrayList<>(
             Arrays.asList(
-                "${mbox.name}", // no mbox name available for pageLoad
-                "362225",
-                "Hello Mickey Mouse",
-                "macros pageLoad")),
+              "362225",
+              "Hello Mickey Mouse",
+              "macros pageLoad",
+              "target-global-mbox")),
         actionContents);
   }
 

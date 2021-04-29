@@ -173,6 +173,9 @@ public class OnDeviceDecisioningDetailsExecutor {
         mboxResponse.setName(mbox.getName());
         mboxResponse.setIndex(mbox.getIndex());
         for (Option option : options) {
+          if (option.getType() == null && option.getContent() == null) {
+            continue;
+          }
           if (executeResponse != null) {
             option.setEventToken(null);
           }
@@ -207,6 +210,9 @@ public class OnDeviceDecisioningDetailsExecutor {
         if (pageLoad != null) {
           pageLoad.setTrace(currentTrace(traceHandler));
           for (Option option : options) {
+            if (option.getType() == null && option.getContent() == null) {
+              continue;
+            }
             if (executeResponse != null) {
               option.setEventToken(null);
             }
@@ -312,11 +318,11 @@ public class OnDeviceDecisioningDetailsExecutor {
   }
 
   private boolean propertyTokenMismatch(List<String> rulePropertyTokens, String propertyToken) {
-    if (StringUtils.isEmpty(propertyToken)) {
-      return false;
-    }
     if (rulePropertyTokens == null || rulePropertyTokens.isEmpty()) {
       return false;
+    }
+    if (StringUtils.isEmpty(propertyToken)) {
+      return true;
     }
     return !rulePropertyTokens.contains(propertyToken);
   }

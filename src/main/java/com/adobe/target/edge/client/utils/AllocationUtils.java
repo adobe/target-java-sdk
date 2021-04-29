@@ -17,11 +17,6 @@ public class AllocationUtils {
 
   public static String getDeviceId(
       String clientId, String activityId, String visitorId, String salt) {
-    int index = visitorId.indexOf(".");
-    if (index > 0) {
-      visitorId = visitorId.substring(0, index);
-    }
-
     return clientId + "." + activityId + "." + visitorId + "." + salt;
   }
 
