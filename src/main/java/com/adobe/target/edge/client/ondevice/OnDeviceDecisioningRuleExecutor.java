@@ -128,7 +128,8 @@ public class OnDeviceDecisioningRuleExecutor {
         } else {
           tokenKey = OnDeviceDecisioningService.CONTEXT_KEY_GEO + "." + key;
         }
-        if (responseTokenKeys.contains(tokenKey) && geoEntry.getValue() != GeoParamsCollator.DEFAULT_GEO_PARAMS.get(geoEntry.getKey())) {
+        if (responseTokenKeys.contains(tokenKey)
+            && geoEntry.getValue() != GeoParamsCollator.DEFAULT_GEO_PARAMS.get(geoEntry.getKey())) {
           responseTokens.put(tokenKey, geoEntry.getValue());
         }
       }

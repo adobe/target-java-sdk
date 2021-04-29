@@ -629,11 +629,7 @@ class TargetDeliveryRequestLocalMboxTest {
 
     assertEquals(
         new ArrayList<>(
-            Arrays.asList(
-              "362225",
-              "Hello Mickey Mouse",
-              "macros pageLoad",
-              "target-global-mbox")),
+            Arrays.asList("362225", "Hello Mickey Mouse", "macros pageLoad", "target-global-mbox")),
         actionContents);
   }
 

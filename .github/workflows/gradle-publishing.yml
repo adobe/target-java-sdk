@@ -50,7 +50,7 @@ jobs:
           echo "GPG_KEY_ID=$(gpg -k --with-colons | grep 'pub' | cut -d':' -f5 | tail -c 9)" >> $GITHUB_ENV
 
       - name: Publish to the Maven Central Repository
-        run: gradle publish
+        run: ./gradlew publish
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           ADOBE_BOT_GITHUB_USERNAME: ${{ secrets.ADOBE_BOT_GITHUB_USERNAME  }}
