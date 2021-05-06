@@ -60,7 +60,7 @@ public class CookieUtils {
       return Collections.EMPTY_MAP;
     }
 
-    int nowInSeconds = (int) (System.currentTimeMillis() / 1000);
+    int nowInSeconds = getNowInSeconds();
     Map<String, String> internalTargetCookies = new HashMap<>();
     final String[] rawInternalCookies = targetCookie.split(Pattern.quote(COOKIE_VALUE_SEPARATOR));
     for (final String rawInternalCookie : rawInternalCookies) {
@@ -91,48 +91,52 @@ public class CookieUtils {
   }
 
   public static Optional<TargetCookie> createTargetCookie(String sessionId, String deviceId) {
-    final long nowInSeconds = System.currentTimeMillis() / 1000;
+    final int nowInSeconds = getNowInSeconds();
     final StringBuilder targetCookieValue = new StringBuilder();
-    long maxAge = 0;
+    int maxAge = 0;
     maxAge = createSessionId(sessionId, nowInSeconds, targetCookieValue, maxAge);
     maxAge = createDeviceId(deviceId, nowInSeconds, targetCookieValue, maxAge);
     TargetCookie targetCookie = null;
     String cookieValue = targetCookieValue.toString();
 
     if (isNotEmpty(cookieValue)) {
-      targetCookie = new TargetCookie(COOKIE_NAME, cookieValue, (int) (maxAge / 1000));
+      targetCookie = new TargetCookie(COOKIE_NAME, cookieValue, maxAge);
     }
 
     return Optional.ofNullable(targetCookie);
   }
 
-  private static long createDeviceId(
-      String deviceId, long nowInSeconds, StringBuilder targetCookieValue, long maxAge) {
+  private static int getNowInSeconds() {
+    return (int) (System.currentTimeMillis() / 1000);
+  }
+
+  private static int createDeviceId(
+      String deviceId, int nowInSeconds, StringBuilder targetCookieValue, int maxAge) {
     if (isEmpty(deviceId)) {
       return maxAge;
     }
 
-    long deviceIdMaxAge = nowInSeconds + DEVICE_ID_COOKIE_MAX_AGE;
+    int deviceIdMaxAge = nowInSeconds + DEVICE_ID_COOKIE_MAX_AGE;
     maxAge = Math.max(maxAge, deviceIdMaxAge);
     appendCookieValue(deviceId, targetCookieValue, deviceIdMaxAge, DEVICE_ID_COOKIE_NAME);
 
     return maxAge;
   }
 
-  private static long createSessionId(
-      String sessionId, long nowInSeconds, StringBuilder targetCookieValue, long maxAge) {
+  private static int createSessionId(
+      String sessionId, int nowInSeconds, StringBuilder targetCookieValue, int maxAge) {
     if (isEmpty(sessionId)) {
       return maxAge;
     }
 
-    long sessionIdMaxAge = nowInSeconds + SESSION_ID_COOKIE_MAX_AGE;
+    int sessionIdMaxAge = nowInSeconds + SESSION_ID_COOKIE_MAX_AGE;
     maxAge = sessionIdMaxAge;
     appendCookieValue(sessionId, targetCookieValue, sessionIdMaxAge, SESSION_ID_COOKIE_NAME);
     return maxAge;
   }
 
   private static void appendCookieValue(
-      String id, StringBuilder targetCookieValue, long maxAge, String cookieName) {
+      String id, StringBuilder targetCookieValue, int maxAge, String cookieName) {
     targetCookieValue
         .append(cookieName)
         .append(INTERNAL_COOKIE_SERIALIZATION_SEPARATOR)
@@ -144,13 +148,13 @@ public class CookieUtils {
 
   public static Optional<TargetCookie> createClusterCookie(String tntId) {
     if (tntId == null) {
-      return Optional.ofNullable(null);
+      return Optional.empty();
     }
     TargetCookie targetCookie = null;
     String locationHint = locationHintFromTntId(tntId);
     if (locationHint != null) {
-      long maxAge = System.currentTimeMillis() / 1000 + CLUSTER_LOCATION_HINT_MAX_AGE;
-      targetCookie = new TargetCookie(CLUSTER_COOKIE_NAME, locationHint, (int) (maxAge / 1000));
+      int maxAge = getNowInSeconds() + CLUSTER_LOCATION_HINT_MAX_AGE;
+      targetCookie = new TargetCookie(CLUSTER_COOKIE_NAME, locationHint, maxAge);
     }
     return Optional.ofNullable(targetCookie);
   }
