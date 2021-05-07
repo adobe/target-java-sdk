@@ -118,7 +118,7 @@ class TargetTelemetryTest {
         TargetDeliveryRequest.builder()
             .context(new Context().channel(ChannelType.WEB))
             .execute(
-                new ExecuteRequest().addMboxesItem(new MboxRequest().index(0).name("allmatches")))
+                new ExecuteRequest().addMboxesItem(new MboxRequest().index(1).name("allmatches")))
             .decisioningMethod(DecisioningMethod.ON_DEVICE)
             .build();
     targetJavaClient.getOffers(targetDeliveryRequest);
@@ -157,7 +157,7 @@ class TargetTelemetryTest {
         TargetDeliveryRequest.builder()
             .context(new Context().channel(ChannelType.WEB))
             .prefetch(
-                new PrefetchRequest().addMboxesItem(new MboxRequest().index(0).name("allmatches")))
+                new PrefetchRequest().addMboxesItem(new MboxRequest().index(1).name("allmatches")))
             .decisioningMethod(DecisioningMethod.ON_DEVICE)
             .build();
     targetJavaClient.getOffers(targetDeliveryRequest);
@@ -195,7 +195,7 @@ class TargetTelemetryTest {
         TargetDeliveryRequest.builder()
             .context(new Context().channel(ChannelType.WEB))
             .prefetch(
-                new PrefetchRequest().addMboxesItem(new MboxRequest().index(0).name("allmatches")))
+                new PrefetchRequest().addMboxesItem(new MboxRequest().index(1).name("allmatches")))
             .decisioningMethod(DecisioningMethod.ON_DEVICE)
             .build();
     targetJavaClient.getOffers(targetDeliveryRequest);
@@ -217,7 +217,7 @@ class TargetTelemetryTest {
         TargetDeliveryRequest.builder()
             .context(new Context().channel(ChannelType.WEB))
             .execute(
-                new ExecuteRequest().addMboxesItem(new MboxRequest().index(0).name("allmatches")))
+                new ExecuteRequest().addMboxesItem(new MboxRequest().index(1).name("allmatches")))
             .decisioningMethod(DecisioningMethod.ON_DEVICE)
             .build();
     targetJavaClient.getOffers(targetDeliveryRequest);

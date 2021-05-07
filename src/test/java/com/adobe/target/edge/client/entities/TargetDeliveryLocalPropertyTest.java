@@ -156,7 +156,7 @@ public class TargetDeliveryLocalPropertyTest {
             .context(new Context().address(new Address().url("https://test.com")))
             .prefetch(
                 new PrefetchRequest()
-                    .addMboxesItem(new MboxRequest().name("superfluous-mbox").index(0)))
+                    .addMboxesItem(new MboxRequest().name("superfluous-mbox").index(1)))
             .id(new VisitorId().tntId("38734fba-262c-4722-b4a3-ac0a93916874"))
             .decisioningMethod(DecisioningMethod.HYBRID);
     if (!noProperty) {
@@ -177,7 +177,7 @@ public class TargetDeliveryLocalPropertyTest {
     assertEquals(1, mboxResponses.size());
     PrefetchMboxResponse mboxResponse = mboxResponses.get(0);
     assertNotNull(mboxResponse);
-    assertEquals(0, mboxResponse.getIndex());
+    assertEquals(1, mboxResponse.getIndex());
     assertEquals("superfluous-mbox", mboxResponse.getName());
     return mboxResponse.getOptions();
   }

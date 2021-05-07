@@ -152,13 +152,13 @@ public class DefaultTargetClient implements TargetClient {
       targetRequest =
           TargetDeliveryRequest.builder().decisioningMethod(DecisioningMethod.HYBRID).build();
     }
-    int idx = 0;
-    Set<String> existingMBoxNames = new HashSet<>();
+    int index = 1;
+    Set<String> existingMboxNames = new HashSet<>();
     DeliveryRequest deliveryRequest = targetRequest.getDeliveryRequest();
     PrefetchRequest prefetchRequest = deliveryRequest.getPrefetch();
     if (prefetchRequest != null && prefetchRequest.getMboxes() != null) {
       for (MboxRequest mb : prefetchRequest.getMboxes()) {
-        existingMBoxNames.add(mb.getName());
+        existingMboxNames.add(mb.getName());
       }
     }
     ExecuteRequest executeRequest = deliveryRequest.getExecute();
@@ -166,20 +166,20 @@ public class DefaultTargetClient implements TargetClient {
       List<MboxRequest> executeMboxes = executeRequest.getMboxes();
       if (executeMboxes != null) {
         for (MboxRequest mb : executeMboxes) {
-          if (mb.getIndex() >= idx) {
-            idx = mb.getIndex() + 1;
+          if (mb.getIndex() >= index) {
+            index = mb.getIndex() + 1;
           }
-          existingMBoxNames.add(mb.getName());
+          existingMboxNames.add(mb.getName());
         }
       }
     }
     for (String mbox : mboxes) {
-      if (!existingMBoxNames.contains(mbox)) {
+      if (!existingMboxNames.contains(mbox)) {
         if (executeRequest == null) {
           executeRequest = new ExecuteRequest();
           targetRequest.getDeliveryRequest().setExecute(executeRequest);
         }
-        executeRequest.addMboxesItem(new MboxRequest().index(idx++).name(mbox));
+        executeRequest.addMboxesItem(new MboxRequest().index(index++).name(mbox));
       }
     }
     return targetRequest;
