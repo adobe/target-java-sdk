@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.5] - 2021-05-06
+### Changed
+- Fix incorrect MaxAge set in response cookies
+
 ## [2.1.4] - 2021-04-29
 ### Changed
 - Fix incorrect handling of error scenario in `TargetMetrics.begin()`
