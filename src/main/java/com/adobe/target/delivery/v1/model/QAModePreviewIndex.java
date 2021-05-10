@@ -11,22 +11,31 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 /** QAModePreviewIndex */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({
+  QAModePreviewIndex.JSON_PROPERTY_ACTIVITY_INDEX,
+  QAModePreviewIndex.JSON_PROPERTY_EXPERIENCE_INDEX
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class QAModePreviewIndex {
-  @JsonProperty("activityIndex")
+  public static final String JSON_PROPERTY_ACTIVITY_INDEX = "activityIndex";
   private Integer activityIndex;
 
-  @JsonProperty("experienceIndex")
+  public static final String JSON_PROPERTY_EXPERIENCE_INDEX = "experienceIndex";
   private Integer experienceIndex;
 
   public QAModePreviewIndex activityIndex(Integer activityIndex) {
+
     this.activityIndex = activityIndex;
     return this;
   }
@@ -39,6 +48,12 @@ public class QAModePreviewIndex {
    *
    * @return activityIndex
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Index references the activity in the activity list (from the encrypted token). Validation   * If the activity list index is out of boundaries of the activities list in the token or if it is null it will  be ignored.   * Activity list index starts with 1.   * Should be at least one activity index, and should reference an activity specified in the token. ")
+  @JsonProperty(JSON_PROPERTY_ACTIVITY_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getActivityIndex() {
     return activityIndex;
   }
@@ -48,6 +63,7 @@ public class QAModePreviewIndex {
   }
 
   public QAModePreviewIndex experienceIndex(Integer experienceIndex) {
+
     this.experienceIndex = experienceIndex;
     return this;
   }
@@ -60,6 +76,12 @@ public class QAModePreviewIndex {
    *
    * @return experienceIndex
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "When specified, the experience with this index in the activity definition will be selected. Validation   * Can be null (unspecified)   * If index is not specified or out of bounds, the experience will be selected via activity experience selector strategy.   * Experience index starts with 1. ")
+  @JsonProperty(JSON_PROPERTY_EXPERIENCE_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getExperienceIndex() {
     return experienceIndex;
   }
@@ -69,7 +91,7 @@ public class QAModePreviewIndex {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -99,7 +121,7 @@ public class QAModePreviewIndex {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

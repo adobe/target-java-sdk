@@ -11,57 +11,81 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /** DeliveryRequest */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({
+  DeliveryRequest.JSON_PROPERTY_REQUEST_ID,
+  DeliveryRequest.JSON_PROPERTY_IMPRESSION_ID,
+  DeliveryRequest.JSON_PROPERTY_ID,
+  DeliveryRequest.JSON_PROPERTY_ENVIRONMENT_ID,
+  DeliveryRequest.JSON_PROPERTY_PROPERTY,
+  DeliveryRequest.JSON_PROPERTY_TRACE,
+  DeliveryRequest.JSON_PROPERTY_CONTEXT,
+  DeliveryRequest.JSON_PROPERTY_EXPERIENCE_CLOUD,
+  DeliveryRequest.JSON_PROPERTY_EXECUTE,
+  DeliveryRequest.JSON_PROPERTY_PREFETCH,
+  DeliveryRequest.JSON_PROPERTY_TELEMETRY,
+  DeliveryRequest.JSON_PROPERTY_NOTIFICATIONS,
+  DeliveryRequest.JSON_PROPERTY_QA_MODE,
+  DeliveryRequest.JSON_PROPERTY_PREVIEW
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class DeliveryRequest {
-  @JsonProperty("requestId")
+  public static final String JSON_PROPERTY_REQUEST_ID = "requestId";
   private String requestId;
 
-  @JsonProperty("impressionId")
+  public static final String JSON_PROPERTY_IMPRESSION_ID = "impressionId";
   private String impressionId;
 
-  @JsonProperty("id")
-  private VisitorId id = null;
+  public static final String JSON_PROPERTY_ID = "id";
+  private VisitorId id;
 
-  @JsonProperty("environmentId")
+  public static final String JSON_PROPERTY_ENVIRONMENT_ID = "environmentId";
   private Long environmentId;
 
-  @JsonProperty("property")
-  private Property property = null;
+  public static final String JSON_PROPERTY_PROPERTY = "property";
+  private Property property;
 
-  @JsonProperty("trace")
-  private Trace trace = null;
+  public static final String JSON_PROPERTY_TRACE = "trace";
+  private Trace trace;
 
-  @JsonProperty("context")
-  private Context context = null;
+  public static final String JSON_PROPERTY_CONTEXT = "context";
+  private Context context;
 
-  @JsonProperty("experienceCloud")
-  private ExperienceCloud experienceCloud = null;
+  public static final String JSON_PROPERTY_EXPERIENCE_CLOUD = "experienceCloud";
+  private ExperienceCloud experienceCloud;
 
-  @JsonProperty("execute")
-  private ExecuteRequest execute = null;
+  public static final String JSON_PROPERTY_EXECUTE = "execute";
+  private ExecuteRequest execute;
 
-  @JsonProperty("prefetch")
-  private PrefetchRequest prefetch = null;
+  public static final String JSON_PROPERTY_PREFETCH = "prefetch";
+  private PrefetchRequest prefetch;
 
-  @JsonProperty("notifications")
-  private List<Notification> notifications = new ArrayList<>();
+  public static final String JSON_PROPERTY_TELEMETRY = "telemetry";
+  private Telemetry telemetry;
 
-  @JsonProperty("telemetry")
-  private Telemetry telemetry = null;
+  public static final String JSON_PROPERTY_NOTIFICATIONS = "notifications";
+  private List<Notification> notifications = null;
 
-  @JsonProperty("qaMode")
-  private QAMode qaMode = null;
+  public static final String JSON_PROPERTY_QA_MODE = "qaMode";
+  private QAMode qaMode;
+
+  public static final String JSON_PROPERTY_PREVIEW = "preview";
+  private Preview preview;
 
   public DeliveryRequest requestId(String requestId) {
+
     this.requestId = requestId;
     return this;
   }
@@ -72,6 +96,12 @@ public class DeliveryRequest {
    *
    * @return requestId
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "The request ID that will be returned in the response. In case it is not provided, an UUID is generated and returned automatically. ")
+  @JsonProperty(JSON_PROPERTY_REQUEST_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getRequestId() {
     return requestId;
   }
@@ -81,6 +111,7 @@ public class DeliveryRequest {
   }
 
   public DeliveryRequest impressionId(String impressionId) {
+
     this.impressionId = impressionId;
     return this;
   }
@@ -92,6 +123,12 @@ public class DeliveryRequest {
    *
    * @return impressionId
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "If not present it will be automatically generated (UUID). If present,  second and subsequent requests with the same id will not increment impressions to activities/metrics. Similar to page id. ")
+  @JsonProperty(JSON_PROPERTY_IMPRESSION_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getImpressionId() {
     return impressionId;
   }
@@ -101,6 +138,7 @@ public class DeliveryRequest {
   }
 
   public DeliveryRequest id(VisitorId id) {
+
     this.id = id;
     return this;
   }
@@ -110,6 +148,10 @@ public class DeliveryRequest {
    *
    * @return id
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public VisitorId getId() {
     return id;
   }
@@ -119,6 +161,7 @@ public class DeliveryRequest {
   }
 
   public DeliveryRequest environmentId(Long environmentId) {
+
     this.environmentId = environmentId;
     return this;
   }
@@ -129,6 +172,12 @@ public class DeliveryRequest {
    *
    * @return environmentId
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Valid client environment id. If not specified host will be determined base on the provided host.")
+  @JsonProperty(JSON_PROPERTY_ENVIRONMENT_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getEnvironmentId() {
     return environmentId;
   }
@@ -138,6 +187,7 @@ public class DeliveryRequest {
   }
 
   public DeliveryRequest property(Property property) {
+
     this.property = property;
     return this;
   }
@@ -147,6 +197,10 @@ public class DeliveryRequest {
    *
    * @return property
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_PROPERTY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Property getProperty() {
     return property;
   }
@@ -156,6 +210,7 @@ public class DeliveryRequest {
   }
 
   public DeliveryRequest trace(Trace trace) {
+
     this.trace = trace;
     return this;
   }
@@ -165,6 +220,10 @@ public class DeliveryRequest {
    *
    * @return trace
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_TRACE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Trace getTrace() {
     return trace;
   }
@@ -174,6 +233,7 @@ public class DeliveryRequest {
   }
 
   public DeliveryRequest context(Context context) {
+
     this.context = context;
     return this;
   }
@@ -183,6 +243,9 @@ public class DeliveryRequest {
    *
    * @return context
    */
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(JSON_PROPERTY_CONTEXT)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Context getContext() {
     return context;
   }
@@ -192,6 +255,7 @@ public class DeliveryRequest {
   }
 
   public DeliveryRequest experienceCloud(ExperienceCloud experienceCloud) {
+
     this.experienceCloud = experienceCloud;
     return this;
   }
@@ -201,6 +265,10 @@ public class DeliveryRequest {
    *
    * @return experienceCloud
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_EXPERIENCE_CLOUD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ExperienceCloud getExperienceCloud() {
     return experienceCloud;
   }
@@ -210,6 +278,7 @@ public class DeliveryRequest {
   }
 
   public DeliveryRequest execute(ExecuteRequest execute) {
+
     this.execute = execute;
     return this;
   }
@@ -219,6 +288,10 @@ public class DeliveryRequest {
    *
    * @return execute
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_EXECUTE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ExecuteRequest getExecute() {
     return execute;
   }
@@ -228,6 +301,7 @@ public class DeliveryRequest {
   }
 
   public DeliveryRequest prefetch(PrefetchRequest prefetch) {
+
     this.prefetch = prefetch;
     return this;
   }
@@ -237,6 +311,10 @@ public class DeliveryRequest {
    *
    * @return prefetch
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_PREFETCH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PrefetchRequest getPrefetch() {
     return prefetch;
   }
@@ -246,30 +324,37 @@ public class DeliveryRequest {
   }
 
   public DeliveryRequest telemetry(Telemetry telemetry) {
+
     this.telemetry = telemetry;
     return this;
   }
 
+  /**
+   * Get telemetry
+   *
+   * @return telemetry
+   */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_TELEMETRY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Telemetry getTelemetry() {
     return telemetry;
   }
 
-  public DeliveryRequest addTelemetryEntry(TelemetryEntry telemetryEntry) {
-    if (this.telemetry == null) {
-      this.telemetry = new Telemetry();
-    }
-    this.telemetry.addTelemetryEntry(telemetryEntry);
-    return this;
+  public void setTelemetry(Telemetry telemetry) {
+    this.telemetry = telemetry;
   }
 
   public DeliveryRequest notifications(List<Notification> notifications) {
+
     this.notifications = notifications;
     return this;
   }
 
   public DeliveryRequest addNotificationsItem(Notification notificationsItem) {
     if (this.notifications == null) {
-      this.notifications = new ArrayList<>();
+      this.notifications = new ArrayList<Notification>();
     }
     this.notifications.add(notificationsItem);
     return this;
@@ -280,6 +365,12 @@ public class DeliveryRequest {
    *
    * @return notifications
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Notifications for the displayed content, clicked selectors, and/or visited views or mboxes.")
+  @JsonProperty(JSON_PROPERTY_NOTIFICATIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Notification> getNotifications() {
     return notifications;
   }
@@ -289,6 +380,7 @@ public class DeliveryRequest {
   }
 
   public DeliveryRequest qaMode(QAMode qaMode) {
+
     this.qaMode = qaMode;
     return this;
   }
@@ -298,6 +390,10 @@ public class DeliveryRequest {
    *
    * @return qaMode
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_QA_MODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public QAMode getQaMode() {
     return qaMode;
   }
@@ -306,8 +402,31 @@ public class DeliveryRequest {
     this.qaMode = qaMode;
   }
 
+  public DeliveryRequest preview(Preview preview) {
+
+    this.preview = preview;
+    return this;
+  }
+
+  /**
+   * Get preview
+   *
+   * @return preview
+   */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_PREVIEW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public Preview getPreview() {
+    return preview;
+  }
+
+  public void setPreview(Preview preview) {
+    this.preview = preview;
+  }
+
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -325,8 +444,10 @@ public class DeliveryRequest {
         && Objects.equals(this.experienceCloud, deliveryRequest.experienceCloud)
         && Objects.equals(this.execute, deliveryRequest.execute)
         && Objects.equals(this.prefetch, deliveryRequest.prefetch)
+        && Objects.equals(this.telemetry, deliveryRequest.telemetry)
         && Objects.equals(this.notifications, deliveryRequest.notifications)
-        && Objects.equals(this.qaMode, deliveryRequest.qaMode);
+        && Objects.equals(this.qaMode, deliveryRequest.qaMode)
+        && Objects.equals(this.preview, deliveryRequest.preview);
   }
 
   @Override
@@ -342,8 +463,10 @@ public class DeliveryRequest {
         experienceCloud,
         execute,
         prefetch,
+        telemetry,
         notifications,
-        qaMode);
+        qaMode,
+        preview);
   }
 
   @Override
@@ -360,8 +483,10 @@ public class DeliveryRequest {
     sb.append("    experienceCloud: ").append(toIndentedString(experienceCloud)).append("\n");
     sb.append("    execute: ").append(toIndentedString(execute)).append("\n");
     sb.append("    prefetch: ").append(toIndentedString(prefetch)).append("\n");
+    sb.append("    telemetry: ").append(toIndentedString(telemetry)).append("\n");
     sb.append("    notifications: ").append(toIndentedString(notifications)).append("\n");
     sb.append("    qaMode: ").append(toIndentedString(qaMode)).append("\n");
+    sb.append("    preview: ").append(toIndentedString(preview)).append("\n");
     sb.append("}");
     return sb.toString();
   }
@@ -369,7 +494,7 @@ public class DeliveryRequest {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

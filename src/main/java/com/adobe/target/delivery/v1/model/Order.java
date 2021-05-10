@@ -11,10 +11,13 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -22,30 +25,43 @@ import java.util.List;
 import java.util.Objects;
 
 /** Object that describes the order details. */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(description = "Object that describes the order details.")
+@JsonPropertyOrder({
+  Order.JSON_PROPERTY_ID,
+  Order.JSON_PROPERTY_TOTAL,
+  Order.JSON_PROPERTY_PURCHASED_PRODUCT_IDS,
+  Order.JSON_PROPERTY_TIME,
+  Order.JSON_PROPERTY_EXPERIENCE_LOCAL_ID,
+  Order.JSON_PROPERTY_DUPLICATE,
+  Order.JSON_PROPERTY_OUTLIER
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class Order {
-  @JsonProperty("id")
+  public static final String JSON_PROPERTY_ID = "id";
   private String id;
 
-  @JsonProperty("total")
+  public static final String JSON_PROPERTY_TOTAL = "total";
   private BigDecimal total;
 
-  @JsonProperty("purchasedProductIds")
-  private List<String> purchasedProductIds = new ArrayList<>();
+  public static final String JSON_PROPERTY_PURCHASED_PRODUCT_IDS = "purchasedProductIds";
+  private List<String> purchasedProductIds = null;
 
-  @JsonProperty("time")
-  private OffsetDateTime time;
+  public static final String JSON_PROPERTY_TIME = "time";
+  private OffsetDateTime time = null;
 
-  @JsonProperty("experienceLocalId")
+  public static final String JSON_PROPERTY_EXPERIENCE_LOCAL_ID = "experienceLocalId";
   private Integer experienceLocalId;
 
-  @JsonProperty("duplicate")
+  public static final String JSON_PROPERTY_DUPLICATE = "duplicate";
   private Boolean duplicate;
 
-  @JsonProperty("outlier")
+  public static final String JSON_PROPERTY_OUTLIER = "outlier";
   private Boolean outlier;
 
   public Order id(String id) {
+
     this.id = id;
     return this;
   }
@@ -55,6 +71,10 @@ public class Order {
    *
    * @return id
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Order Id.")
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
@@ -64,6 +84,7 @@ public class Order {
   }
 
   public Order total(BigDecimal total) {
+
     this.total = total;
     return this;
   }
@@ -73,6 +94,10 @@ public class Order {
    *
    * @return total
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Order Total. The amount of money in the current order. ")
+  @JsonProperty(JSON_PROPERTY_TOTAL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public BigDecimal getTotal() {
     return total;
   }
@@ -82,13 +107,14 @@ public class Order {
   }
 
   public Order purchasedProductIds(List<String> purchasedProductIds) {
+
     this.purchasedProductIds = purchasedProductIds;
     return this;
   }
 
   public Order addPurchasedProductIdsItem(String purchasedProductIdsItem) {
     if (this.purchasedProductIds == null) {
-      this.purchasedProductIds = new ArrayList<>();
+      this.purchasedProductIds = new ArrayList<String>();
     }
     this.purchasedProductIds.add(purchasedProductIdsItem);
     return this;
@@ -100,6 +126,12 @@ public class Order {
    *
    * @return purchasedProductIds
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Order's product ids. Validation   * No blank values allowed.   * Each product Id max length 50.   * Product ids, separated by commas and concatenated, total length should not exceed 250. ")
+  @JsonProperty(JSON_PROPERTY_PURCHASED_PRODUCT_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<String> getPurchasedProductIds() {
     return purchasedProductIds;
   }
@@ -109,15 +141,22 @@ public class Order {
   }
 
   public Order time(OffsetDateTime time) {
+
     this.time = time;
     return this;
   }
 
   /**
-   * Time in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format
+   * Time in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Time_intervals) format
    *
    * @return time
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Time in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Time_intervals) format ")
+  @JsonProperty(JSON_PROPERTY_TIME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OffsetDateTime getTime() {
     return time;
   }
@@ -127,6 +166,7 @@ public class Order {
   }
 
   public Order experienceLocalId(Integer experienceLocalId) {
+
     this.experienceLocalId = experienceLocalId;
     return this;
   }
@@ -136,6 +176,10 @@ public class Order {
    *
    * @return experienceLocalId
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Id used to track the experience across POST/PUT requests")
+  @JsonProperty(JSON_PROPERTY_EXPERIENCE_LOCAL_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Integer getExperienceLocalId() {
     return experienceLocalId;
   }
@@ -145,6 +189,7 @@ public class Order {
   }
 
   public Order duplicate(Boolean duplicate) {
+
     this.duplicate = duplicate;
     return this;
   }
@@ -154,6 +199,10 @@ public class Order {
    *
    * @return duplicate
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Whether or not the order is a duplicate")
+  @JsonProperty(JSON_PROPERTY_DUPLICATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getDuplicate() {
     return duplicate;
   }
@@ -163,6 +212,7 @@ public class Order {
   }
 
   public Order outlier(Boolean outlier) {
+
     this.outlier = outlier;
     return this;
   }
@@ -172,6 +222,11 @@ public class Order {
    *
    * @return outlier
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value = "Whether or not the order is abnormally different from the rest in volume")
+  @JsonProperty(JSON_PROPERTY_OUTLIER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getOutlier() {
     return outlier;
   }
@@ -181,7 +236,7 @@ public class Order {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -224,7 +279,7 @@ public class Order {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

@@ -11,31 +11,44 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 /** UnexpectedError */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({UnexpectedError.JSON_PROPERTY_STATUS, UnexpectedError.JSON_PROPERTY_MESSAGE})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class UnexpectedError {
-  @JsonProperty("status")
+  public static final String JSON_PROPERTY_STATUS = "status";
   private Integer status;
 
-  @JsonProperty("message")
+  public static final String JSON_PROPERTY_MESSAGE = "message";
   private String message;
 
   public UnexpectedError status(Integer status) {
+
     this.status = status;
     return this;
   }
 
   /**
-   * Get status
+   * HTTP response codes: * &#x60;400&#x60; - Validation error (ex. invalid token) * &#x60;500&#x60;
+   * - An internal server error during processing
    *
    * @return status
    */
+  @ApiModelProperty(
+      required = true,
+      value =
+          "HTTP response codes: * `400` - Validation error (ex. invalid token) * `500` - An internal server error during processing ")
+  @JsonProperty(JSON_PROPERTY_STATUS)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Integer getStatus() {
     return status;
   }
@@ -45,15 +58,19 @@ public class UnexpectedError {
   }
 
   public UnexpectedError message(String message) {
+
     this.message = message;
     return this;
   }
 
   /**
-   * Get message
+   * error message
    *
    * @return message
    */
+  @ApiModelProperty(required = true, value = "error message")
+  @JsonProperty(JSON_PROPERTY_MESSAGE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getMessage() {
     return message;
   }
@@ -63,7 +80,7 @@ public class UnexpectedError {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -93,7 +110,7 @@ public class UnexpectedError {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

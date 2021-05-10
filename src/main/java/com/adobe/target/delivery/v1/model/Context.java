@@ -11,52 +11,74 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 /**
  * Specifies the context for the request, IE if it a web request then is should include user agent
  * etc.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(
+    description =
+        "Specifies the context for the request, IE if it a web request then is should include user agent etc.")
+@JsonPropertyOrder({
+  Context.JSON_PROPERTY_CHANNEL,
+  Context.JSON_PROPERTY_MOBILE_PLATFORM,
+  Context.JSON_PROPERTY_APPLICATION,
+  Context.JSON_PROPERTY_SCREEN,
+  Context.JSON_PROPERTY_WINDOW,
+  Context.JSON_PROPERTY_BROWSER,
+  Context.JSON_PROPERTY_ADDRESS,
+  Context.JSON_PROPERTY_GEO,
+  Context.JSON_PROPERTY_TIME_OFFSET_IN_MINUTES,
+  Context.JSON_PROPERTY_USER_AGENT,
+  Context.JSON_PROPERTY_BEACON
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class Context {
-  @JsonProperty("channel")
-  private ChannelType channel = null;
+  public static final String JSON_PROPERTY_CHANNEL = "channel";
+  private ChannelType channel;
 
-  @JsonProperty("mobilePlatform")
-  private MobilePlatform mobilePlatform = null;
+  public static final String JSON_PROPERTY_MOBILE_PLATFORM = "mobilePlatform";
+  private MobilePlatform mobilePlatform;
 
-  @JsonProperty("application")
-  private Application application = null;
+  public static final String JSON_PROPERTY_APPLICATION = "application";
+  private Application application;
 
-  @JsonProperty("screen")
-  private Screen screen = null;
+  public static final String JSON_PROPERTY_SCREEN = "screen";
+  private Screen screen;
 
-  @JsonProperty("window")
-  private Window window = null;
+  public static final String JSON_PROPERTY_WINDOW = "window";
+  private Window window;
 
-  @JsonProperty("browser")
-  private Browser browser = null;
+  public static final String JSON_PROPERTY_BROWSER = "browser";
+  private Browser browser;
 
-  @JsonProperty("address")
-  private Address address = null;
+  public static final String JSON_PROPERTY_ADDRESS = "address";
+  private Address address;
 
-  @JsonProperty("geo")
-  private Geo geo = null;
+  public static final String JSON_PROPERTY_GEO = "geo";
+  private Geo geo;
 
-  @JsonProperty("timeOffsetInMinutes")
+  public static final String JSON_PROPERTY_TIME_OFFSET_IN_MINUTES = "timeOffsetInMinutes";
   private Double timeOffsetInMinutes;
 
-  @JsonProperty("userAgent")
+  public static final String JSON_PROPERTY_USER_AGENT = "userAgent";
   private String userAgent;
 
-  @JsonProperty("beacon")
+  public static final String JSON_PROPERTY_BEACON = "beacon";
   private Boolean beacon = false;
 
   public Context channel(ChannelType channel) {
+
     this.channel = channel;
     return this;
   }
@@ -66,6 +88,9 @@ public class Context {
    *
    * @return channel
    */
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(JSON_PROPERTY_CHANNEL)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public ChannelType getChannel() {
     return channel;
   }
@@ -75,6 +100,7 @@ public class Context {
   }
 
   public Context mobilePlatform(MobilePlatform mobilePlatform) {
+
     this.mobilePlatform = mobilePlatform;
     return this;
   }
@@ -84,6 +110,10 @@ public class Context {
    *
    * @return mobilePlatform
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_MOBILE_PLATFORM)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public MobilePlatform getMobilePlatform() {
     return mobilePlatform;
   }
@@ -93,6 +123,7 @@ public class Context {
   }
 
   public Context application(Application application) {
+
     this.application = application;
     return this;
   }
@@ -102,6 +133,10 @@ public class Context {
    *
    * @return application
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_APPLICATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Application getApplication() {
     return application;
   }
@@ -111,6 +146,7 @@ public class Context {
   }
 
   public Context screen(Screen screen) {
+
     this.screen = screen;
     return this;
   }
@@ -120,6 +156,10 @@ public class Context {
    *
    * @return screen
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_SCREEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Screen getScreen() {
     return screen;
   }
@@ -129,6 +169,7 @@ public class Context {
   }
 
   public Context window(Window window) {
+
     this.window = window;
     return this;
   }
@@ -138,6 +179,10 @@ public class Context {
    *
    * @return window
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_WINDOW)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Window getWindow() {
     return window;
   }
@@ -147,6 +192,7 @@ public class Context {
   }
 
   public Context browser(Browser browser) {
+
     this.browser = browser;
     return this;
   }
@@ -156,6 +202,10 @@ public class Context {
    *
    * @return browser
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_BROWSER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Browser getBrowser() {
     return browser;
   }
@@ -165,6 +215,7 @@ public class Context {
   }
 
   public Context address(Address address) {
+
     this.address = address;
     return this;
   }
@@ -174,6 +225,10 @@ public class Context {
    *
    * @return address
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_ADDRESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Address getAddress() {
     return address;
   }
@@ -183,6 +238,7 @@ public class Context {
   }
 
   public Context geo(Geo geo) {
+
     this.geo = geo;
     return this;
   }
@@ -192,6 +248,10 @@ public class Context {
    *
    * @return geo
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_GEO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Geo getGeo() {
     return geo;
   }
@@ -201,6 +261,7 @@ public class Context {
   }
 
   public Context timeOffsetInMinutes(Double timeOffsetInMinutes) {
+
     this.timeOffsetInMinutes = timeOffsetInMinutes;
     return this;
   }
@@ -210,6 +271,10 @@ public class Context {
    *
    * @return timeOffsetInMinutes
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Specifies minutes from UTC for specific client")
+  @JsonProperty(JSON_PROPERTY_TIME_OFFSET_IN_MINUTES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getTimeOffsetInMinutes() {
     return timeOffsetInMinutes;
   }
@@ -219,6 +284,7 @@ public class Context {
   }
 
   public Context userAgent(String userAgent) {
+
     this.userAgent = userAgent;
     return this;
   }
@@ -228,6 +294,12 @@ public class Context {
    *
    * @return userAgent
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "User-Agent should be sent only via this property. HTTP header User-Agent is ignored.")
+  @JsonProperty(JSON_PROPERTY_USER_AGENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUserAgent() {
     return userAgent;
   }
@@ -237,6 +309,7 @@ public class Context {
   }
 
   public Context beacon(Boolean beacon) {
+
     this.beacon = beacon;
     return this;
   }
@@ -247,6 +320,12 @@ public class Context {
    *
    * @return beacon
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "In case beacon = true is provided in the request, the server will return a 204 No Content response with no response body. ")
+  @JsonProperty(JSON_PROPERTY_BEACON)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getBeacon() {
     return beacon;
   }
@@ -256,7 +335,7 @@ public class Context {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -317,7 +396,7 @@ public class Context {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

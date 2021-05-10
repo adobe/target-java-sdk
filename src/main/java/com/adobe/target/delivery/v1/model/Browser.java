@@ -11,25 +11,37 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 /** Browser object may be specified only when the Channel is Web. */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(description = "Browser object may be specified only when the Channel is Web.")
+@JsonPropertyOrder({
+  Browser.JSON_PROPERTY_HOST,
+  Browser.JSON_PROPERTY_LANGUAGE,
+  Browser.JSON_PROPERTY_WEB_G_L_RENDERER
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class Browser {
-  @JsonProperty("host")
+  public static final String JSON_PROPERTY_HOST = "host";
   private String host;
 
-  @JsonProperty("language")
+  public static final String JSON_PROPERTY_LANGUAGE = "language";
   private String language;
 
-  @JsonProperty("webGLRenderer")
+  public static final String JSON_PROPERTY_WEB_G_L_RENDERER = "webGLRenderer";
   private String webGLRenderer;
 
   public Browser host(String host) {
+
     this.host = host;
     return this;
   }
@@ -39,6 +51,10 @@ public class Browser {
    *
    * @return host
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Current web page host")
+  @JsonProperty(JSON_PROPERTY_HOST)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getHost() {
     return host;
   }
@@ -48,6 +64,7 @@ public class Browser {
   }
 
   public Browser language(String language) {
+
     this.language = language;
     return this;
   }
@@ -57,6 +74,10 @@ public class Browser {
    *
    * @return language
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Language in Accept-Language header format, see RFC 7231 sec. 5.3.5")
+  @JsonProperty(JSON_PROPERTY_LANGUAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getLanguage() {
     return language;
   }
@@ -66,6 +87,7 @@ public class Browser {
   }
 
   public Browser webGLRenderer(String webGLRenderer) {
+
     this.webGLRenderer = webGLRenderer;
     return this;
   }
@@ -75,6 +97,11 @@ public class Browser {
    *
    * @return webGLRenderer
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value = "This is an optional field, added to help with device detection using device atlas ")
+  @JsonProperty(JSON_PROPERTY_WEB_G_L_RENDERER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getWebGLRenderer() {
     return webGLRenderer;
   }
@@ -84,7 +111,7 @@ public class Browser {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -116,7 +143,7 @@ public class Browser {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

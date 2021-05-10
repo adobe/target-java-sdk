@@ -11,22 +11,30 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 /** View request */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(description = "View request")
+@JsonPropertyOrder({ViewRequest.JSON_PROPERTY_NAME, ViewRequest.JSON_PROPERTY_KEY})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class ViewRequest extends RequestDetails {
-  @JsonProperty("name")
+  public static final String JSON_PROPERTY_NAME = "name";
   private String name;
 
-  @JsonProperty("key")
+  public static final String JSON_PROPERTY_KEY = "key";
   private String key;
 
   public ViewRequest name(String name) {
+
     this.name = name;
     return this;
   }
@@ -38,6 +46,12 @@ public class ViewRequest extends RequestDetails {
    *
    * @return name
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "View Name - Unique view name. If the activity has a metric with a view with this name it will be matched, providing the Key matches as well or is null and view and metric targeting is matched. ")
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
@@ -47,6 +61,7 @@ public class ViewRequest extends RequestDetails {
   }
 
   public ViewRequest key(String key) {
+
     this.key = key;
     return this;
   }
@@ -57,6 +72,12 @@ public class ViewRequest extends RequestDetails {
    *
    * @return key
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "View Key - An optional encoded String identifier used in advanced scenarios, such as View fingerprinting. Same matching conditions as for View Name. ")
+  @JsonProperty(JSON_PROPERTY_KEY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
@@ -66,7 +87,7 @@ public class ViewRequest extends RequestDetails {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -98,7 +119,7 @@ public class ViewRequest extends RequestDetails {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

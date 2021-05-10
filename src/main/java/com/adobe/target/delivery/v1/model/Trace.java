@@ -11,10 +11,13 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -23,15 +26,22 @@ import java.util.Objects;
  * Enables the trace for delivery API. At present it is not be possible to set the metrics and
  * packages for the trace.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(
+    description =
+        "Enables the trace for delivery API. At present it is not be possible to set the metrics and packages for the trace. ")
+@JsonPropertyOrder({Trace.JSON_PROPERTY_AUTHORIZATION_TOKEN, Trace.JSON_PROPERTY_USAGE})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class Trace {
-  @JsonProperty("authorizationToken")
+  public static final String JSON_PROPERTY_AUTHORIZATION_TOKEN = "authorizationToken";
   private String authorizationToken;
 
-  @JsonProperty("usage")
-  private Map<String, String> usage = new HashMap<>();
+  public static final String JSON_PROPERTY_USAGE = "usage";
+  private Map<String, String> usage = null;
 
   public Trace authorizationToken(String authorizationToken) {
+
     this.authorizationToken = authorizationToken;
     return this;
   }
@@ -41,6 +51,9 @@ public class Trace {
    *
    * @return authorizationToken
    */
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(JSON_PROPERTY_AUTHORIZATION_TOKEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getAuthorizationToken() {
     return authorizationToken;
   }
@@ -50,13 +63,14 @@ public class Trace {
   }
 
   public Trace usage(Map<String, String> usage) {
+
     this.usage = usage;
     return this;
   }
 
   public Trace putUsageItem(String key, String usageItem) {
     if (this.usage == null) {
-      this.usage = new HashMap<>();
+      this.usage = new HashMap<String, String>();
     }
     this.usage.put(key, usageItem);
     return this;
@@ -67,6 +81,12 @@ public class Trace {
    *
    * @return usage
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "A String dictionary of client SDK usage tracking and internal diagnostics metadata. ")
+  @JsonProperty(JSON_PROPERTY_USAGE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getUsage() {
     return usage;
   }
@@ -76,7 +96,7 @@ public class Trace {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -106,7 +126,7 @@ public class Trace {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

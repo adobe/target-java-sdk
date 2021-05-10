@@ -11,31 +11,43 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
-/** Window */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+/** The dimensions that dictate a window */
+@ApiModel(description = "The dimensions that dictate a window")
+@JsonPropertyOrder({Window.JSON_PROPERTY_WIDTH, Window.JSON_PROPERTY_HEIGHT})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class Window {
-  @JsonProperty("width")
+  public static final String JSON_PROPERTY_WIDTH = "width";
   private Double width;
 
-  @JsonProperty("height")
+  public static final String JSON_PROPERTY_HEIGHT = "height";
   private Double height;
 
   public Window width(Double width) {
+
     this.width = width;
     return this;
   }
 
   /**
-   * Get width
+   * width
    *
    * @return width
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "width")
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getWidth() {
     return width;
   }
@@ -45,15 +57,20 @@ public class Window {
   }
 
   public Window height(Double height) {
+
     this.height = height;
     return this;
   }
 
   /**
-   * Get height
+   * height
    *
    * @return height
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "height")
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getHeight() {
     return height;
   }
@@ -63,7 +80,7 @@ public class Window {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -92,7 +109,7 @@ public class Window {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

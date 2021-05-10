@@ -19,58 +19,29 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
-/** NotificationMbox */
-@JsonPropertyOrder({NotificationMbox.JSON_PROPERTY_NAME, NotificationMbox.JSON_PROPERTY_STATE})
+/** PrefetchMboxResponseAllOf */
+@JsonPropertyOrder({PrefetchMboxResponseAllOf.JSON_PROPERTY_STATE})
 @javax.annotation.Generated(
     value = "org.openapitools.codegen.languages.JavaClientCodegen",
     date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
-public class NotificationMbox {
-  public static final String JSON_PROPERTY_NAME = "name";
-  private String name;
-
+public class PrefetchMboxResponseAllOf {
   public static final String JSON_PROPERTY_STATE = "state";
   private String state;
 
-  public NotificationMbox name(String name) {
-
-    this.name = name;
-    return this;
-  }
-
-  /**
-   * Mbox name. Validation * No blank values allowed. * A &#39;-clicked&#39; suffix or the following
-   * names are not allowed for mbox names: ** display mboxes **, ** any mbox **, ** click from
-   * display mbox ** * Allowed chars: - &#39;-, ./&#x3D;&#x60;:;&amp;!@#$%^&amp;*()+|?~[]{}&#39;
-   *
-   * @return name
-   */
-  @javax.annotation.Nullable
-  @ApiModelProperty(
-      value =
-          "Mbox name. Validation   * No blank values allowed.   * A '-clicked' suffix or the following names are not allowed for mbox names: ** display mboxes **, ** any mbox **, ** click from display mbox **   * Allowed chars: - '-, ./=`:;&!@#$%^&*()+|?~[]{}' ")
-  @JsonProperty(JSON_PROPERTY_NAME)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public NotificationMbox state(String state) {
+  public PrefetchMboxResponseAllOf state(String state) {
 
     this.state = state;
     return this;
   }
 
   /**
-   * Mbox state token
+   * Mbox state token that must be sent back with display notification for the mbox.
    *
    * @return state
    */
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Mbox state token")
+  @ApiModelProperty(
+      value = "Mbox state token that must be sent back with display notification for the mbox.")
   @JsonProperty(JSON_PROPERTY_STATE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getState() {
@@ -89,21 +60,19 @@ public class NotificationMbox {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    NotificationMbox notificationMbox = (NotificationMbox) o;
-    return Objects.equals(this.name, notificationMbox.name)
-        && Objects.equals(this.state, notificationMbox.state);
+    PrefetchMboxResponseAllOf prefetchMboxResponseAllOf = (PrefetchMboxResponseAllOf) o;
+    return Objects.equals(this.state, prefetchMboxResponseAllOf.state);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, state);
+    return Objects.hash(state);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class NotificationMbox {\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("class PrefetchMboxResponseAllOf {\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("}");
     return sb.toString();

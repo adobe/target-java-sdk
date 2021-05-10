@@ -11,10 +11,13 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -23,15 +26,22 @@ import java.util.Objects;
  * The object that contains responses from execute &#x60;pageLoad&#x60; and/or execute regional
  * &#x60;mboxes&#x60; request.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(
+    description =
+        "The object that contains responses from execute `pageLoad` and/or execute regional `mboxes` request.")
+@JsonPropertyOrder({ExecuteResponse.JSON_PROPERTY_PAGE_LOAD, ExecuteResponse.JSON_PROPERTY_MBOXES})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class ExecuteResponse {
-  @JsonProperty("pageLoad")
-  private PageLoadResponse pageLoad = null;
+  public static final String JSON_PROPERTY_PAGE_LOAD = "pageLoad";
+  private PageLoadResponse pageLoad;
 
-  @JsonProperty("mboxes")
-  private List<MboxResponse> mboxes = new ArrayList<>();
+  public static final String JSON_PROPERTY_MBOXES = "mboxes";
+  private List<MboxResponse> mboxes = null;
 
   public ExecuteResponse pageLoad(PageLoadResponse pageLoad) {
+
     this.pageLoad = pageLoad;
     return this;
   }
@@ -41,6 +51,10 @@ public class ExecuteResponse {
    *
    * @return pageLoad
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_PAGE_LOAD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PageLoadResponse getPageLoad() {
     return pageLoad;
   }
@@ -50,13 +64,14 @@ public class ExecuteResponse {
   }
 
   public ExecuteResponse mboxes(List<MboxResponse> mboxes) {
+
     this.mboxes = mboxes;
     return this;
   }
 
   public ExecuteResponse addMboxesItem(MboxResponse mboxesItem) {
     if (this.mboxes == null) {
-      this.mboxes = new ArrayList<>();
+      this.mboxes = new ArrayList<MboxResponse>();
     }
     this.mboxes.add(mboxesItem);
     return this;
@@ -67,6 +82,10 @@ public class ExecuteResponse {
    *
    * @return mboxes
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The list of responses for requested regional mboxes.")
+  @JsonProperty(JSON_PROPERTY_MBOXES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<MboxResponse> getMboxes() {
     return mboxes;
   }
@@ -76,7 +95,7 @@ public class ExecuteResponse {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -106,7 +125,7 @@ public class ExecuteResponse {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

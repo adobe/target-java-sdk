@@ -19,35 +19,35 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
-/** NotificationMbox */
-@JsonPropertyOrder({NotificationMbox.JSON_PROPERTY_NAME, NotificationMbox.JSON_PROPERTY_STATE})
+/** ViewRequestAllOf */
+@JsonPropertyOrder({ViewRequestAllOf.JSON_PROPERTY_NAME, ViewRequestAllOf.JSON_PROPERTY_KEY})
 @javax.annotation.Generated(
     value = "org.openapitools.codegen.languages.JavaClientCodegen",
     date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
-public class NotificationMbox {
+public class ViewRequestAllOf {
   public static final String JSON_PROPERTY_NAME = "name";
   private String name;
 
-  public static final String JSON_PROPERTY_STATE = "state";
-  private String state;
+  public static final String JSON_PROPERTY_KEY = "key";
+  private String key;
 
-  public NotificationMbox name(String name) {
+  public ViewRequestAllOf name(String name) {
 
     this.name = name;
     return this;
   }
 
   /**
-   * Mbox name. Validation * No blank values allowed. * A &#39;-clicked&#39; suffix or the following
-   * names are not allowed for mbox names: ** display mboxes **, ** any mbox **, ** click from
-   * display mbox ** * Allowed chars: - &#39;-, ./&#x3D;&#x60;:;&amp;!@#$%^&amp;*()+|?~[]{}&#39;
+   * View Name - Unique view name. If the activity has a metric with a view with this name it will
+   * be matched, providing the Key matches as well or is null and view and metric targeting is
+   * matched.
    *
    * @return name
    */
   @javax.annotation.Nullable
   @ApiModelProperty(
       value =
-          "Mbox name. Validation   * No blank values allowed.   * A '-clicked' suffix or the following names are not allowed for mbox names: ** display mboxes **, ** any mbox **, ** click from display mbox **   * Allowed chars: - '-, ./=`:;&!@#$%^&*()+|?~[]{}' ")
+          "View Name - Unique view name. If the activity has a metric with a view with this name it will be matched, providing the Key matches as well or is null and view and metric targeting is matched. ")
   @JsonProperty(JSON_PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
@@ -58,27 +58,30 @@ public class NotificationMbox {
     this.name = name;
   }
 
-  public NotificationMbox state(String state) {
+  public ViewRequestAllOf key(String key) {
 
-    this.state = state;
+    this.key = key;
     return this;
   }
 
   /**
-   * Mbox state token
+   * View Key - An optional encoded String identifier used in advanced scenarios, such as View
+   * fingerprinting. Same matching conditions as for View Name.
    *
-   * @return state
+   * @return key
    */
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Mbox state token")
-  @JsonProperty(JSON_PROPERTY_STATE)
+  @ApiModelProperty(
+      value =
+          "View Key - An optional encoded String identifier used in advanced scenarios, such as View fingerprinting. Same matching conditions as for View Name. ")
+  @JsonProperty(JSON_PROPERTY_KEY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public String getState() {
-    return state;
+  public String getKey() {
+    return key;
   }
 
-  public void setState(String state) {
-    this.state = state;
+  public void setKey(String key) {
+    this.key = key;
   }
 
   @Override
@@ -89,22 +92,22 @@ public class NotificationMbox {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    NotificationMbox notificationMbox = (NotificationMbox) o;
-    return Objects.equals(this.name, notificationMbox.name)
-        && Objects.equals(this.state, notificationMbox.state);
+    ViewRequestAllOf viewRequestAllOf = (ViewRequestAllOf) o;
+    return Objects.equals(this.name, viewRequestAllOf.name)
+        && Objects.equals(this.key, viewRequestAllOf.key);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, state);
+    return Objects.hash(name, key);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class NotificationMbox {\n");
+    sb.append("class ViewRequestAllOf {\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    state: ").append(toIndentedString(state)).append("\n");
+    sb.append("    key: ").append(toIndentedString(key)).append("\n");
     sb.append("}");
     return sb.toString();
   }

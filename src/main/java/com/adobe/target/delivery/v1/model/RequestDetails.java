@@ -11,10 +11,13 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -22,24 +25,37 @@ import java.util.Objects;
 /**
  * Object common for prefetch, execute and notifications in order to specify the request details.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(
+    description =
+        "Object common for prefetch, execute and notifications in order to specify the request details.")
+@JsonPropertyOrder({
+  RequestDetails.JSON_PROPERTY_ADDRESS,
+  RequestDetails.JSON_PROPERTY_PARAMETERS,
+  RequestDetails.JSON_PROPERTY_PROFILE_PARAMETERS,
+  RequestDetails.JSON_PROPERTY_ORDER,
+  RequestDetails.JSON_PROPERTY_PRODUCT
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class RequestDetails {
-  @JsonProperty("address")
-  private Address address = null;
+  public static final String JSON_PROPERTY_ADDRESS = "address";
+  private Address address;
 
-  @JsonProperty("parameters")
-  private Map<String, String> parameters = new HashMap<>();
+  public static final String JSON_PROPERTY_PARAMETERS = "parameters";
+  private Map<String, String> parameters = null;
 
-  @JsonProperty("profileParameters")
-  private Map<String, String> profileParameters = new HashMap<>();
+  public static final String JSON_PROPERTY_PROFILE_PARAMETERS = "profileParameters";
+  private Map<String, String> profileParameters = null;
 
-  @JsonProperty("order")
-  private Order order = null;
+  public static final String JSON_PROPERTY_ORDER = "order";
+  private Order order;
 
-  @JsonProperty("product")
-  private Product product = null;
+  public static final String JSON_PROPERTY_PRODUCT = "product";
+  private Product product;
 
   public RequestDetails address(Address address) {
+
     this.address = address;
     return this;
   }
@@ -49,6 +65,10 @@ public class RequestDetails {
    *
    * @return address
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_ADDRESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Address getAddress() {
     return address;
   }
@@ -58,13 +78,14 @@ public class RequestDetails {
   }
 
   public RequestDetails parameters(Map<String, String> parameters) {
+
     this.parameters = parameters;
     return this;
   }
 
   public RequestDetails putParametersItem(String key, String parametersItem) {
     if (this.parameters == null) {
-      this.parameters = new HashMap<>();
+      this.parameters = new HashMap<String, String>();
     }
     this.parameters.put(key, parametersItem);
     return this;
@@ -80,6 +101,12 @@ public class RequestDetails {
    *
    * @return parameters
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Parameters map. Same object is reused for mbox or profile parameters with slight validation differences. Following names are not allowed for mbox parameters: 'orderId', 'orderTotal', productPurchasedIds' Validation (for both mbox and profile parameters):   * Max 50 parameters limit.   * Parameter name should not be blank.   * Parameter name max length 128.   * Parameter name should not start with 'profile.'   * Parameter value length max 5000. ")
+  @JsonProperty(JSON_PROPERTY_PARAMETERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getParameters() {
     return parameters;
   }
@@ -89,13 +116,14 @@ public class RequestDetails {
   }
 
   public RequestDetails profileParameters(Map<String, String> profileParameters) {
+
     this.profileParameters = profileParameters;
     return this;
   }
 
   public RequestDetails putProfileParametersItem(String key, String profileParametersItem) {
     if (this.profileParameters == null) {
-      this.profileParameters = new HashMap<>();
+      this.profileParameters = new HashMap<String, String>();
     }
     this.profileParameters.put(key, profileParametersItem);
     return this;
@@ -111,6 +139,12 @@ public class RequestDetails {
    *
    * @return profileParameters
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Parameters map. Same object is reused for mbox or profile parameters with slight validation differences. Following names are not allowed for mbox parameters: 'orderId', 'orderTotal', productPurchasedIds' Validation (for both mbox and profile parameters):   * Max 50 parameters limit.   * Parameter name should not be blank.   * Parameter name max length 128.   * Parameter name should not start with 'profile.'   * Parameter value length max 5000. ")
+  @JsonProperty(JSON_PROPERTY_PROFILE_PARAMETERS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, String> getProfileParameters() {
     return profileParameters;
   }
@@ -120,6 +154,7 @@ public class RequestDetails {
   }
 
   public RequestDetails order(Order order) {
+
     this.order = order;
     return this;
   }
@@ -129,6 +164,10 @@ public class RequestDetails {
    *
    * @return order
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_ORDER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Order getOrder() {
     return order;
   }
@@ -138,6 +177,7 @@ public class RequestDetails {
   }
 
   public RequestDetails product(Product product) {
+
     this.product = product;
     return this;
   }
@@ -147,6 +187,10 @@ public class RequestDetails {
    *
    * @return product
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_PRODUCT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Product getProduct() {
     return product;
   }
@@ -156,7 +200,7 @@ public class RequestDetails {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -192,7 +236,7 @@ public class RequestDetails {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

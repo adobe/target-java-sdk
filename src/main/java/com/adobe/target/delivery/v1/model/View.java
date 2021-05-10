@@ -11,41 +11,63 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.*;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * This object will contain all the options for the selectors set for the current view, from the
  * active activities, in case the context and targeting conditions from the request have been
  * matched.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(
+    description =
+        "This object will contain all the options for the selectors set for the current view, from the active activities, in case the context and targeting conditions from the request have been matched. ")
+@JsonPropertyOrder({
+  View.JSON_PROPERTY_NAME,
+  View.JSON_PROPERTY_KEY,
+  View.JSON_PROPERTY_OPTIONS,
+  View.JSON_PROPERTY_METRICS,
+  View.JSON_PROPERTY_ANALYTICS,
+  View.JSON_PROPERTY_STATE,
+  View.JSON_PROPERTY_TRACE
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class View {
-  @JsonProperty("name")
+  public static final String JSON_PROPERTY_NAME = "name";
   private String name;
 
-  @JsonProperty("key")
+  public static final String JSON_PROPERTY_KEY = "key";
   private String key;
 
-  @JsonProperty("options")
-  private List<Option> options = new ArrayList<>();
+  public static final String JSON_PROPERTY_OPTIONS = "options";
+  private List<Option> options = null;
 
-  @JsonProperty("metrics")
-  private List<Metric> metrics = new ArrayList<>();
+  public static final String JSON_PROPERTY_METRICS = "metrics";
+  private List<Metric> metrics = null;
 
-  @JsonProperty("analytics")
-  private AnalyticsResponse analytics = null;
+  public static final String JSON_PROPERTY_ANALYTICS = "analytics";
+  private AnalyticsResponse analytics;
 
-  @JsonProperty("state")
+  public static final String JSON_PROPERTY_STATE = "state";
   private String state;
 
-  @JsonProperty("trace")
-  private Map<String, Object> trace = new HashMap<>();
+  public static final String JSON_PROPERTY_TRACE = "trace";
+  private Map<String, Object> trace = null;
 
   public View name(String name) {
+
     this.name = name;
     return this;
   }
@@ -57,6 +79,12 @@ public class View {
    *
    * @return name
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "View Name - Unique view name. If the activity has a metric with a view with this name it will be matched, providing the Key matches as well or is null and view and metric targeting is matched. ")
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
@@ -66,6 +94,7 @@ public class View {
   }
 
   public View key(String key) {
+
     this.key = key;
     return this;
   }
@@ -76,6 +105,12 @@ public class View {
    *
    * @return key
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "View Key - An optional encoded String identifier used in advanced scenarios, such as View fingerprinting. Same matching conditions as for View Name. ")
+  @JsonProperty(JSON_PROPERTY_KEY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
@@ -85,13 +120,14 @@ public class View {
   }
 
   public View options(List<Option> options) {
+
     this.options = options;
     return this;
   }
 
   public View addOptionsItem(Option optionsItem) {
     if (this.options == null) {
-      this.options = new ArrayList<>();
+      this.options = new ArrayList<Option>();
     }
     this.options.add(optionsItem);
     return this;
@@ -102,6 +138,11 @@ public class View {
    *
    * @return options
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value = "The prefetched content (options) to be displayed for the current view. ")
+  @JsonProperty(JSON_PROPERTY_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Option> getOptions() {
     return options;
   }
@@ -111,13 +152,14 @@ public class View {
   }
 
   public View metrics(List<Metric> metrics) {
+
     this.metrics = metrics;
     return this;
   }
 
   public View addMetricsItem(Metric metricsItem) {
     if (this.metrics == null) {
-      this.metrics = new ArrayList<>();
+      this.metrics = new ArrayList<Metric>();
     }
     this.metrics.add(metricsItem);
     return this;
@@ -128,6 +170,10 @@ public class View {
    *
    * @return metrics
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Click track metrics for the current view. ")
+  @JsonProperty(JSON_PROPERTY_METRICS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Metric> getMetrics() {
     return metrics;
   }
@@ -137,6 +183,7 @@ public class View {
   }
 
   public View analytics(AnalyticsResponse analytics) {
+
     this.analytics = analytics;
     return this;
   }
@@ -146,6 +193,10 @@ public class View {
    *
    * @return analytics
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_ANALYTICS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public AnalyticsResponse getAnalytics() {
     return analytics;
   }
@@ -155,6 +206,7 @@ public class View {
   }
 
   public View state(String state) {
+
     this.state = state;
     return this;
   }
@@ -164,6 +216,11 @@ public class View {
    *
    * @return state
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value = "View state token that must be sent back with display notification for the view.")
+  @JsonProperty(JSON_PROPERTY_STATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getState() {
     return state;
   }
@@ -173,13 +230,14 @@ public class View {
   }
 
   public View trace(Map<String, Object> trace) {
+
     this.trace = trace;
     return this;
   }
 
   public View putTraceItem(String key, Object traceItem) {
     if (this.trace == null) {
-      this.trace = new HashMap<>();
+      this.trace = new HashMap<String, Object>();
     }
     this.trace.put(key, traceItem);
     return this;
@@ -191,6 +249,12 @@ public class View {
    *
    * @return trace
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "The object containing all trace data for the request, only present if the trace token was provided in the request. ")
+  @JsonProperty(JSON_PROPERTY_TRACE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, Object> getTrace() {
     return trace;
   }
@@ -200,7 +264,7 @@ public class View {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -240,7 +304,7 @@ public class View {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

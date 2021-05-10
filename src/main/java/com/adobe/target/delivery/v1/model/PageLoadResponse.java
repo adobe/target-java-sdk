@@ -11,41 +11,61 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.*;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Page load response. Contains the result of prefetching or executing a request that will retrieve
  * content for all selectors not associated with a particular view.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(
+    description =
+        "Page load response. Contains the result of prefetching or executing a request that will retrieve content for all selectors not associated with a particular view. ")
+@JsonPropertyOrder({
+  PageLoadResponse.JSON_PROPERTY_OPTIONS,
+  PageLoadResponse.JSON_PROPERTY_METRICS,
+  PageLoadResponse.JSON_PROPERTY_ANALYTICS,
+  PageLoadResponse.JSON_PROPERTY_STATE,
+  PageLoadResponse.JSON_PROPERTY_TRACE
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class PageLoadResponse {
-  @JsonProperty("options")
-  private List<Option> options = new ArrayList<>();
+  public static final String JSON_PROPERTY_OPTIONS = "options";
+  private List<Option> options = null;
 
-  @JsonProperty("metrics")
-  private List<Metric> metrics = new ArrayList<>();
+  public static final String JSON_PROPERTY_METRICS = "metrics";
+  private List<Metric> metrics = null;
 
-  @JsonProperty("analytics")
-  private AnalyticsResponse analytics = null;
+  public static final String JSON_PROPERTY_ANALYTICS = "analytics";
+  private AnalyticsResponse analytics;
 
-  @JsonProperty("state")
+  public static final String JSON_PROPERTY_STATE = "state";
   private String state;
 
-  @JsonProperty("trace")
-  private Map<String, Object> trace = new HashMap<>();
+  public static final String JSON_PROPERTY_TRACE = "trace";
+  private Map<String, Object> trace = null;
 
   public PageLoadResponse options(List<Option> options) {
+
     this.options = options;
     return this;
   }
 
   public PageLoadResponse addOptionsItem(Option optionsItem) {
     if (this.options == null) {
-      this.options = new ArrayList<>();
+      this.options = new ArrayList<Option>();
     }
     this.options.add(optionsItem);
     return this;
@@ -57,6 +77,12 @@ public class PageLoadResponse {
    *
    * @return options
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "List of options that should be applied. Note: options that have been set on selectors assigned to views will not be included here. ")
+  @JsonProperty(JSON_PROPERTY_OPTIONS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Option> getOptions() {
     return options;
   }
@@ -66,13 +92,14 @@ public class PageLoadResponse {
   }
 
   public PageLoadResponse metrics(List<Metric> metrics) {
+
     this.metrics = metrics;
     return this;
   }
 
   public PageLoadResponse addMetricsItem(Metric metricsItem) {
     if (this.metrics == null) {
-      this.metrics = new ArrayList<>();
+      this.metrics = new ArrayList<Metric>();
     }
     this.metrics.add(metricsItem);
     return this;
@@ -89,6 +116,12 @@ public class PageLoadResponse {
    *
    * @return metrics
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Click track metrics. Note that click metrics for selectors set with views will not be included here. In case the same activity is serving content for selectors both assinged to a view and selectors without any views, and having click track metrics that are not assotiated with any view within the activity, then:   * in case of a prefetch only request, these metrics (tokens) will be set in the Prefetch response's metrics.   * in case of an execute only request, the metrics will be set in the page load response's metrics.   * in case of a request, with both, execute and prefetch, metrics will be set in the page load response's     metrics only. ")
+  @JsonProperty(JSON_PROPERTY_METRICS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Metric> getMetrics() {
     return metrics;
   }
@@ -98,6 +131,7 @@ public class PageLoadResponse {
   }
 
   public PageLoadResponse analytics(AnalyticsResponse analytics) {
+
     this.analytics = analytics;
     return this;
   }
@@ -107,6 +141,10 @@ public class PageLoadResponse {
    *
    * @return analytics
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_ANALYTICS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public AnalyticsResponse getAnalytics() {
     return analytics;
   }
@@ -116,6 +154,7 @@ public class PageLoadResponse {
   }
 
   public PageLoadResponse state(String state) {
+
     this.state = state;
     return this;
   }
@@ -126,6 +165,12 @@ public class PageLoadResponse {
    *
    * @return state
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "View state token that must be sent back with display notification for the view. May only be present for prefetch requests. ")
+  @JsonProperty(JSON_PROPERTY_STATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getState() {
     return state;
   }
@@ -135,13 +180,14 @@ public class PageLoadResponse {
   }
 
   public PageLoadResponse trace(Map<String, Object> trace) {
+
     this.trace = trace;
     return this;
   }
 
   public PageLoadResponse putTraceItem(String key, Object traceItem) {
     if (this.trace == null) {
-      this.trace = new HashMap<>();
+      this.trace = new HashMap<String, Object>();
     }
     this.trace.put(key, traceItem);
     return this;
@@ -153,6 +199,12 @@ public class PageLoadResponse {
    *
    * @return trace
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "The object containing all trace data for the request, only present if the trace token was provided in the request. ")
+  @JsonProperty(JSON_PROPERTY_TRACE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, Object> getTrace() {
     return trace;
   }
@@ -162,7 +214,7 @@ public class PageLoadResponse {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -198,7 +250,7 @@ public class PageLoadResponse {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

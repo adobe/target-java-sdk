@@ -11,40 +11,58 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
-/** Screen */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+/** The properties that dictate a screen */
+@ApiModel(description = "The properties that dictate a screen")
+@JsonPropertyOrder({
+  Screen.JSON_PROPERTY_WIDTH,
+  Screen.JSON_PROPERTY_HEIGHT,
+  Screen.JSON_PROPERTY_COLOR_DEPTH,
+  Screen.JSON_PROPERTY_PIXEL_RATIO,
+  Screen.JSON_PROPERTY_ORIENTATION
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class Screen {
-  @JsonProperty("width")
+  public static final String JSON_PROPERTY_WIDTH = "width";
   private Double width;
 
-  @JsonProperty("height")
+  public static final String JSON_PROPERTY_HEIGHT = "height";
   private Double height;
 
-  @JsonProperty("colorDepth")
+  public static final String JSON_PROPERTY_COLOR_DEPTH = "colorDepth";
   private Double colorDepth;
 
-  @JsonProperty("pixelRatio")
+  public static final String JSON_PROPERTY_PIXEL_RATIO = "pixelRatio";
   private Double pixelRatio;
 
-  @JsonProperty("orientation")
-  private ScreenOrientationType orientation = null;
+  public static final String JSON_PROPERTY_ORIENTATION = "orientation";
+  private ScreenOrientationType orientation;
 
   public Screen width(Double width) {
+
     this.width = width;
     return this;
   }
 
   /**
-   * Get width
+   * width
    *
    * @return width
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "width")
+  @JsonProperty(JSON_PROPERTY_WIDTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getWidth() {
     return width;
   }
@@ -54,15 +72,20 @@ public class Screen {
   }
 
   public Screen height(Double height) {
+
     this.height = height;
     return this;
   }
 
   /**
-   * Get height
+   * height
    *
    * @return height
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "height")
+  @JsonProperty(JSON_PROPERTY_HEIGHT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getHeight() {
     return height;
   }
@@ -72,15 +95,20 @@ public class Screen {
   }
 
   public Screen colorDepth(Double colorDepth) {
+
     this.colorDepth = colorDepth;
     return this;
   }
 
   /**
-   * Get colorDepth
+   * color depth
    *
    * @return colorDepth
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "color depth")
+  @JsonProperty(JSON_PROPERTY_COLOR_DEPTH)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getColorDepth() {
     return colorDepth;
   }
@@ -90,6 +118,7 @@ public class Screen {
   }
 
   public Screen pixelRatio(Double pixelRatio) {
+
     this.pixelRatio = pixelRatio;
     return this;
   }
@@ -99,6 +128,10 @@ public class Screen {
    *
    * @return pixelRatio
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Optional, Used for device detection using the device atlas")
+  @JsonProperty(JSON_PROPERTY_PIXEL_RATIO)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Double getPixelRatio() {
     return pixelRatio;
   }
@@ -108,6 +141,7 @@ public class Screen {
   }
 
   public Screen orientation(ScreenOrientationType orientation) {
+
     this.orientation = orientation;
     return this;
   }
@@ -117,6 +151,10 @@ public class Screen {
    *
    * @return orientation
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_ORIENTATION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public ScreenOrientationType getOrientation() {
     return orientation;
   }
@@ -126,7 +164,7 @@ public class Screen {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -162,7 +200,7 @@ public class Screen {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

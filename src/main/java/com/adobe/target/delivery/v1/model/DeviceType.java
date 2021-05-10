@@ -11,7 +11,7 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -45,12 +45,12 @@ public enum DeviceType {
   }
 
   @JsonCreator
-  public static DeviceType fromValue(String text) {
+  public static DeviceType fromValue(String value) {
     for (DeviceType b : DeviceType.values()) {
-      if (String.valueOf(b.value).equals(text)) {
+      if (b.value.equals(value)) {
         return b;
       }
     }
-    throw new IllegalArgumentException("Unexpected value '" + text + "'");
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
   }
 }

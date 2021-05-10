@@ -16,15 +16,17 @@ package Model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-/** Notification type. Currently only click and display are supported. */
-public enum MetricType {
-  CLICK("click"),
+/** Gets or Sets DecisioningMethod */
+public enum DecisioningMethod {
+  SERVER_SIDE("server-side"),
 
-  DISPLAY("display");
+  ON_DEVICE("on-device"),
+
+  HYBRID("hybrid");
 
   private String value;
 
-  MetricType(String value) {
+  DecisioningMethod(String value) {
     this.value = value;
   }
 
@@ -39,8 +41,8 @@ public enum MetricType {
   }
 
   @JsonCreator
-  public static MetricType fromValue(String value) {
-    for (MetricType b : MetricType.values()) {
+  public static DecisioningMethod fromValue(String value) {
+    for (DecisioningMethod b : DecisioningMethod.values()) {
       if (b.value.equals(value)) {
         return b;
       }

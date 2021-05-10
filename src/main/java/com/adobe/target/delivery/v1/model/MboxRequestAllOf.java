@@ -19,35 +19,58 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
-/** NotificationMbox */
-@JsonPropertyOrder({NotificationMbox.JSON_PROPERTY_NAME, NotificationMbox.JSON_PROPERTY_STATE})
+/** MboxRequestAllOf */
+@JsonPropertyOrder({MboxRequestAllOf.JSON_PROPERTY_INDEX, MboxRequestAllOf.JSON_PROPERTY_NAME})
 @javax.annotation.Generated(
     value = "org.openapitools.codegen.languages.JavaClientCodegen",
     date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
-public class NotificationMbox {
+public class MboxRequestAllOf {
+  public static final String JSON_PROPERTY_INDEX = "index";
+  private Integer index;
+
   public static final String JSON_PROPERTY_NAME = "name";
   private String name;
 
-  public static final String JSON_PROPERTY_STATE = "state";
-  private String state;
+  public MboxRequestAllOf index(Integer index) {
 
-  public NotificationMbox name(String name) {
+    this.index = index;
+    return this;
+  }
+
+  /**
+   * An index for the mboxes to be executed or prefetched. Mbox index is used for correlation
+   * between the mbox request with the mbox response, for either prefetch or execute responses.
+   * Index should be unique in the mbox list.
+   *
+   * @return index
+   */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "An index for the mboxes to be executed or prefetched. Mbox index is used for correlation between the mbox request with the mbox response, for either prefetch or execute responses. Index should be unique in the mbox list. ")
+  @JsonProperty(JSON_PROPERTY_INDEX)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public Integer getIndex() {
+    return index;
+  }
+
+  public void setIndex(Integer index) {
+    this.index = index;
+  }
+
+  public MboxRequestAllOf name(String name) {
 
     this.name = name;
     return this;
   }
 
   /**
-   * Mbox name. Validation * No blank values allowed. * A &#39;-clicked&#39; suffix or the following
-   * names are not allowed for mbox names: ** display mboxes **, ** any mbox **, ** click from
-   * display mbox ** * Allowed chars: - &#39;-, ./&#x3D;&#x60;:;&amp;!@#$%^&amp;*()+|?~[]{}&#39;
+   * The name of the regional mbox to be evaluated.
    *
    * @return name
    */
   @javax.annotation.Nullable
-  @ApiModelProperty(
-      value =
-          "Mbox name. Validation   * No blank values allowed.   * A '-clicked' suffix or the following names are not allowed for mbox names: ** display mboxes **, ** any mbox **, ** click from display mbox **   * Allowed chars: - '-, ./=`:;&!@#$%^&*()+|?~[]{}' ")
+  @ApiModelProperty(value = "The name of the regional mbox to be evaluated. ")
   @JsonProperty(JSON_PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
@@ -58,29 +81,6 @@ public class NotificationMbox {
     this.name = name;
   }
 
-  public NotificationMbox state(String state) {
-
-    this.state = state;
-    return this;
-  }
-
-  /**
-   * Mbox state token
-   *
-   * @return state
-   */
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "Mbox state token")
-  @JsonProperty(JSON_PROPERTY_STATE)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public String getState() {
-    return state;
-  }
-
-  public void setState(String state) {
-    this.state = state;
-  }
-
   @Override
   public boolean equals(java.lang.Object o) {
     if (this == o) {
@@ -89,22 +89,22 @@ public class NotificationMbox {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    NotificationMbox notificationMbox = (NotificationMbox) o;
-    return Objects.equals(this.name, notificationMbox.name)
-        && Objects.equals(this.state, notificationMbox.state);
+    MboxRequestAllOf mboxRequestAllOf = (MboxRequestAllOf) o;
+    return Objects.equals(this.index, mboxRequestAllOf.index)
+        && Objects.equals(this.name, mboxRequestAllOf.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, state);
+    return Objects.hash(index, name);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class NotificationMbox {\n");
+    sb.append("class MboxRequestAllOf {\n");
+    sb.append("    index: ").append(toIndentedString(index)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
-    sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("}");
     return sb.toString();
   }

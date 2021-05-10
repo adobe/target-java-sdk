@@ -11,19 +11,27 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
-/** AnalyticsResponse */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+/** Contains the analytics payload metadata */
+@ApiModel(description = "Contains the analytics payload metadata")
+@JsonPropertyOrder({AnalyticsResponse.JSON_PROPERTY_PAYLOAD})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class AnalyticsResponse {
-  @JsonProperty("payload")
-  private AnalyticsPayload payload = null;
+  public static final String JSON_PROPERTY_PAYLOAD = "payload";
+  private AnalyticsPayload payload;
 
   public AnalyticsResponse payload(AnalyticsPayload payload) {
+
     this.payload = payload;
     return this;
   }
@@ -33,6 +41,10 @@ public class AnalyticsResponse {
    *
    * @return payload
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_PAYLOAD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public AnalyticsPayload getPayload() {
     return payload;
   }
@@ -42,7 +54,7 @@ public class AnalyticsResponse {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -70,7 +82,7 @@ public class AnalyticsResponse {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

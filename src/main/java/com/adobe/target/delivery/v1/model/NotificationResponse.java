@@ -18,34 +18,40 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
-/** The properties of the products */
-@ApiModel(description = "The properties of the products")
-@JsonPropertyOrder({Product.JSON_PROPERTY_ID, Product.JSON_PROPERTY_CATEGORY_ID})
+/** Notification response. Contains the result of a processed notification. */
+@ApiModel(description = "Notification response. Contains the result of a processed notification. ")
+@JsonPropertyOrder({
+  NotificationResponse.JSON_PROPERTY_ID,
+  NotificationResponse.JSON_PROPERTY_TRACE
+})
 @javax.annotation.Generated(
     value = "org.openapitools.codegen.languages.JavaClientCodegen",
     date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
-public class Product {
+public class NotificationResponse {
   public static final String JSON_PROPERTY_ID = "id";
   private String id;
 
-  public static final String JSON_PROPERTY_CATEGORY_ID = "categoryId";
-  private String categoryId;
+  public static final String JSON_PROPERTY_TRACE = "trace";
+  private Map<String, Object> trace = null;
 
-  public Product id(String id) {
+  public NotificationResponse id(String id) {
 
     this.id = id;
     return this;
   }
 
   /**
-   * Product id. Should not be blank.
+   * Notification id which indicates that the notification was processed successfully.
    *
    * @return id
    */
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Product id. Should not be blank.")
+  @ApiModelProperty(
+      value = "Notification id which indicates that the notification was processed successfully. ")
   @JsonProperty(JSON_PROPERTY_ID)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
@@ -56,27 +62,38 @@ public class Product {
     this.id = id;
   }
 
-  public Product categoryId(String categoryId) {
+  public NotificationResponse trace(Map<String, Object> trace) {
 
-    this.categoryId = categoryId;
+    this.trace = trace;
+    return this;
+  }
+
+  public NotificationResponse putTraceItem(String key, Object traceItem) {
+    if (this.trace == null) {
+      this.trace = new HashMap<String, Object>();
+    }
+    this.trace.put(key, traceItem);
     return this;
   }
 
   /**
-   * Category id. Should not be blank.
+   * The object containing all trace data for the request, only present if the trace token was
+   * provided in the request.
    *
-   * @return categoryId
+   * @return trace
    */
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Category id. Should not be blank.")
-  @JsonProperty(JSON_PROPERTY_CATEGORY_ID)
+  @ApiModelProperty(
+      value =
+          "The object containing all trace data for the request, only present if the trace token was provided in the request. ")
+  @JsonProperty(JSON_PROPERTY_TRACE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public String getCategoryId() {
-    return categoryId;
+  public Map<String, Object> getTrace() {
+    return trace;
   }
 
-  public void setCategoryId(String categoryId) {
-    this.categoryId = categoryId;
+  public void setTrace(Map<String, Object> trace) {
+    this.trace = trace;
   }
 
   @Override
@@ -87,22 +104,22 @@ public class Product {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Product product = (Product) o;
-    return Objects.equals(this.id, product.id)
-        && Objects.equals(this.categoryId, product.categoryId);
+    NotificationResponse notificationResponse = (NotificationResponse) o;
+    return Objects.equals(this.id, notificationResponse.id)
+        && Objects.equals(this.trace, notificationResponse.trace);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, categoryId);
+    return Objects.hash(id, trace);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Product {\n");
+    sb.append("class NotificationResponse {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    categoryId: ").append(toIndentedString(categoryId)).append("\n");
+    sb.append("    trace: ").append(toIndentedString(trace)).append("\n");
     sb.append("}");
     return sb.toString();
   }

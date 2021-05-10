@@ -11,25 +11,39 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 /** Application identifiers. If specified, should match the with the one from the activity. */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(
+    description =
+        "Application identifiers. If specified, should match the with the one from the activity.")
+@JsonPropertyOrder({
+  Application.JSON_PROPERTY_ID,
+  Application.JSON_PROPERTY_NAME,
+  Application.JSON_PROPERTY_VERSION
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class Application {
-  @JsonProperty("id")
+  public static final String JSON_PROPERTY_ID = "id";
   private String id;
 
-  @JsonProperty("name")
+  public static final String JSON_PROPERTY_NAME = "name";
   private String name;
 
-  @JsonProperty("version")
+  public static final String JSON_PROPERTY_VERSION = "version";
   private String version;
 
   public Application id(String id) {
+
     this.id = id;
     return this;
   }
@@ -40,6 +54,12 @@ public class Application {
    *
    * @return id
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Application ID. If not specified - all activities with any applicationId will be evaluated. If specified - only activities with the matching applicationId will be evaluated. ")
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
@@ -49,6 +69,7 @@ public class Application {
   }
 
   public Application name(String name) {
+
     this.name = name;
     return this;
   }
@@ -59,6 +80,12 @@ public class Application {
    *
    * @return name
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Application name. If not specified - all activities with any applicationName will be evaluated. If specified - only activities with specified applicationName will be evaluated. ")
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
@@ -68,6 +95,7 @@ public class Application {
   }
 
   public Application version(String version) {
+
     this.version = version;
     return this;
   }
@@ -78,6 +106,12 @@ public class Application {
    *
    * @return version
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Application version If not specified - all activities with any applicationVersion will not be evaluated. If specified - only activities with specific applicationVersion will be evaluated. ")
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getVersion() {
     return version;
   }
@@ -87,7 +121,7 @@ public class Application {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -119,7 +153,7 @@ public class Application {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

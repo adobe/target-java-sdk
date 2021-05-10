@@ -20,37 +20,45 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
-/** Telemetry Features */
-@ApiModel(description = "Telemetry Features")
-@JsonPropertyOrder({TelemetryFeatures.JSON_PROPERTY_DECISIONING_METHOD})
+/**
+ * Use this object to enable the Preview mode in the request. Use the Preview mode to test the look
+ * and feel of your site for various location and offer combinations.
+ */
+@ApiModel(
+    description =
+        "Use this object to enable the Preview mode in the request. Use the Preview mode to test the look and feel of your site for various location and offer combinations. ")
+@JsonPropertyOrder({Preview.JSON_PROPERTY_TOKEN})
 @javax.annotation.Generated(
     value = "org.openapitools.codegen.languages.JavaClientCodegen",
     date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
-public class TelemetryFeatures {
-  public static final String JSON_PROPERTY_DECISIONING_METHOD = "decisioningMethod";
-  private DecisioningMethod decisioningMethod;
+public class Preview {
+  public static final String JSON_PROPERTY_TOKEN = "token";
+  private String token;
 
-  public TelemetryFeatures decisioningMethod(DecisioningMethod decisioningMethod) {
+  public Preview token(String token) {
 
-    this.decisioningMethod = decisioningMethod;
+    this.token = token;
     return this;
   }
 
   /**
-   * Get decisioningMethod
+   * The token for the Preview mode. Validation * Verify that the token belongs to the client
+   * provided in request.
    *
-   * @return decisioningMethod
+   * @return token
    */
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "")
-  @JsonProperty(JSON_PROPERTY_DECISIONING_METHOD)
+  @ApiModelProperty(
+      value =
+          "The token for the Preview mode. Validation   * Verify that the token belongs to the client provided in request. ")
+  @JsonProperty(JSON_PROPERTY_TOKEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public DecisioningMethod getDecisioningMethod() {
-    return decisioningMethod;
+  public String getToken() {
+    return token;
   }
 
-  public void setDecisioningMethod(DecisioningMethod decisioningMethod) {
-    this.decisioningMethod = decisioningMethod;
+  public void setToken(String token) {
+    this.token = token;
   }
 
   @Override
@@ -61,20 +69,20 @@ public class TelemetryFeatures {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    TelemetryFeatures telemetryFeatures = (TelemetryFeatures) o;
-    return Objects.equals(this.decisioningMethod, telemetryFeatures.decisioningMethod);
+    Preview preview = (Preview) o;
+    return Objects.equals(this.token, preview.token);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(decisioningMethod);
+    return Objects.hash(token);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class TelemetryFeatures {\n");
-    sb.append("    decisioningMethod: ").append(toIndentedString(decisioningMethod)).append("\n");
+    sb.append("class Preview {\n");
+    sb.append("    token: ").append(toIndentedString(token)).append("\n");
     sb.append("}");
     return sb.toString();
   }

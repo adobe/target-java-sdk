@@ -11,19 +11,25 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 /** PrefetchMboxResponse */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({PrefetchMboxResponse.JSON_PROPERTY_STATE})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class PrefetchMboxResponse extends MboxResponse {
-  @JsonProperty("state")
+  public static final String JSON_PROPERTY_STATE = "state";
   private String state;
 
   public PrefetchMboxResponse state(String state) {
+
     this.state = state;
     return this;
   }
@@ -33,6 +39,11 @@ public class PrefetchMboxResponse extends MboxResponse {
    *
    * @return state
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value = "Mbox state token that must be sent back with display notification for the mbox.")
+  @JsonProperty(JSON_PROPERTY_STATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getState() {
     return state;
   }
@@ -42,7 +53,7 @@ public class PrefetchMboxResponse extends MboxResponse {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -71,7 +82,7 @@ public class PrefetchMboxResponse extends MboxResponse {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

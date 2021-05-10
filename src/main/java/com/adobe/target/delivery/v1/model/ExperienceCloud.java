@@ -11,22 +11,33 @@
  *
  * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.delivery.v1.model;
+package Model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 /** Integrations with Audience Manager and Analytics */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(description = "Integrations with Audience Manager and Analytics")
+@JsonPropertyOrder({
+  ExperienceCloud.JSON_PROPERTY_AUDIENCE_MANAGER,
+  ExperienceCloud.JSON_PROPERTY_ANALYTICS
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-10T11:24:27.013-07:00[America/Los_Angeles]")
 public class ExperienceCloud {
-  @JsonProperty("audienceManager")
-  private AudienceManager audienceManager = null;
+  public static final String JSON_PROPERTY_AUDIENCE_MANAGER = "audienceManager";
+  private AudienceManager audienceManager;
 
-  @JsonProperty("analytics")
-  private AnalyticsRequest analytics = null;
+  public static final String JSON_PROPERTY_ANALYTICS = "analytics";
+  private AnalyticsRequest analytics;
 
   public ExperienceCloud audienceManager(AudienceManager audienceManager) {
+
     this.audienceManager = audienceManager;
     return this;
   }
@@ -36,6 +47,10 @@ public class ExperienceCloud {
    *
    * @return audienceManager
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_AUDIENCE_MANAGER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public AudienceManager getAudienceManager() {
     return audienceManager;
   }
@@ -45,6 +60,7 @@ public class ExperienceCloud {
   }
 
   public ExperienceCloud analytics(AnalyticsRequest analytics) {
+
     this.analytics = analytics;
     return this;
   }
@@ -54,6 +70,10 @@ public class ExperienceCloud {
    *
    * @return analytics
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_ANALYTICS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public AnalyticsRequest getAnalytics() {
     return analytics;
   }
@@ -63,7 +83,7 @@ public class ExperienceCloud {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -93,7 +113,7 @@ public class ExperienceCloud {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }
