@@ -21,67 +21,44 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 /**
- * Analytics payload for client side integration that should be sent to Analytics after content has
- * been applied.
+ * Use this object to enable the Preview mode in the request. Use the Preview mode to test the look
+ * and feel of your site for various location and offer combinations.
  */
 @ApiModel(
     description =
-        "Analytics payload for client side integration that should be sent to Analytics after content has been applied. ")
-@JsonPropertyOrder({AnalyticsPayload.JSON_PROPERTY_PE, AnalyticsPayload.JSON_PROPERTY_TNTA})
+        "Use this object to enable the Preview mode in the request. Use the Preview mode to test the look and feel of your site for various location and offer combinations. ")
+@JsonPropertyOrder({Preview.JSON_PROPERTY_TOKEN})
 @javax.annotation.Generated(
     value = "org.openapitools.codegen.languages.JavaClientCodegen",
     date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
-public class AnalyticsPayload {
-  public static final String JSON_PROPERTY_PE = "pe";
-  private String pe;
+public class Preview {
+  public static final String JSON_PROPERTY_TOKEN = "token";
+  private String token;
 
-  public static final String JSON_PROPERTY_TNTA = "tnta";
-  private String tnta;
+  public Preview token(String token) {
 
-  public AnalyticsPayload pe(String pe) {
-
-    this.pe = pe;
+    this.token = token;
     return this;
   }
 
   /**
-   * Indicates to Adobe Analytics that the payload is an Adobe Target type
+   * The token for the Preview mode. Validation * Verify that the token belongs to the client
+   * provided in request.
    *
-   * @return pe
+   * @return token
    */
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Indicates to Adobe Analytics that the payload is an Adobe Target type")
-  @JsonProperty(JSON_PROPERTY_PE)
+  @ApiModelProperty(
+      value =
+          "The token for the Preview mode. Validation   * Verify that the token belongs to the client provided in request. ")
+  @JsonProperty(JSON_PROPERTY_TOKEN)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public String getPe() {
-    return pe;
+  public String getToken() {
+    return token;
   }
 
-  public void setPe(String pe) {
-    this.pe = pe;
-  }
-
-  public AnalyticsPayload tnta(String tnta) {
-
-    this.tnta = tnta;
-    return this;
-  }
-
-  /**
-   * Contains Target metadata that describes the activity and experience
-   *
-   * @return tnta
-   */
-  @javax.annotation.Nullable
-  @ApiModelProperty(value = "Contains Target metadata that describes the activity and experience")
-  @JsonProperty(JSON_PROPERTY_TNTA)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public String getTnta() {
-    return tnta;
-  }
-
-  public void setTnta(String tnta) {
-    this.tnta = tnta;
+  public void setToken(String token) {
+    this.token = token;
   }
 
   @Override
@@ -92,22 +69,20 @@ public class AnalyticsPayload {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AnalyticsPayload analyticsPayload = (AnalyticsPayload) o;
-    return Objects.equals(this.pe, analyticsPayload.pe)
-        && Objects.equals(this.tnta, analyticsPayload.tnta);
+    Preview preview = (Preview) o;
+    return Objects.equals(this.token, preview.token);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(pe, tnta);
+    return Objects.hash(token);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class AnalyticsPayload {\n");
-    sb.append("    pe: ").append(toIndentedString(pe)).append("\n");
-    sb.append("    tnta: ").append(toIndentedString(tnta)).append("\n");
+    sb.append("class Preview {\n");
+    sb.append("    token: ").append(toIndentedString(token)).append("\n");
     sb.append("}");
     return sb.toString();
   }

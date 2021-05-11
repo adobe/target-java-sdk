@@ -15,27 +15,42 @@ package com.adobe.target.delivery.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 /**
  * Specifies the at_property via the token field. It can be used to control the scope for the
  * delivery.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(
+    description =
+        "Specifies the at_property via the token field. It can be used to control the scope for the delivery. ")
+@JsonPropertyOrder({Property.JSON_PROPERTY_TOKEN})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class Property {
-  @JsonProperty("token")
+  public static final String JSON_PROPERTY_TOKEN = "token";
   private String token;
 
   public Property token(String token) {
+
     this.token = token;
     return this;
   }
 
   /**
-   * Required if the property is specified.
+   * The at_property token Validation * Required if the property is specified.
    *
    * @return token
    */
+  @ApiModelProperty(
+      required = true,
+      value = "The at_property token  Validation * Required if the property is specified. ")
+  @JsonProperty(JSON_PROPERTY_TOKEN)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public String getToken() {
     return token;
   }
@@ -45,7 +60,7 @@ public class Property {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -73,7 +88,7 @@ public class Property {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

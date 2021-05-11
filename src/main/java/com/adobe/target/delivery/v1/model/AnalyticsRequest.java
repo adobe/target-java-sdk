@@ -15,24 +15,37 @@ package com.adobe.target.delivery.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
-/** Integration with Adobe Analytics (A4T). */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+/** Integration with Adobe Analytics (A4T) */
+@ApiModel(description = "Integration with Adobe Analytics (A4T)")
+@JsonPropertyOrder({
+  AnalyticsRequest.JSON_PROPERTY_SUPPLEMENTAL_DATA_ID,
+  AnalyticsRequest.JSON_PROPERTY_LOGGING,
+  AnalyticsRequest.JSON_PROPERTY_TRACKING_SERVER,
+  AnalyticsRequest.JSON_PROPERTY_TRACKING_SERVER_SECURE
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class AnalyticsRequest {
-  @JsonProperty("supplementalDataId")
+  public static final String JSON_PROPERTY_SUPPLEMENTAL_DATA_ID = "supplementalDataId";
   private String supplementalDataId;
 
-  @JsonProperty("logging")
-  private LoggingType logging = null;
+  public static final String JSON_PROPERTY_LOGGING = "logging";
+  private LoggingType logging;
 
-  @JsonProperty("trackingServer")
+  public static final String JSON_PROPERTY_TRACKING_SERVER = "trackingServer";
   private String trackingServer;
 
-  @JsonProperty("trackingServerSecure")
+  public static final String JSON_PROPERTY_TRACKING_SERVER_SECURE = "trackingServerSecure";
   private String trackingServerSecure;
 
   public AnalyticsRequest supplementalDataId(String supplementalDataId) {
+
     this.supplementalDataId = supplementalDataId;
     return this;
   }
@@ -43,6 +56,12 @@ public class AnalyticsRequest {
    *
    * @return supplementalDataId
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Supplemental data id, used for **server side** integrations. Format <16 hexadecimal digits>-<16 hexadecimal digits> ")
+  @JsonProperty(JSON_PROPERTY_SUPPLEMENTAL_DATA_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getSupplementalDataId() {
     return supplementalDataId;
   }
@@ -52,6 +71,7 @@ public class AnalyticsRequest {
   }
 
   public AnalyticsRequest logging(LoggingType logging) {
+
     this.logging = logging;
     return this;
   }
@@ -61,6 +81,10 @@ public class AnalyticsRequest {
    *
    * @return logging
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_LOGGING)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public LoggingType getLogging() {
     return logging;
   }
@@ -70,15 +94,20 @@ public class AnalyticsRequest {
   }
 
   public AnalyticsRequest trackingServer(String trackingServer) {
+
     this.trackingServer = trackingServer;
     return this;
   }
 
   /**
-   * Get trackingServer
+   * tracking server
    *
    * @return trackingServer
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "tracking server")
+  @JsonProperty(JSON_PROPERTY_TRACKING_SERVER)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTrackingServer() {
     return trackingServer;
   }
@@ -88,15 +117,20 @@ public class AnalyticsRequest {
   }
 
   public AnalyticsRequest trackingServerSecure(String trackingServerSecure) {
+
     this.trackingServerSecure = trackingServerSecure;
     return this;
   }
 
   /**
-   * Get trackingServerSecure
+   * secure tracking server
    *
    * @return trackingServerSecure
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "secure tracking server")
+  @JsonProperty(JSON_PROPERTY_TRACKING_SERVER_SECURE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getTrackingServerSecure() {
     return trackingServerSecure;
   }
@@ -106,7 +140,7 @@ public class AnalyticsRequest {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -142,7 +176,7 @@ public class AnalyticsRequest {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

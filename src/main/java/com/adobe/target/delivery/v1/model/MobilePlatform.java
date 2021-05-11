@@ -15,24 +15,37 @@ package com.adobe.target.delivery.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 /** Mobile Platform should be specified when the channel is Mobile */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(description = "Mobile Platform should be specified when the channel is Mobile")
+@JsonPropertyOrder({
+  MobilePlatform.JSON_PROPERTY_DEVICE_NAME,
+  MobilePlatform.JSON_PROPERTY_DEVICE_TYPE,
+  MobilePlatform.JSON_PROPERTY_PLATFORM_TYPE,
+  MobilePlatform.JSON_PROPERTY_VERSION
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class MobilePlatform {
-  @JsonProperty("deviceName")
+  public static final String JSON_PROPERTY_DEVICE_NAME = "deviceName";
   private String deviceName;
 
-  @JsonProperty("deviceType")
-  private DeviceType deviceType = null;
+  public static final String JSON_PROPERTY_DEVICE_TYPE = "deviceType";
+  private DeviceType deviceType;
 
-  @JsonProperty("platformType")
-  private MobilePlatformType platformType = null;
+  public static final String JSON_PROPERTY_PLATFORM_TYPE = "platformType";
+  private MobilePlatformType platformType;
 
-  @JsonProperty("version")
+  public static final String JSON_PROPERTY_VERSION = "version";
   private String version;
 
   public MobilePlatform deviceName(String deviceName) {
+
     this.deviceName = deviceName;
     return this;
   }
@@ -43,6 +56,12 @@ public class MobilePlatform {
    *
    * @return deviceName
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Optional field, added to help with device detection using device atlas. This is equivalent of a.DeviceName field passed in from Mobile SDK ")
+  @JsonProperty(JSON_PROPERTY_DEVICE_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getDeviceName() {
     return deviceName;
   }
@@ -52,6 +71,7 @@ public class MobilePlatform {
   }
 
   public MobilePlatform deviceType(DeviceType deviceType) {
+
     this.deviceType = deviceType;
     return this;
   }
@@ -61,6 +81,9 @@ public class MobilePlatform {
    *
    * @return deviceType
    */
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(JSON_PROPERTY_DEVICE_TYPE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public DeviceType getDeviceType() {
     return deviceType;
   }
@@ -70,6 +93,7 @@ public class MobilePlatform {
   }
 
   public MobilePlatform platformType(MobilePlatformType platformType) {
+
     this.platformType = platformType;
     return this;
   }
@@ -79,6 +103,9 @@ public class MobilePlatform {
    *
    * @return platformType
    */
+  @ApiModelProperty(required = true, value = "")
+  @JsonProperty(JSON_PROPERTY_PLATFORM_TYPE)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public MobilePlatformType getPlatformType() {
     return platformType;
   }
@@ -88,6 +115,7 @@ public class MobilePlatform {
   }
 
   public MobilePlatform version(String version) {
+
     this.version = version;
     return this;
   }
@@ -98,6 +126,12 @@ public class MobilePlatform {
    *
    * @return version
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "If not specified - all activities with any platformVersion will be evaluated. If specified - only activities with the same platformVersion will be evaluated. ")
+  @JsonProperty(JSON_PROPERTY_VERSION)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getVersion() {
     return version;
   }
@@ -107,7 +141,7 @@ public class MobilePlatform {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -141,7 +175,7 @@ public class MobilePlatform {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

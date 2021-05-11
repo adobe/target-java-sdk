@@ -15,26 +15,39 @@ package com.adobe.target.delivery.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 /** The content from the activitiesc is returned via the option objects. */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(description = "The content from the activitiesc is returned via the option objects.")
+@JsonPropertyOrder({
+  Option.JSON_PROPERTY_TYPE,
+  Option.JSON_PROPERTY_CONTENT,
+  Option.JSON_PROPERTY_EVENT_TOKEN,
+  Option.JSON_PROPERTY_RESPONSE_TOKENS
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class Option {
-  @JsonProperty("type")
-  private OptionType type = null;
+  public static final String JSON_PROPERTY_TYPE = "type";
+  private OptionType type;
 
-  @JsonProperty("content")
+  public static final String JSON_PROPERTY_CONTENT = "content";
   private Object content = null;
 
-  @JsonProperty("eventToken")
+  public static final String JSON_PROPERTY_EVENT_TOKEN = "eventToken";
   private String eventToken;
 
-  @JsonProperty("responseTokens")
-  private Map<String, Object> responseTokens = new HashMap<>();
+  public static final String JSON_PROPERTY_RESPONSE_TOKENS = "responseTokens";
+  private Map<String, Object> responseTokens = null;
 
   public Option type(OptionType type) {
+
     this.type = type;
     return this;
   }
@@ -44,6 +57,10 @@ public class Option {
    *
    * @return type
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_TYPE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public OptionType getType() {
     return type;
   }
@@ -53,6 +70,7 @@ public class Option {
   }
 
   public Option content(Object content) {
+
     this.content = content;
     return this;
   }
@@ -65,6 +83,12 @@ public class Option {
    *
    * @return content
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Content that should be applied/displayed/replaced etc, based on the option type. Content can be one of:   * html   * redirect link   * link for a dynamic offer   * raw json   * one or more actions (json - from offers with templates and visual offers) Actions format is specific for delivery API. ")
+  @JsonProperty(JSON_PROPERTY_CONTENT)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Object getContent() {
     return content;
   }
@@ -74,6 +98,7 @@ public class Option {
   }
 
   public Option eventToken(String eventToken) {
+
     this.eventToken = eventToken;
     return this;
   }
@@ -85,6 +110,12 @@ public class Option {
    *
    * @return eventToken
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Will be present only in response of a prefetch request. After the content is displayed the event token should be sent via notifications to the edge server so that visit/visitor/impression events could be logged. ")
+  @JsonProperty(JSON_PROPERTY_EVENT_TOKEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getEventToken() {
     return eventToken;
   }
@@ -94,6 +125,7 @@ public class Option {
   }
 
   public Option responseTokens(Map<String, Object> responseTokens) {
+
     this.responseTokens = responseTokens;
     return this;
   }
@@ -115,6 +147,12 @@ public class Option {
    *
    * @return responseTokens
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "List of the response tokens and their values for the given option. Response tokens can be defined via the /v1/responsetokens API. The values for the tokens are computed for every option returned by a activity and represented as a dictionary:   * Key - the response token name.   * Value - the response token value. The value is usually a string, but it can be a list of string in case of   'category affinity' response token. ")
+  @JsonProperty(JSON_PROPERTY_RESPONSE_TOKENS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Map<String, Object> getResponseTokens() {
     return responseTokens;
   }
@@ -124,7 +162,7 @@ public class Option {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -158,7 +196,7 @@ public class Option {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

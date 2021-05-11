@@ -15,33 +15,43 @@ package com.adobe.target.delivery.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /**
  * Use this object to prefetch the content for &#x60;views&#x60; and/or &#x60;pageLoad&#x60; and/or
- * &#x60; mboxes&#x60;. * &#x60;views&#x60; - the request to prefetch selectors grouped per view. *
+ * &#x60;mboxes&#x60;. * &#x60;views&#x60; - the request to prefetch selectors grouped per view. *
  * &#x60;pageLoad&#x60; - the request to prefetch selectors not assigned to any view. *
  * &#x60;mboxes&#x60; - the request to prefetch mbox content.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(
+    description =
+        "Use this object to prefetch the content for `views` and/or `pageLoad` and/or `mboxes`.   * `views` - the request to prefetch selectors grouped per view.   * `pageLoad` - the request to prefetch selectors not assigned to any view.   * `mboxes` - the request to prefetch mbox content. ")
+@JsonPropertyOrder({
+  PrefetchRequest.JSON_PROPERTY_VIEWS,
+  PrefetchRequest.JSON_PROPERTY_PAGE_LOAD,
+  PrefetchRequest.JSON_PROPERTY_MBOXES
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class PrefetchRequest {
-  @JsonProperty("views")
-  private List<ViewRequest> views = new ArrayList<>();
+  public static final String JSON_PROPERTY_VIEWS = "views";
+  private List<ViewRequest> views = null;
 
-  @JsonProperty("pageLoad")
-  private RequestDetails pageLoad = null;
+  public static final String JSON_PROPERTY_PAGE_LOAD = "pageLoad";
+  private RequestDetails pageLoad;
 
-  @JsonProperty("mboxes")
-  private List<MboxRequest> mboxes = new ArrayList<>();
+  public static final String JSON_PROPERTY_MBOXES = "mboxes";
+  private List<MboxRequest> mboxes = null;
 
   public PrefetchRequest views(List<ViewRequest> views) {
-    if (views == null) {
-      return this;
-    }
-    // wrap passed in list with our own ArrayList to make sure it is mutable
-    this.views = new ArrayList<>(views);
+
+    this.views = views;
     return this;
   }
 
@@ -54,25 +64,24 @@ public class PrefetchRequest {
   }
 
   /**
-   * Currenly only 1 view can be set in the request. All views matching the request will be
-   * returned. In future it will be possible to request 1 or several concrete views.
+   * An array of views
    *
    * @return views
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "An array of views ")
+  @JsonProperty(JSON_PROPERTY_VIEWS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<ViewRequest> getViews() {
     return views;
   }
 
   public void setViews(List<ViewRequest> views) {
-    if (views != null) {
-      // wrap passed in list with our own ArrayList to make sure it is mutable
-      this.views = new ArrayList<>(views);
-    } else {
-      this.views = views;
-    }
+    this.views = views;
   }
 
   public PrefetchRequest pageLoad(RequestDetails pageLoad) {
+
     this.pageLoad = pageLoad;
     return this;
   }
@@ -82,6 +91,10 @@ public class PrefetchRequest {
    *
    * @return pageLoad
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_PAGE_LOAD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public RequestDetails getPageLoad() {
     return pageLoad;
   }
@@ -91,11 +104,8 @@ public class PrefetchRequest {
   }
 
   public PrefetchRequest mboxes(List<MboxRequest> mboxes) {
-    if (mboxes == null) {
-      return this;
-    }
-    // wrap passed in list with our own ArrayList to make sure it is mutable
-    this.mboxes = new ArrayList<>(mboxes);
+
+    this.mboxes = mboxes;
     return this;
   }
 
@@ -108,25 +118,24 @@ public class PrefetchRequest {
   }
 
   /**
-   * Prefetch the content for the regional mbox. Can be used as a replacement to batch mbox v2 API.
+   * Prefetch the content for the regional mbox.
    *
    * @return mboxes
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Prefetch the content for the regional mbox.")
+  @JsonProperty(JSON_PROPERTY_MBOXES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<MboxRequest> getMboxes() {
     return mboxes;
   }
 
   public void setMboxes(List<MboxRequest> mboxes) {
-    if (mboxes != null) {
-      // wrap passed in list with our own ArrayList to make sure it is mutable
-      this.mboxes = new ArrayList<>(mboxes);
-    } else {
-      this.mboxes = mboxes;
-    }
+    this.mboxes = mboxes;
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -158,7 +167,7 @@ public class PrefetchRequest {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

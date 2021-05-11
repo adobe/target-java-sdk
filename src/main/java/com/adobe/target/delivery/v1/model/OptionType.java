@@ -26,8 +26,6 @@ public enum OptionType {
 
   DYNAMIC("dynamic"),
 
-  DEFAULT("default"),
-
   ACTIONS("actions");
 
   private String value;
@@ -47,12 +45,12 @@ public enum OptionType {
   }
 
   @JsonCreator
-  public static OptionType fromValue(String text) {
+  public static OptionType fromValue(String value) {
     for (OptionType b : OptionType.values()) {
-      if (String.valueOf(b.value).equals(text)) {
+      if (b.value.equals(value)) {
         return b;
       }
     }
-    throw new IllegalArgumentException("Unexpected value '" + text + "'");
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
   }
 }

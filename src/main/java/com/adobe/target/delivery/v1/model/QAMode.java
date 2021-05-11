@@ -15,6 +15,9 @@ package com.adobe.target.delivery.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -25,24 +28,39 @@ import java.util.Objects;
  * to match or not match specified audiences, select a specific experience, count the
  * impressions/visits for the reporting or not.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(
+    description =
+        "Use this object to enable the QA mode in the request. Use the QA mode to test the look and feel of your site or application for various activities in isolation or together, with the possibilty to match or not match specified audiences, select a specific experience, count the impressions/visits for the reporting or not. ")
+@JsonPropertyOrder({
+  QAMode.JSON_PROPERTY_TOKEN,
+  QAMode.JSON_PROPERTY_LISTED_ACTIVITIES_ONLY,
+  QAMode.JSON_PROPERTY_EVALUATE_AS_TRUE_AUDIENCE_IDS,
+  QAMode.JSON_PROPERTY_EVALUATE_AS_FALSE_AUDIENCE_IDS,
+  QAMode.JSON_PROPERTY_PREVIEW_INDEXES
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class QAMode {
-  @JsonProperty("token")
+  public static final String JSON_PROPERTY_TOKEN = "token";
   private String token;
 
-  @JsonProperty("listedActivitiesOnly")
+  public static final String JSON_PROPERTY_LISTED_ACTIVITIES_ONLY = "listedActivitiesOnly";
   private Boolean listedActivitiesOnly;
 
-  @JsonProperty("evaluateAsTrueAudienceIds")
-  private List<Long> evaluateAsTrueAudienceIds = new ArrayList<>();
+  public static final String JSON_PROPERTY_EVALUATE_AS_TRUE_AUDIENCE_IDS =
+      "evaluateAsTrueAudienceIds";
+  private List<Long> evaluateAsTrueAudienceIds = null;
 
-  @JsonProperty("evaluateAsFalseAudienceIds")
-  private List<Long> evaluateAsFalseAudienceIds = new ArrayList<>();
+  public static final String JSON_PROPERTY_EVALUATE_AS_FALSE_AUDIENCE_IDS =
+      "evaluateAsFalseAudienceIds";
+  private List<Long> evaluateAsFalseAudienceIds = null;
 
-  @JsonProperty("previewIndexes")
-  private List<QAModePreviewIndex> previewIndexes = new ArrayList<>();
+  public static final String JSON_PROPERTY_PREVIEW_INDEXES = "previewIndexes";
+  private List<QAModePreviewIndex> previewIndexes = null;
 
   public QAMode token(String token) {
+
     this.token = token;
     return this;
   }
@@ -55,6 +73,12 @@ public class QAMode {
    *
    * @return token
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "The encrypted token for the QA mode. It contains the list of the activity ids that are allowed to be executed in QA mode. Validation   * After decryption, the client code from the token should match the one from the request.   * After decryption, activities with the ids specified in the token should belong to the client. ")
+  @JsonProperty(JSON_PROPERTY_TOKEN)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getToken() {
     return token;
   }
@@ -64,6 +88,7 @@ public class QAMode {
   }
 
   public QAMode listedActivitiesOnly(Boolean listedActivitiesOnly) {
+
     this.listedActivitiesOnly = listedActivitiesOnly;
     return this;
   }
@@ -74,6 +99,12 @@ public class QAMode {
    *
    * @return listedActivitiesOnly
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Specifies whether qa_mode campaigns should be executed in isolation or if they should be evaluated along other active campaigns for current environment. ")
+  @JsonProperty(JSON_PROPERTY_LISTED_ACTIVITIES_ONLY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Boolean getListedActivitiesOnly() {
     return listedActivitiesOnly;
   }
@@ -83,6 +114,7 @@ public class QAMode {
   }
 
   public QAMode evaluateAsTrueAudienceIds(List<Long> evaluateAsTrueAudienceIds) {
+
     this.evaluateAsTrueAudienceIds = evaluateAsTrueAudienceIds;
     return this;
   }
@@ -101,6 +133,12 @@ public class QAMode {
    *
    * @return evaluateAsTrueAudienceIds
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "List of audience ids that should be always evaluated as TRUE in the scope of the delivery request ")
+  @JsonProperty(JSON_PROPERTY_EVALUATE_AS_TRUE_AUDIENCE_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Long> getEvaluateAsTrueAudienceIds() {
     return evaluateAsTrueAudienceIds;
   }
@@ -110,6 +148,7 @@ public class QAMode {
   }
 
   public QAMode evaluateAsFalseAudienceIds(List<Long> evaluateAsFalseAudienceIds) {
+
     this.evaluateAsFalseAudienceIds = evaluateAsFalseAudienceIds;
     return this;
   }
@@ -128,6 +167,12 @@ public class QAMode {
    *
    * @return evaluateAsFalseAudienceIds
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "List of audience ids that should be always evaluated as FALSE in the scope of the delivery request ")
+  @JsonProperty(JSON_PROPERTY_EVALUATE_AS_FALSE_AUDIENCE_IDS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Long> getEvaluateAsFalseAudienceIds() {
     return evaluateAsFalseAudienceIds;
   }
@@ -137,6 +182,7 @@ public class QAMode {
   }
 
   public QAMode previewIndexes(List<QAModePreviewIndex> previewIndexes) {
+
     this.previewIndexes = previewIndexes;
     return this;
   }
@@ -154,6 +200,10 @@ public class QAMode {
    *
    * @return previewIndexes
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "List of preview indexes. If present, the list cannot be empty. ")
+  @JsonProperty(JSON_PROPERTY_PREVIEW_INDEXES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<QAModePreviewIndex> getPreviewIndexes() {
     return previewIndexes;
   }
@@ -163,7 +213,7 @@ public class QAMode {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -210,7 +260,7 @@ public class QAMode {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

@@ -16,72 +16,69 @@ package com.adobe.target.delivery.v1.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
-/**
- * Analytics payload for client side integration that should be sent to Analytics after content has
- * been applied.
- */
-@ApiModel(
-    description =
-        "Analytics payload for client side integration that should be sent to Analytics after content has been applied. ")
-@JsonPropertyOrder({AnalyticsPayload.JSON_PROPERTY_PE, AnalyticsPayload.JSON_PROPERTY_TNTA})
+/** MboxRequestAllOf */
+@JsonPropertyOrder({MboxRequestAllOf.JSON_PROPERTY_INDEX, MboxRequestAllOf.JSON_PROPERTY_NAME})
 @javax.annotation.Generated(
     value = "org.openapitools.codegen.languages.JavaClientCodegen",
     date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
-public class AnalyticsPayload {
-  public static final String JSON_PROPERTY_PE = "pe";
-  private String pe;
+public class MboxRequestAllOf {
+  public static final String JSON_PROPERTY_INDEX = "index";
+  private Integer index;
 
-  public static final String JSON_PROPERTY_TNTA = "tnta";
-  private String tnta;
+  public static final String JSON_PROPERTY_NAME = "name";
+  private String name;
 
-  public AnalyticsPayload pe(String pe) {
+  public MboxRequestAllOf index(Integer index) {
 
-    this.pe = pe;
+    this.index = index;
     return this;
   }
 
   /**
-   * Indicates to Adobe Analytics that the payload is an Adobe Target type
+   * An index for the mboxes to be executed or prefetched. Mbox index is used for correlation
+   * between the mbox request with the mbox response, for either prefetch or execute responses.
+   * Index should be unique in the mbox list.
    *
-   * @return pe
+   * @return index
    */
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Indicates to Adobe Analytics that the payload is an Adobe Target type")
-  @JsonProperty(JSON_PROPERTY_PE)
+  @ApiModelProperty(
+      value =
+          "An index for the mboxes to be executed or prefetched. Mbox index is used for correlation between the mbox request with the mbox response, for either prefetch or execute responses. Index should be unique in the mbox list. ")
+  @JsonProperty(JSON_PROPERTY_INDEX)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public String getPe() {
-    return pe;
+  public Integer getIndex() {
+    return index;
   }
 
-  public void setPe(String pe) {
-    this.pe = pe;
+  public void setIndex(Integer index) {
+    this.index = index;
   }
 
-  public AnalyticsPayload tnta(String tnta) {
+  public MboxRequestAllOf name(String name) {
 
-    this.tnta = tnta;
+    this.name = name;
     return this;
   }
 
   /**
-   * Contains Target metadata that describes the activity and experience
+   * The name of the regional mbox to be evaluated.
    *
-   * @return tnta
+   * @return name
    */
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Contains Target metadata that describes the activity and experience")
-  @JsonProperty(JSON_PROPERTY_TNTA)
+  @ApiModelProperty(value = "The name of the regional mbox to be evaluated. ")
+  @JsonProperty(JSON_PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public String getTnta() {
-    return tnta;
+  public String getName() {
+    return name;
   }
 
-  public void setTnta(String tnta) {
-    this.tnta = tnta;
+  public void setName(String name) {
+    this.name = name;
   }
 
   @Override
@@ -92,22 +89,22 @@ public class AnalyticsPayload {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AnalyticsPayload analyticsPayload = (AnalyticsPayload) o;
-    return Objects.equals(this.pe, analyticsPayload.pe)
-        && Objects.equals(this.tnta, analyticsPayload.tnta);
+    MboxRequestAllOf mboxRequestAllOf = (MboxRequestAllOf) o;
+    return Objects.equals(this.index, mboxRequestAllOf.index)
+        && Objects.equals(this.name, mboxRequestAllOf.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(pe, tnta);
+    return Objects.hash(index, name);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class AnalyticsPayload {\n");
-    sb.append("    pe: ").append(toIndentedString(pe)).append("\n");
-    sb.append("    tnta: ").append(toIndentedString(tnta)).append("\n");
+    sb.append("class MboxRequestAllOf {\n");
+    sb.append("    index: ").append(toIndentedString(index)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("}");
     return sb.toString();
   }

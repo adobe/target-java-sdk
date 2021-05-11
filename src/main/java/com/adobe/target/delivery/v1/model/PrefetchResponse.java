@@ -15,26 +15,41 @@ package com.adobe.target.delivery.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /** The object that will return the prefetched content based on the request, active activites etc */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(
+    description =
+        "The object that will return the prefetched content based on the request, active activites etc ")
+@JsonPropertyOrder({
+  PrefetchResponse.JSON_PROPERTY_VIEWS,
+  PrefetchResponse.JSON_PROPERTY_PAGE_LOAD,
+  PrefetchResponse.JSON_PROPERTY_MBOXES,
+  PrefetchResponse.JSON_PROPERTY_METRICS
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class PrefetchResponse {
-  @JsonProperty("views")
-  private List<View> views = new ArrayList<>();
+  public static final String JSON_PROPERTY_VIEWS = "views";
+  private List<View> views = null;
 
-  @JsonProperty("pageLoad")
-  private PageLoadResponse pageLoad = null;
+  public static final String JSON_PROPERTY_PAGE_LOAD = "pageLoad";
+  private PageLoadResponse pageLoad;
 
-  @JsonProperty("mboxes")
-  private List<PrefetchMboxResponse> mboxes = new ArrayList<>();
+  public static final String JSON_PROPERTY_MBOXES = "mboxes";
+  private List<PrefetchMboxResponse> mboxes = null;
 
-  @JsonProperty("metrics")
-  private List<Metric> metrics = new ArrayList<>();
+  public static final String JSON_PROPERTY_METRICS = "metrics";
+  private List<Metric> metrics = null;
 
   public PrefetchResponse views(List<View> views) {
+
     this.views = views;
     return this;
   }
@@ -52,6 +67,10 @@ public class PrefetchResponse {
    *
    * @return views
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Contains all the views matching the request. ")
+  @JsonProperty(JSON_PROPERTY_VIEWS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<View> getViews() {
     return views;
   }
@@ -61,6 +80,7 @@ public class PrefetchResponse {
   }
 
   public PrefetchResponse pageLoad(PageLoadResponse pageLoad) {
+
     this.pageLoad = pageLoad;
     return this;
   }
@@ -70,6 +90,10 @@ public class PrefetchResponse {
    *
    * @return pageLoad
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
+  @JsonProperty(JSON_PROPERTY_PAGE_LOAD)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public PageLoadResponse getPageLoad() {
     return pageLoad;
   }
@@ -79,6 +103,7 @@ public class PrefetchResponse {
   }
 
   public PrefetchResponse mboxes(List<PrefetchMboxResponse> mboxes) {
+
     this.mboxes = mboxes;
     return this;
   }
@@ -97,6 +122,12 @@ public class PrefetchResponse {
    *
    * @return mboxes
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Prefetched mboxes, including content and notification tokens to be sent back when the mboxes are displayed. ")
+  @JsonProperty(JSON_PROPERTY_MBOXES)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<PrefetchMboxResponse> getMboxes() {
     return mboxes;
   }
@@ -106,6 +137,7 @@ public class PrefetchResponse {
   }
 
   public PrefetchResponse metrics(List<Metric> metrics) {
+
     this.metrics = metrics;
     return this;
   }
@@ -130,6 +162,12 @@ public class PrefetchResponse {
    *
    * @return metrics
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "The click track metrics that are not assigned to a view but are present in activites that have views, except in case the same activity is serving content for selectors both assinged to a view and selectors without any views, and having click track metrics that are not assotiated with any view within the activity, then:   * in case of a prefetch only request, these metrics (tokens) will be set in the prefetch response's metrics.   * in case of an execute only request, the metrics will be set in the page load response's metrics.   * in case of a request, with both, execute and prefetch, metrics will be set in the page load response's     metrics only. ")
+  @JsonProperty(JSON_PROPERTY_METRICS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public List<Metric> getMetrics() {
     return metrics;
   }
@@ -139,7 +177,7 @@ public class PrefetchResponse {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -173,7 +211,7 @@ public class PrefetchResponse {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

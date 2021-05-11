@@ -16,72 +16,72 @@ package com.adobe.target.delivery.v1.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
-/**
- * Analytics payload for client side integration that should be sent to Analytics after content has
- * been applied.
- */
-@ApiModel(
-    description =
-        "Analytics payload for client side integration that should be sent to Analytics after content has been applied. ")
-@JsonPropertyOrder({AnalyticsPayload.JSON_PROPERTY_PE, AnalyticsPayload.JSON_PROPERTY_TNTA})
+/** ViewRequestAllOf */
+@JsonPropertyOrder({ViewRequestAllOf.JSON_PROPERTY_NAME, ViewRequestAllOf.JSON_PROPERTY_KEY})
 @javax.annotation.Generated(
     value = "org.openapitools.codegen.languages.JavaClientCodegen",
     date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
-public class AnalyticsPayload {
-  public static final String JSON_PROPERTY_PE = "pe";
-  private String pe;
+public class ViewRequestAllOf {
+  public static final String JSON_PROPERTY_NAME = "name";
+  private String name;
 
-  public static final String JSON_PROPERTY_TNTA = "tnta";
-  private String tnta;
+  public static final String JSON_PROPERTY_KEY = "key";
+  private String key;
 
-  public AnalyticsPayload pe(String pe) {
+  public ViewRequestAllOf name(String name) {
 
-    this.pe = pe;
+    this.name = name;
     return this;
   }
 
   /**
-   * Indicates to Adobe Analytics that the payload is an Adobe Target type
+   * View Name - Unique view name. If the activity has a metric with a view with this name it will
+   * be matched, providing the Key matches as well or is null and view and metric targeting is
+   * matched.
    *
-   * @return pe
+   * @return name
    */
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Indicates to Adobe Analytics that the payload is an Adobe Target type")
-  @JsonProperty(JSON_PROPERTY_PE)
+  @ApiModelProperty(
+      value =
+          "View Name - Unique view name. If the activity has a metric with a view with this name it will be matched, providing the Key matches as well or is null and view and metric targeting is matched. ")
+  @JsonProperty(JSON_PROPERTY_NAME)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public String getPe() {
-    return pe;
+  public String getName() {
+    return name;
   }
 
-  public void setPe(String pe) {
-    this.pe = pe;
+  public void setName(String name) {
+    this.name = name;
   }
 
-  public AnalyticsPayload tnta(String tnta) {
+  public ViewRequestAllOf key(String key) {
 
-    this.tnta = tnta;
+    this.key = key;
     return this;
   }
 
   /**
-   * Contains Target metadata that describes the activity and experience
+   * View Key - An optional encoded String identifier used in advanced scenarios, such as View
+   * fingerprinting. Same matching conditions as for View Name.
    *
-   * @return tnta
+   * @return key
    */
   @javax.annotation.Nullable
-  @ApiModelProperty(value = "Contains Target metadata that describes the activity and experience")
-  @JsonProperty(JSON_PROPERTY_TNTA)
+  @ApiModelProperty(
+      value =
+          "View Key - An optional encoded String identifier used in advanced scenarios, such as View fingerprinting. Same matching conditions as for View Name. ")
+  @JsonProperty(JSON_PROPERTY_KEY)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public String getTnta() {
-    return tnta;
+  public String getKey() {
+    return key;
   }
 
-  public void setTnta(String tnta) {
-    this.tnta = tnta;
+  public void setKey(String key) {
+    this.key = key;
   }
 
   @Override
@@ -92,22 +92,22 @@ public class AnalyticsPayload {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AnalyticsPayload analyticsPayload = (AnalyticsPayload) o;
-    return Objects.equals(this.pe, analyticsPayload.pe)
-        && Objects.equals(this.tnta, analyticsPayload.tnta);
+    ViewRequestAllOf viewRequestAllOf = (ViewRequestAllOf) o;
+    return Objects.equals(this.name, viewRequestAllOf.name)
+        && Objects.equals(this.key, viewRequestAllOf.key);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(pe, tnta);
+    return Objects.hash(name, key);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class AnalyticsPayload {\n");
-    sb.append("    pe: ").append(toIndentedString(pe)).append("\n");
-    sb.append("    tnta: ").append(toIndentedString(tnta)).append("\n");
+    sb.append("class ViewRequestAllOf {\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    key: ").append(toIndentedString(key)).append("\n");
     sb.append("}");
     return sb.toString();
   }

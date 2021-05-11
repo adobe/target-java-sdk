@@ -41,12 +41,12 @@ public enum AuthenticatedState {
   }
 
   @JsonCreator
-  public static AuthenticatedState fromValue(String text) {
+  public static AuthenticatedState fromValue(String value) {
     for (AuthenticatedState b : AuthenticatedState.values()) {
-      if (String.valueOf(b.value).equals(text)) {
+      if (b.value.equals(value)) {
         return b;
       }
     }
-    throw new IllegalArgumentException("Unexpected value '" + text + "'");
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
   }
 }

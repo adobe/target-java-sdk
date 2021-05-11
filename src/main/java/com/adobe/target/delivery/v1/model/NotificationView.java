@@ -15,21 +15,33 @@ package com.adobe.target.delivery.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 /** Notification for the displayed view. */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(description = "Notification for the displayed view.")
+@JsonPropertyOrder({
+  NotificationView.JSON_PROPERTY_NAME,
+  NotificationView.JSON_PROPERTY_KEY,
+  NotificationView.JSON_PROPERTY_STATE
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class NotificationView {
-  @JsonProperty("name")
+  public static final String JSON_PROPERTY_NAME = "name";
   private String name;
 
-  @JsonProperty("key")
+  public static final String JSON_PROPERTY_KEY = "key";
   private String key;
 
-  @JsonProperty("state")
+  public static final String JSON_PROPERTY_STATE = "state";
   private String state;
 
   public NotificationView name(String name) {
+
     this.name = name;
     return this;
   }
@@ -41,6 +53,12 @@ public class NotificationView {
    *
    * @return name
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "View Name - Unique view name. If the activity has a metric with a view with this name it will be matched, providing the Key matches as well or is null and view and metric targeting is matched. ")
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
@@ -50,6 +68,7 @@ public class NotificationView {
   }
 
   public NotificationView key(String key) {
+
     this.key = key;
     return this;
   }
@@ -60,6 +79,12 @@ public class NotificationView {
    *
    * @return key
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "View Key - An optional encoded String identifier used in advanced scenarios, such as View fingerprinting. Same matching conditions as for View Name. ")
+  @JsonProperty(JSON_PROPERTY_KEY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getKey() {
     return key;
   }
@@ -69,6 +94,7 @@ public class NotificationView {
   }
 
   public NotificationView state(String state) {
+
     this.state = state;
     return this;
   }
@@ -78,6 +104,10 @@ public class NotificationView {
    *
    * @return state
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "View state token.")
+  @JsonProperty(JSON_PROPERTY_STATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getState() {
     return state;
   }
@@ -87,7 +117,7 @@ public class NotificationView {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -119,7 +149,7 @@ public class NotificationView {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

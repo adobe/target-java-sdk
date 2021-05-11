@@ -18,72 +18,82 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
-/** Audience Manager Integration (AAM). */
-@ApiModel(description = "Audience Manager Integration (AAM).")
+/** Notification response. Contains the result of a processed notification. */
+@ApiModel(description = "Notification response. Contains the result of a processed notification. ")
 @JsonPropertyOrder({
-  AudienceManager.JSON_PROPERTY_LOCATION_HINT,
-  AudienceManager.JSON_PROPERTY_BLOB
+  NotificationResponse.JSON_PROPERTY_ID,
+  NotificationResponse.JSON_PROPERTY_TRACE
 })
 @javax.annotation.Generated(
     value = "org.openapitools.codegen.languages.JavaClientCodegen",
     date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
-public class AudienceManager {
-  public static final String JSON_PROPERTY_LOCATION_HINT = "locationHint";
-  private Integer locationHint;
+public class NotificationResponse {
+  public static final String JSON_PROPERTY_ID = "id";
+  private String id;
 
-  public static final String JSON_PROPERTY_BLOB = "blob";
-  private String blob;
+  public static final String JSON_PROPERTY_TRACE = "trace";
+  private Map<String, Object> trace = null;
 
-  public AudienceManager locationHint(Integer locationHint) {
+  public NotificationResponse id(String id) {
 
-    this.locationHint = locationHint;
+    this.id = id;
     return this;
   }
 
   /**
-   * DCS location hint. Used to determine which AAM DCS Endpoint to hit in order to retrieve the
-   * profile. minimum: 1
+   * Notification id which indicates that the notification was processed successfully.
    *
-   * @return locationHint
+   * @return id
+   */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value = "Notification id which indicates that the notification was processed successfully. ")
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public NotificationResponse trace(Map<String, Object> trace) {
+
+    this.trace = trace;
+    return this;
+  }
+
+  public NotificationResponse putTraceItem(String key, Object traceItem) {
+    if (this.trace == null) {
+      this.trace = new HashMap<>();
+    }
+    this.trace.put(key, traceItem);
+    return this;
+  }
+
+  /**
+   * The object containing all trace data for the request, only present if the trace token was
+   * provided in the request.
+   *
+   * @return trace
    */
   @javax.annotation.Nullable
   @ApiModelProperty(
       value =
-          "DCS location hint. Used to determine which AAM DCS Endpoint to hit in order to retrieve the profile. ")
-  @JsonProperty(JSON_PROPERTY_LOCATION_HINT)
+          "The object containing all trace data for the request, only present if the trace token was provided in the request. ")
+  @JsonProperty(JSON_PROPERTY_TRACE)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public Integer getLocationHint() {
-    return locationHint;
+  public Map<String, Object> getTrace() {
+    return trace;
   }
 
-  public void setLocationHint(Integer locationHint) {
-    this.locationHint = locationHint;
-  }
-
-  public AudienceManager blob(String blob) {
-
-    this.blob = blob;
-    return this;
-  }
-
-  /**
-   * AAM Blob. Used to send additional data to AAM. Validation * Cannot be blank.
-   *
-   * @return blob
-   */
-  @javax.annotation.Nullable
-  @ApiModelProperty(
-      value = "AAM Blob. Used to send additional data to AAM. Validation   * Cannot be blank. ")
-  @JsonProperty(JSON_PROPERTY_BLOB)
-  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public String getBlob() {
-    return blob;
-  }
-
-  public void setBlob(String blob) {
-    this.blob = blob;
+  public void setTrace(Map<String, Object> trace) {
+    this.trace = trace;
   }
 
   @Override
@@ -94,22 +104,22 @@ public class AudienceManager {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AudienceManager audienceManager = (AudienceManager) o;
-    return Objects.equals(this.locationHint, audienceManager.locationHint)
-        && Objects.equals(this.blob, audienceManager.blob);
+    NotificationResponse notificationResponse = (NotificationResponse) o;
+    return Objects.equals(this.id, notificationResponse.id)
+        && Objects.equals(this.trace, notificationResponse.trace);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(locationHint, blob);
+    return Objects.hash(id, trace);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class AudienceManager {\n");
-    sb.append("    locationHint: ").append(toIndentedString(locationHint)).append("\n");
-    sb.append("    blob: ").append(toIndentedString(blob)).append("\n");
+    sb.append("class NotificationResponse {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    trace: ").append(toIndentedString(trace)).append("\n");
     sb.append("}");
     return sb.toString();
   }

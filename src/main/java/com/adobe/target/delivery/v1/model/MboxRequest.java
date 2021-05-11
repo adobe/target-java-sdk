@@ -15,18 +15,26 @@ package com.adobe.target.delivery.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 /** Regional mbox request. */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(description = "Regional mbox request.")
+@JsonPropertyOrder({MboxRequest.JSON_PROPERTY_INDEX, MboxRequest.JSON_PROPERTY_NAME})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class MboxRequest extends RequestDetails {
-  @JsonProperty("index")
+  public static final String JSON_PROPERTY_INDEX = "index";
   private Integer index;
 
-  @JsonProperty("name")
+  public static final String JSON_PROPERTY_NAME = "name";
   private String name;
 
   public MboxRequest index(Integer index) {
+
     this.index = index;
     return this;
   }
@@ -38,6 +46,12 @@ public class MboxRequest extends RequestDetails {
    *
    * @return index
    */
+  @ApiModelProperty(
+      required = true,
+      value =
+          "An index for the mboxes to be executed or prefetched. Mbox index is used for correlation between the mbox request with the mbox response, for either prefetch or execute responses. Index should be unique in the mbox list. ")
+  @JsonProperty(JSON_PROPERTY_INDEX)
+  @JsonInclude(value = JsonInclude.Include.ALWAYS)
   public Integer getIndex() {
     return index;
   }
@@ -47,6 +61,7 @@ public class MboxRequest extends RequestDetails {
   }
 
   public MboxRequest name(String name) {
+
     this.name = name;
     return this;
   }
@@ -56,6 +71,10 @@ public class MboxRequest extends RequestDetails {
    *
    * @return name
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "The name of the regional mbox to be evaluated. ")
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
@@ -65,7 +84,7 @@ public class MboxRequest extends RequestDetails {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -97,7 +116,7 @@ public class MboxRequest extends RequestDetails {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

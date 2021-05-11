@@ -16,38 +16,26 @@ package com.adobe.target.delivery.v1.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Notification object is used to sent notificaitons regarding what prefetched content was displayed
- * (for views, pageLoad or regional mboxes), which views, pages and mboxes were visited (triggered),
- * and which elements were clicked. Notification request detail will be validated and in case there
- * are validation errors with any token or timestamp the entire request will be invalidated, so
- * there are no cases of inconsistent data, caused by a partially processed notification. that may
- * happen with a partially processed notification. This is different from the approach in the batch
- * mbox v2 API. Mboxes and views are mutually exclusive.
- */
-@ApiModel(
-    description =
-        "Notification object is used to sent notificaitons regarding what prefetched content was displayed (for views, pageLoad or regional mboxes), which views, pages and mboxes were visited (triggered), and which elements were clicked. Notification request detail will be validated and in case there are validation errors with any token or timestamp the entire request will be invalidated, so there are no cases of inconsistent data, caused by a partially processed notification. that may happen with a partially processed notification. This is different from the approach in the batch mbox v2 API. Mboxes and views are mutually exclusive. ")
+/** NotificationAllOf */
 @JsonPropertyOrder({
-  Notification.JSON_PROPERTY_ID,
-  Notification.JSON_PROPERTY_IMPRESSION_ID,
-  Notification.JSON_PROPERTY_TYPE,
-  Notification.JSON_PROPERTY_TIMESTAMP,
-  Notification.JSON_PROPERTY_TOKENS,
-  Notification.JSON_PROPERTY_MBOX,
-  Notification.JSON_PROPERTY_VIEW,
-  Notification.JSON_PROPERTY_PAGE_LOAD
+  NotificationAllOf.JSON_PROPERTY_ID,
+  NotificationAllOf.JSON_PROPERTY_IMPRESSION_ID,
+  NotificationAllOf.JSON_PROPERTY_TYPE,
+  NotificationAllOf.JSON_PROPERTY_TIMESTAMP,
+  NotificationAllOf.JSON_PROPERTY_TOKENS,
+  NotificationAllOf.JSON_PROPERTY_MBOX,
+  NotificationAllOf.JSON_PROPERTY_VIEW,
+  NotificationAllOf.JSON_PROPERTY_PAGE_LOAD
 })
 @javax.annotation.Generated(
     value = "org.openapitools.codegen.languages.JavaClientCodegen",
     date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
-public class Notification extends RequestDetails {
+public class NotificationAllOf {
   public static final String JSON_PROPERTY_ID = "id";
   private String id;
 
@@ -72,7 +60,7 @@ public class Notification extends RequestDetails {
   public static final String JSON_PROPERTY_PAGE_LOAD = "pageLoad";
   private NotificationPageLoad pageLoad;
 
-  public Notification id(String id) {
+  public NotificationAllOf id(String id) {
 
     this.id = id;
     return this;
@@ -84,12 +72,12 @@ public class Notification extends RequestDetails {
    *
    * @return id
    */
+  @javax.annotation.Nullable
   @ApiModelProperty(
-      required = true,
       value =
           "Notification id will be returned in response and will indicate that the notification was processed successfully. ")
   @JsonProperty(JSON_PROPERTY_ID)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
@@ -98,7 +86,7 @@ public class Notification extends RequestDetails {
     this.id = id;
   }
 
-  public Notification impressionId(String impressionId) {
+  public NotificationAllOf impressionId(String impressionId) {
 
     this.impressionId = impressionId;
     return this;
@@ -125,7 +113,7 @@ public class Notification extends RequestDetails {
     this.impressionId = impressionId;
   }
 
-  public Notification type(MetricType type) {
+  public NotificationAllOf type(MetricType type) {
 
     this.type = type;
     return this;
@@ -136,9 +124,10 @@ public class Notification extends RequestDetails {
    *
    * @return type
    */
-  @ApiModelProperty(required = true, value = "")
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "")
   @JsonProperty(JSON_PROPERTY_TYPE)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public MetricType getType() {
     return type;
   }
@@ -147,7 +136,7 @@ public class Notification extends RequestDetails {
     this.type = type;
   }
 
-  public Notification timestamp(Long timestamp) {
+  public NotificationAllOf timestamp(Long timestamp) {
 
     this.timestamp = timestamp;
     return this;
@@ -158,11 +147,11 @@ public class Notification extends RequestDetails {
    *
    * @return timestamp
    */
+  @javax.annotation.Nullable
   @ApiModelProperty(
-      required = true,
       value = "Timestamp of the notification, in milliseconds elapsed since UNIX epoch.")
   @JsonProperty(JSON_PROPERTY_TIMESTAMP)
-  @JsonInclude(value = JsonInclude.Include.ALWAYS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Long getTimestamp() {
     return timestamp;
   }
@@ -171,13 +160,13 @@ public class Notification extends RequestDetails {
     this.timestamp = timestamp;
   }
 
-  public Notification tokens(List<String> tokens) {
+  public NotificationAllOf tokens(List<String> tokens) {
 
     this.tokens = tokens;
     return this;
   }
 
-  public Notification addTokensItem(String tokensItem) {
+  public NotificationAllOf addTokensItem(String tokensItem) {
     if (this.tokens == null) {
       this.tokens = new ArrayList<>();
     }
@@ -204,7 +193,7 @@ public class Notification extends RequestDetails {
     this.tokens = tokens;
   }
 
-  public Notification mbox(NotificationMbox mbox) {
+  public NotificationAllOf mbox(NotificationMbox mbox) {
 
     this.mbox = mbox;
     return this;
@@ -227,7 +216,7 @@ public class Notification extends RequestDetails {
     this.mbox = mbox;
   }
 
-  public Notification view(NotificationView view) {
+  public NotificationAllOf view(NotificationView view) {
 
     this.view = view;
     return this;
@@ -250,7 +239,7 @@ public class Notification extends RequestDetails {
     this.view = view;
   }
 
-  public Notification pageLoad(NotificationPageLoad pageLoad) {
+  public NotificationAllOf pageLoad(NotificationPageLoad pageLoad) {
 
     this.pageLoad = pageLoad;
     return this;
@@ -281,29 +270,26 @@ public class Notification extends RequestDetails {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Notification notification = (Notification) o;
-    return Objects.equals(this.id, notification.id)
-        && Objects.equals(this.impressionId, notification.impressionId)
-        && Objects.equals(this.type, notification.type)
-        && Objects.equals(this.timestamp, notification.timestamp)
-        && Objects.equals(this.tokens, notification.tokens)
-        && Objects.equals(this.mbox, notification.mbox)
-        && Objects.equals(this.view, notification.view)
-        && Objects.equals(this.pageLoad, notification.pageLoad)
-        && super.equals(o);
+    NotificationAllOf notificationAllOf = (NotificationAllOf) o;
+    return Objects.equals(this.id, notificationAllOf.id)
+        && Objects.equals(this.impressionId, notificationAllOf.impressionId)
+        && Objects.equals(this.type, notificationAllOf.type)
+        && Objects.equals(this.timestamp, notificationAllOf.timestamp)
+        && Objects.equals(this.tokens, notificationAllOf.tokens)
+        && Objects.equals(this.mbox, notificationAllOf.mbox)
+        && Objects.equals(this.view, notificationAllOf.view)
+        && Objects.equals(this.pageLoad, notificationAllOf.pageLoad);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(
-        id, impressionId, type, timestamp, tokens, mbox, view, pageLoad, super.hashCode());
+    return Objects.hash(id, impressionId, type, timestamp, tokens, mbox, view, pageLoad);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Notification {\n");
-    sb.append("    ").append(toIndentedString(super.toString())).append("\n");
+    sb.append("class NotificationAllOf {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    impressionId: ").append(toIndentedString(impressionId)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
