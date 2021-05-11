@@ -38,7 +38,7 @@ public class ExecuteResponse {
   private PageLoadResponse pageLoad;
 
   public static final String JSON_PROPERTY_MBOXES = "mboxes";
-  private List<MboxResponse> mboxes = null;
+  private List<MboxResponse> mboxes = new ArrayList<>();
 
   public ExecuteResponse pageLoad(PageLoadResponse pageLoad) {
 

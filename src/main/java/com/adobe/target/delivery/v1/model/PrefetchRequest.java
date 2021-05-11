@@ -41,13 +41,13 @@ import java.util.Objects;
     date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class PrefetchRequest {
   public static final String JSON_PROPERTY_VIEWS = "views";
-  private List<ViewRequest> views = null;
+  private List<ViewRequest> views = new ArrayList<>();
 
   public static final String JSON_PROPERTY_PAGE_LOAD = "pageLoad";
   private RequestDetails pageLoad;
 
   public static final String JSON_PROPERTY_MBOXES = "mboxes";
-  private List<MboxRequest> mboxes = null;
+  private List<MboxRequest> mboxes = new ArrayList<>();
 
   public PrefetchRequest views(List<ViewRequest> views) {
 

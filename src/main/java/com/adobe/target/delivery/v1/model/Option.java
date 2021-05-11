@@ -44,7 +44,7 @@ public class Option {
   private String eventToken;
 
   public static final String JSON_PROPERTY_RESPONSE_TOKENS = "responseTokens";
-  private Map<String, Object> responseTokens = null;
+  private Map<String, Object> responseTokens = new HashMap<>();
 
   public Option type(OptionType type) {
 

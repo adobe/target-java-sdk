@@ -29,11 +29,10 @@ import java.util.Objects;
     date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class TelemetryFeatures {
   public static final String JSON_PROPERTY_DECISIONING_METHOD = "decisioningMethod";
-  private DecisioningMethod decisioningMethod;
+  private String decisioningMethod;
 
   public TelemetryFeatures decisioningMethod(DecisioningMethod decisioningMethod) {
-
-    this.decisioningMethod = decisioningMethod;
+    this.decisioningMethod = decisioningMethod.getName();
     return this;
   }
 
@@ -46,11 +45,11 @@ public class TelemetryFeatures {
   @ApiModelProperty(value = "")
   @JsonProperty(JSON_PROPERTY_DECISIONING_METHOD)
   @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
-  public DecisioningMethod getDecisioningMethod() {
+  public String getDecisioningMethod() {
     return decisioningMethod;
   }
 
-  public void setDecisioningMethod(DecisioningMethod decisioningMethod) {
+  public void setDecisioningMethod(String decisioningMethod) {
     this.decisioningMethod = decisioningMethod;
   }
 

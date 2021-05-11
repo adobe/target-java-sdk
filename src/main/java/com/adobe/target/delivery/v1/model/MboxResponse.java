@@ -45,16 +45,16 @@ public class MboxResponse {
   private String name;
 
   public static final String JSON_PROPERTY_OPTIONS = "options";
-  private List<Option> options = null;
+  private List<Option> options = new ArrayList<>();
 
   public static final String JSON_PROPERTY_METRICS = "metrics";
-  private List<Metric> metrics = null;
+  private List<Metric> metrics = new ArrayList<>();
 
   public static final String JSON_PROPERTY_ANALYTICS = "analytics";
   private AnalyticsResponse analytics;
 
   public static final String JSON_PROPERTY_TRACE = "trace";
-  private Map<String, Object> trace = null;
+  private Map<String, Object> trace = new HashMap<>();
 
   public MboxResponse index(Integer index) {
 
