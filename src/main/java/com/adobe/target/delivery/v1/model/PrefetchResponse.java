@@ -37,16 +37,16 @@ import java.util.Objects;
     date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class PrefetchResponse {
   public static final String JSON_PROPERTY_VIEWS = "views";
-  private List<View> views = null;
+  private List<View> views = new ArrayList<>();
 
   public static final String JSON_PROPERTY_PAGE_LOAD = "pageLoad";
   private PageLoadResponse pageLoad;
 
   public static final String JSON_PROPERTY_MBOXES = "mboxes";
-  private List<PrefetchMboxResponse> mboxes = null;
+  private List<PrefetchMboxResponse> mboxes = new ArrayList<>();
 
   public static final String JSON_PROPERTY_METRICS = "metrics";
-  private List<Metric> metrics = null;
+  private List<Metric> metrics = new ArrayList<>();
 
   public PrefetchResponse views(List<View> views) {
 

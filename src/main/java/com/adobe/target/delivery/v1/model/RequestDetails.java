@@ -43,10 +43,10 @@ public class RequestDetails {
   private Address address;
 
   public static final String JSON_PROPERTY_PARAMETERS = "parameters";
-  private Map<String, String> parameters = null;
+  private Map<String, String> parameters = new HashMap<>();
 
   public static final String JSON_PROPERTY_PROFILE_PARAMETERS = "profileParameters";
-  private Map<String, String> profileParameters = null;
+  private Map<String, String> profileParameters = new HashMap<>();
 
   public static final String JSON_PROPERTY_ORDER = "order";
   private Order order;

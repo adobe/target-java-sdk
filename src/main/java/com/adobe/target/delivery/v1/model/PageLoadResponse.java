@@ -43,10 +43,10 @@ import java.util.Objects;
     date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class PageLoadResponse {
   public static final String JSON_PROPERTY_OPTIONS = "options";
-  private List<Option> options = null;
+  private List<Option> options = new ArrayList<>();
 
   public static final String JSON_PROPERTY_METRICS = "metrics";
-  private List<Metric> metrics = null;
+  private List<Metric> metrics = new ArrayList<>();
 
   public static final String JSON_PROPERTY_ANALYTICS = "analytics";
   private AnalyticsResponse analytics;
@@ -55,7 +55,7 @@ public class PageLoadResponse {
   private String state;
 
   public static final String JSON_PROPERTY_TRACE = "trace";
-  private Map<String, Object> trace = null;
+  private Map<String, Object> trace = new HashMap<>();
 
   public PageLoadResponse options(List<Option> options) {
 

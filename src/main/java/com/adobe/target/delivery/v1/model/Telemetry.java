@@ -30,10 +30,9 @@ import java.util.Objects;
     date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class Telemetry {
   public static final String JSON_PROPERTY_ENTRIES = "entries";
-  private List<TelemetryEntry> entries = null;
+  private List<TelemetryEntry> entries = new ArrayList<>();
 
   public Telemetry entries(List<TelemetryEntry> entries) {
-
     this.entries = entries;
     return this;
   }

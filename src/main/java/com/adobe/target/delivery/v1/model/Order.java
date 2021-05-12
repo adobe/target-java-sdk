@@ -46,7 +46,7 @@ public class Order {
   private BigDecimal total;
 
   public static final String JSON_PROPERTY_PURCHASED_PRODUCT_IDS = "purchasedProductIds";
-  private List<String> purchasedProductIds = null;
+  private List<String> purchasedProductIds = new ArrayList<>();
 
   public static final String JSON_PROPERTY_TIME = "time";
   private OffsetDateTime time = null;

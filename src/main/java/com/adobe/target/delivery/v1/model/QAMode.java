@@ -50,14 +50,14 @@ public class QAMode {
 
   public static final String JSON_PROPERTY_EVALUATE_AS_TRUE_AUDIENCE_IDS =
       "evaluateAsTrueAudienceIds";
-  private List<Long> evaluateAsTrueAudienceIds = null;
+  private List<Long> evaluateAsTrueAudienceIds = new ArrayList<>();
 
   public static final String JSON_PROPERTY_EVALUATE_AS_FALSE_AUDIENCE_IDS =
       "evaluateAsFalseAudienceIds";
-  private List<Long> evaluateAsFalseAudienceIds = null;
+  private List<Long> evaluateAsFalseAudienceIds = new ArrayList<>();
 
   public static final String JSON_PROPERTY_PREVIEW_INDEXES = "previewIndexes";
-  private List<QAModePreviewIndex> previewIndexes = null;
+  private List<QAModePreviewIndex> previewIndexes = new ArrayList<>();
 
   public QAMode token(String token) {
 

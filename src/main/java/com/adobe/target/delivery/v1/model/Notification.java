@@ -61,7 +61,7 @@ public class Notification extends RequestDetails {
   private Long timestamp;
 
   public static final String JSON_PROPERTY_TOKENS = "tokens";
-  private List<String> tokens = null;
+  private List<String> tokens = new ArrayList<>();
 
   public static final String JSON_PROPERTY_MBOX = "mbox";
   private NotificationMbox mbox;

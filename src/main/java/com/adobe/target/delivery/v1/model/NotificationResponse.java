@@ -36,7 +36,7 @@ public class NotificationResponse {
   private String id;
 
   public static final String JSON_PROPERTY_TRACE = "trace";
-  private Map<String, Object> trace = null;
+  private Map<String, Object> trace = new HashMap<>();
 
   public NotificationResponse id(String id) {
 
