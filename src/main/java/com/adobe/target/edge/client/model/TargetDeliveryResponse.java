@@ -50,12 +50,12 @@ public class TargetDeliveryResponse {
             || response.getStatus() == HttpStatus.SC_PARTIAL_CONTENT)) {
       return Collections.EMPTY_LIST;
     }
-    List<TargetCookie> requestCookies = new ArrayList<>();
+    List<TargetCookie> responseCookies = new ArrayList<>();
     CookieUtils.createTargetCookie(request.getSessionId(), response.getId().getTntId())
-        .ifPresent(targetCookie -> requestCookies.add(targetCookie));
+        .ifPresent(targetCookie -> responseCookies.add(targetCookie));
     CookieUtils.createClusterCookie(response.getId().getTntId())
-        .ifPresent(clusterCookie -> requestCookies.add(clusterCookie));
-    return requestCookies;
+        .ifPresent(clusterCookie -> responseCookies.add(clusterCookie));
+    return responseCookies;
   }
 
   public Map<String, VisitorState> getVisitorState() {

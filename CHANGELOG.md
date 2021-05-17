@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [2.1.5] - 2021-05-06
+## [2.1.5] - 2021-05-18
 ### Changed
 - Fix incorrect MaxAge set in response cookies
 
