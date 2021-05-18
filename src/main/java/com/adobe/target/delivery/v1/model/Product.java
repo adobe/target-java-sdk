@@ -15,18 +15,26 @@ package com.adobe.target.delivery.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
-/** Product */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+/** The properties of the products */
+@ApiModel(description = "The properties of the products")
+@JsonPropertyOrder({Product.JSON_PROPERTY_ID, Product.JSON_PROPERTY_CATEGORY_ID})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class Product {
-  @JsonProperty("id")
+  public static final String JSON_PROPERTY_ID = "id";
   private String id;
 
-  @JsonProperty("categoryId")
+  public static final String JSON_PROPERTY_CATEGORY_ID = "categoryId";
   private String categoryId;
 
   public Product id(String id) {
+
     this.id = id;
     return this;
   }
@@ -36,6 +44,10 @@ public class Product {
    *
    * @return id
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Product id. Should not be blank.")
+  @JsonProperty(JSON_PROPERTY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getId() {
     return id;
   }
@@ -45,6 +57,7 @@ public class Product {
   }
 
   public Product categoryId(String categoryId) {
+
     this.categoryId = categoryId;
     return this;
   }
@@ -54,6 +67,10 @@ public class Product {
    *
    * @return categoryId
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Category id. Should not be blank.")
+  @JsonProperty(JSON_PROPERTY_CATEGORY_ID)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCategoryId() {
     return categoryId;
   }
@@ -63,7 +80,7 @@ public class Product {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -93,7 +110,7 @@ public class Product {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

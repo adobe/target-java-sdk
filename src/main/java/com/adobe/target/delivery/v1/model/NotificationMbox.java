@@ -15,18 +15,24 @@ package com.adobe.target.delivery.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 /** NotificationMbox */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonPropertyOrder({NotificationMbox.JSON_PROPERTY_NAME, NotificationMbox.JSON_PROPERTY_STATE})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class NotificationMbox {
-  @JsonProperty("name")
+  public static final String JSON_PROPERTY_NAME = "name";
   private String name;
 
-  @JsonProperty("state")
+  public static final String JSON_PROPERTY_STATE = "state";
   private String state;
 
   public NotificationMbox name(String name) {
+
     this.name = name;
     return this;
   }
@@ -38,6 +44,12 @@ public class NotificationMbox {
    *
    * @return name
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value =
+          "Mbox name. Validation   * No blank values allowed.   * A '-clicked' suffix or the following names are not allowed for mbox names: ** display mboxes **, ** any mbox **, ** click from display mbox **   * Allowed chars: - '-, ./=`:;&!@#$%^&*()+|?~[]{}' ")
+  @JsonProperty(JSON_PROPERTY_NAME)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getName() {
     return name;
   }
@@ -47,6 +59,7 @@ public class NotificationMbox {
   }
 
   public NotificationMbox state(String state) {
+
     this.state = state;
     return this;
   }
@@ -56,6 +69,10 @@ public class NotificationMbox {
    *
    * @return state
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Mbox state token")
+  @JsonProperty(JSON_PROPERTY_STATE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getState() {
     return state;
   }
@@ -65,7 +82,7 @@ public class NotificationMbox {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -95,7 +112,7 @@ public class NotificationMbox {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

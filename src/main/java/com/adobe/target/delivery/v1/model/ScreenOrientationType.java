@@ -42,12 +42,12 @@ public enum ScreenOrientationType {
   }
 
   @JsonCreator
-  public static ScreenOrientationType fromValue(String text) {
+  public static ScreenOrientationType fromValue(String value) {
     for (ScreenOrientationType b : ScreenOrientationType.values()) {
-      if (String.valueOf(b.value).equals(text)) {
+      if (b.value.equals(value)) {
         return b;
       }
     }
-    throw new IllegalArgumentException("Unexpected value '" + text + "'");
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
   }
 }

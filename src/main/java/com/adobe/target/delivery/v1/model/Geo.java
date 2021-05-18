@@ -15,36 +15,54 @@ package com.adobe.target.delivery.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 /**
  * Geo data. If not specified, and Geo is enabled for the client, it will be resolved via user&#39;s
  * IP.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(
+    description =
+        "Geo data. If not specified, and Geo is enabled for the client, it will be resolved via user's IP. ")
+@JsonPropertyOrder({
+  Geo.JSON_PROPERTY_IP_ADDRESS,
+  Geo.JSON_PROPERTY_LATITUDE,
+  Geo.JSON_PROPERTY_LONGITUDE,
+  Geo.JSON_PROPERTY_COUNTRY_CODE,
+  Geo.JSON_PROPERTY_STATE_CODE,
+  Geo.JSON_PROPERTY_CITY,
+  Geo.JSON_PROPERTY_ZIP
+})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class Geo {
-  @JsonProperty("ipAddress")
+  public static final String JSON_PROPERTY_IP_ADDRESS = "ipAddress";
   private String ipAddress;
 
-  @JsonProperty("latitude")
+  public static final String JSON_PROPERTY_LATITUDE = "latitude";
   private Float latitude;
 
-  @JsonProperty("longitude")
+  public static final String JSON_PROPERTY_LONGITUDE = "longitude";
   private Float longitude;
 
-  @JsonProperty("countryCode")
+  public static final String JSON_PROPERTY_COUNTRY_CODE = "countryCode";
   private String countryCode;
 
-  @JsonProperty("stateCode")
+  public static final String JSON_PROPERTY_STATE_CODE = "stateCode";
   private String stateCode;
 
-  @JsonProperty("city")
+  public static final String JSON_PROPERTY_CITY = "city";
   private String city;
 
-  @JsonProperty("zip")
+  public static final String JSON_PROPERTY_ZIP = "zip";
   private String zip;
 
   public Geo ipAddress(String ipAddress) {
+
     this.ipAddress = ipAddress;
     return this;
   }
@@ -54,6 +72,10 @@ public class Geo {
    *
    * @return ipAddress
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "IPv4 or IPv6 address for Geo resolution")
+  @JsonProperty(JSON_PROPERTY_IP_ADDRESS)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getIpAddress() {
     return ipAddress;
   }
@@ -63,6 +85,7 @@ public class Geo {
   }
 
   public Geo latitude(Float latitude) {
+
     this.latitude = latitude;
     return this;
   }
@@ -72,6 +95,10 @@ public class Geo {
    *
    * @return latitude
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Latitude")
+  @JsonProperty(JSON_PROPERTY_LATITUDE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Float getLatitude() {
     return latitude;
   }
@@ -81,6 +108,7 @@ public class Geo {
   }
 
   public Geo longitude(Float longitude) {
+
     this.longitude = longitude;
     return this;
   }
@@ -90,6 +118,10 @@ public class Geo {
    *
    * @return longitude
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Longitude")
+  @JsonProperty(JSON_PROPERTY_LONGITUDE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public Float getLongitude() {
     return longitude;
   }
@@ -99,6 +131,7 @@ public class Geo {
   }
 
   public Geo countryCode(String countryCode) {
+
     this.countryCode = countryCode;
     return this;
   }
@@ -108,6 +141,10 @@ public class Geo {
    *
    * @return countryCode
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Country code in ISO 3166-1 alpha-2 format")
+  @JsonProperty(JSON_PROPERTY_COUNTRY_CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCountryCode() {
     return countryCode;
   }
@@ -117,6 +154,7 @@ public class Geo {
   }
 
   public Geo stateCode(String stateCode) {
+
     this.stateCode = stateCode;
     return this;
   }
@@ -126,6 +164,11 @@ public class Geo {
    *
    * @return stateCode
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(
+      value = "Alphanumeric characters representing the subdivision part from ISO 3166-2")
+  @JsonProperty(JSON_PROPERTY_STATE_CODE)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getStateCode() {
     return stateCode;
   }
@@ -135,6 +178,7 @@ public class Geo {
   }
 
   public Geo city(String city) {
+
     this.city = city;
     return this;
   }
@@ -144,6 +188,10 @@ public class Geo {
    *
    * @return city
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "City")
+  @JsonProperty(JSON_PROPERTY_CITY)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getCity() {
     return city;
   }
@@ -153,6 +201,7 @@ public class Geo {
   }
 
   public Geo zip(String zip) {
+
     this.zip = zip;
     return this;
   }
@@ -162,6 +211,10 @@ public class Geo {
    *
    * @return zip
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "Zip/Postal Code")
+  @JsonProperty(JSON_PROPERTY_ZIP)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getZip() {
     return zip;
   }
@@ -171,7 +224,7 @@ public class Geo {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -211,7 +264,7 @@ public class Geo {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

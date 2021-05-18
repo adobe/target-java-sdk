@@ -39,12 +39,12 @@ public enum MobilePlatformType {
   }
 
   @JsonCreator
-  public static MobilePlatformType fromValue(String text) {
+  public static MobilePlatformType fromValue(String value) {
     for (MobilePlatformType b : MobilePlatformType.values()) {
-      if (String.valueOf(b.value).equals(text)) {
+      if (b.value.equals(value)) {
         return b;
       }
     }
-    throw new IllegalArgumentException("Unexpected value '" + text + "'");
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
   }
 }

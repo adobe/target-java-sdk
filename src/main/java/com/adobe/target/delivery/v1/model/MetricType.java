@@ -39,12 +39,12 @@ public enum MetricType {
   }
 
   @JsonCreator
-  public static MetricType fromValue(String text) {
+  public static MetricType fromValue(String value) {
     for (MetricType b : MetricType.values()) {
-      if (String.valueOf(b.value).equals(text)) {
+      if (b.value.equals(value)) {
         return b;
       }
     }
-    throw new IllegalArgumentException("Unexpected value '" + text + "'");
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
   }
 }

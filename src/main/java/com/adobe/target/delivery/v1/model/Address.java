@@ -15,27 +15,39 @@ package com.adobe.target.delivery.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
 /** The address object. It indicates the current URL and the referring URL. */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@ApiModel(description = "The address object. It indicates the current URL and the referring URL.")
+@JsonPropertyOrder({Address.JSON_PROPERTY_URL, Address.JSON_PROPERTY_REFERRING_URL})
+@javax.annotation.Generated(
+    value = "org.openapitools.codegen.languages.JavaClientCodegen",
+    date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
 public class Address {
-  @JsonProperty("url")
+  public static final String JSON_PROPERTY_URL = "url";
   private String url;
 
-  @JsonProperty("referringUrl")
+  public static final String JSON_PROPERTY_REFERRING_URL = "referringUrl";
   private String referringUrl;
 
   public Address url(String url) {
+
     this.url = url;
     return this;
   }
 
   /**
-   * Get url
+   * URL
    *
    * @return url
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "URL")
+  @JsonProperty(JSON_PROPERTY_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getUrl() {
     return url;
   }
@@ -45,15 +57,20 @@ public class Address {
   }
 
   public Address referringUrl(String referringUrl) {
+
     this.referringUrl = referringUrl;
     return this;
   }
 
   /**
-   * Get referringUrl
+   * referral URL
    *
    * @return referringUrl
    */
+  @javax.annotation.Nullable
+  @ApiModelProperty(value = "referral URL")
+  @JsonProperty(JSON_PROPERTY_REFERRING_URL)
+  @JsonInclude(value = JsonInclude.Include.USE_DEFAULTS)
   public String getReferringUrl() {
     return referringUrl;
   }
@@ -63,7 +80,7 @@ public class Address {
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(java.lang.Object o) {
     if (this == o) {
       return true;
     }
@@ -93,7 +110,7 @@ public class Address {
   /**
    * Convert the given object to string with each line indented by 4 spaces (except the first line).
    */
-  private String toIndentedString(Object o) {
+  private String toIndentedString(java.lang.Object o) {
     if (o == null) {
       return "null";
     }

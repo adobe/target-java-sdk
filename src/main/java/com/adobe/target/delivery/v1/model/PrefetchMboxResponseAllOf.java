@@ -19,16 +19,16 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.annotations.ApiModelProperty;
 import java.util.Objects;
 
-/** PrefetchMboxResponse */
-@JsonPropertyOrder({PrefetchMboxResponse.JSON_PROPERTY_STATE})
+/** PrefetchMboxResponseAllOf */
+@JsonPropertyOrder({PrefetchMboxResponseAllOf.JSON_PROPERTY_STATE})
 @javax.annotation.Generated(
     value = "org.openapitools.codegen.languages.JavaClientCodegen",
     date = "2021-05-11T11:10:29.904-07:00[America/Los_Angeles]")
-public class PrefetchMboxResponse extends MboxResponse {
+public class PrefetchMboxResponseAllOf {
   public static final String JSON_PROPERTY_STATE = "state";
   private String state;
 
-  public PrefetchMboxResponse state(String state) {
+  public PrefetchMboxResponseAllOf state(String state) {
 
     this.state = state;
     return this;
@@ -60,20 +60,19 @@ public class PrefetchMboxResponse extends MboxResponse {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    PrefetchMboxResponse prefetchMboxResponse = (PrefetchMboxResponse) o;
-    return Objects.equals(this.state, prefetchMboxResponse.state) && super.equals(o);
+    PrefetchMboxResponseAllOf prefetchMboxResponseAllOf = (PrefetchMboxResponseAllOf) o;
+    return Objects.equals(this.state, prefetchMboxResponseAllOf.state);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(state, super.hashCode());
+    return Objects.hash(state);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class PrefetchMboxResponse {\n");
-    sb.append("    ").append(toIndentedString(super.toString())).append("\n");
+    sb.append("class PrefetchMboxResponseAllOf {\n");
     sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("}");
     return sb.toString();
