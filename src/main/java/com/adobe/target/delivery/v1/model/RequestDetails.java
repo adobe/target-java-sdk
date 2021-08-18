@@ -13,7 +13,6 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,10 +21,12 @@ import java.util.Objects;
 /**
  * Object common for prefetch, execute and notifications in order to specify the request details.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RequestDetails {
+  @JsonProperty("$_type")
+  protected String $type;
+
   @JsonProperty("address")
-  private Address address = null;
+  private Address address;
 
   @JsonProperty("parameters")
   private Map<String, String> parameters = new HashMap<>();
@@ -34,10 +35,28 @@ public class RequestDetails {
   private Map<String, String> profileParameters = new HashMap<>();
 
   @JsonProperty("order")
-  private Order order = null;
+  private Order order;
 
   @JsonProperty("product")
-  private Product product = null;
+  private Product product;
+
+  public RequestDetails $type(String $type) {
+    this.$type = $type;
+    return this;
+  }
+
+  /**
+   * Get $type
+   *
+   * @return $type
+   */
+  public String get$Type() {
+    return $type;
+  }
+
+  public void set$Type(String $type) {
+    this.$type = $type;
+  }
 
   public RequestDetails address(Address address) {
     this.address = address;
@@ -164,7 +183,8 @@ public class RequestDetails {
       return false;
     }
     RequestDetails requestDetails = (RequestDetails) o;
-    return Objects.equals(this.address, requestDetails.address)
+    return Objects.equals(this.$type, requestDetails.$type)
+        && Objects.equals(this.address, requestDetails.address)
         && Objects.equals(this.parameters, requestDetails.parameters)
         && Objects.equals(this.profileParameters, requestDetails.profileParameters)
         && Objects.equals(this.order, requestDetails.order)
@@ -173,13 +193,14 @@ public class RequestDetails {
 
   @Override
   public int hashCode() {
-    return Objects.hash(address, parameters, profileParameters, order, product);
+    return Objects.hash($type, address, parameters, profileParameters, order, product);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class RequestDetails {\n");
+    sb.append("    $type: ").append(toIndentedString($type)).append("\n");
     sb.append("    address: ").append(toIndentedString(address)).append("\n");
     sb.append("    parameters: ").append(toIndentedString(parameters)).append("\n");
     sb.append("    profileParameters: ").append(toIndentedString(profileParameters)).append("\n");

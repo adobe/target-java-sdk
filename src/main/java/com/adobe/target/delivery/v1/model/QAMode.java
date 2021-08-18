@@ -13,7 +13,6 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,6 @@ import java.util.Objects;
  * to match or not match specified audiences, select a specific experience, count the
  * impressions/visits for the reporting or not.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class QAMode {
   @JsonProperty("token")
   private String token;

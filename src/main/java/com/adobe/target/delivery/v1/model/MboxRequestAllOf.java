@@ -16,27 +16,50 @@ package com.adobe.target.delivery.v1.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
-/** Contains the analytics payload metadata */
-public class AnalyticsResponse {
-  @JsonProperty("payload")
-  private AnalyticsPayload payload;
+/** MboxRequestAllOf */
+public class MboxRequestAllOf {
+  @JsonProperty("index")
+  private Integer index;
 
-  public AnalyticsResponse payload(AnalyticsPayload payload) {
-    this.payload = payload;
+  @JsonProperty("name")
+  private String name;
+
+  public MboxRequestAllOf index(Integer index) {
+    this.index = index;
     return this;
   }
 
   /**
-   * Get payload
+   * An index for the mboxes to be executed or prefetched. Mbox index is used for correlation
+   * between the mbox request with the mbox response, for either prefetch or execute responses.
+   * Index should be unique in the mbox list.
    *
-   * @return payload
+   * @return index
    */
-  public AnalyticsPayload getPayload() {
-    return payload;
+  public Integer getIndex() {
+    return index;
   }
 
-  public void setPayload(AnalyticsPayload payload) {
-    this.payload = payload;
+  public void setIndex(Integer index) {
+    this.index = index;
+  }
+
+  public MboxRequestAllOf name(String name) {
+    this.name = name;
+    return this;
+  }
+
+  /**
+   * The name of the regional mbox to be evaluated.
+   *
+   * @return name
+   */
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
   @Override
@@ -47,20 +70,22 @@ public class AnalyticsResponse {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AnalyticsResponse analyticsResponse = (AnalyticsResponse) o;
-    return Objects.equals(this.payload, analyticsResponse.payload);
+    MboxRequestAllOf mboxRequestAllOf = (MboxRequestAllOf) o;
+    return Objects.equals(this.index, mboxRequestAllOf.index)
+        && Objects.equals(this.name, mboxRequestAllOf.name);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(payload);
+    return Objects.hash(index, name);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class AnalyticsResponse {\n");
-    sb.append("    payload: ").append(toIndentedString(payload)).append("\n");
+    sb.append("class MboxRequestAllOf {\n");
+    sb.append("    index: ").append(toIndentedString(index)).append("\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("}");
     return sb.toString();
   }

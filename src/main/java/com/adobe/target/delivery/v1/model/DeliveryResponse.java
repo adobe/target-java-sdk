@@ -13,15 +13,15 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
  * Delivery response. Returned content will be based upon the request and client&#39;s active
  * activities.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DeliveryResponse {
   @JsonProperty("status")
   private Integer status;
@@ -30,7 +30,7 @@ public class DeliveryResponse {
   private String requestId;
 
   @JsonProperty("id")
-  private VisitorId id = null;
+  private VisitorId id;
 
   @JsonProperty("client")
   private String client;
@@ -39,10 +39,13 @@ public class DeliveryResponse {
   private String edgeHost;
 
   @JsonProperty("execute")
-  private ExecuteResponse execute = null;
+  private ExecuteResponse execute;
 
   @JsonProperty("prefetch")
-  private PrefetchResponse prefetch = null;
+  private PrefetchResponse prefetch;
+
+  @JsonProperty("notifications")
+  private List<NotificationResponse> notifications = new ArrayList<>();
 
   public DeliveryResponse status(Integer status) {
     this.status = status;
@@ -50,9 +53,7 @@ public class DeliveryResponse {
   }
 
   /**
-   * HTTP response code. If the request was processed sucessfully it will be 200. The code will be
-   * 400 in case of a validation error, ex invalid token. The code will be 500 on case of a server
-   * error during processing.
+   * Get status
    *
    * @return status
    */
@@ -174,6 +175,32 @@ public class DeliveryResponse {
     this.prefetch = prefetch;
   }
 
+  public DeliveryResponse notifications(List<NotificationResponse> notifications) {
+    this.notifications = notifications;
+    return this;
+  }
+
+  public DeliveryResponse addNotificationsItem(NotificationResponse notificationsItem) {
+    if (this.notifications == null) {
+      this.notifications = new ArrayList<>();
+    }
+    this.notifications.add(notificationsItem);
+    return this;
+  }
+
+  /**
+   * Get notifications
+   *
+   * @return notifications
+   */
+  public List<NotificationResponse> getNotifications() {
+    return notifications;
+  }
+
+  public void setNotifications(List<NotificationResponse> notifications) {
+    this.notifications = notifications;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -189,12 +216,13 @@ public class DeliveryResponse {
         && Objects.equals(this.client, deliveryResponse.client)
         && Objects.equals(this.edgeHost, deliveryResponse.edgeHost)
         && Objects.equals(this.execute, deliveryResponse.execute)
-        && Objects.equals(this.prefetch, deliveryResponse.prefetch);
+        && Objects.equals(this.prefetch, deliveryResponse.prefetch)
+        && Objects.equals(this.notifications, deliveryResponse.notifications);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(status, requestId, id, client, edgeHost, execute, prefetch);
+    return Objects.hash(status, requestId, id, client, edgeHost, execute, prefetch, notifications);
   }
 
   @Override
@@ -208,6 +236,7 @@ public class DeliveryResponse {
     sb.append("    edgeHost: ").append(toIndentedString(edgeHost)).append("\n");
     sb.append("    execute: ").append(toIndentedString(execute)).append("\n");
     sb.append("    prefetch: ").append(toIndentedString(prefetch)).append("\n");
+    sb.append("    notifications: ").append(toIndentedString(notifications)).append("\n");
     sb.append("}");
     return sb.toString();
   }

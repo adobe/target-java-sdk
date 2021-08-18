@@ -13,7 +13,6 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
@@ -21,7 +20,6 @@ import java.util.Objects;
  * Geo data. If not specified, and Geo is enabled for the client, it will be resolved via user&#39;s
  * IP.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Geo {
   @JsonProperty("ipAddress")
   private String ipAddress;

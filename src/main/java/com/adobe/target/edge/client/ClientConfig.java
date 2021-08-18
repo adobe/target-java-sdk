@@ -13,7 +13,7 @@ package com.adobe.target.edge.client;
 
 import static com.adobe.target.edge.client.utils.StringUtils.isNotEmpty;
 
-import com.adobe.target.edge.client.model.DecisioningMethod;
+import com.adobe.target.delivery.v1.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningHandler;
 import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import java.util.List;

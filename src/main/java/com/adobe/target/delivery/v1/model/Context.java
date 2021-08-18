@@ -13,7 +13,6 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
@@ -21,31 +20,30 @@ import java.util.Objects;
  * Specifies the context for the request, IE if it a web request then is should include user agent
  * etc.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Context {
   @JsonProperty("channel")
-  private ChannelType channel = null;
+  private ChannelType channel;
 
   @JsonProperty("mobilePlatform")
-  private MobilePlatform mobilePlatform = null;
+  private MobilePlatform mobilePlatform;
 
   @JsonProperty("application")
-  private Application application = null;
+  private Application application;
 
   @JsonProperty("screen")
-  private Screen screen = null;
+  private Screen screen;
 
   @JsonProperty("window")
-  private Window window = null;
+  private Window window;
 
   @JsonProperty("browser")
-  private Browser browser = null;
+  private Browser browser;
 
   @JsonProperty("address")
-  private Address address = null;
+  private Address address;
 
   @JsonProperty("geo")
-  private Geo geo = null;
+  private Geo geo;
 
   @JsonProperty("timeOffsetInMinutes")
   private Double timeOffsetInMinutes;

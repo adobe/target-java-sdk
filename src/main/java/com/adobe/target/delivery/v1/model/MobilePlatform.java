@@ -13,21 +13,19 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
 /** Mobile Platform should be specified when the channel is Mobile */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MobilePlatform {
   @JsonProperty("deviceName")
   private String deviceName;
 
   @JsonProperty("deviceType")
-  private DeviceType deviceType = null;
+  private DeviceType deviceType;
 
   @JsonProperty("platformType")
-  private MobilePlatformType platformType = null;
+  private MobilePlatformType platformType;
 
   @JsonProperty("version")
   private String version;

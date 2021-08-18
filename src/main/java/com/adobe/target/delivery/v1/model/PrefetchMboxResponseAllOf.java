@@ -16,27 +16,27 @@ package com.adobe.target.delivery.v1.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
-/** Contains the analytics payload metadata */
-public class AnalyticsResponse {
-  @JsonProperty("payload")
-  private AnalyticsPayload payload;
+/** PrefetchMboxResponseAllOf */
+public class PrefetchMboxResponseAllOf {
+  @JsonProperty("state")
+  private String state;
 
-  public AnalyticsResponse payload(AnalyticsPayload payload) {
-    this.payload = payload;
+  public PrefetchMboxResponseAllOf state(String state) {
+    this.state = state;
     return this;
   }
 
   /**
-   * Get payload
+   * Mbox state token that must be sent back with display notification for the mbox.
    *
-   * @return payload
+   * @return state
    */
-  public AnalyticsPayload getPayload() {
-    return payload;
+  public String getState() {
+    return state;
   }
 
-  public void setPayload(AnalyticsPayload payload) {
-    this.payload = payload;
+  public void setState(String state) {
+    this.state = state;
   }
 
   @Override
@@ -47,20 +47,20 @@ public class AnalyticsResponse {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AnalyticsResponse analyticsResponse = (AnalyticsResponse) o;
-    return Objects.equals(this.payload, analyticsResponse.payload);
+    PrefetchMboxResponseAllOf prefetchMboxResponseAllOf = (PrefetchMboxResponseAllOf) o;
+    return Objects.equals(this.state, prefetchMboxResponseAllOf.state);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(payload);
+    return Objects.hash(state);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class AnalyticsResponse {\n");
-    sb.append("    payload: ").append(toIndentedString(payload)).append("\n");
+    sb.append("class PrefetchMboxResponseAllOf {\n");
+    sb.append("    state: ").append(toIndentedString(state)).append("\n");
     sb.append("}");
     return sb.toString();
   }

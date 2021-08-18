@@ -8,26 +8,45 @@
  * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
+ *
+ * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.edge.client.model;
+package com.adobe.target.delivery.v1.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
+/** Gets or Sets DecisioningMethod */
 public enum DecisioningMethod {
   SERVER_SIDE("server-side"),
+
   ON_DEVICE("on-device"),
+
   HYBRID("hybrid");
 
-  private final String name;
+  private String value;
 
-  DecisioningMethod(String nameValue) {
-    name = nameValue;
+  DecisioningMethod(String value) {
+    this.value = value;
+  }
+
+  @JsonValue
+  public String getValue() {
+    return value;
   }
 
   @Override
   public String toString() {
-    return this.name;
+    return String.valueOf(value);
   }
 
-  public String getName() {
-    return this.name;
+  @JsonCreator
+  public static DecisioningMethod fromValue(String value) {
+    for (DecisioningMethod b : DecisioningMethod.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
+    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
   }
 }

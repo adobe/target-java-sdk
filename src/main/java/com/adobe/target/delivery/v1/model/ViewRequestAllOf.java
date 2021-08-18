@@ -16,27 +16,51 @@ package com.adobe.target.delivery.v1.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
-/** Contains the analytics payload metadata */
-public class AnalyticsResponse {
-  @JsonProperty("payload")
-  private AnalyticsPayload payload;
+/** ViewRequestAllOf */
+public class ViewRequestAllOf {
+  @JsonProperty("name")
+  private String name;
 
-  public AnalyticsResponse payload(AnalyticsPayload payload) {
-    this.payload = payload;
+  @JsonProperty("key")
+  private String key;
+
+  public ViewRequestAllOf name(String name) {
+    this.name = name;
     return this;
   }
 
   /**
-   * Get payload
+   * View Name - Unique view name. If the activity has a metric with a view with this name it will
+   * be matched, providing the Key matches as well or is null and view and metric targeting is
+   * matched.
    *
-   * @return payload
+   * @return name
    */
-  public AnalyticsPayload getPayload() {
-    return payload;
+  public String getName() {
+    return name;
   }
 
-  public void setPayload(AnalyticsPayload payload) {
-    this.payload = payload;
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public ViewRequestAllOf key(String key) {
+    this.key = key;
+    return this;
+  }
+
+  /**
+   * View Key - An optional encoded String identifier used in advanced scenarios, such as View
+   * fingerprinting. Same matching conditions as for View Name.
+   *
+   * @return key
+   */
+  public String getKey() {
+    return key;
+  }
+
+  public void setKey(String key) {
+    this.key = key;
   }
 
   @Override
@@ -47,20 +71,22 @@ public class AnalyticsResponse {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AnalyticsResponse analyticsResponse = (AnalyticsResponse) o;
-    return Objects.equals(this.payload, analyticsResponse.payload);
+    ViewRequestAllOf viewRequestAllOf = (ViewRequestAllOf) o;
+    return Objects.equals(this.name, viewRequestAllOf.name)
+        && Objects.equals(this.key, viewRequestAllOf.key);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(payload);
+    return Objects.hash(name, key);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class AnalyticsResponse {\n");
-    sb.append("    payload: ").append(toIndentedString(payload)).append("\n");
+    sb.append("class ViewRequestAllOf {\n");
+    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    key: ").append(toIndentedString(key)).append("\n");
     sb.append("}");
     return sb.toString();
   }

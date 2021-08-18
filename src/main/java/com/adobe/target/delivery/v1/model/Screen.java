@@ -13,12 +13,10 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
-/** Screen */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+/** The properties that dictate a screen */
 public class Screen {
   @JsonProperty("width")
   private Double width;
@@ -33,7 +31,7 @@ public class Screen {
   private Double pixelRatio;
 
   @JsonProperty("orientation")
-  private ScreenOrientationType orientation = null;
+  private ScreenOrientationType orientation;
 
   public Screen width(Double width) {
     this.width = width;
@@ -41,7 +39,7 @@ public class Screen {
   }
 
   /**
-   * Get width
+   * width
    *
    * @return width
    */
@@ -59,7 +57,7 @@ public class Screen {
   }
 
   /**
-   * Get height
+   * height
    *
    * @return height
    */
@@ -77,7 +75,7 @@ public class Screen {
   }
 
   /**
-   * Get colorDepth
+   * color depth
    *
    * @return colorDepth
    */

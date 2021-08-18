@@ -13,7 +13,6 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -22,7 +21,6 @@ import java.util.List;
 import java.util.Objects;
 
 /** Object that describes the order details. */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Order {
   @JsonProperty("id")
   private String id;
@@ -114,7 +112,7 @@ public class Order {
   }
 
   /**
-   * Time in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) format
+   * Time in the [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601#Time_intervals) format
    *
    * @return time
    */

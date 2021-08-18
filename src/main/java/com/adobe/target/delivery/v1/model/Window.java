@@ -13,12 +13,10 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
-/** Window */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+/** The dimensions that dictate a window */
 public class Window {
   @JsonProperty("width")
   private Double width;
@@ -32,7 +30,7 @@ public class Window {
   }
 
   /**
-   * Get width
+   * width
    *
    * @return width
    */
@@ -50,7 +48,7 @@ public class Window {
   }
 
   /**
-   * Get height
+   * height
    *
    * @return height
    */

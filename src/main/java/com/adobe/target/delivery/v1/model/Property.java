@@ -13,7 +13,6 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
@@ -21,7 +20,6 @@ import java.util.Objects;
  * Specifies the at_property via the token field. It can be used to control the scope for the
  * delivery.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Property {
   @JsonProperty("token")
   private String token;
@@ -32,7 +30,7 @@ public class Property {
   }
 
   /**
-   * Required if the property is specified.
+   * The at_property token Validation * Required if the property is specified.
    *
    * @return token
    */

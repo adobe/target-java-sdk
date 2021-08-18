@@ -13,7 +13,6 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +22,6 @@ import java.util.Objects;
  * Enables the trace for delivery API. At present it is not be possible to set the metrics and
  * packages for the trace.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Trace {
   @JsonProperty("authorizationToken")
   private String authorizationToken;

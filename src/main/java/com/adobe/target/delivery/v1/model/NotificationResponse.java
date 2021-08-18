@@ -14,63 +14,61 @@
 package com.adobe.target.delivery.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
-/**
- * The execute part of the request that will be evaluated on the server side immediately.
- * Impressions will be incremented for the matching activities.
- */
-public class ExecuteRequest {
-  @JsonProperty("pageLoad")
-  private RequestDetails pageLoad;
+/** Notification response. Contains the result of a processed notification. */
+public class NotificationResponse {
+  @JsonProperty("id")
+  private String id;
 
-  @JsonProperty("mboxes")
-  private List<MboxRequest> mboxes = new ArrayList<>();
+  @JsonProperty("trace")
+  private Map<String, Object> trace = new HashMap<>();
 
-  public ExecuteRequest pageLoad(RequestDetails pageLoad) {
-    this.pageLoad = pageLoad;
+  public NotificationResponse id(String id) {
+    this.id = id;
     return this;
   }
 
   /**
-   * Get pageLoad
+   * Notification id which indicates that the notification was processed successfully.
    *
-   * @return pageLoad
+   * @return id
    */
-  public RequestDetails getPageLoad() {
-    return pageLoad;
+  public String getId() {
+    return id;
   }
 
-  public void setPageLoad(RequestDetails pageLoad) {
-    this.pageLoad = pageLoad;
+  public void setId(String id) {
+    this.id = id;
   }
 
-  public ExecuteRequest mboxes(List<MboxRequest> mboxes) {
-    this.mboxes = mboxes;
+  public NotificationResponse trace(Map<String, Object> trace) {
+    this.trace = trace;
     return this;
   }
 
-  public ExecuteRequest addMboxesItem(MboxRequest mboxesItem) {
-    if (this.mboxes == null) {
-      this.mboxes = new ArrayList<>();
+  public NotificationResponse putTraceItem(String key, Object traceItem) {
+    if (this.trace == null) {
+      this.trace = new HashMap<>();
     }
-    this.mboxes.add(mboxesItem);
+    this.trace.put(key, traceItem);
     return this;
   }
 
   /**
-   * An array of mboxes other than global mbox.
+   * The object containing all trace data for the request, only present if the trace token was
+   * provided in the request.
    *
-   * @return mboxes
+   * @return trace
    */
-  public List<MboxRequest> getMboxes() {
-    return mboxes;
+  public Map<String, Object> getTrace() {
+    return trace;
   }
 
-  public void setMboxes(List<MboxRequest> mboxes) {
-    this.mboxes = mboxes;
+  public void setTrace(Map<String, Object> trace) {
+    this.trace = trace;
   }
 
   @Override
@@ -81,22 +79,22 @@ public class ExecuteRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    ExecuteRequest executeRequest = (ExecuteRequest) o;
-    return Objects.equals(this.pageLoad, executeRequest.pageLoad)
-        && Objects.equals(this.mboxes, executeRequest.mboxes);
+    NotificationResponse notificationResponse = (NotificationResponse) o;
+    return Objects.equals(this.id, notificationResponse.id)
+        && Objects.equals(this.trace, notificationResponse.trace);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(pageLoad, mboxes);
+    return Objects.hash(id, trace);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class ExecuteRequest {\n");
-    sb.append("    pageLoad: ").append(toIndentedString(pageLoad)).append("\n");
-    sb.append("    mboxes: ").append(toIndentedString(mboxes)).append("\n");
+    sb.append("class NotificationResponse {\n");
+    sb.append("    id: ").append(toIndentedString(id)).append("\n");
+    sb.append("    trace: ").append(toIndentedString(trace)).append("\n");
     sb.append("}");
     return sb.toString();
   }

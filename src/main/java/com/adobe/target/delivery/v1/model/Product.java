@@ -13,12 +13,10 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
-/** Product */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+/** The properties of the products */
 public class Product {
   @JsonProperty("id")
   private String id;

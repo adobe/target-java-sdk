@@ -13,14 +13,12 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /** DeliveryRequest */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DeliveryRequest {
   @JsonProperty("requestId")
   private String requestId;
@@ -29,37 +27,40 @@ public class DeliveryRequest {
   private String impressionId;
 
   @JsonProperty("id")
-  private VisitorId id = null;
+  private VisitorId id;
 
   @JsonProperty("environmentId")
   private Long environmentId;
 
   @JsonProperty("property")
-  private Property property = null;
+  private Property property;
 
   @JsonProperty("trace")
-  private Trace trace = null;
+  private Trace trace;
 
   @JsonProperty("context")
-  private Context context = null;
+  private Context context;
 
   @JsonProperty("experienceCloud")
-  private ExperienceCloud experienceCloud = null;
+  private ExperienceCloud experienceCloud;
 
   @JsonProperty("execute")
-  private ExecuteRequest execute = null;
+  private ExecuteRequest execute;
 
   @JsonProperty("prefetch")
-  private PrefetchRequest prefetch = null;
+  private PrefetchRequest prefetch;
+
+  @JsonProperty("telemetry")
+  private Telemetry telemetry;
 
   @JsonProperty("notifications")
   private List<Notification> notifications = new ArrayList<>();
 
-  @JsonProperty("telemetry")
-  private Telemetry telemetry = null;
-
   @JsonProperty("qaMode")
-  private QAMode qaMode = null;
+  private QAMode qaMode;
+
+  @JsonProperty("preview")
+  private Preview preview;
 
   public DeliveryRequest requestId(String requestId) {
     this.requestId = requestId;
@@ -250,16 +251,17 @@ public class DeliveryRequest {
     return this;
   }
 
+  /**
+   * Get telemetry
+   *
+   * @return telemetry
+   */
   public Telemetry getTelemetry() {
     return telemetry;
   }
 
-  public DeliveryRequest addTelemetryEntry(TelemetryEntry telemetryEntry) {
-    if (this.telemetry == null) {
-      this.telemetry = new Telemetry();
-    }
-    this.telemetry.addTelemetryEntry(telemetryEntry);
-    return this;
+  public void setTelemetry(Telemetry telemetry) {
+    this.telemetry = telemetry;
   }
 
   public DeliveryRequest notifications(List<Notification> notifications) {
@@ -306,6 +308,24 @@ public class DeliveryRequest {
     this.qaMode = qaMode;
   }
 
+  public DeliveryRequest preview(Preview preview) {
+    this.preview = preview;
+    return this;
+  }
+
+  /**
+   * Get preview
+   *
+   * @return preview
+   */
+  public Preview getPreview() {
+    return preview;
+  }
+
+  public void setPreview(Preview preview) {
+    this.preview = preview;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -325,8 +345,10 @@ public class DeliveryRequest {
         && Objects.equals(this.experienceCloud, deliveryRequest.experienceCloud)
         && Objects.equals(this.execute, deliveryRequest.execute)
         && Objects.equals(this.prefetch, deliveryRequest.prefetch)
+        && Objects.equals(this.telemetry, deliveryRequest.telemetry)
         && Objects.equals(this.notifications, deliveryRequest.notifications)
-        && Objects.equals(this.qaMode, deliveryRequest.qaMode);
+        && Objects.equals(this.qaMode, deliveryRequest.qaMode)
+        && Objects.equals(this.preview, deliveryRequest.preview);
   }
 
   @Override
@@ -342,8 +364,10 @@ public class DeliveryRequest {
         experienceCloud,
         execute,
         prefetch,
+        telemetry,
         notifications,
-        qaMode);
+        qaMode,
+        preview);
   }
 
   @Override
@@ -360,8 +384,10 @@ public class DeliveryRequest {
     sb.append("    experienceCloud: ").append(toIndentedString(experienceCloud)).append("\n");
     sb.append("    execute: ").append(toIndentedString(execute)).append("\n");
     sb.append("    prefetch: ").append(toIndentedString(prefetch)).append("\n");
+    sb.append("    telemetry: ").append(toIndentedString(telemetry)).append("\n");
     sb.append("    notifications: ").append(toIndentedString(notifications)).append("\n");
     sb.append("    qaMode: ").append(toIndentedString(qaMode)).append("\n");
+    sb.append("    preview: ").append(toIndentedString(preview)).append("\n");
     sb.append("}");
     return sb.toString();
   }

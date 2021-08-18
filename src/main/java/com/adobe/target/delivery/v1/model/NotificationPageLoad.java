@@ -13,12 +13,10 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
 /** Include this object to send display notifications for the prefetch page load contnet. */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NotificationPageLoad {
   @JsonProperty("state")
   private String state;

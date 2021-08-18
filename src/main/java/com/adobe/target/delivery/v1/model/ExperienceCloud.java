@@ -13,18 +13,16 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
 /** Integrations with Audience Manager and Analytics */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExperienceCloud {
   @JsonProperty("audienceManager")
-  private AudienceManager audienceManager = null;
+  private AudienceManager audienceManager;
 
   @JsonProperty("analytics")
-  private AnalyticsRequest analytics = null;
+  private AnalyticsRequest analytics;
 
   public ExperienceCloud audienceManager(AudienceManager audienceManager) {
     this.audienceManager = audienceManager;
