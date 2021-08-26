@@ -304,6 +304,7 @@ public class DefaultRuleLoader implements RuleLoader {
         + clientConfig.getOnDeviceEnvironment().toLowerCase()
         + "/v"
         + MAJOR_VERSION
+        + (clientConfig.getDefaultPropertyToken() != null ? "/" + clientConfig.getDefaultPropertyToken() : "")
         + "/rules.json";
   }
 }
