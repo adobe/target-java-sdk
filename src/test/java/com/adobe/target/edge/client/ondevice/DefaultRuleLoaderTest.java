@@ -47,6 +47,8 @@ class DefaultRuleLoaderTest {
       "{\"version\":\"1.0.0\",\"meta\":{\"generatedAt\":\"2020-03-17T22:29:29.115Z\",\"remoteMboxes\":[\"recommendations\"],\"globalMbox\":\"target-global-mbox\"},\"rules\":{\"mboxes\":{\"product\":[{\"condition\":{\"and\":[{\"<\":[0,{\"var\":\"allocation\"},50]},{\"<=\":[1580371200000,{\"var\":\"current_timestamp\"},1600585200000]}]},\"consequence\":{\"mboxes\":[{\"options\":[{\"content\":{\"product\":\"default\"},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"3eLgpLF+APtuSsE47wxq/mqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"product\"}]},\"meta\":{\"activityId\":317586,\"experienceId\":0,\"type\":\"ab\",\"mbox\":\"product\"}},{\"condition\":{\"and\":[{\"<\":[50,{\"var\":\"allocation\"},100]},{\"<=\":[1580371200000,{\"var\":\"current_timestamp\"},1600585200000]}]},\"consequence\":{\"mboxes\":[{\"options\":[{\"content\":{\"product\":\"new_layout\"},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"3eLgpLF+APtuSsE47wxq/pNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"product\"}]},\"meta\":{\"activityId\":317586,\"experienceId\":1,\"type\":\"ab\",\"mbox\":\"product\"}}]},\"views\":{}}}";
   static final String TEST_RULE_SET_HIGHER_VERSION =
       "{\"version\":\"2.0.0\",\"meta\":{\"generatedAt\":\"2020-03-17T22:29:29.115Z\",\"remoteMboxes\":[\"recommendations\"],\"globalMbox\":\"target-global-mbox\"},\"rules\":{\"mboxes\":{\"product\":[{\"condition\":{\"and\":[{\"<\":[0,{\"var\":\"allocation\"},50]},{\"<=\":[1580371200000,{\"var\":\"current_timestamp\"},1600585200000]}]},\"consequence\":{\"mboxes\":[{\"options\":[{\"content\":{\"product\":\"default\"},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"3eLgpLF+APtuSsE47wxq/mqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"product\"}]},\"meta\":{\"activityId\":317586,\"experienceId\":0,\"type\":\"ab\",\"mbox\":\"product\"}},{\"condition\":{\"and\":[{\"<\":[50,{\"var\":\"allocation\"},100]},{\"<=\":[1580371200000,{\"var\":\"current_timestamp\"},1600585200000]}]},\"consequence\":{\"mboxes\":[{\"options\":[{\"content\":{\"product\":\"new_layout\"},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"3eLgpLF+APtuSsE47wxq/pNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"product\"}]},\"meta\":{\"activityId\":317586,\"experienceId\":1,\"type\":\"ab\",\"mbox\":\"product\"}}]},\"views\":{}}}";
+  static final String CONFIG_HOSTNAME = "assets.adobetarget.com";
+  static final String CLIENT_CODE = "client123";
 
   private TargetExceptionHandler exceptionHandler;
   private OnDeviceDecisioningHandler executionHandler;
@@ -301,6 +303,50 @@ class DefaultRuleLoaderTest {
 
     defaultRuleLoader.refresh();
     verify(exceptionHandler, never()).handleException(any(TargetClientException.class));
+    defaultRuleLoader.stop();
+  }
+
+  @Test
+  void testGetLocationWithProperty() {
+    String propertyToken = "a4d17d78-cb39-6171-b12d-a222a62ebe49";
+    DefaultRuleLoader defaultRuleLoader = mock(DefaultRuleLoader.class, CALLS_REAL_METHODS);
+
+    clientConfig =
+      ClientConfig.builder()
+          .organizationId(TEST_ORG_ID)
+          .onDeviceEnvironment("production")
+          .defaultDecisioningMethod(DecisioningMethod.ON_DEVICE)
+          .exceptionHandler(exceptionHandler)
+          .onDeviceDecisioningHandler(executionHandler)
+          .onDeviceConfigHostname(CONFIG_HOSTNAME)
+          .client(CLIENT_CODE)
+          .defaultPropertyToken(propertyToken)
+          .build();
+
+    defaultRuleLoader.start(clientConfig);
+    String artifactUrl = defaultRuleLoader.getLocation();
+    assertEquals("https://assets.adobetarget.com/client123/production/v1/a4d17d78-cb39-6171-b12d-a222a62ebe49/rules.json", artifactUrl);
+    defaultRuleLoader.stop();
+  }
+
+  @Test
+  void testGetLocationWithoutProperty() {
+    DefaultRuleLoader defaultRuleLoader = mock(DefaultRuleLoader.class, CALLS_REAL_METHODS);
+
+    clientConfig =
+      ClientConfig.builder()
+          .organizationId(TEST_ORG_ID)
+          .onDeviceEnvironment("production")
+          .defaultDecisioningMethod(DecisioningMethod.ON_DEVICE)
+          .exceptionHandler(exceptionHandler)
+          .onDeviceDecisioningHandler(executionHandler)
+          .onDeviceConfigHostname(CONFIG_HOSTNAME)
+          .client(CLIENT_CODE)
+          .build();
+
+    defaultRuleLoader.start(clientConfig);
+    String artifactUrl = defaultRuleLoader.getLocation();
+    assertEquals("https://assets.adobetarget.com/client123/production/v1/rules.json", artifactUrl);
     defaultRuleLoader.stop();
   }
 }
