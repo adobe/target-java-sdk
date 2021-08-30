@@ -16,11 +16,11 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 /** Gets or Sets DecisioningMethod */
 public enum DecisioningMethod {
-  SERVER_SIDE(com.adobe.target.delivery.v1.model.DecisioningMethod.SERVER_SIDE.name()),
+  SERVER_SIDE(com.adobe.target.delivery.v1.model.DecisioningMethod.SERVER_SIDE.toString()),
 
-  ON_DEVICE(com.adobe.target.delivery.v1.model.DecisioningMethod.ON_DEVICE.name()),
+  ON_DEVICE(com.adobe.target.delivery.v1.model.DecisioningMethod.ON_DEVICE.toString()),
 
-  HYBRID(com.adobe.target.delivery.v1.model.DecisioningMethod.HYBRID.name());
+  HYBRID(com.adobe.target.delivery.v1.model.DecisioningMethod.HYBRID.toString());
 
   private String value;
 
