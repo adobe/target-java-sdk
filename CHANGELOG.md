@@ -1,9 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [2.1.5] - 2021-05-18
+## [2.1.5] - 2021-08-30
 ### Changed
 - Fix incorrect MaxAge set in response cookies
+- (On Device Decisioning) Downloaded artifact will only include activities for specified property if `defaultPropertyToken` is set in ClientConfig
 
 ## [2.1.4] - 2021-04-29
 ### Changed
