@@ -8,19 +8,21 @@
  * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
+ *
+ * NOTE: This is an auto generated file. Do not edit directly.
  */
-package com.adobe.target.edge.client.model;
+package com.adobe.target.delivery.v1.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /** Gets or Sets DecisioningMethod */
 public enum DecisioningMethod {
-  SERVER_SIDE(com.adobe.target.delivery.v1.model.DecisioningMethod.SERVER_SIDE.name()),
+  SERVER_SIDE("server-side"),
 
-  ON_DEVICE(com.adobe.target.delivery.v1.model.DecisioningMethod.ON_DEVICE.name()),
+  ON_DEVICE("on-device"),
 
-  HYBRID(com.adobe.target.delivery.v1.model.DecisioningMethod.HYBRID.name());
+  HYBRID("hybrid");
 
   private String value;
 

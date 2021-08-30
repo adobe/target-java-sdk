@@ -11,7 +11,20 @@
  */
 package com.adobe.target.edge.client.ondevice;
 
-import com.adobe.target.delivery.v1.model.*;
+import com.adobe.target.delivery.v1.model.AuthenticatedState;
+import com.adobe.target.delivery.v1.model.Context;
+import com.adobe.target.delivery.v1.model.CustomerId;
+import com.adobe.target.delivery.v1.model.DeliveryRequest;
+import com.adobe.target.delivery.v1.model.DeliveryResponse;
+import com.adobe.target.delivery.v1.model.ExecuteResponse;
+import com.adobe.target.delivery.v1.model.Geo;
+import com.adobe.target.delivery.v1.model.Notification;
+import com.adobe.target.delivery.v1.model.PrefetchResponse;
+import com.adobe.target.delivery.v1.model.RequestDetails;
+import com.adobe.target.delivery.v1.model.Telemetry;
+import com.adobe.target.delivery.v1.model.TelemetryEntry;
+import com.adobe.target.delivery.v1.model.TelemetryFeatures;
+import com.adobe.target.delivery.v1.model.VisitorId;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.http.ResponseStatus;
@@ -384,8 +397,11 @@ public class OnDeviceDecisioningService {
       TargetDeliveryRequest targetDeliveryRequest,
       TargetDeliveryResponse targetDeliveryResponse,
       double executionTime) {
+    com.adobe.target.delivery.v1.model.DecisioningMethod decisioningMethod =
+        com.adobe.target.delivery.v1.model.DecisioningMethod.valueOf(
+            getDecisioningMethod(targetDeliveryRequest).name());
     TelemetryFeatures telemetryFeatures =
-        new TelemetryFeatures().decisioningMethod(getDecisioningMethod(targetDeliveryRequest));
+        new TelemetryFeatures().decisioningMethod(decisioningMethod);
 
     return new TelemetryEntry()
         .requestId(targetDeliveryResponse.getResponse().getRequestId())

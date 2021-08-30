@@ -12,7 +12,6 @@
 package com.adobe.target.edge.client.model;
 
 import com.adobe.experiencecloud.ecid.visitor.Visitor;
-import com.adobe.target.delivery.v1.model.DecisioningMethod;
 import com.adobe.target.delivery.v1.model.DeliveryRequest;
 
 public class TargetDeliveryRequest {

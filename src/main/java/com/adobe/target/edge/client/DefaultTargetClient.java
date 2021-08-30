@@ -11,7 +11,11 @@
  */
 package com.adobe.target.edge.client;
 
-import com.adobe.target.delivery.v1.model.*;
+import com.adobe.target.delivery.v1.model.DeliveryRequest;
+import com.adobe.target.delivery.v1.model.ExecuteRequest;
+import com.adobe.target.delivery.v1.model.MboxRequest;
+import com.adobe.target.delivery.v1.model.PrefetchRequest;
+import com.adobe.target.delivery.v1.model.Property;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.ResponseStatus;
 import com.adobe.target.edge.client.model.DecisioningMethod;
