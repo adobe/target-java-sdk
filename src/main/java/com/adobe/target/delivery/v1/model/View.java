@@ -13,16 +13,18 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * This object will contain all the options for the selectors set for the current view, from the
  * active activities, in case the context and targeting conditions from the request have been
  * matched.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class View {
   @JsonProperty("name")
   private String name;
@@ -37,7 +39,7 @@ public class View {
   private List<Metric> metrics = new ArrayList<>();
 
   @JsonProperty("analytics")
-  private AnalyticsResponse analytics = null;
+  private AnalyticsResponse analytics;
 
   @JsonProperty("state")
   private String state;

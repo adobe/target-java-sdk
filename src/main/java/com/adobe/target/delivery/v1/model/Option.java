@@ -13,20 +13,18 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 /** The content from the activitiesc is returned via the option objects. */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Option {
   @JsonProperty("type")
-  private OptionType type = null;
+  private OptionType type;
 
   @JsonProperty("content")
-  private Object content = null;
+  private Object content;
 
   @JsonProperty("eventToken")
   private String eventToken;

@@ -13,12 +13,10 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
 /** The address object. It indicates the current URL and the referring URL. */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Address {
   @JsonProperty("url")
   private String url;
@@ -32,7 +30,7 @@ public class Address {
   }
 
   /**
-   * Get url
+   * URL
    *
    * @return url
    */
@@ -50,7 +48,7 @@ public class Address {
   }
 
   /**
-   * Get referringUrl
+   * referral URL
    *
    * @return referringUrl
    */

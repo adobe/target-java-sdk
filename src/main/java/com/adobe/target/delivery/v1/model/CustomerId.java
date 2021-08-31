@@ -13,12 +13,10 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
 /** CustomerId */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CustomerId {
   @JsonProperty("id")
   private String id;
@@ -27,7 +25,7 @@ public class CustomerId {
   private String integrationCode;
 
   @JsonProperty("authenticatedState")
-  private AuthenticatedState authenticatedState = null;
+  private AuthenticatedState authenticatedState;
 
   public CustomerId id(String id) {
     this.id = id;

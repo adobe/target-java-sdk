@@ -18,16 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Notification object is used to sent notificaitons regarding what prefetched content was displayed
- * (for views, pageLoad or regional mboxes), which views, pages and mboxes were visited (triggered),
- * and which elements were clicked. Notification request detail will be validated and in case there
- * are validation errors with any token or timestamp the entire request will be invalidated, so
- * there are no cases of inconsistent data, caused by a partially processed notification. that may
- * happen with a partially processed notification. This is different from the approach in the batch
- * mbox v2 API. Mboxes and views are mutually exclusive.
- */
-public class Notification extends RequestDetails {
+/** NotificationAllOf */
+public class NotificationAllOf {
   @JsonProperty("id")
   private String id;
 
@@ -52,7 +44,7 @@ public class Notification extends RequestDetails {
   @JsonProperty("pageLoad")
   private NotificationPageLoad pageLoad;
 
-  public Notification id(String id) {
+  public NotificationAllOf id(String id) {
     this.id = id;
     return this;
   }
@@ -71,7 +63,7 @@ public class Notification extends RequestDetails {
     this.id = id;
   }
 
-  public Notification impressionId(String impressionId) {
+  public NotificationAllOf impressionId(String impressionId) {
     this.impressionId = impressionId;
     return this;
   }
@@ -91,7 +83,7 @@ public class Notification extends RequestDetails {
     this.impressionId = impressionId;
   }
 
-  public Notification type(MetricType type) {
+  public NotificationAllOf type(MetricType type) {
     this.type = type;
     return this;
   }
@@ -109,7 +101,7 @@ public class Notification extends RequestDetails {
     this.type = type;
   }
 
-  public Notification timestamp(Long timestamp) {
+  public NotificationAllOf timestamp(Long timestamp) {
     this.timestamp = timestamp;
     return this;
   }
@@ -127,12 +119,12 @@ public class Notification extends RequestDetails {
     this.timestamp = timestamp;
   }
 
-  public Notification tokens(List<String> tokens) {
+  public NotificationAllOf tokens(List<String> tokens) {
     this.tokens = tokens;
     return this;
   }
 
-  public Notification addTokensItem(String tokensItem) {
+  public NotificationAllOf addTokensItem(String tokensItem) {
     if (this.tokens == null) {
       this.tokens = new ArrayList<>();
     }
@@ -153,7 +145,7 @@ public class Notification extends RequestDetails {
     this.tokens = tokens;
   }
 
-  public Notification mbox(NotificationMbox mbox) {
+  public NotificationAllOf mbox(NotificationMbox mbox) {
     this.mbox = mbox;
     return this;
   }
@@ -171,7 +163,7 @@ public class Notification extends RequestDetails {
     this.mbox = mbox;
   }
 
-  public Notification view(NotificationView view) {
+  public NotificationAllOf view(NotificationView view) {
     this.view = view;
     return this;
   }
@@ -189,7 +181,7 @@ public class Notification extends RequestDetails {
     this.view = view;
   }
 
-  public Notification pageLoad(NotificationPageLoad pageLoad) {
+  public NotificationAllOf pageLoad(NotificationPageLoad pageLoad) {
     this.pageLoad = pageLoad;
     return this;
   }
@@ -215,29 +207,26 @@ public class Notification extends RequestDetails {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Notification notification = (Notification) o;
-    return Objects.equals(this.id, notification.id)
-        && Objects.equals(this.impressionId, notification.impressionId)
-        && Objects.equals(this.type, notification.type)
-        && Objects.equals(this.timestamp, notification.timestamp)
-        && Objects.equals(this.tokens, notification.tokens)
-        && Objects.equals(this.mbox, notification.mbox)
-        && Objects.equals(this.view, notification.view)
-        && Objects.equals(this.pageLoad, notification.pageLoad)
-        && super.equals(o);
+    NotificationAllOf notificationAllOf = (NotificationAllOf) o;
+    return Objects.equals(this.id, notificationAllOf.id)
+        && Objects.equals(this.impressionId, notificationAllOf.impressionId)
+        && Objects.equals(this.type, notificationAllOf.type)
+        && Objects.equals(this.timestamp, notificationAllOf.timestamp)
+        && Objects.equals(this.tokens, notificationAllOf.tokens)
+        && Objects.equals(this.mbox, notificationAllOf.mbox)
+        && Objects.equals(this.view, notificationAllOf.view)
+        && Objects.equals(this.pageLoad, notificationAllOf.pageLoad);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(
-        id, impressionId, type, timestamp, tokens, mbox, view, pageLoad, super.hashCode());
+    return Objects.hash(id, impressionId, type, timestamp, tokens, mbox, view, pageLoad);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Notification {\n");
-    sb.append("    ").append(toIndentedString(super.toString())).append("\n");
+    sb.append("class NotificationAllOf {\n");
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    impressionId: ").append(toIndentedString(impressionId)).append("\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");

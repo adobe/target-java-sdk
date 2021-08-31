@@ -13,11 +13,10 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+/** Telemetry Entry. */
 public class TelemetryEntry {
   @JsonProperty("requestId")
   private String requestId;
@@ -25,15 +24,37 @@ public class TelemetryEntry {
   @JsonProperty("timestamp")
   private Long timestamp;
 
+  @JsonProperty("mode")
+  private ExecutionMode mode;
+
   @JsonProperty("execution")
-  private double execution;
+  private Double execution;
+
+  @JsonProperty("parsing")
+  private Double parsing;
 
   @JsonProperty("features")
   private TelemetryFeatures features;
 
+  @JsonProperty("request")
+  private TelemetryRequest request;
+
   public TelemetryEntry requestId(String requestId) {
     this.requestId = requestId;
     return this;
+  }
+
+  /**
+   * Request Id
+   *
+   * @return requestId
+   */
+  public String getRequestId() {
+    return requestId;
+  }
+
+  public void setRequestId(String requestId) {
+    this.requestId = requestId;
   }
 
   public TelemetryEntry timestamp(Long timestamp) {
@@ -41,9 +62,71 @@ public class TelemetryEntry {
     return this;
   }
 
-  public TelemetryEntry execution(double execution) {
+  /**
+   * Timestamp of the entry, in milliseconds elapsed since UNIX epoch.
+   *
+   * @return timestamp
+   */
+  public Long getTimestamp() {
+    return timestamp;
+  }
+
+  public void setTimestamp(Long timestamp) {
+    this.timestamp = timestamp;
+  }
+
+  public TelemetryEntry mode(ExecutionMode mode) {
+    this.mode = mode;
+    return this;
+  }
+
+  /**
+   * Get mode
+   *
+   * @return mode
+   */
+  public ExecutionMode getMode() {
+    return mode;
+  }
+
+  public void setMode(ExecutionMode mode) {
+    this.mode = mode;
+  }
+
+  public TelemetryEntry execution(Double execution) {
     this.execution = execution;
     return this;
+  }
+
+  /**
+   * Execution time in milliseconds.
+   *
+   * @return execution
+   */
+  public Double getExecution() {
+    return execution;
+  }
+
+  public void setExecution(Double execution) {
+    this.execution = execution;
+  }
+
+  public TelemetryEntry parsing(Double parsing) {
+    this.parsing = parsing;
+    return this;
+  }
+
+  /**
+   * Response parsing time, in milliseconds elapsed since UNIX epoch.
+   *
+   * @return parsing
+   */
+  public Double getParsing() {
+    return parsing;
+  }
+
+  public void setParsing(Double parsing) {
+    this.parsing = parsing;
   }
 
   public TelemetryEntry features(TelemetryFeatures features) {
@@ -51,50 +134,82 @@ public class TelemetryEntry {
     return this;
   }
 
-  public String getRequestId() {
-    return requestId;
-  }
-
-  public Long getTimestamp() {
-    return timestamp;
-  }
-
-  public double getExecution() {
-    return execution;
-  }
-
+  /**
+   * Get features
+   *
+   * @return features
+   */
   public TelemetryFeatures getFeatures() {
     return features;
   }
 
+  public void setFeatures(TelemetryFeatures features) {
+    this.features = features;
+  }
+
+  public TelemetryEntry request(TelemetryRequest request) {
+    this.request = request;
+    return this;
+  }
+
+  /**
+   * Get request
+   *
+   * @return request
+   */
+  public TelemetryRequest getRequest() {
+    return request;
+  }
+
+  public void setRequest(TelemetryRequest request) {
+    this.request = request;
+  }
+
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    TelemetryEntry that = (TelemetryEntry) o;
-    return Objects.equals(requestId, that.requestId)
-        && Objects.equals(timestamp, that.timestamp)
-        && Objects.equals(execution, that.execution)
-        && Objects.equals(features, that.features);
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    TelemetryEntry telemetryEntry = (TelemetryEntry) o;
+    return Objects.equals(this.requestId, telemetryEntry.requestId)
+        && Objects.equals(this.timestamp, telemetryEntry.timestamp)
+        && Objects.equals(this.mode, telemetryEntry.mode)
+        && Objects.equals(this.execution, telemetryEntry.execution)
+        && Objects.equals(this.parsing, telemetryEntry.parsing)
+        && Objects.equals(this.features, telemetryEntry.features)
+        && Objects.equals(this.request, telemetryEntry.request);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(requestId, timestamp, execution, features);
+    return Objects.hash(requestId, timestamp, mode, execution, parsing, features, request);
   }
 
   @Override
   public String toString() {
-    return "TelemetryEntry{"
-        + "requestId='"
-        + requestId
-        + '\''
-        + ", timestamp="
-        + timestamp
-        + ", execution="
-        + execution
-        + ", features="
-        + features
-        + '}';
+    StringBuilder sb = new StringBuilder();
+    sb.append("class TelemetryEntry {\n");
+    sb.append("    requestId: ").append(toIndentedString(requestId)).append("\n");
+    sb.append("    timestamp: ").append(toIndentedString(timestamp)).append("\n");
+    sb.append("    mode: ").append(toIndentedString(mode)).append("\n");
+    sb.append("    execution: ").append(toIndentedString(execution)).append("\n");
+    sb.append("    parsing: ").append(toIndentedString(parsing)).append("\n");
+    sb.append("    features: ").append(toIndentedString(features)).append("\n");
+    sb.append("    request: ").append(toIndentedString(request)).append("\n");
+    sb.append("}");
+    return sb.toString();
+  }
+
+  /**
+   * Convert the given object to string with each line indented by 4 spaces (except the first line).
+   */
+  private String toIndentedString(Object o) {
+    if (o == null) {
+      return "null";
+    }
+    return o.toString().replace("\n", "\n    ");
   }
 }

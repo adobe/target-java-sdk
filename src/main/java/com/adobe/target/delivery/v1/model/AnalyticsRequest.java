@@ -13,18 +13,16 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
-/** Integration with Adobe Analytics (A4T). */
-@JsonInclude(JsonInclude.Include.NON_NULL)
+/** Integration with Adobe Analytics (A4T) */
 public class AnalyticsRequest {
   @JsonProperty("supplementalDataId")
   private String supplementalDataId;
 
   @JsonProperty("logging")
-  private LoggingType logging = null;
+  private LoggingType logging;
 
   @JsonProperty("trackingServer")
   private String trackingServer;
@@ -75,7 +73,7 @@ public class AnalyticsRequest {
   }
 
   /**
-   * Get trackingServer
+   * tracking server
    *
    * @return trackingServer
    */
@@ -93,7 +91,7 @@ public class AnalyticsRequest {
   }
 
   /**
-   * Get trackingServerSecure
+   * secure tracking server
    *
    * @return trackingServerSecure
    */

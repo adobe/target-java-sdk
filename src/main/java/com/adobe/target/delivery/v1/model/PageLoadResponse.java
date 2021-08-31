@@ -13,15 +13,17 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Page load response. Contains the result of prefetching or executing a request that will retrieve
  * content for all selectors not associated with a particular view.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PageLoadResponse {
   @JsonProperty("options")
   private List<Option> options = new ArrayList<>();
@@ -30,7 +32,7 @@ public class PageLoadResponse {
   private List<Metric> metrics = new ArrayList<>();
 
   @JsonProperty("analytics")
-  private AnalyticsResponse analytics = null;
+  private AnalyticsResponse analytics;
 
   @JsonProperty("state")
   private String state;

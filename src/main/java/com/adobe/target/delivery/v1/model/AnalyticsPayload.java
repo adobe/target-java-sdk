@@ -13,7 +13,6 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
@@ -21,7 +20,6 @@ import java.util.Objects;
  * Analytics payload for client side integration that should be sent to Analytics after content has
  * been applied.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AnalyticsPayload {
   @JsonProperty("pe")
   private String pe;
@@ -35,7 +33,7 @@ public class AnalyticsPayload {
   }
 
   /**
-   * Get pe
+   * Indicates to Adobe Analytics that the payload is an Adobe Target type
    *
    * @return pe
    */
@@ -53,7 +51,7 @@ public class AnalyticsPayload {
   }
 
   /**
-   * Get tnta
+   * Contains Target metadata that describes the activity and experience
    *
    * @return tnta
    */

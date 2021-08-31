@@ -13,7 +13,6 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,6 @@ import java.util.Objects;
  * responsible for passing this tntId value on all subsequent calls. Validation * Either tntId,
  * thirdPartyId or maketingCloudVisistorId required.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class VisitorId {
   @JsonProperty("tntId")
   private String tntId;
@@ -69,7 +67,7 @@ public class VisitorId {
   }
 
   /**
-   * Get thirdPartyId
+   * Third party id
    *
    * @return thirdPartyId
    */
@@ -87,7 +85,7 @@ public class VisitorId {
   }
 
   /**
-   * Get marketingCloudVisitorId
+   * Marketing cloud visitor id
    *
    * @return marketingCloudVisitorId
    */
@@ -113,7 +111,8 @@ public class VisitorId {
   }
 
   /**
-   * Validation * No null elements.
+   * Along with the marketing cloud visitor id, you can associate additional customer ids Validation
+   * * No null elements.
    *
    * @return customerIds
    */

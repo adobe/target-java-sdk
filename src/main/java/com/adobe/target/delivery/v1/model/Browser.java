@@ -13,12 +13,10 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
 /** Browser object may be specified only when the Channel is Web. */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Browser {
   @JsonProperty("host")
   private String host;

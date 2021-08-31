@@ -16,27 +16,31 @@ package com.adobe.target.delivery.v1.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
-/** Contains the analytics payload metadata */
-public class AnalyticsResponse {
-  @JsonProperty("payload")
-  private AnalyticsPayload payload;
+/**
+ * Use this object to enable the Preview mode in the request. Use the Preview mode to test the look
+ * and feel of your site for various location and offer combinations.
+ */
+public class Preview {
+  @JsonProperty("token")
+  private String token;
 
-  public AnalyticsResponse payload(AnalyticsPayload payload) {
-    this.payload = payload;
+  public Preview token(String token) {
+    this.token = token;
     return this;
   }
 
   /**
-   * Get payload
+   * The token for the Preview mode. Validation * Verify that the token belongs to the client
+   * provided in request.
    *
-   * @return payload
+   * @return token
    */
-  public AnalyticsPayload getPayload() {
-    return payload;
+  public String getToken() {
+    return token;
   }
 
-  public void setPayload(AnalyticsPayload payload) {
-    this.payload = payload;
+  public void setToken(String token) {
+    this.token = token;
   }
 
   @Override
@@ -47,20 +51,20 @@ public class AnalyticsResponse {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AnalyticsResponse analyticsResponse = (AnalyticsResponse) o;
-    return Objects.equals(this.payload, analyticsResponse.payload);
+    Preview preview = (Preview) o;
+    return Objects.equals(this.token, preview.token);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(payload);
+    return Objects.hash(token);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class AnalyticsResponse {\n");
-    sb.append("    payload: ").append(toIndentedString(payload)).append("\n");
+    sb.append("class Preview {\n");
+    sb.append("    token: ").append(toIndentedString(token)).append("\n");
     sb.append("}");
     return sb.toString();
   }

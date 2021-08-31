@@ -16,18 +16,17 @@ package com.adobe.target.delivery.v1.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-/**
- * Indicates whether integraion will be done via client side (from the client) or server side (edge
- * servers)
- */
-public enum LoggingType {
-  SERVER_SIDE("server_side"),
+/** Gets or Sets DecisioningMethod */
+public enum DecisioningMethod {
+  SERVER_SIDE("server-side"),
 
-  CLIENT_SIDE("client_side");
+  ON_DEVICE("on-device"),
+
+  HYBRID("hybrid");
 
   private String value;
 
-  LoggingType(String value) {
+  DecisioningMethod(String value) {
     this.value = value;
   }
 
@@ -42,8 +41,8 @@ public enum LoggingType {
   }
 
   @JsonCreator
-  public static LoggingType fromValue(String value) {
-    for (LoggingType b : LoggingType.values()) {
+  public static DecisioningMethod fromValue(String value) {
+    for (DecisioningMethod b : DecisioningMethod.values()) {
       if (b.value.equals(value)) {
         return b;
       }

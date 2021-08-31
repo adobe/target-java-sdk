@@ -11,23 +11,40 @@
  */
 package com.adobe.target.edge.client.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
+/** Gets or Sets DecisioningMethod */
 public enum DecisioningMethod {
-  SERVER_SIDE("server-side"),
-  ON_DEVICE("on-device"),
-  HYBRID("hybrid");
+  SERVER_SIDE(com.adobe.target.delivery.v1.model.DecisioningMethod.SERVER_SIDE.toString()),
 
-  private final String name;
+  ON_DEVICE(com.adobe.target.delivery.v1.model.DecisioningMethod.ON_DEVICE.toString()),
 
-  DecisioningMethod(String nameValue) {
-    name = nameValue;
+  HYBRID(com.adobe.target.delivery.v1.model.DecisioningMethod.HYBRID.toString());
+
+  private String value;
+
+  DecisioningMethod(String value) {
+    this.value = value;
+  }
+
+  @JsonValue
+  public String getValue() {
+    return value;
   }
 
   @Override
   public String toString() {
-    return this.name;
+    return String.valueOf(value);
   }
 
-  public String getName() {
-    return this.name;
+  @JsonCreator
+  public static DecisioningMethod fromValue(String value) {
+    for (DecisioningMethod b : DecisioningMethod.values()) {
+      if (b.value.equals(value)) {
+        return b;
+      }
+    }
+    throw new IllegalArgumentException("Unexpected value '" + value + "'");
   }
 }

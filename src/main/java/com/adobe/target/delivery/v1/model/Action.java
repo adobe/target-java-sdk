@@ -16,21 +16,21 @@ package com.adobe.target.delivery.v1.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
-/** Metric */
-public class Metric {
+/** Action */
+public class Action {
   @JsonProperty("type")
-  private MetricType type;
+  private String type;
 
   @JsonProperty("selector")
   private String selector;
 
-  @JsonProperty("eventToken")
-  private String eventToken;
+  @JsonProperty("cssSelector")
+  private String cssSelector;
 
-  @JsonProperty("analytics")
-  private AnalyticsResponse analytics;
+  @JsonProperty("content")
+  private Object content;
 
-  public Metric type(MetricType type) {
+  public Action type(String type) {
     this.type = type;
     return this;
   }
@@ -40,21 +40,21 @@ public class Metric {
    *
    * @return type
    */
-  public MetricType getType() {
+  public String getType() {
     return type;
   }
 
-  public void setType(MetricType type) {
+  public void setType(String type) {
     this.type = type;
   }
 
-  public Metric selector(String selector) {
+  public Action selector(String selector) {
     this.selector = selector;
     return this;
   }
 
   /**
-   * The selector
+   * Get selector
    *
    * @return selector
    */
@@ -66,40 +66,40 @@ public class Metric {
     this.selector = selector;
   }
 
-  public Metric eventToken(String eventToken) {
-    this.eventToken = eventToken;
+  public Action cssSelector(String cssSelector) {
+    this.cssSelector = cssSelector;
     return this;
   }
 
   /**
-   * The event token that should be sent with the notifications in case the click occurred.
+   * Get cssSelector
    *
-   * @return eventToken
+   * @return cssSelector
    */
-  public String getEventToken() {
-    return eventToken;
+  public String getCssSelector() {
+    return cssSelector;
   }
 
-  public void setEventToken(String eventToken) {
-    this.eventToken = eventToken;
+  public void setCssSelector(String cssSelector) {
+    this.cssSelector = cssSelector;
   }
 
-  public Metric analytics(AnalyticsResponse analytics) {
-    this.analytics = analytics;
+  public Action content(Object content) {
+    this.content = content;
     return this;
   }
 
   /**
-   * Get analytics
+   * Get content
    *
-   * @return analytics
+   * @return content
    */
-  public AnalyticsResponse getAnalytics() {
-    return analytics;
+  public Object getContent() {
+    return content;
   }
 
-  public void setAnalytics(AnalyticsResponse analytics) {
-    this.analytics = analytics;
+  public void setContent(Object content) {
+    this.content = content;
   }
 
   @Override
@@ -110,26 +110,26 @@ public class Metric {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Metric metric = (Metric) o;
-    return Objects.equals(this.type, metric.type)
-        && Objects.equals(this.selector, metric.selector)
-        && Objects.equals(this.eventToken, metric.eventToken)
-        && Objects.equals(this.analytics, metric.analytics);
+    Action action = (Action) o;
+    return Objects.equals(this.type, action.type)
+        && Objects.equals(this.selector, action.selector)
+        && Objects.equals(this.cssSelector, action.cssSelector)
+        && Objects.equals(this.content, action.content);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(type, selector, eventToken, analytics);
+    return Objects.hash(type, selector, cssSelector, content);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Metric {\n");
+    sb.append("class Action {\n");
     sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("    selector: ").append(toIndentedString(selector)).append("\n");
-    sb.append("    eventToken: ").append(toIndentedString(eventToken)).append("\n");
-    sb.append("    analytics: ").append(toIndentedString(analytics)).append("\n");
+    sb.append("    cssSelector: ").append(toIndentedString(cssSelector)).append("\n");
+    sb.append("    content: ").append(toIndentedString(content)).append("\n");
     sb.append("}");
     return sb.toString();
   }

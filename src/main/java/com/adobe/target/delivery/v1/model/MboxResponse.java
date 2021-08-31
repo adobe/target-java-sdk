@@ -13,13 +13,18 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /** Mbox response object. */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class MboxResponse {
+  @JsonProperty("$_type")
+  protected String $type;
+
   @JsonProperty("index")
   private Integer index;
 
@@ -33,10 +38,28 @@ public class MboxResponse {
   private List<Metric> metrics = new ArrayList<>();
 
   @JsonProperty("analytics")
-  private AnalyticsResponse analytics = null;
+  private AnalyticsResponse analytics;
 
   @JsonProperty("trace")
   private Map<String, Object> trace = new HashMap<>();
+
+  public MboxResponse $type(String $type) {
+    this.$type = $type;
+    return this;
+  }
+
+  /**
+   * Get $type
+   *
+   * @return $type
+   */
+  public String get$Type() {
+    return $type;
+  }
+
+  public void set$Type(String $type) {
+    this.$type = $type;
+  }
 
   public MboxResponse index(Integer index) {
     this.index = index;
@@ -183,7 +206,8 @@ public class MboxResponse {
       return false;
     }
     MboxResponse mboxResponse = (MboxResponse) o;
-    return Objects.equals(this.index, mboxResponse.index)
+    return Objects.equals(this.$type, mboxResponse.$type)
+        && Objects.equals(this.index, mboxResponse.index)
         && Objects.equals(this.name, mboxResponse.name)
         && Objects.equals(this.options, mboxResponse.options)
         && Objects.equals(this.metrics, mboxResponse.metrics)
@@ -193,13 +217,14 @@ public class MboxResponse {
 
   @Override
   public int hashCode() {
-    return Objects.hash(index, name, options, metrics, analytics, trace);
+    return Objects.hash($type, index, name, options, metrics, analytics, trace);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("class MboxResponse {\n");
+    sb.append("    $type: ").append(toIndentedString($type)).append("\n");
     sb.append("    index: ").append(toIndentedString(index)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
     sb.append("    options: ").append(toIndentedString(options)).append("\n");

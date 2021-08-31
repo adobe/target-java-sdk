@@ -13,12 +13,10 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
 /** Application identifiers. If specified, should match the with the one from the activity. */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Application {
   @JsonProperty("id")
   private String id;

@@ -13,7 +13,6 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +22,9 @@ import java.util.Objects;
  * The object that contains responses from execute &#x60;pageLoad&#x60; and/or execute regional
  * &#x60;mboxes&#x60; request.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ExecuteResponse {
   @JsonProperty("pageLoad")
-  private PageLoadResponse pageLoad = null;
+  private PageLoadResponse pageLoad;
 
   @JsonProperty("mboxes")
   private List<MboxResponse> mboxes = new ArrayList<>();

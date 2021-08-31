@@ -13,12 +13,10 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
 /** View request */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ViewRequest extends RequestDetails {
   @JsonProperty("name")
   private String name;

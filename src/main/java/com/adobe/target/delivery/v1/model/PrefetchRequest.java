@@ -13,7 +13,6 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,27 +20,22 @@ import java.util.Objects;
 
 /**
  * Use this object to prefetch the content for &#x60;views&#x60; and/or &#x60;pageLoad&#x60; and/or
- * &#x60; mboxes&#x60;. * &#x60;views&#x60; - the request to prefetch selectors grouped per view. *
+ * &#x60;mboxes&#x60;. * &#x60;views&#x60; - the request to prefetch selectors grouped per view. *
  * &#x60;pageLoad&#x60; - the request to prefetch selectors not assigned to any view. *
  * &#x60;mboxes&#x60; - the request to prefetch mbox content.
  */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PrefetchRequest {
   @JsonProperty("views")
   private List<ViewRequest> views = new ArrayList<>();
 
   @JsonProperty("pageLoad")
-  private RequestDetails pageLoad = null;
+  private RequestDetails pageLoad;
 
   @JsonProperty("mboxes")
   private List<MboxRequest> mboxes = new ArrayList<>();
 
   public PrefetchRequest views(List<ViewRequest> views) {
-    if (views == null) {
-      return this;
-    }
-    // wrap passed in list with our own ArrayList to make sure it is mutable
-    this.views = new ArrayList<>(views);
+    this.views = views;
     return this;
   }
 
@@ -54,8 +48,7 @@ public class PrefetchRequest {
   }
 
   /**
-   * Currenly only 1 view can be set in the request. All views matching the request will be
-   * returned. In future it will be possible to request 1 or several concrete views.
+   * An array of views
    *
    * @return views
    */
@@ -64,12 +57,7 @@ public class PrefetchRequest {
   }
 
   public void setViews(List<ViewRequest> views) {
-    if (views != null) {
-      // wrap passed in list with our own ArrayList to make sure it is mutable
-      this.views = new ArrayList<>(views);
-    } else {
-      this.views = views;
-    }
+    this.views = views;
   }
 
   public PrefetchRequest pageLoad(RequestDetails pageLoad) {
@@ -91,11 +79,7 @@ public class PrefetchRequest {
   }
 
   public PrefetchRequest mboxes(List<MboxRequest> mboxes) {
-    if (mboxes == null) {
-      return this;
-    }
-    // wrap passed in list with our own ArrayList to make sure it is mutable
-    this.mboxes = new ArrayList<>(mboxes);
+    this.mboxes = mboxes;
     return this;
   }
 
@@ -108,7 +92,7 @@ public class PrefetchRequest {
   }
 
   /**
-   * Prefetch the content for the regional mbox. Can be used as a replacement to batch mbox v2 API.
+   * Prefetch the content for the regional mbox.
    *
    * @return mboxes
    */
@@ -117,12 +101,7 @@ public class PrefetchRequest {
   }
 
   public void setMboxes(List<MboxRequest> mboxes) {
-    if (mboxes != null) {
-      // wrap passed in list with our own ArrayList to make sure it is mutable
-      this.mboxes = new ArrayList<>(mboxes);
-    } else {
-      this.mboxes = mboxes;
-    }
+    this.mboxes = mboxes;
   }
 
   @Override

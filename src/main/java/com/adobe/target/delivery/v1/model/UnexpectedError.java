@@ -13,12 +13,10 @@
  */
 package com.adobe.target.delivery.v1.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 
 /** UnexpectedError */
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UnexpectedError {
   @JsonProperty("status")
   private Integer status;
@@ -32,7 +30,8 @@ public class UnexpectedError {
   }
 
   /**
-   * Get status
+   * HTTP response codes: * &#x60;400&#x60; - Validation error (ex. invalid token) * &#x60;500&#x60;
+   * - An internal server error during processing
    *
    * @return status
    */
@@ -50,7 +49,7 @@ public class UnexpectedError {
   }
 
   /**
-   * Get message
+   * error message
    *
    * @return message
    */
