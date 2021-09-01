@@ -1,0 +1,10 @@
+{
+  "library": "resttemplate",
+  "apiPackage": "com.adobe.target.delivery.v1.api",
+  "modelPackage": "com.adobe.target.delivery.v1.model",
+  "invokerPackage": "com.adobe.target.delivery.v1",
+  "java8": true,
+  "dateLibrary": "java8",
+  "fullJavaUtil": false,
+  "hideGenerationTimestamp": true
+}
