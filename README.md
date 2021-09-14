@@ -57,4 +57,4 @@ To refresh the local `target-openapi` subtree, use the command:
 git subtree pull --prefix openapi git@github.com:adobe/target-openapi.git main --squash
 ```
 
-The openapi-generator config is located in the `codegeneration` directory, but there is no need to invoke it directly. To regenerate the openapi models use the command:  `./gradlew codegen`
+The openapi-generator config is located in the `codegeneration` directory, but there is no need to invoke it directly. To regenerate the openapi models use the command:  `./gradlew codegen spotlessApply`

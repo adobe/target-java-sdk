@@ -312,20 +312,22 @@ class DefaultRuleLoaderTest {
     DefaultRuleLoader defaultRuleLoader = mock(DefaultRuleLoader.class, CALLS_REAL_METHODS);
 
     clientConfig =
-      ClientConfig.builder()
-          .organizationId(TEST_ORG_ID)
-          .onDeviceEnvironment("production")
-          .defaultDecisioningMethod(DecisioningMethod.ON_DEVICE)
-          .exceptionHandler(exceptionHandler)
-          .onDeviceDecisioningHandler(executionHandler)
-          .onDeviceConfigHostname(CONFIG_HOSTNAME)
-          .client(CLIENT_CODE)
-          .defaultPropertyToken(propertyToken)
-          .build();
+        ClientConfig.builder()
+            .organizationId(TEST_ORG_ID)
+            .onDeviceEnvironment("production")
+            .defaultDecisioningMethod(DecisioningMethod.ON_DEVICE)
+            .exceptionHandler(exceptionHandler)
+            .onDeviceDecisioningHandler(executionHandler)
+            .onDeviceConfigHostname(CONFIG_HOSTNAME)
+            .client(CLIENT_CODE)
+            .defaultPropertyToken(propertyToken)
+            .build();
 
     defaultRuleLoader.start(clientConfig);
     String artifactUrl = defaultRuleLoader.getLocation();
-    assertEquals("https://assets.adobetarget.com/client123/production/v1/a4d17d78-cb39-6171-b12d-a222a62ebe49/rules.json", artifactUrl);
+    assertEquals(
+        "https://assets.adobetarget.com/client123/production/v1/a4d17d78-cb39-6171-b12d-a222a62ebe49/rules.json",
+        artifactUrl);
     defaultRuleLoader.stop();
   }
 
@@ -334,15 +336,15 @@ class DefaultRuleLoaderTest {
     DefaultRuleLoader defaultRuleLoader = mock(DefaultRuleLoader.class, CALLS_REAL_METHODS);
 
     clientConfig =
-      ClientConfig.builder()
-          .organizationId(TEST_ORG_ID)
-          .onDeviceEnvironment("production")
-          .defaultDecisioningMethod(DecisioningMethod.ON_DEVICE)
-          .exceptionHandler(exceptionHandler)
-          .onDeviceDecisioningHandler(executionHandler)
-          .onDeviceConfigHostname(CONFIG_HOSTNAME)
-          .client(CLIENT_CODE)
-          .build();
+        ClientConfig.builder()
+            .organizationId(TEST_ORG_ID)
+            .onDeviceEnvironment("production")
+            .defaultDecisioningMethod(DecisioningMethod.ON_DEVICE)
+            .exceptionHandler(exceptionHandler)
+            .onDeviceDecisioningHandler(executionHandler)
+            .onDeviceConfigHostname(CONFIG_HOSTNAME)
+            .client(CLIENT_CODE)
+            .build();
 
     defaultRuleLoader.start(clientConfig);
     String artifactUrl = defaultRuleLoader.getLocation();
