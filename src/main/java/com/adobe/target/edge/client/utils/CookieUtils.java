@@ -154,7 +154,8 @@ public class CookieUtils {
     TargetCookie targetCookie = null;
     String locationHint = locationHintFromTntId(tntId);
     if (locationHint != null) {
-      targetCookie = new TargetCookie(CLUSTER_COOKIE_NAME, locationHint, CLUSTER_LOCATION_HINT_MAX_AGE);
+      targetCookie =
+          new TargetCookie(CLUSTER_COOKIE_NAME, locationHint, CLUSTER_LOCATION_HINT_MAX_AGE);
     }
     return Optional.ofNullable(targetCookie);
   }

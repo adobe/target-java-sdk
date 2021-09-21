@@ -44,3 +44,17 @@ Check out our [Contribution guidelines](.github/CONTRIBUTING.md) as well as [Cod
 to contributing to Target Java SDK development.  
 1. To build the project: `./gradlew build`  
 2. To install `java-sdk` locally: `./gradle install`
+
+## Delivery API Client generation
+
+The SDK depends on [Target Open API](https://github.com/adobe/target-openapi). It uses Open API and the `Open API generator` to generate the low level HTTP client.
+
+To be able to use `Target Open API` for code generation, we are leveraging Git subtree.
+
+To refresh the local `target-openapi` subtree, use the command:
+
+```bash
+git subtree pull --prefix openapi git@github.com:adobe/target-openapi.git main --squash
+```
+
+The openapi-generator config is located in the `codegeneration` directory, but there is no need to invoke it directly. To regenerate the openapi models use the command:  `./gradlew codegen spotlessApply`

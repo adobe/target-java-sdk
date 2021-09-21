@@ -37,6 +37,11 @@ task javadocJar(type: Jar) {
     dependsOn javadoc
 }
 
+task codegen(type: Exec) {
+    workingDir "./codegeneration"
+    commandLine "./codegen.sh"
+}
+
 compileJava {
     options.encoding = "UTF-8"
     sourceCompatibility = "1.8"
