@@ -1,6 +1,5 @@
 package com.adobe.target.edge.client.service;
 
-import com.adobe.target.delivery.v1.model.Telemetry;
 import com.adobe.target.delivery.v1.model.TelemetryEntry;
 import com.adobe.target.delivery.v1.model.TelemetryFeatures;
 import com.adobe.target.edge.client.ClientConfig;
@@ -9,12 +8,9 @@ import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 
 public class TelemetryService {
-
-  public Telemetry telemetry;
   public ClientConfig clientConfig;
 
-  public TelemetryService(Telemetry telemetry, ClientConfig clientConfig) {
-    this.telemetry = telemetry;
+  public TelemetryService(ClientConfig clientConfig) {
     this.clientConfig = clientConfig;
   }
 

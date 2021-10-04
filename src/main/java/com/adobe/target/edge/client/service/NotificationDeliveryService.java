@@ -9,7 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package com.adobe.target.edge.client.ondevice;
+package com.adobe.target.edge.client.service;
 
 import com.adobe.target.delivery.v1.model.DeliveryRequest;
 import com.adobe.target.delivery.v1.model.Notification;
@@ -18,7 +18,7 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
-import com.adobe.target.edge.client.service.TargetService;
+import com.adobe.target.edge.client.ondevice.ClusterLocator;
 
 import java.util.List;
 import java.util.UUID;

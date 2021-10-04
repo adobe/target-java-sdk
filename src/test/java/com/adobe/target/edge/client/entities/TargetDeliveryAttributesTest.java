@@ -26,7 +26,7 @@ import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.ondevice.ClusterLocator;
-import com.adobe.target.edge.client.ondevice.NotificationDeliveryService;
+import com.adobe.target.edge.client.service.NotificationDeliveryService;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningDetailsExecutor;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningEvaluator;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;

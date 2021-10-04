@@ -11,9 +11,7 @@
  */
 package com.adobe.target.edge.client.ondevice;
 
-import com.adobe.target.delivery.v1.model.AuthenticatedState;
 import com.adobe.target.delivery.v1.model.Context;
-import com.adobe.target.delivery.v1.model.CustomerId;
 import com.adobe.target.delivery.v1.model.DeliveryRequest;
 import com.adobe.target.delivery.v1.model.DeliveryResponse;
 import com.adobe.target.delivery.v1.model.ExecuteResponse;
@@ -23,12 +21,12 @@ import com.adobe.target.delivery.v1.model.PrefetchResponse;
 import com.adobe.target.delivery.v1.model.RequestDetails;
 import com.adobe.target.delivery.v1.model.Telemetry;
 import com.adobe.target.delivery.v1.model.TelemetryEntry;
-import com.adobe.target.delivery.v1.model.TelemetryFeatures;
 import com.adobe.target.delivery.v1.model.VisitorId;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.http.ResponseStatus;
-import com.adobe.target.edge.client.model.*;
+import com.adobe.target.edge.client.model.TargetDeliveryRequest;
+import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningEvaluation;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
 import com.adobe.target.edge.client.ondevice.client.geo.DefaultGeoClient;
@@ -39,7 +37,9 @@ import com.adobe.target.edge.client.ondevice.collator.PageParamsCollator;
 import com.adobe.target.edge.client.ondevice.collator.ParamsCollator;
 import com.adobe.target.edge.client.ondevice.collator.TimeParamsCollator;
 import com.adobe.target.edge.client.ondevice.collator.UserParamsCollator;
+import com.adobe.target.edge.client.service.NotificationDeliveryService;
 import com.adobe.target.edge.client.service.TargetService;
+import com.adobe.target.edge.client.service.TelemetryService;
 import com.adobe.target.edge.client.utils.CookieUtils;
 import com.adobe.target.edge.client.utils.StringUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
@@ -83,6 +83,7 @@ public class OnDeviceDecisioningService {
   private final ObjectMapper mapper;
   private final RuleLoader ruleLoader;
   private final NotificationDeliveryService deliveryService;
+  private final TelemetryService telemetryService;
   private final ClusterLocator clusterLocator;
   private final OnDeviceDecisioningDetailsExecutor decisionHandler;
   private final OnDeviceDecisioningEvaluator onDeviceDecisioningEvaluator;
@@ -97,6 +98,7 @@ public class OnDeviceDecisioningService {
     this.ruleLoader = services.getRuleLoader();
     this.ruleLoader.start(clientConfig);
     this.deliveryService = services.getNotificationDeliveryService();
+    this.telemetryService = new TelemetryService(clientConfig);
     this.clusterLocator = services.getClusterLocator();
     this.clusterLocator.start(clientConfig, targetService);
     this.decisionHandler = new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);
@@ -113,10 +115,6 @@ public class OnDeviceDecisioningService {
   public void stop() {
     this.ruleLoader.stop();
     this.clusterLocator.stop();
-  }
-
-  public void refreshRules() {
-    this.ruleLoader.refresh();
   }
 
   public OnDeviceDecisioningEvaluation evaluateLocalExecution(
@@ -159,8 +157,6 @@ public class OnDeviceDecisioningService {
     geoLookupIfNeeded(deliveryRequest, ruleSet.isGeoTargetingEnabled());
     collateParams(requestContext, REQUEST_PARAMS_COLLATORS, deliveryRequest, null);
 
-    Telemetry telemetry = new Telemetry();
-
     TraceHandler traceHandler = null;
     if (delivRequest.getTrace() != null) {
       traceHandler =
@@ -200,12 +196,11 @@ public class OnDeviceDecisioningService {
         targetResponse.getResponse().getExecute(),
         notifications);
 
-    TelemetryEntry telemetryEntry =
-        createTelemetryEntry(
-            deliveryRequest, targetResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
+    Telemetry telemetry = new Telemetry();
+    TelemetryEntry telemetryEntry = telemetryService.createTelemetryEntry(deliveryRequest, targetResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
     telemetry.addEntriesItem(telemetryEntry);
 
-    sendNotifications(deliveryRequest, targetResponse, notifications, telemetry);
+    deliveryService.sendNotifications(deliveryRequest, targetResponse, notifications, telemetry);
 
     if (this.clientConfig.isLogRequests()) {
       logger.debug(targetResponse.toString());
@@ -315,23 +310,6 @@ public class OnDeviceDecisioningService {
     return tntId;
   }
 
-  private String firstAuthenticatedCustomerId(VisitorId visitorId) {
-    if (visitorId == null) {
-      return null;
-    }
-    List<CustomerId> customerIds = visitorId.getCustomerIds();
-    if (customerIds == null) {
-      return null;
-    }
-    for (CustomerId customerId : customerIds) {
-      if (StringUtils.isNotEmpty(customerId.getId())
-          && AuthenticatedState.AUTHENTICATED.equals(customerId.getAuthenticatedState())) {
-        return customerId.getId();
-      }
-    }
-    return null;
-  }
-
   private void geoLookupIfNeeded(TargetDeliveryRequest deliveryRequest, boolean doGeoLookup) {
     if (!doGeoLookup) {
       return;
@@ -391,78 +369,5 @@ public class OnDeviceDecisioningService {
           executeResponse,
           notifications);
     }
-  }
-
-  private TelemetryEntry createTelemetryEntry(
-      TargetDeliveryRequest targetDeliveryRequest,
-      TargetDeliveryResponse targetDeliveryResponse,
-      double executionTime) {
-    com.adobe.target.delivery.v1.model.DecisioningMethod decisioningMethod =
-        com.adobe.target.delivery.v1.model.DecisioningMethod.valueOf(
-            getDecisioningMethod(targetDeliveryRequest).name());
-    TelemetryFeatures telemetryFeatures =
-        new TelemetryFeatures().decisioningMethod(decisioningMethod);
-
-    return new TelemetryEntry()
-        .requestId(targetDeliveryResponse.getResponse().getRequestId())
-        .features(telemetryFeatures)
-        .execution(executionTime)
-        .timestamp(System.currentTimeMillis());
-  }
-
-  private void sendNotifications(
-      TargetDeliveryRequest deliveryRequest,
-      TargetDeliveryResponse deliveryResponse,
-      List<Notification> notifications,
-      Telemetry telemetry) {
-    boolean noNotifications = notifications == null || notifications.isEmpty();
-    boolean noTelemetry =
-        !clientConfig.isTelemetryEnabled()
-            || (telemetry == null || telemetry.getEntries().isEmpty());
-
-    if (noNotifications && noTelemetry) {
-      return;
-    }
-
-    DeliveryRequest dreq = deliveryRequest.getDeliveryRequest();
-    String locationHint =
-        deliveryRequest.getLocationHint() != null
-            ? deliveryRequest.getLocationHint()
-            : this.clusterLocator.getLocationHint();
-    TargetDeliveryRequest notifRequest =
-        TargetDeliveryRequest.builder()
-            .locationHint(locationHint)
-            .sessionId(deliveryRequest.getSessionId())
-            .visitor(deliveryRequest.getVisitor())
-            .decisioningMethod(DecisioningMethod.SERVER_SIDE)
-            .requestId(UUID.randomUUID().toString())
-            .impressionId(UUID.randomUUID().toString())
-            .id(dreq.getId() != null ? dreq.getId() : deliveryResponse.getResponse().getId())
-            .experienceCloud(dreq.getExperienceCloud())
-            .context(dreq.getContext())
-            .environmentId(dreq.getEnvironmentId())
-            .qaMode(dreq.getQaMode())
-            .property(dreq.getProperty())
-            .notifications(notifications)
-            .telemetry(clientConfig.isTelemetryEnabled() ? telemetry : null)
-            .trace(dreq.getTrace())
-            .build();
-    this.deliveryService.sendNotification(notifRequest);
-  }
-
-  private DecisioningMethod getDecisioningMethod(TargetDeliveryRequest request) {
-    DecisioningMethod requestDecisioning = request.getDecisioningMethod();
-
-    if (requestDecisioning != null) {
-      return requestDecisioning;
-    }
-
-    DecisioningMethod configDecisioning = clientConfig.getDefaultDecisioningMethod();
-
-    if (configDecisioning != null) {
-      return configDecisioning;
-    }
-
-    return DecisioningMethod.SERVER_SIDE;
   }
 }

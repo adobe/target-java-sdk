@@ -55,6 +55,10 @@ public class DefaultTargetClient implements TargetClient {
   @Override
   public TargetDeliveryResponse getOffers(TargetDeliveryRequest request) {
     try {
+
+      //TODO: Remove once done with basic local testing
+      System.out.println("Inside newer version");
+
       Objects.requireNonNull(request, "request cannot be null");
       TargetDeliveryResponse targetDeliveryResponse;
       DecisioningMethod decisioningMethod = getDecisioningMethod(request);
