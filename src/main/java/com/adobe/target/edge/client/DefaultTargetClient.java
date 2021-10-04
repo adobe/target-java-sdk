@@ -68,7 +68,10 @@ public class DefaultTargetClient implements TargetClient {
       }
       return targetDeliveryResponse;
     } catch (Exception e) {
-      throw new TargetRequestException(e.getMessage(), e);
+      TargetRequestException targetRequestException =
+          new TargetRequestException(e.getMessage(), e, request);
+      logger.error(targetRequestException.getMessage());
+      throw targetRequestException;
     }
   }
 
@@ -88,7 +91,10 @@ public class DefaultTargetClient implements TargetClient {
       }
       return targetDeliveryResponse;
     } catch (Exception e) {
-      throw new TargetRequestException(e.getMessage(), e);
+      TargetRequestException targetRequestException =
+          new TargetRequestException(e.getMessage(), e, request);
+      logger.error(targetRequestException.getMessage());
+      throw targetRequestException;
     }
   }
 

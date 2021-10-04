@@ -174,6 +174,75 @@ public class TargetTestDeliveryRequestUtils {
     return Arrays.asList(prefetchMboxResponse);
   }
 
+  static RawResponse getRawTestResponse() {
+    return new RawResponse() {
+      @Override
+      public int getStatus() {
+        return HttpStatus.SC_OK;
+      }
+
+      @Override
+      public String getStatusText() {
+        return null;
+      }
+
+      @Override
+      public Headers getHeaders() {
+        return new Headers();
+      }
+
+      @Override
+      public InputStream getContent() {
+        return null;
+      }
+
+      @Override
+      public byte[] getContentAsBytes() {
+        return new byte[0];
+      }
+
+      @Override
+      public String getContentAsString() {
+        return null;
+      }
+
+      @Override
+      public String getContentAsString(String charset) {
+        return null;
+      }
+
+      @Override
+      public InputStreamReader getContentReader() {
+        return null;
+      }
+
+      @Override
+      public boolean hasContent() {
+        return false;
+      }
+
+      @Override
+      public String getContentType() {
+        return null;
+      }
+
+      @Override
+      public String getEncoding() {
+        return null;
+      }
+
+      @Override
+      public Config getConfig() {
+        return null;
+      }
+
+      @Override
+      public HttpResponseSummary toSummary() {
+        return null;
+      }
+    };
+  }
+
   static HttpResponse<DeliveryResponse> getTestDeliveryResponse() {
     DeliveryResponse deliveryResponse =
         new DeliveryResponse() {
@@ -188,74 +257,20 @@ public class TargetTestDeliveryRequestUtils {
             return new VisitorId().tntId(TEST_TNT_ID);
           }
         };
-    RawResponse rawResponse =
-        new RawResponse() {
-          @Override
-          public int getStatus() {
-            return HttpStatus.SC_OK;
-          }
+    return getTestDeliveryResponse(deliveryResponse);
+  }
 
-          @Override
-          public String getStatusText() {
-            return null;
-          }
+  static HttpResponse<DeliveryResponse> getTestDeliveryResponse(DeliveryResponse deliveryResponse) {
+    RawResponse rawResponse = getRawTestResponse();
+    return (HttpResponse<DeliveryResponse>) new BasicResponse(rawResponse, deliveryResponse);
+  }
 
-          @Override
-          public Headers getHeaders() {
-            return new Headers();
-          }
+  static HttpResponse<DeliveryResponse> getTestDeliveryResponseFailure(
+      String errorMessage, String ogBody) {
+    RawResponse rawResponse = getRawTestResponse();
 
-          @Override
-          public InputStream getContent() {
-            return null;
-          }
-
-          @Override
-          public byte[] getContentAsBytes() {
-            return new byte[0];
-          }
-
-          @Override
-          public String getContentAsString() {
-            return null;
-          }
-
-          @Override
-          public String getContentAsString(String charset) {
-            return null;
-          }
-
-          @Override
-          public InputStreamReader getContentReader() {
-            return null;
-          }
-
-          @Override
-          public boolean hasContent() {
-            return false;
-          }
-
-          @Override
-          public String getContentType() {
-            return null;
-          }
-
-          @Override
-          public String getEncoding() {
-            return null;
-          }
-
-          @Override
-          public Config getConfig() {
-            return null;
-          }
-
-          @Override
-          public HttpResponseSummary toSummary() {
-            return null;
-          }
-        };
-    HttpResponse<DeliveryResponse> basicResponse = new BasicResponse(rawResponse, deliveryResponse);
+    HttpResponse<DeliveryResponse> basicResponse =
+        new BasicResponse(rawResponse, ogBody, new RuntimeException(errorMessage));
     return basicResponse;
   }
 
