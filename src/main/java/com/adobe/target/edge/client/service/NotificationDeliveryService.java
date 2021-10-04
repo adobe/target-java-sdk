@@ -35,11 +35,11 @@ public class NotificationDeliveryService {
     this.clusterLocator = clusterLocator;
   }
 
-  public void sendNotification(final TargetDeliveryRequest deliveryRequest) {
-    this.targetService.executeNotificationAsync(deliveryRequest);
+  public void sendNotification(final TargetDeliveryRequest targetDeliveryRequest) {
+    this.targetService.executeNotificationAsync(targetDeliveryRequest);
   }
 
-  public void sendNotifications(TargetDeliveryRequest deliveryRequest, TargetDeliveryResponse deliveryResponse,
+  public void sendNotifications(TargetDeliveryRequest targetDeliveryRequest, TargetDeliveryResponse targetDeliveryResponse,
                                 List<Notification> notifications,
                                 Telemetry telemetry) {
 
@@ -52,29 +52,29 @@ public class NotificationDeliveryService {
       return;
     }
 
-    DeliveryRequest dreq = deliveryRequest.getDeliveryRequest();
+    DeliveryRequest deliveryRequest = targetDeliveryRequest.getDeliveryRequest();
     String locationHint =
-      deliveryRequest.getLocationHint() != null
-        ? deliveryRequest.getLocationHint()
+      targetDeliveryRequest.getLocationHint() != null
+        ? targetDeliveryRequest.getLocationHint()
         : this.clusterLocator.getLocationHint();
-    TargetDeliveryRequest notifRequest =
+    TargetDeliveryRequest notificationRequest =
       TargetDeliveryRequest.builder()
         .locationHint(locationHint)
-        .sessionId(deliveryRequest.getSessionId())
-        .visitor(deliveryRequest.getVisitor())
+        .sessionId(targetDeliveryRequest.getSessionId())
+        .visitor(targetDeliveryRequest.getVisitor())
         .decisioningMethod(DecisioningMethod.SERVER_SIDE)
         .requestId(UUID.randomUUID().toString())
         .impressionId(UUID.randomUUID().toString())
-        .id(dreq.getId() != null ? dreq.getId() : deliveryResponse.getResponse().getId())
-        .experienceCloud(dreq.getExperienceCloud())
-        .context(dreq.getContext())
-        .environmentId(dreq.getEnvironmentId())
-        .qaMode(dreq.getQaMode())
-        .property(dreq.getProperty())
+        .id(deliveryRequest.getId() != null ? deliveryRequest.getId() : targetDeliveryResponse.getResponse().getId())
+        .experienceCloud(deliveryRequest.getExperienceCloud())
+        .context(deliveryRequest.getContext())
+        .environmentId(deliveryRequest.getEnvironmentId())
+        .qaMode(deliveryRequest.getQaMode())
+        .property(deliveryRequest.getProperty())
         .notifications(notifications)
         .telemetry(clientConfig.isTelemetryEnabled() ? telemetry : null)
-        .trace(dreq.getTrace())
+        .trace(deliveryRequest.getTrace())
         .build();
-    this.sendNotification(notifRequest);
+    this.sendNotification(notificationRequest);
   }
 }
