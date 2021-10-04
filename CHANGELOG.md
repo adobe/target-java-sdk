@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.1.6] - 2021-10-04
+### Changed
+- Improved logging for exceptions.
+- `TargetRequestException` now includes the request object for improved debugging.
+
 ## [2.1.5] - 2021-08-30
 ### Changed
 - Fix incorrect MaxAge set in response cookies
