@@ -133,7 +133,10 @@ public class DefaultTargetService implements TargetService {
     DeliveryResponse deliveryResponse = response.getBody();
     if (deliveryResponse == null) {
       Optional<UnirestParsingException> parsingError = response.getParsingError();
-      logger.error("Error parsing delivery response: {}", parsingError.get().getOriginalBody());
+
+      throw new RuntimeException(
+          "Error parsing delivery response: {}. "
+              + (parsingError.isPresent() ? parsingError.get().getOriginalBody() : ""));
     }
     return deliveryResponse;
   }
