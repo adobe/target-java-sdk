@@ -239,13 +239,23 @@ class TargetTelemetryTest {
 
   @Test
   void testDecisioningMethod() {
-    List<String> childKeys = Arrays.stream(com.adobe.target.edge.client.model.DecisioningMethod.values()).map(val -> val.name()).collect(Collectors.toList());
-    List<String> parentKeys = Arrays.stream(com.adobe.target.delivery.v1.model.DecisioningMethod.values()).map(val -> val.name()).collect(Collectors.toList());
+    List<String> childKeys =
+        Arrays.stream(com.adobe.target.edge.client.model.DecisioningMethod.values())
+            .map(val -> val.name())
+            .collect(Collectors.toList());
+    List<String> parentKeys =
+        Arrays.stream(com.adobe.target.delivery.v1.model.DecisioningMethod.values())
+            .map(val -> val.name())
+            .collect(Collectors.toList());
 
     assertEquals(childKeys, parentKeys);
 
     for (int i = 0; i < childKeys.size(); i++) {
-        assertEquals(com.adobe.target.delivery.v1.model.DecisioningMethod.valueOf(parentKeys.get(i)).toString(), com.adobe.target.edge.client.model.DecisioningMethod.valueOf(childKeys.get(i)).toString());
+      assertEquals(
+          com.adobe.target.delivery.v1.model.DecisioningMethod.valueOf(parentKeys.get(i))
+              .toString(),
+          com.adobe.target.edge.client.model.DecisioningMethod.valueOf(childKeys.get(i))
+              .toString());
     }
   }
 }

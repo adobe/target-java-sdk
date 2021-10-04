@@ -2,6 +2,8 @@
 build/
 out/
 !gradle/wrapper/gradle-wrapper.jar
+codegeneration/build
+codegeneration/openapi-generator
 
 ### STS ###
 .apt_generated
