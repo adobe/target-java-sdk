@@ -11,13 +11,37 @@
  */
 package com.adobe.target.edge.client.service;
 
-public class TargetRequestException extends RuntimeException {
+import com.adobe.target.edge.client.model.TargetDeliveryRequest;
+import com.adobe.target.edge.client.utils.LogUtils;
 
-  public TargetRequestException(String message, Throwable cause) {
+public class TargetRequestException extends RuntimeException {
+  private TargetDeliveryRequest request;
+
+  public TargetRequestException(
+      String message, Throwable cause, TargetDeliveryRequest deliveryRequest) {
     super(message, cause);
+
+    request = deliveryRequest;
   }
 
   public TargetRequestException(String message) {
     super(message);
+  }
+
+  public TargetDeliveryRequest getRequest() {
+    return request;
+  }
+
+  public void setRequest(TargetDeliveryRequest deliveryRequest) {
+    request = deliveryRequest;
+  }
+
+  @Override
+  public String getMessage() {
+    if (request == null) {
+      return super.getMessage();
+    }
+
+    return super.getMessage() + " " + LogUtils.getRequestDetails(request);
   }
 }
