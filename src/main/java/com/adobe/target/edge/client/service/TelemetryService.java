@@ -16,7 +16,9 @@ public class TelemetryService {
 
   public TelemetryEntry createTelemetryEntry(TargetDeliveryRequest targetDeliveryRequest, TargetDeliveryResponse targetDeliveryResponse,
                                               double executionTime) {
-
+    if(!clientConfig.isTelemetryEnabled()) {
+      return null;
+    }
     com.adobe.target.delivery.v1.model.DecisioningMethod decisioningMethod =
       com.adobe.target.delivery.v1.model.DecisioningMethod.valueOf(
         getDecisioningMethod(targetDeliveryRequest).name());

@@ -44,14 +44,10 @@ public class NotificationDeliveryService {
                                 Telemetry telemetry) {
 
     boolean noNotifications = notifications == null || notifications.isEmpty();
-    boolean noTelemetry =
-      !clientConfig.isTelemetryEnabled()
-        || (telemetry == null || telemetry.getEntries().isEmpty());
-
+    boolean noTelemetry = telemetry == null || telemetry.getEntries().isEmpty();
     if (noNotifications && noTelemetry) {
       return;
     }
-
     DeliveryRequest deliveryRequest = targetDeliveryRequest.getDeliveryRequest();
     String locationHint =
       targetDeliveryRequest.getLocationHint() != null
@@ -72,7 +68,7 @@ public class NotificationDeliveryService {
         .qaMode(deliveryRequest.getQaMode())
         .property(deliveryRequest.getProperty())
         .notifications(notifications)
-        .telemetry(clientConfig.isTelemetryEnabled() ? telemetry : null)
+        .telemetry(noTelemetry ? null : telemetry)
         .trace(deliveryRequest.getTrace())
         .build();
     this.sendNotification(notificationRequest);

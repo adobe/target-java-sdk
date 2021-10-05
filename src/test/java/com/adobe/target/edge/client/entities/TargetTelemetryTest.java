@@ -186,9 +186,6 @@ class TargetTelemetryTest {
   @Test
   void testTelemetryNotSentPrefetch() throws NoSuchFieldException, IOException {
     setup(false);
-
-    NotificationDeliveryService mockNotificationDeliveryService =
-        mock(NotificationDeliveryService.class, RETURNS_DEFAULTS);
     TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
     NotificationDeliveryService notificationDeliveryService = new NotificationDeliveryService(targetServiceMock, clientConfig, clusterLocator);
     FieldSetter.setField(
