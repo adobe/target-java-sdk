@@ -198,7 +198,7 @@ public class OnDeviceDecisioningService {
 
     Telemetry telemetry = new Telemetry();
     TelemetryEntry telemetryEntry = telemetryService.createTelemetryEntry(deliveryRequest, targetResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
-    if(telemetryEntry!=null) {
+    if (telemetryEntry != null) {
       telemetry.addEntriesItem(telemetryEntry);
     }
 
