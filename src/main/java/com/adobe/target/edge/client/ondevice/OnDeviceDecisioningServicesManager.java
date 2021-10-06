@@ -12,6 +12,7 @@
 package com.adobe.target.edge.client.ondevice;
 
 import com.adobe.target.edge.client.ClientConfig;
+import com.adobe.target.edge.client.service.NotificationDeliveryService;
 import com.adobe.target.edge.client.service.TargetService;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,9 +72,10 @@ public class OnDeviceDecisioningServicesManager {
         return services;
       }
       services = new OnDeviceDecisioningServices();
-      services.setNotificationDeliveryService(new NotificationDeliveryService(targetService));
+      ClusterLocator clusterLocator = new ClusterLocator();
+      services.setNotificationDeliveryService(new NotificationDeliveryService(targetService, clientConfig, clusterLocator));
       services.setRuleLoader(new DefaultRuleLoader());
-      services.setClusterLocator(new ClusterLocator());
+      services.setClusterLocator(clusterLocator);
       servicesMap.put(serviceKey, services);
       return services;
     }

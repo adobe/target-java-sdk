@@ -24,10 +24,11 @@ import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.ondevice.ClusterLocator;
-import com.adobe.target.edge.client.ondevice.NotificationDeliveryService;
+import com.adobe.target.edge.client.service.NotificationDeliveryService;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningDetailsExecutor;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.service.DefaultTargetService;
+import com.adobe.target.edge.client.service.TargetService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Arrays;
@@ -52,6 +53,7 @@ class TargetTelemetryTest {
   private TargetClient targetJavaClient;
   private ClientConfig clientConfig;
   private DefaultTargetService targetService;
+  private ClusterLocator clusterLocator;
   private OnDeviceDecisioningService localService;
   private NotificationDeliveryService notificationDeliveryService;
 
@@ -70,7 +72,8 @@ class TargetTelemetryTest {
             .build();
 
     targetService = new DefaultTargetService(clientConfig);
-    notificationDeliveryService = new NotificationDeliveryService(targetService);
+    clusterLocator = new ClusterLocator();
+    notificationDeliveryService = new NotificationDeliveryService(targetService, clientConfig, clusterLocator);
 
     localService = new OnDeviceDecisioningService(clientConfig, targetService);
     ObjectMapper mapper = new JacksonObjectMapper().getMapper();
@@ -108,13 +111,12 @@ class TargetTelemetryTest {
   void testTelemetrySentOnExecute() throws NoSuchFieldException, IOException {
     setup(true);
     long timestamp = System.currentTimeMillis();
-
-    NotificationDeliveryService mockNotificationDeliveryService =
-        mock(NotificationDeliveryService.class, RETURNS_DEFAULTS);
+    TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
+    NotificationDeliveryService notificationDeliveryService = new NotificationDeliveryService(targetServiceMock, clientConfig, clusterLocator);
     FieldSetter.setField(
         localService,
         localService.getClass().getDeclaredField("deliveryService"),
-        mockNotificationDeliveryService);
+      notificationDeliveryService);
     fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
     TargetDeliveryRequest targetDeliveryRequest =
         TargetDeliveryRequest.builder()
@@ -127,7 +129,7 @@ class TargetTelemetryTest {
 
     ArgumentCaptor<TargetDeliveryRequest> captor =
         ArgumentCaptor.forClass(TargetDeliveryRequest.class);
-    verify(mockNotificationDeliveryService, timeout(1000)).sendNotification(captor.capture());
+    verify(targetServiceMock, timeout(1000)).executeNotificationAsync(captor.capture());
 
     Telemetry telemetry = captor.getValue().getDeliveryRequest().getTelemetry();
 
@@ -147,13 +149,12 @@ class TargetTelemetryTest {
   void testTelemetrySentOnPrefetch() throws NoSuchFieldException, IOException {
     setup(true);
     long timestamp = System.currentTimeMillis();
-
-    NotificationDeliveryService mockNotificationDeliveryService =
-        mock(NotificationDeliveryService.class, RETURNS_DEFAULTS);
+    TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
+    NotificationDeliveryService notificationDeliveryService = new NotificationDeliveryService(targetServiceMock, clientConfig, clusterLocator);
     FieldSetter.setField(
         localService,
         localService.getClass().getDeclaredField("deliveryService"),
-        mockNotificationDeliveryService);
+      notificationDeliveryService);
     fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
     TargetDeliveryRequest targetDeliveryRequest =
         TargetDeliveryRequest.builder()
@@ -166,7 +167,7 @@ class TargetTelemetryTest {
 
     ArgumentCaptor<TargetDeliveryRequest> captor =
         ArgumentCaptor.forClass(TargetDeliveryRequest.class);
-    verify(mockNotificationDeliveryService, timeout(1000)).sendNotification(captor.capture());
+    verify(targetServiceMock, timeout(1000)).executeNotificationAsync(captor.capture());
 
     Telemetry telemetry = captor.getValue().getDeliveryRequest().getTelemetry();
 
@@ -185,13 +186,12 @@ class TargetTelemetryTest {
   @Test
   void testTelemetryNotSentPrefetch() throws NoSuchFieldException, IOException {
     setup(false);
-
-    NotificationDeliveryService mockNotificationDeliveryService =
-        mock(NotificationDeliveryService.class, RETURNS_DEFAULTS);
+    TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
+    NotificationDeliveryService notificationDeliveryService = new NotificationDeliveryService(targetServiceMock, clientConfig, clusterLocator);
     FieldSetter.setField(
         localService,
         localService.getClass().getDeclaredField("deliveryService"),
-        mockNotificationDeliveryService);
+      notificationDeliveryService);
     fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
     TargetDeliveryRequest targetDeliveryRequest =
         TargetDeliveryRequest.builder()
@@ -201,19 +201,18 @@ class TargetTelemetryTest {
             .decisioningMethod(DecisioningMethod.ON_DEVICE)
             .build();
     targetJavaClient.getOffers(targetDeliveryRequest);
-    verify(mockNotificationDeliveryService, never()).sendNotification(any());
+    verify(targetServiceMock, never()).executeNotificationAsync(any());
   }
 
   @Test
   void testTelemetryNotSentExecute() throws NoSuchFieldException, IOException {
     setup(false);
-
-    NotificationDeliveryService mockNotificationDeliveryService =
-        mock(NotificationDeliveryService.class, RETURNS_DEFAULTS);
+    TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
+    NotificationDeliveryService notificationDeliveryService = new NotificationDeliveryService(targetServiceMock, clientConfig, clusterLocator);
     FieldSetter.setField(
         localService,
         localService.getClass().getDeclaredField("deliveryService"),
-        mockNotificationDeliveryService);
+      notificationDeliveryService);
     fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
     TargetDeliveryRequest targetDeliveryRequest =
         TargetDeliveryRequest.builder()
@@ -226,7 +225,7 @@ class TargetTelemetryTest {
 
     ArgumentCaptor<TargetDeliveryRequest> captor =
         ArgumentCaptor.forClass(TargetDeliveryRequest.class);
-    verify(mockNotificationDeliveryService, timeout(1000)).sendNotification(captor.capture());
+    verify(targetServiceMock, timeout(1000)).executeNotificationAsync(captor.capture());
 
     Telemetry telemetry = captor.getValue().getDeliveryRequest().getTelemetry();
     List<Notification> notifications = captor.getValue().getDeliveryRequest().getNotifications();
