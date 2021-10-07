@@ -11,32 +11,32 @@
  */
 package com.adobe.target.edge.client.service;
 
+import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.TIMING_EXECUTE_REQUEST;
 import static com.adobe.target.edge.client.utils.TargetConstants.SDK_VERSION;
 import static org.apache.http.HttpStatus.SC_OK;
 
 import com.adobe.target.delivery.v1.model.DeliveryResponse;
-import com.adobe.target.delivery.v1.model.Option;
+import com.adobe.target.delivery.v1.model.Telemetry;
+import com.adobe.target.delivery.v1.model.TelemetryEntry;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.ResponseStatus;
 import com.adobe.target.edge.client.http.TargetHttpClient;
+import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.utils.CookieUtils;
 import com.adobe.target.edge.client.utils.StringUtils;
+import com.adobe.target.edge.client.utils.TimingTool;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import kong.unirest.HttpResponse;
 import kong.unirest.UnirestParsingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DefaultTargetService implements TargetService {
 
-  private static final Logger logger = LoggerFactory.getLogger(DefaultTargetHttpClient.class);
   public static final String SDK_USER_KEY = "X-EXC-SDK";
   public static final String SDK_USER_VALUE = "AdobeTargetJava";
   public static final String SDK_VERSION_KEY = "X-EXC-SDK-Version";
@@ -45,6 +45,7 @@ public class DefaultTargetService implements TargetService {
   private final TargetHttpClient targetHttpClient;
   private final ClientConfig clientConfig;
   private String stickyLocationHint;
+  private final TelemetryService telemetryService;
 
   public DefaultTargetService(ClientConfig clientConfig) {
     TargetHttpClient targetHttpClient = new DefaultTargetHttpClient(clientConfig);
@@ -56,10 +57,14 @@ public class DefaultTargetService implements TargetService {
     this.targetHttpClient.addDefaultHeader(SDK_USER_KEY, SDK_USER_VALUE);
     this.targetHttpClient.addDefaultHeader(SDK_VERSION_KEY, SDK_VERSION);
     this.clientConfig = clientConfig;
+    this.telemetryService = new TelemetryService(clientConfig);
   }
 
   @Override
   public TargetDeliveryResponse executeRequest(TargetDeliveryRequest deliveryRequest) {
+    TimingTool timer = new TimingTool();
+    timer.timeStart(TIMING_EXECUTE_REQUEST);
+
     String url = clientConfig.getUrl(getBestLocationHint(deliveryRequest));
     HttpResponse<DeliveryResponse> response =
         targetHttpClient.execute(
@@ -67,12 +72,21 @@ public class DefaultTargetService implements TargetService {
             url,
             deliveryRequest.getDeliveryRequest(),
             DeliveryResponse.class);
-    return getTargetDeliveryResponse(deliveryRequest, response);
+    TargetDeliveryResponse targetDeliveryResponse =
+        getTargetDeliveryResponse(deliveryRequest, response);
+
+    /* Sends Telemetry information once original request's response is received */
+    processTelemetry(deliveryRequest, timer, targetDeliveryResponse);
+
+    return targetDeliveryResponse;
   }
 
   @Override
   public CompletableFuture<TargetDeliveryResponse> executeRequestAsync(
       TargetDeliveryRequest deliveryRequest) {
+    TimingTool timer = new TimingTool();
+    timer.timeStart(TIMING_EXECUTE_REQUEST);
+
     String url = clientConfig.getUrl(getBestLocationHint(deliveryRequest));
     CompletableFuture<HttpResponse<DeliveryResponse>> responseCompletableFuture =
         targetHttpClient.executeAsync(
@@ -81,7 +95,12 @@ public class DefaultTargetService implements TargetService {
             deliveryRequest.getDeliveryRequest(),
             DeliveryResponse.class);
     return responseCompletableFuture.thenApply(
-        response -> getTargetDeliveryResponse(deliveryRequest, response));
+        response -> {
+          TargetDeliveryResponse targetDeliveryResponse =
+              getTargetDeliveryResponse(deliveryRequest, response);
+          processTelemetry(deliveryRequest, timer, targetDeliveryResponse);
+          return targetDeliveryResponse;
+        });
   }
 
   @Override
@@ -167,12 +186,31 @@ public class DefaultTargetService implements TargetService {
     return stickyLocationHint;
   }
 
-  private void addRemoteResponseToken(List<Option> options) {
-    if (options != null) {
-      for (Option option : options) {
-        Map<String, Object> responseTokens = option.getResponseTokens();
-        responseTokens.put("activity.decisioningMethod", "server-side");
-      }
+  private void processTelemetry(
+      TargetDeliveryRequest deliveryRequest,
+      TimingTool timer,
+      TargetDeliveryResponse targetDeliveryResponse) {
+    Telemetry telemetry = new Telemetry();
+    TelemetryEntry telemetryEntry =
+        telemetryService.createTelemetryEntry(
+            deliveryRequest, targetDeliveryResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
+    if (telemetryEntry != null) {
+      telemetry.addEntriesItem(telemetryEntry);
+      TargetDeliveryRequest telemetryData =
+          TargetDeliveryRequest.builder()
+              .decisioningMethod(DecisioningMethod.SERVER_SIDE)
+              .telemetry(telemetry)
+              .build();
+      this.sendServerSideTelemetryAsync(telemetryData);
     }
+  }
+
+  public void sendServerSideTelemetryAsync(TargetDeliveryRequest deliveryRequest) {
+    String url = clientConfig.getUrl(getBestLocationHint(deliveryRequest));
+    targetHttpClient.executeAsync(
+        getQueryParams(deliveryRequest),
+        url,
+        deliveryRequest.getDeliveryRequest(),
+        DeliveryResponse.class);
   }
 }
