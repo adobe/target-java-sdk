@@ -16,13 +16,11 @@ import static com.adobe.target.edge.client.utils.TargetConstants.SDK_VERSION;
 import static org.apache.http.HttpStatus.SC_OK;
 
 import com.adobe.target.delivery.v1.model.DeliveryResponse;
-import com.adobe.target.delivery.v1.model.Telemetry;
 import com.adobe.target.delivery.v1.model.TelemetryEntry;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.ResponseStatus;
 import com.adobe.target.edge.client.http.TargetHttpClient;
-import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.utils.CookieUtils;
@@ -32,6 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import kong.unirest.HttpResponse;
 import kong.unirest.UnirestParsingException;
 
@@ -46,6 +45,8 @@ public class DefaultTargetService implements TargetService {
   private final ClientConfig clientConfig;
   private String stickyLocationHint;
   private final TelemetryService telemetryService;
+
+  public ConcurrentLinkedQueue<TelemetryEntry> storedTelemetries = new ConcurrentLinkedQueue<>();
 
   public DefaultTargetService(ClientConfig clientConfig) {
     TargetHttpClient targetHttpClient = new DefaultTargetHttpClient(clientConfig);
@@ -66,17 +67,26 @@ public class DefaultTargetService implements TargetService {
     timer.timeStart(TIMING_EXECUTE_REQUEST);
 
     String url = clientConfig.getUrl(getBestLocationHint(deliveryRequest));
+    TargetDeliveryResponse targetDeliveryResponse;
+    synchronized (this) {
+      while (!storedTelemetries.isEmpty()) {
+        deliveryRequest
+            .getDeliveryRequest()
+            .getTelemetry()
+            .addEntriesItem(storedTelemetries.poll());
+      }
+    }
+
     HttpResponse<DeliveryResponse> response =
         targetHttpClient.execute(
             getQueryParams(deliveryRequest),
             url,
             deliveryRequest.getDeliveryRequest(),
             DeliveryResponse.class);
-    TargetDeliveryResponse targetDeliveryResponse =
-        getTargetDeliveryResponse(deliveryRequest, response);
+    targetDeliveryResponse = getTargetDeliveryResponse(deliveryRequest, response);
 
-    /* Sends Telemetry information once original request's response is received */
-    processTelemetry(deliveryRequest, timer, targetDeliveryResponse);
+    /* capture Telemetry information once original request's response is received */
+    addTelemetry(deliveryRequest, timer, targetDeliveryResponse);
 
     return targetDeliveryResponse;
   }
@@ -87,6 +97,14 @@ public class DefaultTargetService implements TargetService {
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
 
+    synchronized (this) {
+      while (!storedTelemetries.isEmpty()) {
+        deliveryRequest
+            .getDeliveryRequest()
+            .getTelemetry()
+            .addEntriesItem(storedTelemetries.poll());
+      }
+    }
     String url = clientConfig.getUrl(getBestLocationHint(deliveryRequest));
     CompletableFuture<HttpResponse<DeliveryResponse>> responseCompletableFuture =
         targetHttpClient.executeAsync(
@@ -98,7 +116,7 @@ public class DefaultTargetService implements TargetService {
         response -> {
           TargetDeliveryResponse targetDeliveryResponse =
               getTargetDeliveryResponse(deliveryRequest, response);
-          processTelemetry(deliveryRequest, timer, targetDeliveryResponse);
+          addTelemetry(deliveryRequest, timer, targetDeliveryResponse);
           return targetDeliveryResponse;
         });
   }
@@ -186,31 +204,15 @@ public class DefaultTargetService implements TargetService {
     return stickyLocationHint;
   }
 
-  private void processTelemetry(
+  private void addTelemetry(
       TargetDeliveryRequest deliveryRequest,
       TimingTool timer,
       TargetDeliveryResponse targetDeliveryResponse) {
-    Telemetry telemetry = new Telemetry();
     TelemetryEntry telemetryEntry =
         telemetryService.createTelemetryEntry(
             deliveryRequest, targetDeliveryResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
     if (telemetryEntry != null) {
-      telemetry.addEntriesItem(telemetryEntry);
-      TargetDeliveryRequest telemetryData =
-          TargetDeliveryRequest.builder()
-              .decisioningMethod(DecisioningMethod.SERVER_SIDE)
-              .telemetry(telemetry)
-              .build();
-      this.sendServerSideTelemetryAsync(telemetryData);
+      storedTelemetries.add(telemetryEntry);
     }
-  }
-
-  private void sendServerSideTelemetryAsync(TargetDeliveryRequest deliveryRequest) {
-    String url = clientConfig.getUrl(getBestLocationHint(deliveryRequest));
-    targetHttpClient.executeAsync(
-        getQueryParams(deliveryRequest),
-        url,
-        deliveryRequest.getDeliveryRequest(),
-        DeliveryResponse.class);
   }
 }
