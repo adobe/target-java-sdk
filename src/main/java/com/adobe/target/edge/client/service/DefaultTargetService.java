@@ -205,7 +205,7 @@ public class DefaultTargetService implements TargetService {
     }
   }
 
-  public void sendServerSideTelemetryAsync(TargetDeliveryRequest deliveryRequest) {
+  private void sendServerSideTelemetryAsync(TargetDeliveryRequest deliveryRequest) {
     String url = clientConfig.getUrl(getBestLocationHint(deliveryRequest));
     targetHttpClient.executeAsync(
         getQueryParams(deliveryRequest),
