@@ -46,7 +46,7 @@ public class DefaultTargetService implements TargetService {
   private String stickyLocationHint;
   private final TelemetryService telemetryService;
 
-  public ConcurrentLinkedQueue<TelemetryEntry> storedTelemetries = new ConcurrentLinkedQueue<>();
+  private final ConcurrentLinkedQueue<TelemetryEntry> storedTelemetries = new ConcurrentLinkedQueue<>();
 
   public DefaultTargetService(ClientConfig clientConfig) {
     TargetHttpClient targetHttpClient = new DefaultTargetHttpClient(clientConfig);
