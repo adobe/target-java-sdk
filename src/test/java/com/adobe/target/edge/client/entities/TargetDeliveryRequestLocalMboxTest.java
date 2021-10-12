@@ -27,11 +27,11 @@ import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.ondevice.ClusterLocator;
-import com.adobe.target.edge.client.service.NotificationDeliveryService;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningDetailsExecutor;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.ondevice.collator.ParamsCollator;
 import com.adobe.target.edge.client.service.DefaultTargetService;
+import com.adobe.target.edge.client.service.NotificationDeliveryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.*;
@@ -496,23 +496,27 @@ class TargetDeliveryRequestLocalMboxTest {
     for (Option option : prefetchOptions) {
       assertEquals(OptionType.HTML, option.getType());
       String preContent = (String) option.getContent();
-      if (preContent.equals("<div>Firetime</div>")) {
-        assertEquals(
-            "9FNM3ikASssS+sVoFXNulJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-            option.getEventToken());
-        matches++;
-      } else if (preContent.equals("<div>lion</div>")) {
-        assertEquals(
-            "5C2cbrGD+bQ5qOATNGy1AQreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-            option.getEventToken());
-        matches++;
-      } else if (preContent.equals("<div>whale</div>")) {
-        assertEquals(
-            "5C2cbrGD+bQ5qOATNGy1AWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-            option.getEventToken());
-        matches++;
-      } else {
-        throw new IllegalStateException("unexpected content");
+      switch (preContent) {
+        case "<div>Firetime</div>":
+          assertEquals(
+              "9FNM3ikASssS+sVoFXNulJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+              option.getEventToken());
+          matches++;
+          break;
+        case "<div>lion</div>":
+          assertEquals(
+              "5C2cbrGD+bQ5qOATNGy1AQreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+              option.getEventToken());
+          matches++;
+          break;
+        case "<div>whale</div>":
+          assertEquals(
+              "5C2cbrGD+bQ5qOATNGy1AWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+              option.getEventToken());
+          matches++;
+          break;
+        default:
+          throw new IllegalStateException("unexpected content");
       }
     }
     assertEquals(2, matches);
@@ -549,28 +553,33 @@ class TargetDeliveryRequestLocalMboxTest {
     for (Option option : prefetchOptions) {
       assertEquals(OptionType.HTML, option.getType());
       String preContent = (String) option.getContent();
-      if (preContent.equals("<div>Chrometastic</div>")) {
-        assertEquals(
-            "9FNM3ikASssS+sVoFXNulGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-            option.getEventToken());
-        matches++;
-      } else if (preContent.equals("<div>foo=bar experience C</div>")) {
-        assertEquals(
-            "0L1rCkDps3F+UEAm1B9A4AreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-            option.getEventToken());
-        matches++;
-      } else if (preContent.equals("<div>lion</div>")) {
-        assertEquals(
-            "5C2cbrGD+bQ5qOATNGy1AQreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-            option.getEventToken());
-        matches++;
-      } else if (preContent.equals("<div>whale</div>")) {
-        assertEquals(
-            "5C2cbrGD+bQ5qOATNGy1AWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
-            option.getEventToken());
-        matches++;
-      } else {
-        throw new IllegalStateException("unexpected content");
+      switch (preContent) {
+        case "<div>Chrometastic</div>":
+          assertEquals(
+              "9FNM3ikASssS+sVoFXNulGqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+              option.getEventToken());
+          matches++;
+          break;
+        case "<div>foo=bar experience C</div>":
+          assertEquals(
+              "0L1rCkDps3F+UEAm1B9A4AreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+              option.getEventToken());
+          matches++;
+          break;
+        case "<div>lion</div>":
+          assertEquals(
+              "5C2cbrGD+bQ5qOATNGy1AQreqXMfVUcUx0s/BHR5kCKCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+              option.getEventToken());
+          matches++;
+          break;
+        case "<div>whale</div>":
+          assertEquals(
+              "5C2cbrGD+bQ5qOATNGy1AWqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+              option.getEventToken());
+          matches++;
+          break;
+        default:
+          throw new IllegalStateException("unexpected content");
       }
     }
     assertEquals(3, matches);
@@ -707,7 +716,6 @@ class TargetDeliveryRequestLocalMboxTest {
   }
 
   @Test
-  @SuppressWarnings("unchecked")
   void testTargetDeliveryLocalRequestMboxMacrosMissingValues()
       throws IOException, NoSuchFieldException {
     fileRuleLoader("DECISIONING_PAYLOAD_CAMPAIGN_MACROS.json", localService);
