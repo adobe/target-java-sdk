@@ -42,13 +42,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class DefaultRuleLoaderTest {
 
-  static final String TEST_ORG_ID = "0DD934B85278256B0A490D44@AdobeOrg";
-  static final String TEST_RULE_SET =
+  public static final String TEST_ORG_ID = "0DD934B85278256B0A490D44@AdobeOrg";
+  public static final String TEST_RULE_SET =
       "{\"version\":\"1.0.0\",\"meta\":{\"generatedAt\":\"2020-03-17T22:29:29.115Z\",\"remoteMboxes\":[\"recommendations\"],\"globalMbox\":\"target-global-mbox\"},\"rules\":{\"mboxes\":{\"product\":[{\"condition\":{\"and\":[{\"<\":[0,{\"var\":\"allocation\"},50]},{\"<=\":[1580371200000,{\"var\":\"current_timestamp\"},1600585200000]}]},\"consequence\":{\"mboxes\":[{\"options\":[{\"content\":{\"product\":\"default\"},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"3eLgpLF+APtuSsE47wxq/mqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"product\"}]},\"meta\":{\"activityId\":317586,\"experienceId\":0,\"type\":\"ab\",\"mbox\":\"product\"}},{\"condition\":{\"and\":[{\"<\":[50,{\"var\":\"allocation\"},100]},{\"<=\":[1580371200000,{\"var\":\"current_timestamp\"},1600585200000]}]},\"consequence\":{\"mboxes\":[{\"options\":[{\"content\":{\"product\":\"new_layout\"},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"3eLgpLF+APtuSsE47wxq/pNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"product\"}]},\"meta\":{\"activityId\":317586,\"experienceId\":1,\"type\":\"ab\",\"mbox\":\"product\"}}]},\"views\":{}}}";
-  static final String TEST_RULE_SET_HIGHER_VERSION =
+  public static final String TEST_RULE_SET_HIGHER_VERSION =
       "{\"version\":\"2.0.0\",\"meta\":{\"generatedAt\":\"2020-03-17T22:29:29.115Z\",\"remoteMboxes\":[\"recommendations\"],\"globalMbox\":\"target-global-mbox\"},\"rules\":{\"mboxes\":{\"product\":[{\"condition\":{\"and\":[{\"<\":[0,{\"var\":\"allocation\"},50]},{\"<=\":[1580371200000,{\"var\":\"current_timestamp\"},1600585200000]}]},\"consequence\":{\"mboxes\":[{\"options\":[{\"content\":{\"product\":\"default\"},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"3eLgpLF+APtuSsE47wxq/mqipfsIHvVzTQxHolz2IpSCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"product\"}]},\"meta\":{\"activityId\":317586,\"experienceId\":0,\"type\":\"ab\",\"mbox\":\"product\"}},{\"condition\":{\"and\":[{\"<\":[50,{\"var\":\"allocation\"},100]},{\"<=\":[1580371200000,{\"var\":\"current_timestamp\"},1600585200000]}]},\"consequence\":{\"mboxes\":[{\"options\":[{\"content\":{\"product\":\"new_layout\"},\"type\":\"json\"}],\"metrics\":[{\"type\":\"display\",\"eventToken\":\"3eLgpLF+APtuSsE47wxq/pNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==\"}],\"name\":\"product\"}]},\"meta\":{\"activityId\":317586,\"experienceId\":1,\"type\":\"ab\",\"mbox\":\"product\"}}]},\"views\":{}}}";
-  static final String CONFIG_HOSTNAME = "assets.adobetarget.com";
-  static final String CLIENT_CODE = "client123";
+  public static final String CONFIG_HOSTNAME = "assets.adobetarget.com";
+  public static final String CLIENT_CODE = "client123";
 
   private TargetExceptionHandler exceptionHandler;
   private OnDeviceDecisioningHandler executionHandler;
@@ -58,8 +58,10 @@ class DefaultRuleLoaderTest {
   void init() {
     exceptionHandler =
         spy(
-          e -> {});
-
+            new TargetExceptionHandler() {
+              @Override
+              public void handleException(TargetClientException e) {}
+            });
     executionHandler =
         spy(
             new OnDeviceDecisioningHandler() {
