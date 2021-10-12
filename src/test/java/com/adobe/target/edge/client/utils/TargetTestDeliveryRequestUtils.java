@@ -9,7 +9,7 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-package com.adobe.target.edge.client.entities;
+package com.adobe.target.edge.client.utils;
 
 import static com.adobe.target.edge.client.entities.TargetDeliveryRequestTest.*;
 import static com.adobe.target.edge.client.utils.TargetConstants.COOKIE_NAME;
@@ -17,13 +17,13 @@ import static com.adobe.target.edge.client.utils.TargetConstants.COOKIE_NAME;
 import com.adobe.experiencecloud.ecid.visitor.CustomerState;
 import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.ClientConfig;
+import com.adobe.target.edge.client.entities.TargetDeliveryRequestTest;
 import com.adobe.target.edge.client.model.TargetCookie;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningEvaluator;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.ondevice.RuleLoader;
 import com.adobe.target.edge.client.ondevice.collator.ParamsCollator;
-import com.adobe.target.edge.client.utils.CookieUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -51,14 +51,14 @@ public class TargetTestDeliveryRequestUtils {
   static final int SESSION_ID_COOKIE_MAX_AGE = 1860;
   static final int DEVICE_ID_COOKIE_MAX_AGE = 63244800;
 
-  static PrefetchRequest getPrefetchViewsRequest() {
+  public static PrefetchRequest getPrefetchViewsRequest() {
     PrefetchRequest prefetchRequest = new PrefetchRequest();
     ViewRequest requestDetails = new ViewRequest();
-    prefetchRequest.setViews(Arrays.asList(requestDetails));
+    prefetchRequest.setViews(Collections.singletonList(requestDetails));
     return prefetchRequest;
   }
 
-  static ExecuteRequest getMboxExecuteRequest() {
+  public static ExecuteRequest getMboxExecuteRequest() {
     List<MboxRequest> mboxRequests =
         new ArrayList() {
           {
@@ -72,14 +72,14 @@ public class TargetTestDeliveryRequestUtils {
     return executeRequest;
   }
 
-  static Map<String, CustomerState> getCustomerIds() {
+  public static Map<String, CustomerState> getCustomerIds() {
     Map<String, CustomerState> customerIds = new HashMap<>();
     customerIds.put("userid", CustomerState.authenticated("67312378756723456"));
     customerIds.put("puuid", CustomerState.unknown("550e8400-e29b-41d4-a716-446655440000"));
     return customerIds;
   }
 
-  static Context getContext() {
+  public static Context getContext() {
     Context context = new Context();
     context.setChannel(ChannelType.WEB);
     context.setTimeOffsetInMinutes(330.0);
@@ -93,7 +93,7 @@ public class TargetTestDeliveryRequestUtils {
     return address;
   }
 
-  static List<TargetCookie> getTestCookies() {
+  public static List<TargetCookie> getTestCookies() {
     int timeNow = (int) (System.currentTimeMillis() / 1000);
     Optional<TargetCookie> targetCookie =
         CookieUtils.createTargetCookie(TEST_SESSION_ID, TEST_TNT_ID);
@@ -117,7 +117,7 @@ public class TargetTestDeliveryRequestUtils {
     return cookies;
   }
 
-  static List<TargetCookie> getExpiredSessionCookie() {
+  public static List<TargetCookie> getExpiredSessionCookie() {
     int timeNow = (int) (System.currentTimeMillis() / 1000);
     int sessionExpirationTime = timeNow - 1;
     int tntIdExpirationTime = timeNow + DEVICE_ID_COOKIE_MAX_AGE;
@@ -134,7 +134,7 @@ public class TargetTestDeliveryRequestUtils {
     return cookies;
   }
 
-  static List<Notification> getMboxNotifications() {
+  public static List<Notification> getMboxNotifications() {
     List<Notification> notifications = new ArrayList<>();
     List<PrefetchMboxResponse> dummyMboxPrefetchResponse = getDummyMboxPrefetchResponse();
     for (PrefetchMboxResponse mbox : dummyMboxPrefetchResponse) {
@@ -243,7 +243,7 @@ public class TargetTestDeliveryRequestUtils {
     };
   }
 
-  static HttpResponse<DeliveryResponse> getTestDeliveryResponse() {
+  public static HttpResponse<DeliveryResponse> getTestDeliveryResponse() {
     DeliveryResponse deliveryResponse =
         new DeliveryResponse() {
 
@@ -265,7 +265,7 @@ public class TargetTestDeliveryRequestUtils {
     return (HttpResponse<DeliveryResponse>) new BasicResponse(rawResponse, deliveryResponse);
   }
 
-  static HttpResponse<DeliveryResponse> getTestDeliveryResponseFailure(
+  public static HttpResponse<DeliveryResponse> getTestDeliveryResponseFailure(
       String errorMessage, String ogBody) {
     RawResponse rawResponse = getRawTestResponse();
 
@@ -343,7 +343,7 @@ public class TargetTestDeliveryRequestUtils {
     };
   }
 
-  static PrefetchRequest getMboxPrefetchLocalRequest(String mbox) {
+  public static PrefetchRequest getMboxPrefetchLocalRequest(String mbox) {
     List<MboxRequest> mboxRequests =
         new ArrayList() {
           {
@@ -355,7 +355,7 @@ public class TargetTestDeliveryRequestUtils {
     return prefetchRequest;
   }
 
-  static ExecuteRequest getMboxExecuteLocalRequest(String mbox) {
+  public static ExecuteRequest getMboxExecuteLocalRequest(String mbox) {
     List<MboxRequest> mboxRequests =
         new ArrayList() {
           {
@@ -367,7 +367,7 @@ public class TargetTestDeliveryRequestUtils {
     return executeRequest;
   }
 
-  static Context getLocalContext() {
+  public static Context getLocalContext() {
     Context context = new Context();
     context.setChannel(ChannelType.WEB);
     context.setAddress(getLocalAddress());
@@ -391,7 +391,7 @@ public class TargetTestDeliveryRequestUtils {
     };
   }
 
-  static ParamsCollator getSpecificTimeCollator(final long now) {
+  public static ParamsCollator getSpecificTimeCollator(final long now) {
     return (deliveryRequest, requestDetails) -> {
       Map<String, Object> time = new HashMap<>();
       time.put("current_timestamp", now);

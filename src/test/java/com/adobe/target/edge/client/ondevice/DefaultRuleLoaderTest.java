@@ -16,11 +16,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import com.adobe.target.edge.client.ClientConfig;
+import com.adobe.target.edge.client.exception.TargetClientException;
+import com.adobe.target.edge.client.exception.TargetExceptionHandler;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningHandler;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
-import com.adobe.target.edge.client.service.TargetClientException;
-import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -58,10 +58,7 @@ class DefaultRuleLoaderTest {
   void init() {
     exceptionHandler =
         spy(
-            new TargetExceptionHandler() {
-              @Override
-              public void handleException(TargetClientException e) {}
-            });
+          e -> {});
 
     executionHandler =
         spy(

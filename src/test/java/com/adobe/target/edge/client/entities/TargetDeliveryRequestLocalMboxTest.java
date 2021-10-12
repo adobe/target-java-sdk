@@ -11,7 +11,7 @@
  */
 package com.adobe.target.edge.client.entities;
 
-import static com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils.*;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -32,6 +32,7 @@ import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.ondevice.collator.ParamsCollator;
 import com.adobe.target.edge.client.service.DefaultTargetService;
 import com.adobe.target.edge.client.service.NotificationDeliveryService;
+import com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.*;
