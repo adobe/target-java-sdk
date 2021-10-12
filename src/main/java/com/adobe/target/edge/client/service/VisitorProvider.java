@@ -12,6 +12,8 @@
 package com.adobe.target.edge.client.service;
 
 import com.adobe.experiencecloud.ecid.visitor.Visitor;
+import com.adobe.target.edge.client.exception.TargetClientException;
+import com.adobe.target.edge.client.exception.TargetRequestException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 

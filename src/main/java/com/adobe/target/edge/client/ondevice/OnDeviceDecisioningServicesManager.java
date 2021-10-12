@@ -73,7 +73,8 @@ public class OnDeviceDecisioningServicesManager {
       }
       services = new OnDeviceDecisioningServices();
       ClusterLocator clusterLocator = new ClusterLocator();
-      services.setNotificationDeliveryService(new NotificationDeliveryService(targetService, clientConfig, clusterLocator));
+      services.setNotificationDeliveryService(
+          new NotificationDeliveryService(targetService, clientConfig, clusterLocator));
       services.setRuleLoader(new DefaultRuleLoader());
       services.setClusterLocator(clusterLocator);
       servicesMap.put(serviceKey, services);

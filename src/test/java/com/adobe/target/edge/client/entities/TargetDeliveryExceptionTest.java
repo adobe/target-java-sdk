@@ -11,10 +11,10 @@
  */
 package com.adobe.target.edge.client.entities;
 
-import static com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils.getContext;
-import static com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils.getMboxExecuteRequest;
-import static com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils.getPrefetchViewsRequest;
-import static com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils.getTestDeliveryResponseFailure;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getContext;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getMboxExecuteRequest;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getPrefetchViewsRequest;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getTestDeliveryResponseFailure;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,11 +25,11 @@ import com.adobe.target.delivery.v1.model.ExecuteRequest;
 import com.adobe.target.delivery.v1.model.PrefetchRequest;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
+import com.adobe.target.edge.client.exception.TargetRequestException;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.service.DefaultTargetService;
-import com.adobe.target.edge.client.service.TargetRequestException;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

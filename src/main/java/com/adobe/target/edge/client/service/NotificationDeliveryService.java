@@ -19,7 +19,6 @@ import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.ondevice.ClusterLocator;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +28,8 @@ public class NotificationDeliveryService {
   private final ClientConfig clientConfig;
   private final ClusterLocator clusterLocator;
 
-  public NotificationDeliveryService(TargetService targetService, ClientConfig clientConfig, ClusterLocator clusterLocator) {
+  public NotificationDeliveryService(
+      TargetService targetService, ClientConfig clientConfig, ClusterLocator clusterLocator) {
     this.targetService = targetService;
     this.clientConfig = clientConfig;
     this.clusterLocator = clusterLocator;
@@ -39,9 +39,11 @@ public class NotificationDeliveryService {
     this.targetService.executeNotificationAsync(targetDeliveryRequest);
   }
 
-  public void sendNotifications(TargetDeliveryRequest targetDeliveryRequest, TargetDeliveryResponse targetDeliveryResponse,
-                                List<Notification> notifications,
-                                Telemetry telemetry) {
+  public void sendNotifications(
+      TargetDeliveryRequest targetDeliveryRequest,
+      TargetDeliveryResponse targetDeliveryResponse,
+      List<Notification> notifications,
+      Telemetry telemetry) {
 
     boolean noNotifications = notifications == null || notifications.isEmpty();
     boolean noTelemetry = telemetry == null || telemetry.getEntries().isEmpty();
@@ -50,27 +52,30 @@ public class NotificationDeliveryService {
     }
     DeliveryRequest deliveryRequest = targetDeliveryRequest.getDeliveryRequest();
     String locationHint =
-      targetDeliveryRequest.getLocationHint() != null
-        ? targetDeliveryRequest.getLocationHint()
-        : this.clusterLocator.getLocationHint();
+        targetDeliveryRequest.getLocationHint() != null
+            ? targetDeliveryRequest.getLocationHint()
+            : this.clusterLocator.getLocationHint();
     TargetDeliveryRequest notificationRequest =
-      TargetDeliveryRequest.builder()
-        .locationHint(locationHint)
-        .sessionId(targetDeliveryRequest.getSessionId())
-        .visitor(targetDeliveryRequest.getVisitor())
-        .decisioningMethod(DecisioningMethod.SERVER_SIDE)
-        .requestId(UUID.randomUUID().toString())
-        .impressionId(UUID.randomUUID().toString())
-        .id(deliveryRequest.getId() != null ? deliveryRequest.getId() : targetDeliveryResponse.getResponse().getId())
-        .experienceCloud(deliveryRequest.getExperienceCloud())
-        .context(deliveryRequest.getContext())
-        .environmentId(deliveryRequest.getEnvironmentId())
-        .qaMode(deliveryRequest.getQaMode())
-        .property(deliveryRequest.getProperty())
-        .notifications(notifications)
-        .telemetry(noTelemetry ? null : telemetry)
-        .trace(deliveryRequest.getTrace())
-        .build();
+        TargetDeliveryRequest.builder()
+            .locationHint(locationHint)
+            .sessionId(targetDeliveryRequest.getSessionId())
+            .visitor(targetDeliveryRequest.getVisitor())
+            .decisioningMethod(DecisioningMethod.SERVER_SIDE)
+            .requestId(UUID.randomUUID().toString())
+            .impressionId(UUID.randomUUID().toString())
+            .id(
+                deliveryRequest.getId() != null
+                    ? deliveryRequest.getId()
+                    : targetDeliveryResponse.getResponse().getId())
+            .experienceCloud(deliveryRequest.getExperienceCloud())
+            .context(deliveryRequest.getContext())
+            .environmentId(deliveryRequest.getEnvironmentId())
+            .qaMode(deliveryRequest.getQaMode())
+            .property(deliveryRequest.getProperty())
+            .notifications(notifications)
+            .telemetry(noTelemetry ? null : telemetry)
+            .trace(deliveryRequest.getTrace())
+            .build();
     this.sendNotification(notificationRequest);
   }
 }
