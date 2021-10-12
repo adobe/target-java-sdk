@@ -11,9 +11,9 @@
  */
 package com.adobe.target.edge.client.entities;
 
-import static com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils.fileRuleLoader;
-import static com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils.getLocalContext;
-import static com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils.getTestDeliveryResponse;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.fileRuleLoader;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getLocalContext;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getTestDeliveryResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,11 +34,12 @@ import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryRequestBuilder;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.ondevice.ClusterLocator;
-import com.adobe.target.edge.client.service.NotificationDeliveryService;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningDetailsExecutor;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.ondevice.collator.ParamsCollator;
 import com.adobe.target.edge.client.service.DefaultTargetService;
+import com.adobe.target.edge.client.service.NotificationDeliveryService;
+import com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.*;
@@ -243,8 +244,8 @@ class TargetDeliveryRequestLocalViewTest {
     ArrayList<String> actionContents = new ArrayList<>();
 
     for (Option option : pageLoadOptions) {
-      for (Object action : (List<Map<String, String>>) option.getContent()) {
-        actionContents.add(((Map<String, String>) action).get("content"));
+      for (Map<String, String> action : (List<Map<String, String>>) option.getContent()) {
+        actionContents.add(action.get("content"));
       }
     }
 
@@ -512,11 +513,7 @@ class TargetDeliveryRequestLocalViewTest {
     fileRuleLoader("DECISIONING_PAYLOAD_PAGELOAD_VEC_AB.json", localService);
     TargetDeliveryRequest targetDeliveryRequest =
         localDeliveryRequest("38734fba-262c-4722-b4a3-ac0a93916877", null, false);
-    Map<String, String> params =
-        new HashMap<String, String>() {
-          {
-          }
-        };
+    Map<String, String> params = new HashMap<String, String>() {};
     targetDeliveryRequest.getDeliveryRequest().getPrefetch().getPageLoad().setParameters(params);
     TargetDeliveryResponse targetDeliveryResponse =
         targetJavaClient.getOffers(targetDeliveryRequest);

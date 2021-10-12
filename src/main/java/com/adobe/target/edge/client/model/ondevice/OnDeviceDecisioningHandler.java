@@ -11,7 +11,7 @@
  */
 package com.adobe.target.edge.client.model.ondevice;
 
-import com.adobe.target.edge.client.service.TargetClientException;
+import com.adobe.target.edge.client.exception.TargetClientException;
 
 public interface OnDeviceDecisioningHandler {
 

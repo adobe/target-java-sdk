@@ -13,11 +13,11 @@ package com.adobe.target.edge.client.ondevice;
 
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.ClientProxyConfig;
+import com.adobe.target.edge.client.exception.TargetClientException;
+import com.adobe.target.edge.client.exception.TargetExceptionHandler;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningHandler;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
-import com.adobe.target.edge.client.service.TargetClientException;
-import com.adobe.target.edge.client.service.TargetExceptionHandler;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Timer;

@@ -11,9 +11,9 @@
  */
 package com.adobe.target.edge.client.entities;
 
-import static com.adobe.target.edge.client.entities.TargetTestDeliveryRequestUtils.*;
 import static com.adobe.target.edge.client.utils.TargetConstants.CLUSTER_COOKIE_NAME;
 import static com.adobe.target.edge.client.utils.TargetConstants.COOKIE_NAME;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -37,14 +37,14 @@ import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class TargetDeliveryRequestTest {
+public class TargetDeliveryRequestTest {
 
-  static final String TEST_SESSION_ID = "430a140336d545daacde53af9636eef5";
-  static final String TEST_THIRD_PARTY_ID = "12345678";
-  static final String TEST_TNT_ID = "20250794242226839061607285880759069379.22_33";
-  static final String TEST_MCID = "20250794242226839061607285880759069379";
-  static final String TEST_TRACKING_SERVER = "jimsbrims.sc.omtrds.net";
-  static final String TEST_ORG_ID = "0DD934B85278256B0A490D44@AdobeOrg";
+  public static final String TEST_SESSION_ID = "430a140336d545daacde53af9636eef5";
+  public static final String TEST_THIRD_PARTY_ID = "12345678";
+  public static final String TEST_TNT_ID = "20250794242226839061607285880759069379.22_33";
+  public static final String TEST_MCID = "20250794242226839061607285880759069379";
+  public static final String TEST_TRACKING_SERVER = "jimsbrims.sc.omtrds.net";
+  public static final String TEST_ORG_ID = "0DD934B85278256B0A490D44@AdobeOrg";
   static final String TEST_PROPERTY_TOKEN = "6147bff3-ff76-4793-a185-d2e56380a81a";
   @Mock private DefaultTargetHttpClient defaultTargetHttpClient;
 
