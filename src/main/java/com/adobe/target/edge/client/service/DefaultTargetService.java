@@ -17,7 +17,6 @@ import static org.apache.http.HttpStatus.SC_OK;
 
 import com.adobe.target.delivery.v1.model.DeliveryResponse;
 import com.adobe.target.delivery.v1.model.Telemetry;
-import com.adobe.target.delivery.v1.model.TelemetryEntry;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.ResponseStatus;
@@ -27,14 +26,10 @@ import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.utils.CookieUtils;
 import com.adobe.target.edge.client.utils.StringUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
-
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import kong.unirest.HttpResponse;
 import kong.unirest.UnirestParsingException;
 
@@ -49,8 +44,6 @@ public class DefaultTargetService implements TargetService {
   private final ClientConfig clientConfig;
   private String stickyLocationHint;
   private final TelemetryService telemetryService;
-
-  private final ConcurrentLinkedQueue<TelemetryEntry> storedTelemetries = new ConcurrentLinkedQueue<>();
 
   public DefaultTargetService(ClientConfig clientConfig) {
     TargetHttpClient targetHttpClient = new DefaultTargetHttpClient(clientConfig);
@@ -72,16 +65,11 @@ public class DefaultTargetService implements TargetService {
 
     String url = clientConfig.getUrl(getBestLocationHint(deliveryRequest));
     TargetDeliveryResponse targetDeliveryResponse;
-    synchronized (this) {
-      if(!storedTelemetries.isEmpty()) {
-        Telemetry telemetry = new Telemetry();
-        deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
-        while (!storedTelemetries.isEmpty()) {
-          telemetry.addEntriesItem(storedTelemetries.poll());
-        }
-      }
-    }
 
+    Telemetry telemetry = telemetryService.getTelemetry();
+    if (!telemetry.getEntries().isEmpty()) {
+      deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
+    }
     HttpResponse<DeliveryResponse> response =
         targetHttpClient.execute(
             getQueryParams(deliveryRequest),
@@ -91,7 +79,7 @@ public class DefaultTargetService implements TargetService {
     targetDeliveryResponse = getTargetDeliveryResponse(deliveryRequest, response);
 
     /* capture Telemetry information once original request's response is received */
-    addTelemetry(deliveryRequest, timer, targetDeliveryResponse);
+    telemetryService.addTelemetry(deliveryRequest, timer, targetDeliveryResponse);
 
     return targetDeliveryResponse;
   }
@@ -102,14 +90,9 @@ public class DefaultTargetService implements TargetService {
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
 
-    synchronized (this) {
-      if(!storedTelemetries.isEmpty()) {
-        Telemetry telemetry = new Telemetry();
-        deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
-        while (!storedTelemetries.isEmpty()) {
-          telemetry.addEntriesItem(storedTelemetries.poll());
-        }
-      }
+    Telemetry telemetry = telemetryService.getTelemetry();
+    if (!telemetry.getEntries().isEmpty()) {
+      deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
     }
     String url = clientConfig.getUrl(getBestLocationHint(deliveryRequest));
     CompletableFuture<HttpResponse<DeliveryResponse>> responseCompletableFuture =
@@ -122,7 +105,7 @@ public class DefaultTargetService implements TargetService {
         response -> {
           TargetDeliveryResponse targetDeliveryResponse =
               getTargetDeliveryResponse(deliveryRequest, response);
-          addTelemetry(deliveryRequest, timer, targetDeliveryResponse);
+          telemetryService.addTelemetry(deliveryRequest, timer, targetDeliveryResponse);
           return targetDeliveryResponse;
         });
   }
@@ -208,17 +191,5 @@ public class DefaultTargetService implements TargetService {
       return deliveryRequest.getLocationHint();
     }
     return stickyLocationHint;
-  }
-
-  private void addTelemetry(
-      TargetDeliveryRequest deliveryRequest,
-      TimingTool timer,
-      TargetDeliveryResponse targetDeliveryResponse) {
-    TelemetryEntry telemetryEntry =
-        telemetryService.createTelemetryEntry(
-            deliveryRequest, targetDeliveryResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
-    if (telemetryEntry != null) {
-      storedTelemetries.add(telemetryEntry);
-    }
   }
 }

@@ -11,18 +11,49 @@
  */
 package com.adobe.target.edge.client.service;
 
+import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.TIMING_EXECUTE_REQUEST;
+
+import com.adobe.target.delivery.v1.model.Telemetry;
 import com.adobe.target.delivery.v1.model.TelemetryEntry;
 import com.adobe.target.delivery.v1.model.TelemetryFeatures;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
+import com.adobe.target.edge.client.utils.TimingTool;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TelemetryService {
+
   public ClientConfig clientConfig;
+  public final ConcurrentLinkedQueue<TelemetryEntry> storedTelemetries =
+      new ConcurrentLinkedQueue<>();
 
   public TelemetryService(ClientConfig clientConfig) {
     this.clientConfig = clientConfig;
+  }
+
+  public void addTelemetry(
+      TargetDeliveryRequest deliveryRequest,
+      TimingTool timer,
+      TargetDeliveryResponse targetDeliveryResponse) {
+    TelemetryEntry telemetryEntry =
+        createTelemetryEntry(
+            deliveryRequest, targetDeliveryResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
+    if (telemetryEntry != null) {
+      storedTelemetries.add(telemetryEntry);
+    }
+  }
+
+  public Telemetry getTelemetry() {
+    List<TelemetryEntry> telemetryEntryList = new ArrayList<>();
+    TelemetryEntry telemetryEntry;
+    while ((telemetryEntry = storedTelemetries.poll()) != null) {
+      telemetryEntryList.add(telemetryEntry);
+    }
+    return new Telemetry().entries(telemetryEntryList);
   }
 
   public TelemetryEntry createTelemetryEntry(

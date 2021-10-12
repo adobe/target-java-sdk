@@ -16,10 +16,6 @@ import static com.adobe.target.edge.client.utils.TargetConstants.CLUSTER_COOKIE_
 import static com.adobe.target.edge.client.utils.TargetConstants.COOKIE_NAME;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.RETURNS_DEFAULTS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.timeout;
-import static org.mockito.Mockito.verify;
 
 import com.adobe.experiencecloud.ecid.visitor.CustomerState;
 import com.adobe.experiencecloud.ecid.visitor.VisitorState;
@@ -33,13 +29,8 @@ import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.service.DefaultTargetService;
 import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import com.adobe.target.edge.client.service.TargetService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.internal.util.reflection.FieldSetter;
@@ -321,17 +312,17 @@ class TargetDeliveryRequestTest {
     ExecuteRequest executeRequest = getMboxExecuteRequest();
     String nonDefaultToken = "non-default-token";
 
-
     TargetDeliveryRequest targetDeliveryRequest =
-      TargetDeliveryRequest.builder()
-        .context(context)
-        .prefetch(prefetchRequest)
-        .execute(executeRequest)
-        .property(new Property().token(nonDefaultToken))
-        .decisioningMethod(DecisioningMethod.SERVER_SIDE)
-        .build();
+        TargetDeliveryRequest.builder()
+            .context(context)
+            .prefetch(prefetchRequest)
+            .execute(executeRequest)
+            .property(new Property().token(nonDefaultToken))
+            .decisioningMethod(DecisioningMethod.SERVER_SIDE)
+            .build();
     targetJavaClient.getOffers(targetDeliveryRequest);
-    TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+    TargetDeliveryResponse targetDeliveryResponse =
+        targetJavaClient.getOffers(targetDeliveryRequest);
     assertNotNull(targetDeliveryResponse);
     assertNotNull(targetDeliveryResponse.getRequest());
     assertNotNull(targetDeliveryResponse.getRequest().getTelemetry());
@@ -346,17 +337,17 @@ class TargetDeliveryRequestTest {
     ExecuteRequest executeRequest = getMboxExecuteRequest();
     String nonDefaultToken = "non-default-token";
 
-
     TargetDeliveryRequest targetDeliveryRequest =
-      TargetDeliveryRequest.builder()
-        .context(context)
-        .prefetch(prefetchRequest)
-        .execute(executeRequest)
-        .property(new Property().token(nonDefaultToken))
-        .decisioningMethod(DecisioningMethod.SERVER_SIDE)
-        .build();
+        TargetDeliveryRequest.builder()
+            .context(context)
+            .prefetch(prefetchRequest)
+            .execute(executeRequest)
+            .property(new Property().token(nonDefaultToken))
+            .decisioningMethod(DecisioningMethod.SERVER_SIDE)
+            .build();
     targetJavaClient.getOffers(targetDeliveryRequest);
-    TargetDeliveryResponse targetDeliveryResponse = targetJavaClient.getOffers(targetDeliveryRequest);
+    TargetDeliveryResponse targetDeliveryResponse =
+        targetJavaClient.getOffers(targetDeliveryRequest);
     assertNotNull(targetDeliveryResponse);
     assertNotNull(targetDeliveryResponse.getRequest());
     assertNull(targetDeliveryResponse.getRequest().getTelemetry());
