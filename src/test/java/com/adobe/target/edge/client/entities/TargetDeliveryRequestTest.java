@@ -23,12 +23,12 @@ import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
+import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetCookie;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.service.DefaultTargetService;
 import java.util.*;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -46,15 +46,13 @@ public class TargetDeliveryRequestTest {
   public static final String TEST_TRACKING_SERVER = "jimsbrims.sc.omtrds.net";
   public static final String TEST_ORG_ID = "0DD934B85278256B0A490D44@AdobeOrg";
   static final String TEST_PROPERTY_TOKEN = "6147bff3-ff76-4793-a185-d2e56380a81a";
-
   @Mock private DefaultTargetHttpClient defaultTargetHttpClient;
 
   private DefaultTargetService targetService;
 
   private TargetClient targetJavaClient;
 
-  @BeforeEach
-  void init() throws NoSuchFieldException {
+  void setup(boolean isTelemetryEnabled) throws NoSuchFieldException {
 
     Mockito.lenient()
         .doReturn(getTestDeliveryResponse())
@@ -65,6 +63,7 @@ public class TargetDeliveryRequestTest {
         ClientConfig.builder()
             .organizationId(TEST_ORG_ID)
             .defaultPropertyToken(TEST_PROPERTY_TOKEN)
+            .telemetryEnabled(isTelemetryEnabled)
             .build();
 
     targetService = new DefaultTargetService(clientConfig);
@@ -82,7 +81,8 @@ public class TargetDeliveryRequestTest {
   }
 
   @Test
-  void testTargetDeliveryRequestWithCookies() {
+  void testTargetDeliveryRequestWithCookies() throws NoSuchFieldException {
+    setup(true);
     Context context = getContext();
     PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
     ExecuteRequest executeRequest = getMboxExecuteRequest();
@@ -179,7 +179,8 @@ public class TargetDeliveryRequestTest {
   }
 
   @Test
-  void testTargetDeliveryRequestWithoutCookies() {
+  void testTargetDeliveryRequestWithoutCookies() throws NoSuchFieldException {
+    setup(true);
     Context context = getContext();
     PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
     ExecuteRequest executeRequest = getMboxExecuteRequest();
@@ -219,7 +220,8 @@ public class TargetDeliveryRequestTest {
   }
 
   @Test
-  void testTargetDeliveryRequestWithExpiredCookies() {
+  void testTargetDeliveryRequestWithExpiredCookies() throws NoSuchFieldException {
+    setup(true);
     Context context = getContext();
     PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
     ExecuteRequest executeRequest = getMboxExecuteRequest();
@@ -261,7 +263,8 @@ public class TargetDeliveryRequestTest {
   }
 
   @Test
-  void testTargetDeliveryRequestWithDefaultProperty() {
+  void testTargetDeliveryRequestWithDefaultProperty() throws NoSuchFieldException {
+    setup(true);
     Context context = getContext();
     PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
     ExecuteRequest executeRequest = getMboxExecuteRequest();
@@ -280,7 +283,8 @@ public class TargetDeliveryRequestTest {
   }
 
   @Test
-  void testTargetDeliveryRequestWithNonDefaultProperty() {
+  void testTargetDeliveryRequestWithNonDefaultProperty() throws NoSuchFieldException {
+    setup(true);
     Context context = getContext();
     PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
     ExecuteRequest executeRequest = getMboxExecuteRequest();
@@ -298,5 +302,54 @@ public class TargetDeliveryRequestTest {
         targetJavaClient.getOffers(targetDeliveryRequest);
     DeliveryRequest finalRequest = targetDeliveryResponse.getRequest();
     assertEquals(nonDefaultToken, finalRequest.getProperty().getToken());
+  }
+
+  @Test
+  void testTelemetryForServerSide() throws NoSuchFieldException {
+    setup(true);
+    Context context = getContext();
+    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
+    ExecuteRequest executeRequest = getMboxExecuteRequest();
+    String nonDefaultToken = "non-default-token";
+
+    TargetDeliveryRequest targetDeliveryRequest =
+        TargetDeliveryRequest.builder()
+            .context(context)
+            .prefetch(prefetchRequest)
+            .execute(executeRequest)
+            .property(new Property().token(nonDefaultToken))
+            .decisioningMethod(DecisioningMethod.SERVER_SIDE)
+            .build();
+    targetJavaClient.getOffers(targetDeliveryRequest);
+    TargetDeliveryResponse targetDeliveryResponse =
+        targetJavaClient.getOffers(targetDeliveryRequest);
+    assertNotNull(targetDeliveryResponse);
+    assertNotNull(targetDeliveryResponse.getRequest());
+    assertNotNull(targetDeliveryResponse.getRequest().getTelemetry());
+    assertEquals(1, targetDeliveryResponse.getRequest().getTelemetry().getEntries().size());
+  }
+
+  @Test
+  void testWhenNoTelemetryEnabledForServerSide() throws NoSuchFieldException {
+    setup(false);
+    Context context = getContext();
+    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
+    ExecuteRequest executeRequest = getMboxExecuteRequest();
+    String nonDefaultToken = "non-default-token";
+
+    TargetDeliveryRequest targetDeliveryRequest =
+        TargetDeliveryRequest.builder()
+            .context(context)
+            .prefetch(prefetchRequest)
+            .execute(executeRequest)
+            .property(new Property().token(nonDefaultToken))
+            .decisioningMethod(DecisioningMethod.SERVER_SIDE)
+            .build();
+    targetJavaClient.getOffers(targetDeliveryRequest);
+    TargetDeliveryResponse targetDeliveryResponse =
+        targetJavaClient.getOffers(targetDeliveryRequest);
+    assertNotNull(targetDeliveryResponse);
+    assertNotNull(targetDeliveryResponse.getRequest());
+    assertNull(targetDeliveryResponse.getRequest().getTelemetry());
   }
 }
