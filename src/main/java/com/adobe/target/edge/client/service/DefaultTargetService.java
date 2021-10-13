@@ -62,20 +62,13 @@ public class DefaultTargetService implements TargetService {
   public TargetDeliveryResponse executeRequest(TargetDeliveryRequest deliveryRequest) {
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
-
-    String url = clientConfig.getUrl(getBestLocationHint(deliveryRequest));
     TargetDeliveryResponse targetDeliveryResponse;
 
     Telemetry telemetry = telemetryService.getTelemetry();
     if (!telemetry.getEntries().isEmpty()) {
       deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
     }
-    HttpResponse<DeliveryResponse> response =
-        targetHttpClient.execute(
-            getQueryParams(deliveryRequest),
-            url,
-            deliveryRequest.getDeliveryRequest(),
-            DeliveryResponse.class);
+    HttpResponse<DeliveryResponse> response = callDeliveryApi(deliveryRequest);
     targetDeliveryResponse = getTargetDeliveryResponse(deliveryRequest, response);
 
     /* capture Telemetry information once original request's response is received */
@@ -94,13 +87,8 @@ public class DefaultTargetService implements TargetService {
     if (!telemetry.getEntries().isEmpty()) {
       deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
     }
-    String url = clientConfig.getUrl(getBestLocationHint(deliveryRequest));
     CompletableFuture<HttpResponse<DeliveryResponse>> responseCompletableFuture =
-        targetHttpClient.executeAsync(
-            getQueryParams(deliveryRequest),
-            url,
-            deliveryRequest.getDeliveryRequest(),
-            DeliveryResponse.class);
+        callDeliveryApiAsync(deliveryRequest);
     return responseCompletableFuture.thenApply(
         response -> {
           TargetDeliveryResponse targetDeliveryResponse =
@@ -112,13 +100,7 @@ public class DefaultTargetService implements TargetService {
 
   @Override
   public ResponseStatus executeNotification(TargetDeliveryRequest deliveryRequest) {
-    String url = clientConfig.getUrl(getBestLocationHint(deliveryRequest));
-    HttpResponse<DeliveryResponse> response =
-        targetHttpClient.execute(
-            getQueryParams(deliveryRequest),
-            url,
-            deliveryRequest.getDeliveryRequest(),
-            DeliveryResponse.class);
+    HttpResponse<DeliveryResponse> response = callDeliveryApi(deliveryRequest);
     updateStickyLocationHint(retrieveDeliveryResponse(response));
     return new ResponseStatus(response.getStatus(), response.getStatusText());
   }
@@ -126,13 +108,8 @@ public class DefaultTargetService implements TargetService {
   @Override
   public CompletableFuture<ResponseStatus> executeNotificationAsync(
       TargetDeliveryRequest deliveryRequest) {
-    String url = clientConfig.getUrl(getBestLocationHint(deliveryRequest));
     CompletableFuture<HttpResponse<DeliveryResponse>> responseCompletableFuture =
-        targetHttpClient.executeAsync(
-            getQueryParams(deliveryRequest),
-            url,
-            deliveryRequest.getDeliveryRequest(),
-            DeliveryResponse.class);
+        callDeliveryApiAsync(deliveryRequest);
     return responseCompletableFuture.thenApply(
         response -> {
           updateStickyLocationHint(retrieveDeliveryResponse(response));
@@ -191,5 +168,24 @@ public class DefaultTargetService implements TargetService {
       return deliveryRequest.getLocationHint();
     }
     return stickyLocationHint;
+  }
+
+  private HttpResponse<DeliveryResponse> callDeliveryApi(TargetDeliveryRequest deliveryRequest) {
+    String url = clientConfig.getUrl(getBestLocationHint(deliveryRequest));
+    return targetHttpClient.execute(
+        getQueryParams(deliveryRequest),
+        url,
+        deliveryRequest.getDeliveryRequest(),
+        DeliveryResponse.class);
+  }
+
+  private CompletableFuture<HttpResponse<DeliveryResponse>> callDeliveryApiAsync(
+      TargetDeliveryRequest deliveryRequest) {
+    String url = clientConfig.getUrl(getBestLocationHint(deliveryRequest));
+    return targetHttpClient.executeAsync(
+        getQueryParams(deliveryRequest),
+        url,
+        deliveryRequest.getDeliveryRequest(),
+        DeliveryResponse.class);
   }
 }

@@ -13,6 +13,9 @@ package com.adobe.target.edge.client.service;
 
 import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.TIMING_EXECUTE_REQUEST;
 
+import com.adobe.target.delivery.v1.model.ExecuteRequest;
+import com.adobe.target.delivery.v1.model.ExecutionMode;
+import com.adobe.target.delivery.v1.model.PrefetchRequest;
 import com.adobe.target.delivery.v1.model.Telemetry;
 import com.adobe.target.delivery.v1.model.TelemetryEntry;
 import com.adobe.target.delivery.v1.model.TelemetryFeatures;
@@ -66,11 +69,20 @@ public class TelemetryService {
     com.adobe.target.delivery.v1.model.DecisioningMethod decisioningMethod =
         com.adobe.target.delivery.v1.model.DecisioningMethod.valueOf(
             getDecisioningMethod(targetDeliveryRequest).name());
-    TelemetryFeatures telemetryFeatures =
-        new TelemetryFeatures().decisioningMethod(decisioningMethod);
+
+    TelemetryFeatures telemetryFeatures = new TelemetryFeatures();
+    telemetryFeatures.setDecisioningMethod(decisioningMethod);
+    telemetryFeatures.setExecuteMboxCount(executeMboxCount(targetDeliveryRequest));
+    telemetryFeatures.setExecutePageLoad(isExecutePageLoad(targetDeliveryRequest));
+    telemetryFeatures.setPrefetchMboxCount(PrefetchMboxCount(targetDeliveryRequest));
+    telemetryFeatures.setPrefetchPageLoad(isPrefetchPageLoad(targetDeliveryRequest));
+    telemetryFeatures.setPrefetchViewCount(prefetchViewCount(targetDeliveryRequest));
+
+    ExecutionMode executionMode = getMode(targetDeliveryRequest);
 
     return new TelemetryEntry()
         .requestId(targetDeliveryResponse.getResponse().getRequestId())
+        .mode(executionMode)
         .features(telemetryFeatures)
         .execution(executionTime)
         .timestamp(System.currentTimeMillis());
@@ -90,5 +102,58 @@ public class TelemetryService {
     }
 
     return DecisioningMethod.SERVER_SIDE;
+  }
+
+  private int executeMboxCount(TargetDeliveryRequest request) {
+    int executeMboxCount = 0;
+    ExecuteRequest executeRequest = request.getDeliveryRequest().getExecute();
+    if (executeRequest != null) {
+      executeMboxCount = executeRequest.getMboxes().size();
+    }
+    return executeMboxCount;
+  }
+
+  private Boolean isExecutePageLoad(TargetDeliveryRequest request) {
+
+    boolean isExecutePageLoad = false;
+    ExecuteRequest executeRequest = request.getDeliveryRequest().getExecute();
+    if (executeRequest != null) {
+      isExecutePageLoad = executeRequest.getPageLoad() != null;
+    }
+    return isExecutePageLoad;
+  }
+
+  private Integer PrefetchMboxCount(TargetDeliveryRequest request) {
+    int prefetchMboxCount = 0;
+    PrefetchRequest prefetchRequest = request.getDeliveryRequest().getPrefetch();
+    if (prefetchRequest != null) {
+      prefetchMboxCount = prefetchRequest.getMboxes().size();
+    }
+    return prefetchMboxCount;
+  }
+
+  private Boolean isPrefetchPageLoad(TargetDeliveryRequest request) {
+    boolean prefetchPageLoad = false;
+    PrefetchRequest prefetchRequest = request.getDeliveryRequest().getPrefetch();
+    if (prefetchRequest != null) {
+      prefetchPageLoad = prefetchRequest.getPageLoad() != null;
+    }
+    return prefetchPageLoad;
+  }
+
+  private Integer prefetchViewCount(TargetDeliveryRequest request) {
+    int prefetchViewCount = 0;
+    if (request.getDeliveryRequest().getPrefetch() != null) {
+      prefetchViewCount = request.getDeliveryRequest().getPrefetch().getViews().size();
+    }
+    return prefetchViewCount;
+  }
+
+  private ExecutionMode getMode(TargetDeliveryRequest request) {
+    if (getDecisioningMethod(request).equals(DecisioningMethod.ON_DEVICE)
+        || getDecisioningMethod(request).equals(DecisioningMethod.HYBRID)) {
+      return ExecutionMode.LOCAL;
+    }
+    return ExecutionMode.EDGE;
   }
 }

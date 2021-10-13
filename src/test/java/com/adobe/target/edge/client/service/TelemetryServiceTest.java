@@ -126,6 +126,9 @@ class TelemetryServiceTest {
             .context(new Context().channel(ChannelType.WEB))
             .execute(
                 new ExecuteRequest().addMboxesItem(new MboxRequest().index(0).name("allmatches")))
+            .prefetch(
+                new PrefetchRequest()
+                    .addMboxesItem(new MboxRequest().index(0).name("TEST_PREFETCH")))
             .decisioningMethod(DecisioningMethod.ON_DEVICE)
             .build();
     targetJavaClient.getOffers(targetDeliveryRequest);
@@ -163,8 +166,11 @@ class TelemetryServiceTest {
     TargetDeliveryRequest targetDeliveryRequest =
         TargetDeliveryRequest.builder()
             .context(new Context().channel(ChannelType.WEB))
+            .execute(
+                new ExecuteRequest().addMboxesItem(new MboxRequest().index(0).name("allmatches")))
             .prefetch(
-                new PrefetchRequest().addMboxesItem(new MboxRequest().index(0).name("allmatches")))
+                new PrefetchRequest()
+                    .addMboxesItem(new MboxRequest().index(0).name("TEST_PREFETCH")))
             .decisioningMethod(DecisioningMethod.ON_DEVICE)
             .build();
     targetJavaClient.getOffers(targetDeliveryRequest);
@@ -225,6 +231,9 @@ class TelemetryServiceTest {
             .context(new Context().channel(ChannelType.WEB))
             .execute(
                 new ExecuteRequest().addMboxesItem(new MboxRequest().index(0).name("allmatches")))
+            .prefetch(
+                new PrefetchRequest()
+                    .addMboxesItem(new MboxRequest().index(0).name("TEST_PREFETCH")))
             .decisioningMethod(DecisioningMethod.ON_DEVICE)
             .build();
     targetJavaClient.getOffers(targetDeliveryRequest);
