@@ -27,8 +27,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class TelemetryService {
 
-  public ClientConfig clientConfig;
-  public final ConcurrentLinkedQueue<TelemetryEntry> storedTelemetries =
+  private final ClientConfig clientConfig;
+  private final ConcurrentLinkedQueue<TelemetryEntry> storedTelemetries =
       new ConcurrentLinkedQueue<>();
 
   public TelemetryService(ClientConfig clientConfig) {
@@ -57,23 +57,23 @@ public class TelemetryService {
   }
 
   public TelemetryEntry createTelemetryEntry(
-    TargetDeliveryRequest targetDeliveryRequest,
-    TargetDeliveryResponse targetDeliveryResponse,
-    double executionTime) {
+      TargetDeliveryRequest targetDeliveryRequest,
+      TargetDeliveryResponse targetDeliveryResponse,
+      double executionTime) {
     if (!clientConfig.isTelemetryEnabled()) {
       return null;
     }
     com.adobe.target.delivery.v1.model.DecisioningMethod decisioningMethod =
-      com.adobe.target.delivery.v1.model.DecisioningMethod.valueOf(
-        getDecisioningMethod(targetDeliveryRequest).name());
+        com.adobe.target.delivery.v1.model.DecisioningMethod.valueOf(
+            getDecisioningMethod(targetDeliveryRequest).name());
     TelemetryFeatures telemetryFeatures =
-      new TelemetryFeatures().decisioningMethod(decisioningMethod);
+        new TelemetryFeatures().decisioningMethod(decisioningMethod);
 
     return new TelemetryEntry()
-      .requestId(targetDeliveryResponse.getResponse().getRequestId())
-      .features(telemetryFeatures)
-      .execution(executionTime)
-      .timestamp(System.currentTimeMillis());
+        .requestId(targetDeliveryResponse.getResponse().getRequestId())
+        .features(telemetryFeatures)
+        .execution(executionTime)
+        .timestamp(System.currentTimeMillis());
   }
 
   private DecisioningMethod getDecisioningMethod(TargetDeliveryRequest request) {

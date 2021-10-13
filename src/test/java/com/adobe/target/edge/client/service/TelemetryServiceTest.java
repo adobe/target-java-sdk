@@ -11,6 +11,7 @@
  */
 package com.adobe.target.edge.client.service;
 
+import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.TIMING_EXECUTE_REQUEST;
 import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -23,9 +24,11 @@ import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
+import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.ondevice.ClusterLocator;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningDetailsExecutor;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
+import com.adobe.target.edge.client.utils.TimingTool;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.Arrays;
@@ -53,6 +56,7 @@ class TelemetryServiceTest {
   private ClusterLocator clusterLocator;
   private OnDeviceDecisioningService localService;
   private NotificationDeliveryService notificationDeliveryService;
+  private TelemetryService telemetryService;
 
   @SuppressWarnings("unchecked")
   void setup(boolean telemetryEnabled) throws NoSuchFieldException {
@@ -79,7 +83,7 @@ class TelemetryServiceTest {
         new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);
 
     targetJavaClient = TargetClient.create(clientConfig);
-
+    telemetryService = new TelemetryService(clientConfig);
     FieldSetter.setField(
         targetService,
         targetService.getClass().getDeclaredField("targetHttpClient"),
@@ -256,5 +260,41 @@ class TelemetryServiceTest {
           com.adobe.target.edge.client.model.DecisioningMethod.valueOf(childKeys.get(i))
               .toString());
     }
+  }
+
+  @Test
+  void testCreateTelemetry() throws NoSuchFieldException {
+    setup(true);
+
+    TimingTool timer = new TimingTool();
+    timer.timeStart(TIMING_EXECUTE_REQUEST);
+
+    Context context = getContext();
+    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
+    ExecuteRequest executeRequest = getMboxExecuteRequest();
+    String nonDefaultToken = "non-default-token";
+
+    TargetDeliveryRequest targetDeliveryRequest =
+        TargetDeliveryRequest.builder()
+            .context(context)
+            .prefetch(prefetchRequest)
+            .execute(executeRequest)
+            .property(new Property().token(nonDefaultToken))
+            .decisioningMethod(DecisioningMethod.SERVER_SIDE)
+            .build();
+
+    DeliveryResponse deliveryResponse = new DeliveryResponse();
+    deliveryResponse.setClient("SUMMIT_TEST2021");
+
+    TargetDeliveryResponse targetDeliveryResponse =
+        new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 200, "test call");
+    targetDeliveryResponse.getResponse().setRequestId("testID");
+
+    TelemetryEntry telemetryEntry =
+        telemetryService.createTelemetryEntry(
+            targetDeliveryRequest, targetDeliveryResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
+
+    assertNotNull(telemetryEntry);
+    assertEquals("testID", telemetryEntry.getRequestId());
   }
 }
