@@ -17,6 +17,7 @@ import static org.apache.http.HttpStatus.SC_OK;
 
 import com.adobe.target.delivery.v1.model.DeliveryResponse;
 import com.adobe.target.delivery.v1.model.Telemetry;
+import com.adobe.target.delivery.v1.model.TelemetryEntry;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.ResponseStatus;
@@ -26,7 +27,9 @@ import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.utils.CookieUtils;
 import com.adobe.target.edge.client.utils.StringUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -100,21 +103,56 @@ public class DefaultTargetService implements TargetService {
 
   @Override
   public ResponseStatus executeNotification(TargetDeliveryRequest deliveryRequest) {
+
+    TimingTool timer = new TimingTool();
+    timer.timeStart(TIMING_EXECUTE_REQUEST);
+    TargetDeliveryResponse targetDeliveryResponse;
+
+    combineTelemetryData(deliveryRequest);
     HttpResponse<DeliveryResponse> response = callDeliveryApi(deliveryRequest);
-    updateStickyLocationHint(retrieveDeliveryResponse(response));
+
+    targetDeliveryResponse = getTargetDeliveryResponse(deliveryRequest, response);
+    telemetryService.addTelemetry(deliveryRequest, timer, targetDeliveryResponse);
+
     return new ResponseStatus(response.getStatus(), response.getStatusText());
   }
 
   @Override
   public CompletableFuture<ResponseStatus> executeNotificationAsync(
       TargetDeliveryRequest deliveryRequest) {
+    TimingTool timer = new TimingTool();
+    timer.timeStart(TIMING_EXECUTE_REQUEST);
+
+    combineTelemetryData(deliveryRequest);
+
     CompletableFuture<HttpResponse<DeliveryResponse>> responseCompletableFuture =
         callDeliveryApiAsync(deliveryRequest);
     return responseCompletableFuture.thenApply(
         response -> {
-          updateStickyLocationHint(retrieveDeliveryResponse(response));
+          TargetDeliveryResponse targetDeliveryResponse =
+              getTargetDeliveryResponse(deliveryRequest, response);
+          telemetryService.addTelemetry(deliveryRequest, timer, targetDeliveryResponse);
           return new ResponseStatus(response.getStatus(), response.getStatusText());
         });
+  }
+
+  private void combineTelemetryData(TargetDeliveryRequest deliveryRequest) {
+    List<TelemetryEntry> telemetryEntryList = new ArrayList<>();
+
+    Telemetry telemetryFromInMemoryStore = telemetryService.getTelemetry();
+    Telemetry telemetryFromODD = deliveryRequest.getDeliveryRequest().getTelemetry();
+
+    if (!telemetryFromInMemoryStore.getEntries().isEmpty()) {
+      telemetryEntryList.addAll(telemetryFromInMemoryStore.getEntries());
+    }
+    if (telemetryFromODD != null) {
+      telemetryEntryList.addAll(telemetryFromODD.getEntries());
+    }
+    if (!telemetryEntryList.isEmpty()) {
+      Telemetry telemetry = new Telemetry();
+      telemetry.entries(telemetryEntryList);
+      deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
+    }
   }
 
   private Map<String, Object> getQueryParams(TargetDeliveryRequest deliveryRequest) {
