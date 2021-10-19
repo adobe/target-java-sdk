@@ -11,13 +11,8 @@
  */
 package com.adobe.target.edge.client.service;
 
-import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.TIMING_EXECUTE_REQUEST;
-import static com.adobe.target.edge.client.utils.TargetConstants.SDK_VERSION;
-import static org.apache.http.HttpStatus.SC_OK;
-
 import com.adobe.target.delivery.v1.model.DeliveryResponse;
 import com.adobe.target.delivery.v1.model.Telemetry;
-import com.adobe.target.delivery.v1.model.TelemetryEntry;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.ResponseStatus;
@@ -27,14 +22,17 @@ import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.utils.CookieUtils;
 import com.adobe.target.edge.client.utils.StringUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
-import java.util.ArrayList;
+import kong.unirest.HttpResponse;
+import kong.unirest.UnirestParsingException;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import kong.unirest.HttpResponse;
-import kong.unirest.UnirestParsingException;
+
+import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.TIMING_EXECUTE_REQUEST;
+import static com.adobe.target.edge.client.utils.TargetConstants.SDK_VERSION;
+import static org.apache.http.HttpStatus.SC_OK;
 
 public class DefaultTargetService implements TargetService {
 
