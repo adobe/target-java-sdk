@@ -60,7 +60,7 @@ public final class TelemetryService {
     return new Telemetry().entries(telemetryEntryList);
   }
 
-  public TelemetryEntry createTelemetryEntry(
+  private TelemetryEntry createTelemetryEntry(
       TargetDeliveryRequest targetDeliveryRequest,
       TargetDeliveryResponse targetDeliveryResponse,
       double executionTime) {

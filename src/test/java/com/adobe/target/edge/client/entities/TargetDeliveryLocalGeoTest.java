@@ -38,6 +38,7 @@ import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.ondevice.client.geo.GeoClient;
 import com.adobe.target.edge.client.service.DefaultTargetService;
 import com.adobe.target.edge.client.service.NotificationService;
+import com.adobe.target.edge.client.service.TelemetryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
@@ -73,9 +74,9 @@ public class TargetDeliveryLocalGeoTest {
 
     ClientConfig clientConfig =
         ClientConfig.builder().client("adobesummit2018").organizationId("org").build();
-
-    DefaultTargetService targetService = new DefaultTargetService(clientConfig);
-    localService = new OnDeviceDecisioningService(clientConfig, targetService);
+    TelemetryService telemetryService = new TelemetryService(clientConfig);
+    DefaultTargetService targetService = new DefaultTargetService(clientConfig, telemetryService);
+    localService = new OnDeviceDecisioningService(clientConfig, targetService, telemetryService);
     ObjectMapper mapper = new JacksonObjectMapper().getMapper();
     OnDeviceDecisioningDetailsExecutor decisionHandler =
         new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);

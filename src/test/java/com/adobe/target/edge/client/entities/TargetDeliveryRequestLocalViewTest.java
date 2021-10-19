@@ -39,6 +39,7 @@ import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.ondevice.collator.ParamsCollator;
 import com.adobe.target.edge.client.service.DefaultTargetService;
 import com.adobe.target.edge.client.service.NotificationService;
+import com.adobe.target.edge.client.service.TelemetryService;
 import com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -110,8 +111,9 @@ class TargetDeliveryRequestLocalViewTest {
     ClientConfig clientConfig =
         ClientConfig.builder().client("emeaprod4").organizationId(TEST_ORG_ID).build();
 
-    DefaultTargetService targetService = new DefaultTargetService(clientConfig);
-    localService = new OnDeviceDecisioningService(clientConfig, targetService);
+    TelemetryService telemetryService = new TelemetryService(clientConfig);
+    DefaultTargetService targetService = new DefaultTargetService(clientConfig, telemetryService);
+    localService = new OnDeviceDecisioningService(clientConfig, targetService, telemetryService);
     ObjectMapper mapper = new JacksonObjectMapper().getMapper();
     OnDeviceDecisioningDetailsExecutor decisionHandler =
         new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);

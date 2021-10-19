@@ -67,11 +67,12 @@ class NotificationServiceTest {
     clientConfig =
         ClientConfig.builder().organizationId(TEST_ORG_ID).telemetryEnabled(false).build();
 
-    targetService = new DefaultTargetService(clientConfig);
+    TelemetryService telemetryService = new TelemetryService(clientConfig);
+    targetService = new DefaultTargetService(clientConfig, telemetryService);
     clusterLocator = new ClusterLocator();
     notificationService = new NotificationService(targetService, clientConfig, clusterLocator);
 
-    localService = new OnDeviceDecisioningService(clientConfig, targetService);
+    localService = new OnDeviceDecisioningService(clientConfig, targetService, telemetryService);
     ObjectMapper mapper = new JacksonObjectMapper().getMapper();
     OnDeviceDecisioningDetailsExecutor decisionHandler =
         new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);

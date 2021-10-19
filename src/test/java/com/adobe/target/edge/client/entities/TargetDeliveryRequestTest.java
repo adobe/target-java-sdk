@@ -28,6 +28,7 @@ import com.adobe.target.edge.client.model.TargetCookie;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.service.DefaultTargetService;
+import com.adobe.target.edge.client.service.TelemetryService;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,7 +67,8 @@ public class TargetDeliveryRequestTest {
             .telemetryEnabled(isTelemetryEnabled)
             .build();
 
-    targetService = new DefaultTargetService(clientConfig);
+    TelemetryService telemetryService = new TelemetryService(clientConfig);
+    targetService = new DefaultTargetService(clientConfig, telemetryService);
     targetJavaClient = TargetClient.create(clientConfig);
 
     FieldSetter.setField(

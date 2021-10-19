@@ -93,10 +93,10 @@ class TelemetryServiceTest {
             .telemetryEnabled(telemetryEnabled)
             .build();
     telemetryService = new TelemetryService(clientConfig);
-    targetService = new DefaultTargetService(clientConfig);
+    targetService = new DefaultTargetService(clientConfig, telemetryService);
     clusterLocator = new ClusterLocator();
     notificationService = new NotificationService(targetService, clientConfig, clusterLocator);
-    localService = new OnDeviceDecisioningService(clientConfig, targetService);
+    localService = new OnDeviceDecisioningService(clientConfig, targetService, telemetryService);
     ObjectMapper mapper = new JacksonObjectMapper().getMapper();
     OnDeviceDecisioningDetailsExecutor decisionHandler =
         new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);
@@ -156,7 +156,7 @@ class TelemetryServiceTest {
 
     verify(targetServiceMock, timeout(1000)).executeNotificationAsync(captor.capture());
 
-    Telemetry telemetry = targetDeliveryRequest.getDeliveryRequest().getTelemetry();
+    Telemetry telemetry = telemetryService.getTelemetry();
 
     assertNotNull(telemetry);
 
@@ -198,8 +198,7 @@ class TelemetryServiceTest {
 
     verify(targetServiceMock, timeout(1000)).executeNotificationAsync(captor.capture());
 
-    Telemetry telemetry = captor.getValue().getDeliveryRequest().getTelemetry();
-
+    Telemetry telemetry = telemetryService.getTelemetry();
     assertNotNull(telemetry);
     TelemetryEntry telemetryEntry = telemetry.getEntries().get(0);
 
@@ -288,7 +287,7 @@ class TelemetryServiceTest {
   }
 
   @Test
-  void testCreateTelemetryForServerSide() throws NoSuchFieldException {
+  void testAddTelemetryForServerSide() throws NoSuchFieldException {
     setup(true);
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
@@ -313,11 +312,8 @@ class TelemetryServiceTest {
     TargetDeliveryResponse targetDeliveryResponse =
         new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 200, "test call");
     targetDeliveryResponse.getResponse().setRequestId("testID");
-
-    TelemetryEntry telemetryEntry =
-        telemetryService.createTelemetryEntry(
-            targetDeliveryRequest, targetDeliveryResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
-
+    telemetryService.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
+    TelemetryEntry telemetryEntry = telemetryService.getTelemetry().getEntries().get(0);
     assertNotNull(telemetryEntry);
     assertEquals(3, telemetryEntry.getFeatures().getExecuteMboxCount());
     assertEquals(1, telemetryEntry.getFeatures().getPrefetchViewCount());
@@ -358,10 +354,8 @@ class TelemetryServiceTest {
         new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 200, "test call");
     targetDeliveryResponse.getResponse().setRequestId("testID");
 
-    TelemetryEntry telemetryEntry =
-        telemetryService.createTelemetryEntry(
-            targetDeliveryRequest, targetDeliveryResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
-
+    telemetryService.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
+    TelemetryEntry telemetryEntry = telemetryService.getTelemetry().getEntries().get(0);
     assert telemetryEntry != null;
     assertEquals(ExecutionMode.LOCAL, telemetryEntry.getMode());
   }
@@ -391,12 +385,10 @@ class TelemetryServiceTest {
         new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 206, "test call");
     targetDeliveryResponse.getResponse().setRequestId("testID");
 
-    TelemetryEntry telemetryEntry =
-        telemetryService.createTelemetryEntry(
-            targetDeliveryRequest, targetDeliveryResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
+    telemetryService.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
+    Telemetry telemetry = telemetryService.getTelemetry();
 
-    assert telemetryEntry != null;
-    assertEquals(ExecutionMode.EDGE, telemetryEntry.getMode());
+    assertEquals(ExecutionMode.EDGE, telemetry.getEntries().get(0).getMode());
   }
 
   @Test

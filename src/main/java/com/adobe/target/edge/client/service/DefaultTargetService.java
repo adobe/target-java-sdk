@@ -48,7 +48,7 @@ public class DefaultTargetService implements TargetService {
   private String stickyLocationHint;
   private final TelemetryService telemetryService;
 
-  public DefaultTargetService(ClientConfig clientConfig) {
+  public DefaultTargetService(ClientConfig clientConfig, TelemetryService telemetryService) {
     TargetHttpClient targetHttpClient = new DefaultTargetHttpClient(clientConfig);
     if (clientConfig.isLogRequests()) {
       this.targetHttpClient = TargetHttpClient.createLoggingHttpClient(targetHttpClient);
@@ -58,7 +58,7 @@ public class DefaultTargetService implements TargetService {
     this.targetHttpClient.addDefaultHeader(SDK_USER_KEY, SDK_USER_VALUE);
     this.targetHttpClient.addDefaultHeader(SDK_VERSION_KEY, SDK_VERSION);
     this.clientConfig = clientConfig;
-    this.telemetryService = new TelemetryService(clientConfig);
+    this.telemetryService = telemetryService;
   }
 
   @Override
@@ -107,7 +107,10 @@ public class DefaultTargetService implements TargetService {
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
     TargetDeliveryResponse targetDeliveryResponse;
-    combineTelemetryData(deliveryRequest);
+    Telemetry telemetry = telemetryService.getTelemetry();
+    if (!telemetry.getEntries().isEmpty()) {
+      deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
+    }
     HttpResponse<DeliveryResponse> response = callDeliveryApi(deliveryRequest);
     targetDeliveryResponse = getTargetDeliveryResponse(deliveryRequest, response);
     telemetryService.addTelemetry(deliveryRequest, timer, targetDeliveryResponse);
@@ -120,7 +123,10 @@ public class DefaultTargetService implements TargetService {
       TargetDeliveryRequest deliveryRequest) {
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
-    combineTelemetryData(deliveryRequest);
+    Telemetry telemetry = telemetryService.getTelemetry();
+    if (!telemetry.getEntries().isEmpty()) {
+      deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
+    }
     CompletableFuture<HttpResponse<DeliveryResponse>> responseCompletableFuture =
         callDeliveryApiAsync(deliveryRequest);
     return responseCompletableFuture.thenApply(
@@ -130,26 +136,6 @@ public class DefaultTargetService implements TargetService {
           telemetryService.addTelemetry(deliveryRequest, timer, targetDeliveryResponse);
           return new ResponseStatus(response.getStatus(), response.getStatusText());
         });
-  }
-
-  private void combineTelemetryData(TargetDeliveryRequest deliveryRequest) {
-
-    List<TelemetryEntry> telemetryEntryList = new ArrayList<>();
-
-    Telemetry telemetryFromInMemoryStore = telemetryService.getTelemetry();
-    Telemetry telemetryFromODD = deliveryRequest.getDeliveryRequest().getTelemetry();
-
-    if (!telemetryFromInMemoryStore.getEntries().isEmpty()) {
-      telemetryEntryList.addAll(telemetryFromInMemoryStore.getEntries());
-    }
-    if (telemetryFromODD != null) {
-      telemetryEntryList.addAll(telemetryFromODD.getEntries());
-    }
-    if (!telemetryEntryList.isEmpty()) {
-      Telemetry telemetry = new Telemetry();
-      telemetry.entries(telemetryEntryList);
-      deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
-    }
   }
 
   private Map<String, Object> getQueryParams(TargetDeliveryRequest deliveryRequest) {

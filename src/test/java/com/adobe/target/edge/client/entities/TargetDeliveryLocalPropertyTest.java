@@ -36,6 +36,7 @@ import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningDetailsExecutor;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.service.DefaultTargetService;
 import com.adobe.target.edge.client.service.NotificationService;
+import com.adobe.target.edge.client.service.TelemetryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
@@ -67,10 +68,10 @@ public class TargetDeliveryLocalPropertyTest {
         .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
 
     ClientConfig clientConfig = ClientConfig.builder().organizationId("org").build();
-
-    DefaultTargetService targetService = new DefaultTargetService(clientConfig);
+    TelemetryService telemetryService = new TelemetryService(clientConfig);
+    DefaultTargetService targetService = new DefaultTargetService(clientConfig, telemetryService);
     OnDeviceDecisioningService localService =
-        new OnDeviceDecisioningService(clientConfig, targetService);
+        new OnDeviceDecisioningService(clientConfig, targetService, telemetryService);
     ObjectMapper mapper = new JacksonObjectMapper().getMapper();
     OnDeviceDecisioningDetailsExecutor decisionHandler =
         new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);
