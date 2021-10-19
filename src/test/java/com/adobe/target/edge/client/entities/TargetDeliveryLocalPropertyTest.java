@@ -35,7 +35,7 @@ import com.adobe.target.edge.client.ondevice.ClusterLocator;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningDetailsExecutor;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.service.DefaultTargetService;
-import com.adobe.target.edge.client.service.NotificationDeliveryService;
+import com.adobe.target.edge.client.service.NotificationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
@@ -94,8 +94,8 @@ public class TargetDeliveryLocalPropertyTest {
         localService, localService.getClass().getDeclaredField("decisionHandler"), decisionHandler);
     FieldSetter.setField(
         localService,
-        localService.getClass().getDeclaredField("deliveryService"),
-        mock(NotificationDeliveryService.class));
+        localService.getClass().getDeclaredField("notificationService"),
+        mock(NotificationService.class));
     FieldSetter.setField(
         localService,
         localService.getClass().getDeclaredField("clusterLocator"),

@@ -13,7 +13,6 @@ package com.adobe.target.edge.client.service;
 
 import com.adobe.target.delivery.v1.model.DeliveryRequest;
 import com.adobe.target.delivery.v1.model.Notification;
-import com.adobe.target.delivery.v1.model.Telemetry;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
@@ -22,32 +21,30 @@ import com.adobe.target.edge.client.ondevice.ClusterLocator;
 import java.util.List;
 import java.util.UUID;
 
-public class NotificationDeliveryService {
+public class NotificationService {
 
   private final TargetService targetService;
   private final ClientConfig clientConfig;
   private final ClusterLocator clusterLocator;
 
-  public NotificationDeliveryService(
+  public NotificationService(
       TargetService targetService, ClientConfig clientConfig, ClusterLocator clusterLocator) {
     this.targetService = targetService;
     this.clientConfig = clientConfig;
     this.clusterLocator = clusterLocator;
   }
 
-  public void sendNotification(final TargetDeliveryRequest targetDeliveryRequest) {
+  public void sendNotification(TargetDeliveryRequest targetDeliveryRequest) {
     this.targetService.executeNotificationAsync(targetDeliveryRequest);
   }
 
-  public void sendNotifications(
+  public void buildNotifications(
       TargetDeliveryRequest targetDeliveryRequest,
       TargetDeliveryResponse targetDeliveryResponse,
-      List<Notification> notifications,
-      Telemetry telemetry) {
+      List<Notification> notifications) {
 
     boolean noNotifications = notifications == null || notifications.isEmpty();
-    boolean noTelemetry = telemetry == null || telemetry.getEntries().isEmpty();
-    if (noNotifications && noTelemetry) {
+    if (noNotifications) {
       return;
     }
     DeliveryRequest deliveryRequest = targetDeliveryRequest.getDeliveryRequest();
@@ -73,7 +70,6 @@ public class NotificationDeliveryService {
             .qaMode(deliveryRequest.getQaMode())
             .property(deliveryRequest.getProperty())
             .notifications(notifications)
-            .telemetry(noTelemetry ? null : telemetry)
             .trace(deliveryRequest.getTrace())
             .build();
     this.sendNotification(notificationRequest);

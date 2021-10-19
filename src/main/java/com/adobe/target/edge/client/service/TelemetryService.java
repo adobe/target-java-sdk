@@ -28,15 +28,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class TelemetryService {
+public final class TelemetryService {
 
+  private static TelemetryService INSTANCE;
   private final ClientConfig clientConfig;
   private final ConcurrentLinkedQueue<TelemetryEntry> storedTelemetries =
       new ConcurrentLinkedQueue<>();
   private static final int STATUS_OK = 200;
 
-  public TelemetryService(ClientConfig clientConfig) {
+  private TelemetryService(ClientConfig clientConfig) {
     this.clientConfig = clientConfig;
+  }
+
+  public static synchronized TelemetryService getInstance(ClientConfig clientConfig) {
+    if (INSTANCE == null) {
+      INSTANCE = new TelemetryService(clientConfig);
+    }
+    return INSTANCE;
   }
 
   public void addTelemetry(

@@ -23,7 +23,6 @@ import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
-import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetCookie;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
@@ -67,7 +66,6 @@ public class TargetDeliveryRequestTest {
             .build();
 
     targetService = new DefaultTargetService(clientConfig);
-
     targetJavaClient = TargetClient.create(clientConfig);
 
     FieldSetter.setField(
@@ -302,54 +300,5 @@ public class TargetDeliveryRequestTest {
         targetJavaClient.getOffers(targetDeliveryRequest);
     DeliveryRequest finalRequest = targetDeliveryResponse.getRequest();
     assertEquals(nonDefaultToken, finalRequest.getProperty().getToken());
-  }
-
-  @Test
-  void testTelemetryForServerSide() throws NoSuchFieldException {
-    setup(true);
-    Context context = getContext();
-    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
-    ExecuteRequest executeRequest = getMboxExecuteRequest();
-    String nonDefaultToken = "non-default-token";
-
-    TargetDeliveryRequest targetDeliveryRequest =
-        TargetDeliveryRequest.builder()
-            .context(context)
-            .prefetch(prefetchRequest)
-            .execute(executeRequest)
-            .property(new Property().token(nonDefaultToken))
-            .decisioningMethod(DecisioningMethod.SERVER_SIDE)
-            .build();
-    targetJavaClient.getOffers(targetDeliveryRequest);
-    TargetDeliveryResponse targetDeliveryResponse =
-        targetJavaClient.getOffers(targetDeliveryRequest);
-    assertNotNull(targetDeliveryResponse);
-    assertNotNull(targetDeliveryResponse.getRequest());
-    assertNotNull(targetDeliveryResponse.getRequest().getTelemetry());
-    assertEquals(1, targetDeliveryResponse.getRequest().getTelemetry().getEntries().size());
-  }
-
-  @Test
-  void testWhenNoTelemetryEnabledForServerSide() throws NoSuchFieldException {
-    setup(false);
-    Context context = getContext();
-    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
-    ExecuteRequest executeRequest = getMboxExecuteRequest();
-    String nonDefaultToken = "non-default-token";
-
-    TargetDeliveryRequest targetDeliveryRequest =
-        TargetDeliveryRequest.builder()
-            .context(context)
-            .prefetch(prefetchRequest)
-            .execute(executeRequest)
-            .property(new Property().token(nonDefaultToken))
-            .decisioningMethod(DecisioningMethod.SERVER_SIDE)
-            .build();
-    targetJavaClient.getOffers(targetDeliveryRequest);
-    TargetDeliveryResponse targetDeliveryResponse =
-        targetJavaClient.getOffers(targetDeliveryRequest);
-    assertNotNull(targetDeliveryResponse);
-    assertNotNull(targetDeliveryResponse.getRequest());
-    assertNull(targetDeliveryResponse.getRequest().getTelemetry());
   }
 }

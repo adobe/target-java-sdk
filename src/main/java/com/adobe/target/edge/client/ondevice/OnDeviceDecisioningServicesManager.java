@@ -12,7 +12,7 @@
 package com.adobe.target.edge.client.ondevice;
 
 import com.adobe.target.edge.client.ClientConfig;
-import com.adobe.target.edge.client.service.NotificationDeliveryService;
+import com.adobe.target.edge.client.service.NotificationService;
 import com.adobe.target.edge.client.service.TargetService;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,13 +20,12 @@ import java.util.Map;
 public class OnDeviceDecisioningServicesManager {
 
   public static class OnDeviceDecisioningServices {
-    private NotificationDeliveryService notificationDeliveryService;
+    private NotificationService notificationService;
     private RuleLoader ruleLoader;
     private ClusterLocator clusterLocator;
 
-    private void setNotificationDeliveryService(
-        NotificationDeliveryService notificationDeliveryService) {
-      this.notificationDeliveryService = notificationDeliveryService;
+    private void setNotificationDeliveryService(NotificationService notificationService) {
+      this.notificationService = notificationService;
     }
 
     private void setRuleLoader(RuleLoader ruleLoader) {
@@ -37,8 +36,8 @@ public class OnDeviceDecisioningServicesManager {
       this.clusterLocator = clusterLocator;
     }
 
-    public NotificationDeliveryService getNotificationDeliveryService() {
-      return notificationDeliveryService;
+    public NotificationService getNotificationDeliveryService() {
+      return notificationService;
     }
 
     public RuleLoader getRuleLoader() {
@@ -74,7 +73,7 @@ public class OnDeviceDecisioningServicesManager {
       services = new OnDeviceDecisioningServices();
       ClusterLocator clusterLocator = new ClusterLocator();
       services.setNotificationDeliveryService(
-          new NotificationDeliveryService(targetService, clientConfig, clusterLocator));
+          new NotificationService(targetService, clientConfig, clusterLocator));
       services.setRuleLoader(new DefaultRuleLoader());
       services.setClusterLocator(clusterLocator);
       servicesMap.put(serviceKey, services);

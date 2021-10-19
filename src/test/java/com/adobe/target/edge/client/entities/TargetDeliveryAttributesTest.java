@@ -32,7 +32,7 @@ import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.ondevice.RuleLoader;
 import com.adobe.target.edge.client.ondevice.collator.ParamsCollator;
 import com.adobe.target.edge.client.service.DefaultTargetService;
-import com.adobe.target.edge.client.service.NotificationDeliveryService;
+import com.adobe.target.edge.client.service.NotificationService;
 import com.adobe.target.edge.client.service.VisitorProvider;
 import com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -104,8 +104,8 @@ class TargetDeliveryAttributesTest {
         evaluator);
     FieldSetter.setField(
         localService,
-        localService.getClass().getDeclaredField("deliveryService"),
-        mock(NotificationDeliveryService.class));
+        localService.getClass().getDeclaredField("notificationService"),
+        mock(NotificationService.class));
     FieldSetter.setField(
         localService,
         localService.getClass().getDeclaredField("clusterLocator"),
