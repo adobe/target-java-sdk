@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -58,8 +59,9 @@ class TelemetryServiceTest {
   private NotificationService notificationService;
   private TelemetryService telemetryService;
 
+  @BeforeEach
   @SuppressWarnings("unchecked")
-  void setup(boolean telemetryEnabled) throws NoSuchFieldException {
+  void init() throws NoSuchFieldException {
 
     Mockito.lenient()
         .doReturn(getTestDeliveryResponse())
@@ -67,10 +69,7 @@ class TelemetryServiceTest {
         .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
 
     clientConfig =
-        ClientConfig.builder()
-            .organizationId(TEST_ORG_ID)
-            .telemetryEnabled(telemetryEnabled)
-            .build();
+        ClientConfig.builder().organizationId(TEST_ORG_ID).telemetryEnabled(true).build();
 
     targetService = new DefaultTargetService(clientConfig);
     clusterLocator = new ClusterLocator();
@@ -110,7 +109,7 @@ class TelemetryServiceTest {
 
   @Test
   void testTelemetrySentOnExecute() throws NoSuchFieldException, IOException {
-    setup(true);
+
     long timestamp = System.currentTimeMillis();
     TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
     NotificationService notificationService =
@@ -153,7 +152,6 @@ class TelemetryServiceTest {
 
   @Test
   void testTelemetrySentOnPrefetch() throws NoSuchFieldException, IOException {
-    setup(true);
     long timestamp = System.currentTimeMillis();
     TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
     NotificationService notificationService =
@@ -196,7 +194,6 @@ class TelemetryServiceTest {
 
   @Test
   void testTelemetryNotSentPrefetch() throws NoSuchFieldException, IOException {
-    setup(false);
     TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
     NotificationService notificationService =
         new NotificationService(targetServiceMock, clientConfig, clusterLocator);
@@ -218,7 +215,6 @@ class TelemetryServiceTest {
 
   @Test
   void testTelemetryNotSentExecute() throws NoSuchFieldException, IOException {
-    setup(false);
     TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
     NotificationService notificationService =
         new NotificationService(targetServiceMock, clientConfig, clusterLocator);
@@ -273,9 +269,7 @@ class TelemetryServiceTest {
   }
 
   @Test
-  void testCreateTelemetryForServerSide() throws NoSuchFieldException {
-    setup(true);
-
+  void testCreateTelemetryForServerSide() {
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
 
@@ -318,9 +312,7 @@ class TelemetryServiceTest {
   }
 
   @Test
-  void testExecutionModeOnDeviceWhenStatusOK() throws NoSuchFieldException {
-    setup(true);
-
+  void testExecutionModeOnDeviceWhenStatusOK() {
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
 
@@ -354,9 +346,7 @@ class TelemetryServiceTest {
   }
 
   @Test
-  void testExecutionModeOnDeviceWithPartialContent() throws NoSuchFieldException {
-    setup(true);
-
+  void testExecutionModeOnDeviceWithPartialContent() {
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
 
@@ -388,9 +378,7 @@ class TelemetryServiceTest {
   }
 
   @Test
-  void testAddTelemetry() throws NoSuchFieldException {
-    setup(true);
-
+  void testAddTelemetry() {
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
 
