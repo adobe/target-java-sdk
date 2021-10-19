@@ -13,6 +13,7 @@ package com.adobe.target.edge.client.service;
 
 import com.adobe.target.delivery.v1.model.DeliveryRequest;
 import com.adobe.target.delivery.v1.model.Notification;
+import com.adobe.target.delivery.v1.model.Telemetry;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
@@ -44,6 +45,8 @@ public class NotificationService {
       List<Notification> notifications) {
 
     boolean noNotifications = notifications == null || notifications.isEmpty();
+    Telemetry telemetryForODD = targetDeliveryRequest.getDeliveryRequest().getTelemetry();
+    boolean noTelemetry = telemetryForODD == null || telemetryForODD.getEntries().isEmpty();
     if (noNotifications) {
       return;
     }
@@ -70,6 +73,7 @@ public class NotificationService {
             .qaMode(deliveryRequest.getQaMode())
             .property(deliveryRequest.getProperty())
             .notifications(notifications)
+            .telemetry(noTelemetry ? null : telemetryForODD)
             .trace(deliveryRequest.getTrace())
             .build();
     this.sendNotification(notificationRequest);

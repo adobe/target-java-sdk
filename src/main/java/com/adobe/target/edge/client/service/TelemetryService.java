@@ -30,21 +30,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public final class TelemetryService {
 
-  private static TelemetryService INSTANCE;
   private final ClientConfig clientConfig;
   private final ConcurrentLinkedQueue<TelemetryEntry> storedTelemetries =
       new ConcurrentLinkedQueue<>();
   private static final int STATUS_OK = 200;
 
-  private TelemetryService(ClientConfig clientConfig) {
+  public TelemetryService(ClientConfig clientConfig) {
     this.clientConfig = clientConfig;
-  }
-
-  public static synchronized TelemetryService getInstance(ClientConfig clientConfig) {
-    if (INSTANCE == null) {
-      INSTANCE = new TelemetryService(clientConfig);
-    }
-    return INSTANCE;
   }
 
   public void addTelemetry(

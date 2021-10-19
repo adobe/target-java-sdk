@@ -12,12 +12,34 @@
 package com.adobe.target.edge.client.service;
 
 import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.TIMING_EXECUTE_REQUEST;
-import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.fileRuleLoader;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getContext;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getMboxExecuteRequest;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getPrefetchViewsRequest;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getTestDeliveryResponse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.RETURNS_DEFAULTS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
-import com.adobe.target.delivery.v1.model.*;
+import com.adobe.target.delivery.v1.model.ChannelType;
+import com.adobe.target.delivery.v1.model.Context;
+import com.adobe.target.delivery.v1.model.DeliveryRequest;
+import com.adobe.target.delivery.v1.model.DeliveryResponse;
+import com.adobe.target.delivery.v1.model.ExecuteRequest;
+import com.adobe.target.delivery.v1.model.ExecutionMode;
+import com.adobe.target.delivery.v1.model.MboxRequest;
+import com.adobe.target.delivery.v1.model.Notification;
+import com.adobe.target.delivery.v1.model.PrefetchRequest;
+import com.adobe.target.delivery.v1.model.Property;
+import com.adobe.target.delivery.v1.model.Telemetry;
+import com.adobe.target.delivery.v1.model.TelemetryEntry;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
@@ -35,8 +57,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -60,22 +80,19 @@ class TelemetryServiceTest {
   private NotificationService notificationService;
   private static TelemetryService telemetryService;
 
-  @BeforeAll
-  static void init() {
-    clientConfig =
-        ClientConfig.builder().organizationId(TEST_ORG_ID).telemetryEnabled(true).build();
-    telemetryService = TelemetryService.getInstance(clientConfig);
-  }
-
-  @BeforeEach
   @SuppressWarnings("unchecked")
-  void setup() throws NoSuchFieldException {
+  void setup(boolean telemetryEnabled) throws NoSuchFieldException {
 
     Mockito.lenient()
         .doReturn(getTestDeliveryResponse())
         .when(defaultTargetHttpClient)
         .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
-
+    clientConfig =
+        ClientConfig.builder()
+            .organizationId(TEST_ORG_ID)
+            .telemetryEnabled(telemetryEnabled)
+            .build();
+    telemetryService = new TelemetryService(clientConfig);
     targetService = new DefaultTargetService(clientConfig);
     clusterLocator = new ClusterLocator();
     notificationService = new NotificationService(targetService, clientConfig, clusterLocator);
@@ -112,6 +129,7 @@ class TelemetryServiceTest {
 
   @Test
   void testTelemetrySentOnExecute() throws NoSuchFieldException, IOException {
+    setup(true);
     long timestamp = System.currentTimeMillis();
     TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
     NotificationService notificationService =
@@ -138,10 +156,11 @@ class TelemetryServiceTest {
 
     verify(targetServiceMock, timeout(1000)).executeNotificationAsync(captor.capture());
 
-    Telemetry telemetry = telemetryService.getTelemetry();
+    Telemetry telemetry = targetDeliveryRequest.getDeliveryRequest().getTelemetry();
 
     assertNotNull(telemetry);
 
+    assertEquals(telemetry.getEntries().size(), 1);
     TelemetryEntry telemetryEntry = telemetry.getEntries().get(0);
 
     assertTrue(telemetryEntry.getTimestamp() > timestamp);
@@ -152,6 +171,7 @@ class TelemetryServiceTest {
 
   @Test
   void testTelemetrySentOnPrefetch() throws NoSuchFieldException, IOException {
+    setup(true);
     long timestamp = System.currentTimeMillis();
     TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
     NotificationService notificationService =
@@ -178,7 +198,7 @@ class TelemetryServiceTest {
 
     verify(targetServiceMock, timeout(1000)).executeNotificationAsync(captor.capture());
 
-    Telemetry telemetry = telemetryService.getTelemetry();
+    Telemetry telemetry = captor.getValue().getDeliveryRequest().getTelemetry();
 
     assertNotNull(telemetry);
     TelemetryEntry telemetryEntry = telemetry.getEntries().get(0);
@@ -191,6 +211,7 @@ class TelemetryServiceTest {
 
   @Test
   void testTelemetryNotSentPrefetch() throws NoSuchFieldException, IOException {
+    setup(false);
     TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
     NotificationService notificationService =
         new NotificationService(targetServiceMock, clientConfig, clusterLocator);
@@ -212,6 +233,7 @@ class TelemetryServiceTest {
 
   @Test
   void testTelemetryNotSentExecute() throws NoSuchFieldException, IOException {
+    setup(false);
     TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
     NotificationService notificationService =
         new NotificationService(targetServiceMock, clientConfig, clusterLocator);
@@ -266,7 +288,8 @@ class TelemetryServiceTest {
   }
 
   @Test
-  void testCreateTelemetryForServerSide() {
+  void testCreateTelemetryForServerSide() throws NoSuchFieldException {
+    setup(true);
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
 
@@ -309,7 +332,8 @@ class TelemetryServiceTest {
   }
 
   @Test
-  void testExecutionModeOnDeviceWhenStatusOK() {
+  void testExecutionModeOnDeviceWhenStatusOK() throws NoSuchFieldException {
+    setup(true);
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
 
@@ -343,7 +367,8 @@ class TelemetryServiceTest {
   }
 
   @Test
-  void testExecutionModeOnDeviceWithPartialContent() {
+  void testExecutionModeOnDeviceWithPartialContent() throws NoSuchFieldException {
+    setup(true);
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
 
@@ -375,7 +400,8 @@ class TelemetryServiceTest {
   }
 
   @Test
-  void testAddTelemetry() {
+  void testAddTelemetry() throws NoSuchFieldException {
+    setup(true);
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
 

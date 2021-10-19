@@ -19,6 +19,7 @@ import com.adobe.target.delivery.v1.model.Geo;
 import com.adobe.target.delivery.v1.model.Notification;
 import com.adobe.target.delivery.v1.model.PrefetchResponse;
 import com.adobe.target.delivery.v1.model.RequestDetails;
+import com.adobe.target.delivery.v1.model.Telemetry;
 import com.adobe.target.delivery.v1.model.VisitorId;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
@@ -96,7 +97,7 @@ public class OnDeviceDecisioningService {
     this.ruleLoader = services.getRuleLoader();
     this.ruleLoader.start(clientConfig);
     this.notificationService = services.getNotificationDeliveryService();
-    this.telemetryService = TelemetryService.getInstance(clientConfig);
+    this.telemetryService = new TelemetryService(clientConfig);
     this.clusterLocator = services.getClusterLocator();
     this.clusterLocator.start(clientConfig, targetService);
     this.decisionHandler = new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);
@@ -195,6 +196,10 @@ public class OnDeviceDecisioningService {
         notifications);
 
     telemetryService.addTelemetry(deliveryRequest, timer, targetResponse);
+    Telemetry telemetry = telemetryService.getTelemetry();
+    if (!telemetry.getEntries().isEmpty()) {
+      deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
+    }
 
     notificationService.buildNotifications(deliveryRequest, targetResponse, notifications);
 
