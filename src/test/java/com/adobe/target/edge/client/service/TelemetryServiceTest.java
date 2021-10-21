@@ -361,6 +361,72 @@ class TelemetryServiceTest {
   }
 
   @Test
+  void testExecutionModeHybridWhenStatusOK() throws NoSuchFieldException {
+    setup(true);
+    TimingTool timer = new TimingTool();
+    timer.timeStart(TIMING_EXECUTE_REQUEST);
+
+    Context context = getContext();
+    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
+    ExecuteRequest executeRequest = getMboxExecuteRequest();
+    String nonDefaultToken = "non-default-token";
+
+    TargetDeliveryRequest targetDeliveryRequest =
+        TargetDeliveryRequest.builder()
+            .context(context)
+            .prefetch(prefetchRequest)
+            .execute(executeRequest)
+            .property(new Property().token(nonDefaultToken))
+            .decisioningMethod(DecisioningMethod.HYBRID)
+            .build();
+
+    DeliveryResponse deliveryResponse = new DeliveryResponse();
+    deliveryResponse.setClient("SUMMIT_TEST2021");
+
+    TargetDeliveryResponse targetDeliveryResponse =
+        new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 200, "test call");
+    targetDeliveryResponse.getResponse().setRequestId("testID");
+
+    telemetryService.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
+    TelemetryEntry telemetryEntry = telemetryService.getTelemetry().getEntries().get(0);
+    assert telemetryEntry != null;
+    assertEquals(ExecutionMode.LOCAL, telemetryEntry.getMode());
+  }
+
+  @Test
+  void testExecutionModeHybridWithPartialContent() throws NoSuchFieldException {
+    setup(true);
+    TimingTool timer = new TimingTool();
+    timer.timeStart(TIMING_EXECUTE_REQUEST);
+
+    Context context = getContext();
+    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
+    ExecuteRequest executeRequest = getMboxExecuteRequest();
+    String nonDefaultToken = "non-default-token";
+
+    TargetDeliveryRequest targetDeliveryRequest =
+        TargetDeliveryRequest.builder()
+            .context(context)
+            .prefetch(prefetchRequest)
+            .execute(executeRequest)
+            .property(new Property().token(nonDefaultToken))
+            .decisioningMethod(DecisioningMethod.HYBRID)
+            .build();
+
+    DeliveryResponse deliveryResponse = new DeliveryResponse();
+    deliveryResponse.setClient("SUMMIT_TEST2021");
+
+    TargetDeliveryResponse targetDeliveryResponse =
+        new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 206, "test call");
+    targetDeliveryResponse.getResponse().setRequestId("testID");
+
+    telemetryService.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
+    TelemetryEntry telemetryEntry = telemetryService.getTelemetry().getEntries().get(0);
+    assert telemetryEntry != null;
+    assertEquals(ExecutionMode.EDGE, telemetryEntry.getMode());
+  }
+
+  @Test
   void testExecutionModeOnDeviceWithPartialContent() throws NoSuchFieldException {
     setup(true);
     TimingTool timer = new TimingTool();

@@ -144,8 +144,9 @@ public final class TelemetryService {
 
   private ExecutionMode getMode(TargetDeliveryRequest request, int status) {
 
-    if (status == STATUS_OK && getDecisioningMethod(request).equals(DecisioningMethod.ON_DEVICE)
-        || getDecisioningMethod(request).equals(DecisioningMethod.HYBRID)) {
+    if (status == STATUS_OK
+        && (getDecisioningMethod(request).equals(DecisioningMethod.ON_DEVICE)
+            || getDecisioningMethod(request).equals(DecisioningMethod.HYBRID))) {
       return ExecutionMode.LOCAL;
     }
     return ExecutionMode.EDGE;
