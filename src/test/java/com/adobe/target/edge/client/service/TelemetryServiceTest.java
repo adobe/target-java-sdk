@@ -12,12 +12,34 @@
 package com.adobe.target.edge.client.service;
 
 import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.TIMING_EXECUTE_REQUEST;
-import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.fileRuleLoader;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getContext;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getMboxExecuteRequest;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getPrefetchViewsRequest;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getTestDeliveryResponse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.RETURNS_DEFAULTS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
 
-import com.adobe.target.delivery.v1.model.*;
+import com.adobe.target.delivery.v1.model.ChannelType;
+import com.adobe.target.delivery.v1.model.Context;
+import com.adobe.target.delivery.v1.model.DeliveryRequest;
+import com.adobe.target.delivery.v1.model.DeliveryResponse;
+import com.adobe.target.delivery.v1.model.ExecuteRequest;
+import com.adobe.target.delivery.v1.model.ExecutionMode;
+import com.adobe.target.delivery.v1.model.MboxRequest;
+import com.adobe.target.delivery.v1.model.Notification;
+import com.adobe.target.delivery.v1.model.PrefetchRequest;
+import com.adobe.target.delivery.v1.model.Property;
+import com.adobe.target.delivery.v1.model.Telemetry;
+import com.adobe.target.delivery.v1.model.TelemetryEntry;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
@@ -51,12 +73,12 @@ class TelemetryServiceTest {
   @Mock private DefaultTargetHttpClient defaultTargetHttpClient;
 
   private TargetClient targetJavaClient;
-  private ClientConfig clientConfig;
+  private static ClientConfig clientConfig;
   private DefaultTargetService targetService;
   private ClusterLocator clusterLocator;
   private OnDeviceDecisioningService localService;
-  private NotificationDeliveryService notificationDeliveryService;
-  private TelemetryService telemetryService;
+  private NotificationService notificationService;
+  private static TelemetryService telemetryService;
 
   @SuppressWarnings("unchecked")
   void setup(boolean telemetryEnabled) throws NoSuchFieldException {
@@ -65,25 +87,21 @@ class TelemetryServiceTest {
         .doReturn(getTestDeliveryResponse())
         .when(defaultTargetHttpClient)
         .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
-
     clientConfig =
         ClientConfig.builder()
             .organizationId(TEST_ORG_ID)
             .telemetryEnabled(telemetryEnabled)
             .build();
-
-    targetService = new DefaultTargetService(clientConfig);
+    telemetryService = new TelemetryService(clientConfig);
+    targetService = new DefaultTargetService(clientConfig, telemetryService);
     clusterLocator = new ClusterLocator();
-    notificationDeliveryService =
-        new NotificationDeliveryService(targetService, clientConfig, clusterLocator);
-
-    localService = new OnDeviceDecisioningService(clientConfig, targetService);
+    notificationService = new NotificationService(targetService, clientConfig, clusterLocator);
+    localService = new OnDeviceDecisioningService(clientConfig, targetService, telemetryService);
     ObjectMapper mapper = new JacksonObjectMapper().getMapper();
     OnDeviceDecisioningDetailsExecutor decisionHandler =
         new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);
-
     targetJavaClient = TargetClient.create(clientConfig);
-    telemetryService = new TelemetryService(clientConfig);
+
     FieldSetter.setField(
         targetService,
         targetService.getClass().getDeclaredField("targetHttpClient"),
@@ -101,8 +119,8 @@ class TelemetryServiceTest {
         localService, localService.getClass().getDeclaredField("decisionHandler"), decisionHandler);
     FieldSetter.setField(
         localService,
-        localService.getClass().getDeclaredField("deliveryService"),
-        notificationDeliveryService);
+        localService.getClass().getDeclaredField("notificationService"),
+        notificationService);
     FieldSetter.setField(
         localService,
         localService.getClass().getDeclaredField("clusterLocator"),
@@ -114,32 +132,35 @@ class TelemetryServiceTest {
     setup(true);
     long timestamp = System.currentTimeMillis();
     TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
-    NotificationDeliveryService notificationDeliveryService =
-        new NotificationDeliveryService(targetServiceMock, clientConfig, clusterLocator);
+    NotificationService notificationService =
+        new NotificationService(targetServiceMock, clientConfig, clusterLocator);
     FieldSetter.setField(
         localService,
-        localService.getClass().getDeclaredField("deliveryService"),
-        notificationDeliveryService);
+        localService.getClass().getDeclaredField("notificationService"),
+        notificationService);
     fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
     TargetDeliveryRequest targetDeliveryRequest =
         TargetDeliveryRequest.builder()
             .context(new Context().channel(ChannelType.WEB))
             .execute(
                 new ExecuteRequest().addMboxesItem(new MboxRequest().index(0).name("allmatches")))
+            .prefetch(
+                new PrefetchRequest()
+                    .addMboxesItem(new MboxRequest().index(0).name("TEST_PREFETCH")))
             .decisioningMethod(DecisioningMethod.ON_DEVICE)
             .build();
     targetJavaClient.getOffers(targetDeliveryRequest);
 
     ArgumentCaptor<TargetDeliveryRequest> captor =
         ArgumentCaptor.forClass(TargetDeliveryRequest.class);
+
     verify(targetServiceMock, timeout(1000)).executeNotificationAsync(captor.capture());
 
-    Telemetry telemetry = captor.getValue().getDeliveryRequest().getTelemetry();
+    Telemetry telemetry = telemetryService.getTelemetry();
 
     assertNotNull(telemetry);
 
     assertEquals(telemetry.getEntries().size(), 1);
-
     TelemetryEntry telemetryEntry = telemetry.getEntries().get(0);
 
     assertTrue(telemetryEntry.getTimestamp() > timestamp);
@@ -153,32 +174,32 @@ class TelemetryServiceTest {
     setup(true);
     long timestamp = System.currentTimeMillis();
     TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
-    NotificationDeliveryService notificationDeliveryService =
-        new NotificationDeliveryService(targetServiceMock, clientConfig, clusterLocator);
+    NotificationService notificationService =
+        new NotificationService(targetServiceMock, clientConfig, clusterLocator);
     FieldSetter.setField(
         localService,
-        localService.getClass().getDeclaredField("deliveryService"),
-        notificationDeliveryService);
+        localService.getClass().getDeclaredField("notificationService"),
+        notificationService);
     fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
     TargetDeliveryRequest targetDeliveryRequest =
         TargetDeliveryRequest.builder()
             .context(new Context().channel(ChannelType.WEB))
+            .execute(
+                new ExecuteRequest().addMboxesItem(new MboxRequest().index(0).name("allmatches")))
             .prefetch(
-                new PrefetchRequest().addMboxesItem(new MboxRequest().index(0).name("allmatches")))
+                new PrefetchRequest()
+                    .addMboxesItem(new MboxRequest().index(0).name("TEST_PREFETCH")))
             .decisioningMethod(DecisioningMethod.ON_DEVICE)
             .build();
     targetJavaClient.getOffers(targetDeliveryRequest);
 
     ArgumentCaptor<TargetDeliveryRequest> captor =
         ArgumentCaptor.forClass(TargetDeliveryRequest.class);
+
     verify(targetServiceMock, timeout(1000)).executeNotificationAsync(captor.capture());
 
-    Telemetry telemetry = captor.getValue().getDeliveryRequest().getTelemetry();
-
+    Telemetry telemetry = telemetryService.getTelemetry();
     assertNotNull(telemetry);
-
-    assertEquals(telemetry.getEntries().size(), 1);
-
     TelemetryEntry telemetryEntry = telemetry.getEntries().get(0);
 
     assertTrue(telemetryEntry.getTimestamp() > timestamp);
@@ -191,12 +212,12 @@ class TelemetryServiceTest {
   void testTelemetryNotSentPrefetch() throws NoSuchFieldException, IOException {
     setup(false);
     TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
-    NotificationDeliveryService notificationDeliveryService =
-        new NotificationDeliveryService(targetServiceMock, clientConfig, clusterLocator);
+    NotificationService notificationService =
+        new NotificationService(targetServiceMock, clientConfig, clusterLocator);
     FieldSetter.setField(
         localService,
-        localService.getClass().getDeclaredField("deliveryService"),
-        notificationDeliveryService);
+        localService.getClass().getDeclaredField("notificationService"),
+        notificationService);
     fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
     TargetDeliveryRequest targetDeliveryRequest =
         TargetDeliveryRequest.builder()
@@ -213,18 +234,21 @@ class TelemetryServiceTest {
   void testTelemetryNotSentExecute() throws NoSuchFieldException, IOException {
     setup(false);
     TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
-    NotificationDeliveryService notificationDeliveryService =
-        new NotificationDeliveryService(targetServiceMock, clientConfig, clusterLocator);
+    NotificationService notificationService =
+        new NotificationService(targetServiceMock, clientConfig, clusterLocator);
     FieldSetter.setField(
         localService,
-        localService.getClass().getDeclaredField("deliveryService"),
-        notificationDeliveryService);
+        localService.getClass().getDeclaredField("notificationService"),
+        notificationService);
     fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
     TargetDeliveryRequest targetDeliveryRequest =
         TargetDeliveryRequest.builder()
             .context(new Context().channel(ChannelType.WEB))
             .execute(
                 new ExecuteRequest().addMboxesItem(new MboxRequest().index(0).name("allmatches")))
+            .prefetch(
+                new PrefetchRequest()
+                    .addMboxesItem(new MboxRequest().index(0).name("TEST_PREFETCH")))
             .decisioningMethod(DecisioningMethod.ON_DEVICE)
             .build();
     targetJavaClient.getOffers(targetDeliveryRequest);
@@ -263,9 +287,179 @@ class TelemetryServiceTest {
   }
 
   @Test
-  void testCreateTelemetry() throws NoSuchFieldException {
+  void testAddTelemetryForServerSide() throws NoSuchFieldException {
     setup(true);
+    TimingTool timer = new TimingTool();
+    timer.timeStart(TIMING_EXECUTE_REQUEST);
 
+    Context context = getContext();
+    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
+    ExecuteRequest executeRequest = getMboxExecuteRequest();
+    String nonDefaultToken = "non-default-token";
+
+    TargetDeliveryRequest targetDeliveryRequest =
+        TargetDeliveryRequest.builder()
+            .context(context)
+            .prefetch(prefetchRequest)
+            .execute(executeRequest)
+            .property(new Property().token(nonDefaultToken))
+            .decisioningMethod(DecisioningMethod.SERVER_SIDE)
+            .build();
+
+    DeliveryResponse deliveryResponse = new DeliveryResponse();
+    deliveryResponse.setClient("SUMMIT_TEST2021");
+
+    TargetDeliveryResponse targetDeliveryResponse =
+        new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 200, "test call");
+    targetDeliveryResponse.getResponse().setRequestId("testID");
+    telemetryService.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
+    TelemetryEntry telemetryEntry = telemetryService.getTelemetry().getEntries().get(0);
+    assertNotNull(telemetryEntry);
+    assertEquals(3, telemetryEntry.getFeatures().getExecuteMboxCount());
+    assertEquals(1, telemetryEntry.getFeatures().getPrefetchViewCount());
+    assertEquals(true, telemetryEntry.getFeatures().getExecutePageLoad());
+    assertEquals(true, telemetryEntry.getFeatures().getPrefetchPageLoad());
+    assertEquals(3, telemetryEntry.getFeatures().getPrefetchMboxCount());
+    assertEquals("testID", telemetryEntry.getRequestId());
+    assertEquals(ExecutionMode.EDGE, telemetryEntry.getMode());
+    assertEquals(
+        DecisioningMethod.SERVER_SIDE.toString(),
+        telemetryEntry.getFeatures().getDecisioningMethod());
+  }
+
+  @Test
+  void testExecutionModeOnDeviceWhenStatusOK() throws NoSuchFieldException {
+    setup(true);
+    TimingTool timer = new TimingTool();
+    timer.timeStart(TIMING_EXECUTE_REQUEST);
+
+    Context context = getContext();
+    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
+    ExecuteRequest executeRequest = getMboxExecuteRequest();
+    String nonDefaultToken = "non-default-token";
+
+    TargetDeliveryRequest targetDeliveryRequest =
+        TargetDeliveryRequest.builder()
+            .context(context)
+            .prefetch(prefetchRequest)
+            .execute(executeRequest)
+            .property(new Property().token(nonDefaultToken))
+            .decisioningMethod(DecisioningMethod.ON_DEVICE)
+            .build();
+
+    DeliveryResponse deliveryResponse = new DeliveryResponse();
+    deliveryResponse.setClient("SUMMIT_TEST2021");
+
+    TargetDeliveryResponse targetDeliveryResponse =
+        new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 200, "test call");
+    targetDeliveryResponse.getResponse().setRequestId("testID");
+
+    telemetryService.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
+    TelemetryEntry telemetryEntry = telemetryService.getTelemetry().getEntries().get(0);
+    assert telemetryEntry != null;
+    assertEquals(ExecutionMode.LOCAL, telemetryEntry.getMode());
+  }
+
+  @Test
+  void testExecutionModeHybridWhenStatusOK() throws NoSuchFieldException {
+    setup(true);
+    TimingTool timer = new TimingTool();
+    timer.timeStart(TIMING_EXECUTE_REQUEST);
+
+    Context context = getContext();
+    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
+    ExecuteRequest executeRequest = getMboxExecuteRequest();
+    String nonDefaultToken = "non-default-token";
+
+    TargetDeliveryRequest targetDeliveryRequest =
+        TargetDeliveryRequest.builder()
+            .context(context)
+            .prefetch(prefetchRequest)
+            .execute(executeRequest)
+            .property(new Property().token(nonDefaultToken))
+            .decisioningMethod(DecisioningMethod.HYBRID)
+            .build();
+
+    DeliveryResponse deliveryResponse = new DeliveryResponse();
+    deliveryResponse.setClient("SUMMIT_TEST2021");
+
+    TargetDeliveryResponse targetDeliveryResponse =
+        new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 200, "test call");
+    targetDeliveryResponse.getResponse().setRequestId("testID");
+
+    telemetryService.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
+    TelemetryEntry telemetryEntry = telemetryService.getTelemetry().getEntries().get(0);
+    assert telemetryEntry != null;
+    assertEquals(ExecutionMode.LOCAL, telemetryEntry.getMode());
+  }
+
+  @Test
+  void testExecutionModeHybridWithPartialContent() throws NoSuchFieldException {
+    setup(true);
+    TimingTool timer = new TimingTool();
+    timer.timeStart(TIMING_EXECUTE_REQUEST);
+
+    Context context = getContext();
+    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
+    ExecuteRequest executeRequest = getMboxExecuteRequest();
+    String nonDefaultToken = "non-default-token";
+
+    TargetDeliveryRequest targetDeliveryRequest =
+        TargetDeliveryRequest.builder()
+            .context(context)
+            .prefetch(prefetchRequest)
+            .execute(executeRequest)
+            .property(new Property().token(nonDefaultToken))
+            .decisioningMethod(DecisioningMethod.HYBRID)
+            .build();
+
+    DeliveryResponse deliveryResponse = new DeliveryResponse();
+    deliveryResponse.setClient("SUMMIT_TEST2021");
+
+    TargetDeliveryResponse targetDeliveryResponse =
+        new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 206, "test call");
+    targetDeliveryResponse.getResponse().setRequestId("testID");
+
+    telemetryService.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
+    TelemetryEntry telemetryEntry = telemetryService.getTelemetry().getEntries().get(0);
+    assert telemetryEntry != null;
+    assertEquals(ExecutionMode.EDGE, telemetryEntry.getMode());
+  }
+
+  @Test
+  void testExecutionModeOnDeviceWithPartialContent() throws NoSuchFieldException {
+    setup(true);
+    TimingTool timer = new TimingTool();
+    timer.timeStart(TIMING_EXECUTE_REQUEST);
+
+    Context context = getContext();
+    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
+    ExecuteRequest executeRequest = getMboxExecuteRequest();
+
+    TargetDeliveryRequest targetDeliveryRequest =
+        TargetDeliveryRequest.builder()
+            .context(context)
+            .prefetch(prefetchRequest)
+            .execute(executeRequest)
+            .decisioningMethod(DecisioningMethod.ON_DEVICE)
+            .build();
+
+    DeliveryResponse deliveryResponse = new DeliveryResponse();
+    deliveryResponse.setClient("SUMMIT_TEST2021");
+
+    TargetDeliveryResponse targetDeliveryResponse =
+        new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 206, "test call");
+    targetDeliveryResponse.getResponse().setRequestId("testID");
+
+    telemetryService.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
+    Telemetry telemetry = telemetryService.getTelemetry();
+
+    assertEquals(ExecutionMode.EDGE, telemetry.getEntries().get(0).getMode());
+  }
+
+  @Test
+  void testAddTelemetry() throws NoSuchFieldException {
+    setup(true);
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
 
@@ -290,11 +484,13 @@ class TelemetryServiceTest {
         new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 200, "test call");
     targetDeliveryResponse.getResponse().setRequestId("testID");
 
-    TelemetryEntry telemetryEntry =
-        telemetryService.createTelemetryEntry(
-            targetDeliveryRequest, targetDeliveryResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
+    //   empty the  in memory stored telemetry
+    telemetryService.getTelemetry();
 
-    assertNotNull(telemetryEntry);
-    assertEquals("testID", telemetryEntry.getRequestId());
+    assertEquals(0, telemetryService.getTelemetry().getEntries().size());
+
+    telemetryService.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
+
+    assertEquals(1, telemetryService.getTelemetry().getEntries().size());
   }
 }

@@ -26,6 +26,7 @@ import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.service.DefaultTargetService;
 import com.adobe.target.edge.client.service.TargetService;
+import com.adobe.target.edge.client.service.TelemetryService;
 import com.adobe.target.edge.client.service.VisitorProvider;
 import com.adobe.target.edge.client.utils.StringUtils;
 import java.util.HashSet;
@@ -45,9 +46,11 @@ public class DefaultTargetClient implements TargetClient {
   private final DecisioningMethod defaultDecisioningMethod;
 
   DefaultTargetClient(ClientConfig clientConfig) {
-    this.targetService = new DefaultTargetService(clientConfig);
+    TelemetryService telemetryService = new TelemetryService(clientConfig);
+    this.targetService = new DefaultTargetService(clientConfig, telemetryService);
     VisitorProvider.init(clientConfig.getOrganizationId());
-    this.localService = new OnDeviceDecisioningService(clientConfig, this.targetService);
+    this.localService =
+        new OnDeviceDecisioningService(clientConfig, this.targetService, telemetryService);
     this.defaultPropertyToken = clientConfig.getDefaultPropertyToken();
     this.defaultDecisioningMethod = clientConfig.getDefaultDecisioningMethod();
   }

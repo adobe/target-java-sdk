@@ -53,8 +53,21 @@ public class TargetTestDeliveryRequestUtils {
 
   public static PrefetchRequest getPrefetchViewsRequest() {
     PrefetchRequest prefetchRequest = new PrefetchRequest();
-    ViewRequest requestDetails = new ViewRequest();
-    prefetchRequest.setViews(Collections.singletonList(requestDetails));
+    ViewRequest viewRequest = new ViewRequest();
+    viewRequest.setName("TEST_NAME_PREFETCH_VIEW_REQUEST");
+    viewRequest.setAddress(getAddress());
+    prefetchRequest.setViews(Collections.singletonList(viewRequest));
+
+    List<MboxRequest> mboxRequests =
+        Arrays.asList(
+            new MboxRequest().name("server-side-mbox").index(0),
+            new MboxRequest().name("server-side-mbox").index(1),
+            new MboxRequest().name("server-side-mbox-prefetch").index(2));
+
+    prefetchRequest.setMboxes(mboxRequests);
+    RequestDetails requestDetails = new RequestDetails();
+    requestDetails.setAddress(getAddress());
+    prefetchRequest.setPageLoad(requestDetails);
     return prefetchRequest;
   }
 
@@ -69,6 +82,9 @@ public class TargetTestDeliveryRequestUtils {
         };
     ExecuteRequest executeRequest = new ExecuteRequest();
     executeRequest.setMboxes(mboxRequests);
+    RequestDetails requestDetails = new RequestDetails();
+    requestDetails.setAddress(getAddress());
+    executeRequest.setPageLoad(requestDetails);
     return executeRequest;
   }
 

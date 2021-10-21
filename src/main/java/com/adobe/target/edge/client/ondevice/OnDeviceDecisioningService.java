@@ -19,8 +19,6 @@ import com.adobe.target.delivery.v1.model.Geo;
 import com.adobe.target.delivery.v1.model.Notification;
 import com.adobe.target.delivery.v1.model.PrefetchResponse;
 import com.adobe.target.delivery.v1.model.RequestDetails;
-import com.adobe.target.delivery.v1.model.Telemetry;
-import com.adobe.target.delivery.v1.model.TelemetryEntry;
 import com.adobe.target.delivery.v1.model.VisitorId;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
@@ -37,7 +35,7 @@ import com.adobe.target.edge.client.ondevice.collator.PageParamsCollator;
 import com.adobe.target.edge.client.ondevice.collator.ParamsCollator;
 import com.adobe.target.edge.client.ondevice.collator.TimeParamsCollator;
 import com.adobe.target.edge.client.ondevice.collator.UserParamsCollator;
-import com.adobe.target.edge.client.service.NotificationDeliveryService;
+import com.adobe.target.edge.client.service.NotificationService;
 import com.adobe.target.edge.client.service.TargetService;
 import com.adobe.target.edge.client.service.TelemetryService;
 import com.adobe.target.edge.client.utils.CookieUtils;
@@ -82,7 +80,7 @@ public class OnDeviceDecisioningService {
   private final ClientConfig clientConfig;
   private final ObjectMapper mapper;
   private final RuleLoader ruleLoader;
-  private final NotificationDeliveryService deliveryService;
+  private final NotificationService notificationService;
   private final TelemetryService telemetryService;
   private final ClusterLocator clusterLocator;
   private final OnDeviceDecisioningDetailsExecutor decisionHandler;
@@ -90,15 +88,16 @@ public class OnDeviceDecisioningService {
   private final GeoClient geoClient;
   private final Set<String> onDeviceAllMatchingRulesMboxes;
 
-  public OnDeviceDecisioningService(ClientConfig clientConfig, TargetService targetService) {
+  public OnDeviceDecisioningService(
+      ClientConfig clientConfig, TargetService targetService, TelemetryService telemetryService) {
     this.mapper = new JacksonObjectMapper().getMapper();
     this.clientConfig = clientConfig;
     OnDeviceDecisioningServicesManager.OnDeviceDecisioningServices services =
         OnDeviceDecisioningServicesManager.getInstance().getServices(clientConfig, targetService);
     this.ruleLoader = services.getRuleLoader();
     this.ruleLoader.start(clientConfig);
-    this.deliveryService = services.getNotificationDeliveryService();
-    this.telemetryService = new TelemetryService(clientConfig);
+    this.notificationService = services.getNotificationDeliveryService();
+    this.telemetryService = telemetryService;
     this.clusterLocator = services.getClusterLocator();
     this.clusterLocator.start(clientConfig, targetService);
     this.decisionHandler = new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);
@@ -196,20 +195,13 @@ public class OnDeviceDecisioningService {
         targetResponse.getResponse().getExecute(),
         notifications);
 
-    Telemetry telemetry = new Telemetry();
-    TelemetryEntry telemetryEntry =
-        telemetryService.createTelemetryEntry(
-            deliveryRequest, targetResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
-    if (telemetryEntry != null) {
-      telemetry.addEntriesItem(telemetryEntry);
-    }
+    telemetryService.addTelemetry(deliveryRequest, timer, targetResponse);
 
-    deliveryService.sendNotifications(deliveryRequest, targetResponse, notifications, telemetry);
+    notificationService.buildNotifications(deliveryRequest, targetResponse, notifications);
 
     if (this.clientConfig.isLogRequests()) {
       logger.debug(targetResponse.toString());
     }
-
     return targetResponse;
   }
 

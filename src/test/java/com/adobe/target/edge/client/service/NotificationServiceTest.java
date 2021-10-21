@@ -41,7 +41,7 @@ import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class NotificationDeliveryServiceTest {
+class NotificationServiceTest {
 
   static final String TEST_ORG_ID = "0DD934B85278256B0A490D44@AdobeOrg";
 
@@ -52,7 +52,7 @@ class NotificationDeliveryServiceTest {
   private DefaultTargetService targetService;
   private ClusterLocator clusterLocator;
   private OnDeviceDecisioningService localService;
-  private NotificationDeliveryService notificationDeliveryService;
+  private NotificationService notificationService;
 
   @BeforeEach
   @SuppressWarnings("unchecked")
@@ -67,12 +67,12 @@ class NotificationDeliveryServiceTest {
     clientConfig =
         ClientConfig.builder().organizationId(TEST_ORG_ID).telemetryEnabled(false).build();
 
-    targetService = new DefaultTargetService(clientConfig);
+    TelemetryService telemetryService = new TelemetryService(clientConfig);
+    targetService = new DefaultTargetService(clientConfig, telemetryService);
     clusterLocator = new ClusterLocator();
-    notificationDeliveryService =
-        new NotificationDeliveryService(targetService, clientConfig, clusterLocator);
+    notificationService = new NotificationService(targetService, clientConfig, clusterLocator);
 
-    localService = new OnDeviceDecisioningService(clientConfig, targetService);
+    localService = new OnDeviceDecisioningService(clientConfig, targetService, telemetryService);
     ObjectMapper mapper = new JacksonObjectMapper().getMapper();
     OnDeviceDecisioningDetailsExecutor decisionHandler =
         new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);
@@ -96,8 +96,8 @@ class NotificationDeliveryServiceTest {
         localService, localService.getClass().getDeclaredField("decisionHandler"), decisionHandler);
     FieldSetter.setField(
         localService,
-        localService.getClass().getDeclaredField("deliveryService"),
-        notificationDeliveryService);
+        localService.getClass().getDeclaredField("notificationService"),
+        notificationService);
     FieldSetter.setField(
         localService,
         localService.getClass().getDeclaredField("clusterLocator"),
@@ -108,7 +108,7 @@ class NotificationDeliveryServiceTest {
   @SuppressWarnings("unchecked")
   void testNotificationDeliveryService() {
     TargetDeliveryRequest localDeliveryRequest = localDeliveryRequest();
-    notificationDeliveryService.sendNotification(localDeliveryRequest);
+    notificationService.sendNotification(localDeliveryRequest);
     verify(defaultTargetHttpClient, timeout(1000))
         .executeAsync(
             any(Map.class),
@@ -120,12 +120,12 @@ class NotificationDeliveryServiceTest {
   @Test
   void testNotificationDeliveryServiceCalled() throws NoSuchFieldException, IOException {
     TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
-    NotificationDeliveryService notificationDeliveryService =
-        new NotificationDeliveryService(targetServiceMock, clientConfig, clusterLocator);
+    NotificationService notificationService =
+        new NotificationService(targetServiceMock, clientConfig, clusterLocator);
     FieldSetter.setField(
         localService,
-        localService.getClass().getDeclaredField("deliveryService"),
-        notificationDeliveryService);
+        localService.getClass().getDeclaredField("notificationService"),
+        notificationService);
     fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
     TargetDeliveryRequest targetDeliveryRequest =
         TargetDeliveryRequest.builder()
@@ -140,12 +140,11 @@ class NotificationDeliveryServiceTest {
 
   @Test
   void testNotificationDeliveryServiceNotCalled() throws NoSuchFieldException, IOException {
-    NotificationDeliveryService mockNotificationDeliveryService =
-        mock(NotificationDeliveryService.class, RETURNS_DEFAULTS);
+    NotificationService mockNotificationService = mock(NotificationService.class, RETURNS_DEFAULTS);
     FieldSetter.setField(
         localService,
-        localService.getClass().getDeclaredField("deliveryService"),
-        mockNotificationDeliveryService);
+        localService.getClass().getDeclaredField("notificationService"),
+        mockNotificationService);
     fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
     TargetDeliveryRequest targetDeliveryRequest =
         TargetDeliveryRequest.builder()
@@ -155,7 +154,7 @@ class NotificationDeliveryServiceTest {
             .decisioningMethod(DecisioningMethod.ON_DEVICE)
             .build();
     targetJavaClient.getOffers(targetDeliveryRequest);
-    verify(mockNotificationDeliveryService, never()).sendNotification(any());
+    verify(mockNotificationService, never()).sendNotification(any());
   }
 
   private TargetDeliveryRequest localDeliveryRequest() {

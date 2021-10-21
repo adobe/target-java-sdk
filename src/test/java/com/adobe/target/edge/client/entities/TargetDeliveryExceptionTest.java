@@ -30,6 +30,7 @@ import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.service.DefaultTargetService;
+import com.adobe.target.edge.client.service.TelemetryService;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -66,8 +67,8 @@ class TargetDeliveryExceptionTest {
             .organizationId(TEST_ORG_ID)
             .defaultPropertyToken(TEST_PROPERTY_TOKEN)
             .build();
-
-    targetService = new DefaultTargetService(clientConfig);
+    TelemetryService telemetryService = new TelemetryService(clientConfig);
+    targetService = new DefaultTargetService(clientConfig, telemetryService);
 
     targetJavaClient = TargetClient.create(clientConfig);
 

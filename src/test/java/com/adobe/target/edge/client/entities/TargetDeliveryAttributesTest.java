@@ -32,7 +32,8 @@ import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.ondevice.RuleLoader;
 import com.adobe.target.edge.client.ondevice.collator.ParamsCollator;
 import com.adobe.target.edge.client.service.DefaultTargetService;
-import com.adobe.target.edge.client.service.NotificationDeliveryService;
+import com.adobe.target.edge.client.service.NotificationService;
+import com.adobe.target.edge.client.service.TelemetryService;
 import com.adobe.target.edge.client.service.VisitorProvider;
 import com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,9 +74,9 @@ class TargetDeliveryAttributesTest {
         ClientConfig.builder().client("emeaprod4").organizationId(TEST_ORG_ID).build();
 
     VisitorProvider.init(TEST_ORG_ID);
-
-    DefaultTargetService targetService = new DefaultTargetService(clientConfig);
-    localService = new OnDeviceDecisioningService(clientConfig, targetService);
+    TelemetryService telemetryService = new TelemetryService(clientConfig);
+    DefaultTargetService targetService = new DefaultTargetService(clientConfig, telemetryService);
+    localService = new OnDeviceDecisioningService(clientConfig, targetService, telemetryService);
 
     targetJavaClient = TargetClient.create(clientConfig);
 
@@ -104,8 +105,8 @@ class TargetDeliveryAttributesTest {
         evaluator);
     FieldSetter.setField(
         localService,
-        localService.getClass().getDeclaredField("deliveryService"),
-        mock(NotificationDeliveryService.class));
+        localService.getClass().getDeclaredField("notificationService"),
+        mock(NotificationService.class));
     FieldSetter.setField(
         localService,
         localService.getClass().getDeclaredField("clusterLocator"),
@@ -200,8 +201,9 @@ class TargetDeliveryAttributesTest {
             .defaultDecisioningMethod(DecisioningMethod.ON_DEVICE)
             .onDeviceAllMatchingRulesMboxes(mboxes)
             .build();
-    DefaultTargetService targetService = new DefaultTargetService(clientConfig);
-    localService = new OnDeviceDecisioningService(clientConfig, targetService);
+    TelemetryService telemetryService = new TelemetryService(clientConfig);
+    DefaultTargetService targetService = new DefaultTargetService(clientConfig, telemetryService);
+    localService = new OnDeviceDecisioningService(clientConfig, targetService, telemetryService);
     fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
     FieldSetter.setField(
         targetJavaClient,

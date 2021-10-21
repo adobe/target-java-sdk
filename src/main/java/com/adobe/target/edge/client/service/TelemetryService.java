@@ -13,6 +13,9 @@ package com.adobe.target.edge.client.service;
 
 import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.TIMING_EXECUTE_REQUEST;
 
+import com.adobe.target.delivery.v1.model.ExecuteRequest;
+import com.adobe.target.delivery.v1.model.ExecutionMode;
+import com.adobe.target.delivery.v1.model.PrefetchRequest;
 import com.adobe.target.delivery.v1.model.Telemetry;
 import com.adobe.target.delivery.v1.model.TelemetryEntry;
 import com.adobe.target.delivery.v1.model.TelemetryFeatures;
@@ -25,11 +28,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class TelemetryService {
+public final class TelemetryService {
 
   private final ClientConfig clientConfig;
   private final ConcurrentLinkedQueue<TelemetryEntry> storedTelemetries =
       new ConcurrentLinkedQueue<>();
+  private static final int STATUS_OK = 200;
 
   public TelemetryService(ClientConfig clientConfig) {
     this.clientConfig = clientConfig;
@@ -56,21 +60,22 @@ public class TelemetryService {
     return new Telemetry().entries(telemetryEntryList);
   }
 
-  public TelemetryEntry createTelemetryEntry(
+  private TelemetryEntry createTelemetryEntry(
       TargetDeliveryRequest targetDeliveryRequest,
       TargetDeliveryResponse targetDeliveryResponse,
       double executionTime) {
     if (!clientConfig.isTelemetryEnabled()) {
       return null;
     }
-    com.adobe.target.delivery.v1.model.DecisioningMethod decisioningMethod =
-        com.adobe.target.delivery.v1.model.DecisioningMethod.valueOf(
-            getDecisioningMethod(targetDeliveryRequest).name());
-    TelemetryFeatures telemetryFeatures =
-        new TelemetryFeatures().decisioningMethod(decisioningMethod);
+
+    TelemetryFeatures telemetryFeatures = buildTelemetryFeatures(targetDeliveryRequest);
+
+    int status = targetDeliveryResponse.getStatus();
+    ExecutionMode executionMode = getMode(targetDeliveryRequest, status);
 
     return new TelemetryEntry()
         .requestId(targetDeliveryResponse.getResponse().getRequestId())
+        .mode(executionMode)
         .features(telemetryFeatures)
         .execution(executionTime)
         .timestamp(System.currentTimeMillis());
@@ -90,5 +95,94 @@ public class TelemetryService {
     }
 
     return DecisioningMethod.SERVER_SIDE;
+  }
+
+  private int executeMboxCount(TargetDeliveryRequest request) {
+    int executeMboxCount = 0;
+    ExecuteRequest executeRequest = request.getDeliveryRequest().getExecute();
+    if (executeRequest != null) {
+      executeMboxCount = executeRequest.getMboxes().size();
+    }
+    return executeMboxCount;
+  }
+
+  private Boolean isExecutePageLoad(TargetDeliveryRequest request) {
+
+    boolean isExecutePageLoad = false;
+    ExecuteRequest executeRequest = request.getDeliveryRequest().getExecute();
+    if (executeRequest != null) {
+      isExecutePageLoad = executeRequest.getPageLoad() != null;
+    }
+    return isExecutePageLoad;
+  }
+
+  private Integer prefetchMboxCount(TargetDeliveryRequest request) {
+    int prefetchMboxCount = 0;
+    PrefetchRequest prefetchRequest = request.getDeliveryRequest().getPrefetch();
+    if (prefetchRequest != null) {
+      prefetchMboxCount = prefetchRequest.getMboxes().size();
+    }
+    return prefetchMboxCount;
+  }
+
+  private Boolean isPrefetchPageLoad(TargetDeliveryRequest request) {
+    boolean prefetchPageLoad = false;
+    PrefetchRequest prefetchRequest = request.getDeliveryRequest().getPrefetch();
+    if (prefetchRequest != null) {
+      prefetchPageLoad = prefetchRequest.getPageLoad() != null;
+    }
+    return prefetchPageLoad;
+  }
+
+  private Integer prefetchViewCount(TargetDeliveryRequest request) {
+    int prefetchViewCount = 0;
+    if (request.getDeliveryRequest().getPrefetch() != null) {
+      prefetchViewCount = request.getDeliveryRequest().getPrefetch().getViews().size();
+    }
+    return prefetchViewCount;
+  }
+
+  private ExecutionMode getMode(TargetDeliveryRequest request, int status) {
+
+    if (status == STATUS_OK
+        && (getDecisioningMethod(request).equals(DecisioningMethod.ON_DEVICE)
+            || getDecisioningMethod(request).equals(DecisioningMethod.HYBRID))) {
+      return ExecutionMode.LOCAL;
+    }
+    return ExecutionMode.EDGE;
+  }
+
+  private TelemetryFeatures buildTelemetryFeatures(TargetDeliveryRequest targetDeliveryRequest) {
+
+    com.adobe.target.delivery.v1.model.DecisioningMethod decisioningMethod =
+        com.adobe.target.delivery.v1.model.DecisioningMethod.valueOf(
+            getDecisioningMethod(targetDeliveryRequest).name());
+
+    TelemetryFeatures telemetryFeatures = new TelemetryFeatures();
+    telemetryFeatures.setDecisioningMethod(decisioningMethod);
+
+    int countOfExecutedMbox = executeMboxCount(targetDeliveryRequest);
+    int countOfPrefetchedMbox = prefetchMboxCount(targetDeliveryRequest);
+    int countOfPrefetchedView = prefetchViewCount(targetDeliveryRequest);
+    boolean isItExecutePageLoad = isExecutePageLoad(targetDeliveryRequest);
+    boolean isItPrefetchedPageLoad = isPrefetchPageLoad(targetDeliveryRequest);
+
+    if (countOfExecutedMbox != 0) {
+      telemetryFeatures.setExecuteMboxCount(countOfExecutedMbox);
+    }
+    if (countOfPrefetchedMbox != 0) {
+      telemetryFeatures.setPrefetchMboxCount(countOfPrefetchedMbox);
+    }
+    if (countOfPrefetchedView != 0) {
+      telemetryFeatures.setPrefetchViewCount(countOfPrefetchedView);
+    }
+    if (isItExecutePageLoad) {
+      telemetryFeatures.setExecutePageLoad(true);
+    }
+    if (isItPrefetchedPageLoad) {
+      telemetryFeatures.setPrefetchPageLoad(true);
+    }
+
+    return telemetryFeatures;
   }
 }
