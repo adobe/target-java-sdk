@@ -22,10 +22,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEFAULTS;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.adobe.target.delivery.v1.model.ChannelType;
@@ -36,10 +40,15 @@ import com.adobe.target.delivery.v1.model.ExecuteRequest;
 import com.adobe.target.delivery.v1.model.ExecutionMode;
 import com.adobe.target.delivery.v1.model.MboxRequest;
 import com.adobe.target.delivery.v1.model.Notification;
+import com.adobe.target.delivery.v1.model.Option;
+import com.adobe.target.delivery.v1.model.OptionType;
+import com.adobe.target.delivery.v1.model.PrefetchMboxResponse;
 import com.adobe.target.delivery.v1.model.PrefetchRequest;
+import com.adobe.target.delivery.v1.model.PrefetchResponse;
 import com.adobe.target.delivery.v1.model.Property;
 import com.adobe.target.delivery.v1.model.Telemetry;
 import com.adobe.target.delivery.v1.model.TelemetryEntry;
+import com.adobe.target.delivery.v1.model.VisitorId;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
@@ -56,6 +65,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -78,11 +88,13 @@ class TelemetryServiceTest {
   private ClusterLocator clusterLocator;
   private OnDeviceDecisioningService localService;
   private NotificationService notificationService;
-  private static TelemetryService telemetryService;
+  private TelemetryService telemetryService;
+  private TelemetryService telemetryServiceSpy;
 
   @SuppressWarnings("unchecked")
   void setup(boolean telemetryEnabled) throws NoSuchFieldException {
 
+    VisitorProvider.init("orgId");
     Mockito.lenient()
         .doReturn(getTestDeliveryResponse())
         .when(defaultTargetHttpClient)
@@ -90,22 +102,32 @@ class TelemetryServiceTest {
     clientConfig =
         ClientConfig.builder()
             .organizationId(TEST_ORG_ID)
+            .defaultDecisioningMethod(DecisioningMethod.ON_DEVICE)
             .telemetryEnabled(telemetryEnabled)
             .build();
-    telemetryService = new TelemetryService(clientConfig);
-    targetService = new DefaultTargetService(clientConfig, telemetryService);
+    //telemetryService = new TelemetryService(clientConfig);
+    //targetService = new DefaultTargetService(clientConfig, telemetryService);
+
+    telemetryServiceSpy = spy(new TelemetryService(clientConfig));
+    targetService = new DefaultTargetService(clientConfig, telemetryServiceSpy);
     clusterLocator = new ClusterLocator();
     notificationService = new NotificationService(targetService, clientConfig, clusterLocator);
-    localService = new OnDeviceDecisioningService(clientConfig, targetService, telemetryService);
+    FieldSetter.setField(
+      targetService,
+      targetService.getClass().getDeclaredField("targetHttpClient"),
+      defaultTargetHttpClient);
+    Mockito.lenient()
+      .doReturn(CompletableFuture.completedFuture(getTestDeliveryResponse()))
+      .when(defaultTargetHttpClient)
+      .executeAsync(
+        any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
+
+    localService = new OnDeviceDecisioningService(clientConfig, targetService, telemetryServiceSpy);
     ObjectMapper mapper = new JacksonObjectMapper().getMapper();
     OnDeviceDecisioningDetailsExecutor decisionHandler =
         new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);
     targetJavaClient = TargetClient.create(clientConfig);
 
-    FieldSetter.setField(
-        targetService,
-        targetService.getClass().getDeclaredField("targetHttpClient"),
-        defaultTargetHttpClient);
     FieldSetter.setField(
         targetJavaClient,
         targetJavaClient.getClass().getDeclaredField("targetService"),
@@ -492,5 +514,61 @@ class TelemetryServiceTest {
     telemetryService.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
 
     assertEquals(1, telemetryService.getTelemetry().getEntries().size());
+  }
+
+  @Test
+  void testTelemetryForServerSide() throws NoSuchFieldException {
+    setup(true);
+    Context context = getContext();
+    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
+    ExecuteRequest executeRequest = getMboxExecuteRequest();
+    String nonDefaultToken = "non-default-token";
+
+    TargetDeliveryRequest targetDeliveryRequest =
+      TargetDeliveryRequest.builder()
+        .context(context)
+        .prefetch(prefetchRequest)
+        .execute(executeRequest)
+        .property(new Property().token(nonDefaultToken))
+        .decisioningMethod(DecisioningMethod.SERVER_SIDE)
+        .build();
+    TargetDeliveryResponse targetDeliveryResponse1 =
+      targetJavaClient.getOffers(targetDeliveryRequest);
+    assertNull(targetDeliveryResponse1.getRequest().getTelemetry());
+
+    //In next call we see telemetry data added to the deliveryRequest
+    TargetDeliveryResponse targetDeliveryResponse2 =
+      targetJavaClient.getOffers(targetDeliveryRequest);
+
+    assertEquals(1, telemetryService.getTelemetry().getEntries().size());
+    assertNotNull(targetDeliveryResponse2);
+    assertNotNull(targetDeliveryResponse2.getRequest());
+    assertNotNull(targetDeliveryResponse2.getRequest().getTelemetry());
+    assertEquals(1, targetDeliveryResponse2.getRequest().getTelemetry().getEntries().size());
+  }
+
+  @Test
+  void testTelemetryForODD() throws NoSuchFieldException, IOException {
+    setup(true);
+
+    fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
+    TargetDeliveryRequest targetDeliveryRequest =
+      TargetDeliveryRequest.builder()
+        .context(new Context().channel(ChannelType.WEB))
+        .execute(
+          new ExecuteRequest().addMboxesItem(new MboxRequest().index(0).name("allmatches")))
+        .decisioningMethod(DecisioningMethod.ON_DEVICE)
+        .build();
+    Mockito.lenient()
+      .doReturn(CompletableFuture.completedFuture(getTestDeliveryResponse()))
+      .when(defaultTargetHttpClient)
+      .executeAsync(
+        any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
+
+     targetJavaClient.getOffers(targetDeliveryRequest);
+
+     verify(telemetryServiceSpy, times(2)).getTelemetry();
+     verify(telemetryServiceSpy, times(3)).addTelemetry(any(TargetDeliveryRequest.class), any(TimingTool.class), any(TargetDeliveryResponse.class));
+
   }
 }
