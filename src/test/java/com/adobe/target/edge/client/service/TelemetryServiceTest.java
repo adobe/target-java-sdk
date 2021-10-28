@@ -284,10 +284,10 @@ class TelemetryServiceTest {
     assertEquals(1, telemetryServiceSpy.getTelemetry().getEntries().size());
   }
 
-
   /**
-   * Test case with Hybrid decisioning that gets executed server-side.
-   * We are verifying telemetry call  for Hybrid decisioning -> server-side execution mode.
+   * Test case with Hybrid decisioning that gets executed server-side. We are verifying telemetry
+   * call for Hybrid decisioning -> server-side execution mode.
+   *
    * @throws NoSuchFieldException
    */
   @Test
@@ -299,26 +299,26 @@ class TelemetryServiceTest {
     String nonDefaultToken = "non-default-token";
 
     TargetDeliveryRequest targetDeliveryRequest =
-      TargetDeliveryRequest.builder()
-        .context(context)
-        .prefetch(prefetchRequest)
-        .execute(executeRequest)
-        .property(new Property().token(nonDefaultToken))
-        .decisioningMethod(DecisioningMethod.HYBRID)
-        .build();
+        TargetDeliveryRequest.builder()
+            .context(context)
+            .prefetch(prefetchRequest)
+            .execute(executeRequest)
+            .property(new Property().token(nonDefaultToken))
+            .decisioningMethod(DecisioningMethod.HYBRID)
+            .build();
 
-      targetJavaClient.getOffers(targetDeliveryRequest);
+    targetJavaClient.getOffers(targetDeliveryRequest);
     verify(telemetryServiceSpy, atLeast(2)).getTelemetry();
     verify(telemetryServiceSpy, times(2))
-      .addTelemetry(
-        any(TargetDeliveryRequest.class),
-        any(TimingTool.class),
-        any(TargetDeliveryResponse.class));
+        .addTelemetry(
+            any(TargetDeliveryRequest.class),
+            any(TimingTool.class),
+            any(TargetDeliveryResponse.class));
     assertEquals(1, telemetryServiceSpy.getTelemetry().getEntries().size());
   }
 
   /**
-   * Capturing telemetry features added to telemetry in execute call
+   * Check telemetryEntry in execute call
    *
    * @throws NoSuchFieldException
    * @throws IOException
@@ -365,7 +365,12 @@ class TelemetryServiceTest {
     assertTrue(telemetryEntry.getRequestId().length() > 0);
     assertEquals(telemetryEntry.getFeatures().getDecisioningMethod(), "on-device");
   }
-
+  /**
+   * Check telemetryEntry in prefetch call
+   *
+   * @throws NoSuchFieldException
+   * @throws IOException
+   */
   @Test
   void testTelemetrySentOnPrefetch() throws NoSuchFieldException, IOException {
     setup(true, DecisioningMethod.ON_DEVICE, "testTelemetrySentOnPrefetch");
@@ -401,7 +406,7 @@ class TelemetryServiceTest {
   }
 
   /**
-   * No telemetry is not enabled we shouldn't capture any telemetry data
+   * When telemetryEnabled flag is set to false verify we don't store telemetry data
    *
    * @throws NoSuchFieldException
    * @throws IOException
@@ -429,7 +434,7 @@ class TelemetryServiceTest {
   }
 
   /**
-   * No telemetry is not enabled we shouldn't capture any telemetry data
+   * When telemetryEnabled flag is set to false verify we don't store telemetry data
    *
    * @throws NoSuchFieldException
    * @throws IOException
@@ -537,8 +542,8 @@ class TelemetryServiceTest {
   }
 
   /**
-   * Test to verify  telemetryEntry has correct executionMode
-   * For ODD & status 200 it should be local
+   * Test to verify telemetryEntry has correct executionMode For ODD & status 200 it should be local
+   *
    * @throws NoSuchFieldException
    */
   @Test
@@ -574,10 +579,10 @@ class TelemetryServiceTest {
     assertEquals(ExecutionMode.LOCAL, telemetryEntry.getMode());
   }
 
-
   /**
-   * Test to verify  telemetryEntry has correct executionMode
-   * For hybrid & status 200 we should  have  mode as local
+   * Test to verify telemetryEntry has correct executionMode For hybrid & status 200 we should have
+   * mode as local
+   *
    * @throws NoSuchFieldException
    */
   @Test
@@ -614,8 +619,9 @@ class TelemetryServiceTest {
   }
 
   /**
-   * Test to verify  telemetryEntry has correct executionMode
-   * With partial content 206 status & hybrid our mode should be edge
+   * Test to verify telemetryEntry has correct executionMode With partial content 206 status &
+   * hybrid our mode should be edge
+   *
    * @throws NoSuchFieldException
    */
   @Test
@@ -652,8 +658,9 @@ class TelemetryServiceTest {
   }
 
   /**
-   * Test to verify  telemetryEntry has correct executionMode
-   * For partial content & ODD it should be edge
+   * Test to verify telemetryEntry has correct executionMode For partial content & ODD it should be
+   * edge
+   *
    * @throws NoSuchFieldException
    */
   @Test
