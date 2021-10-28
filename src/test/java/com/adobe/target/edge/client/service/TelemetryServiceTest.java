@@ -172,7 +172,7 @@ class TelemetryServiceTest {
   }
 
   /**
-   * This test is executed on-device & resulted in Hybrid request.
+   * This test is executed on-device for this Hybrid request.
    *
    * @throws NoSuchFieldException
    * @throws IOException
@@ -254,7 +254,7 @@ class TelemetryServiceTest {
    */
   @Test
   void testTelemetryForServerSideSendNotification() throws NoSuchFieldException {
-    setup(true, DecisioningMethod.SERVER_SIDE, "testTelemetryForServerSide");
+    setup(true, DecisioningMethod.SERVER_SIDE, "testTelemetryForServerSideSendNotification");
     Context context = getContext();
     PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
     ExecuteRequest executeRequest = getMboxExecuteRequest();
@@ -281,6 +281,39 @@ class TelemetryServiceTest {
             any(TargetDeliveryRequest.class),
             any(TimingTool.class),
             any(TargetDeliveryResponse.class));
+    assertEquals(1, telemetryServiceSpy.getTelemetry().getEntries().size());
+  }
+
+
+  /**
+   * Test case with Hybrid decisioning that gets executed server-side.
+   * We are verifying telemetry call  for Hybrid decisioning -> server-side execution mode.
+   * @throws NoSuchFieldException
+   */
+  @Test
+  void testTelemetryForHybridServerSideCall() throws NoSuchFieldException {
+    setup(true, DecisioningMethod.HYBRID, "testTelemetryForHybridServerSideCall");
+    Context context = getContext();
+    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
+    ExecuteRequest executeRequest = getMboxExecuteRequest();
+    String nonDefaultToken = "non-default-token";
+
+    TargetDeliveryRequest targetDeliveryRequest =
+      TargetDeliveryRequest.builder()
+        .context(context)
+        .prefetch(prefetchRequest)
+        .execute(executeRequest)
+        .property(new Property().token(nonDefaultToken))
+        .decisioningMethod(DecisioningMethod.HYBRID)
+        .build();
+
+      targetJavaClient.getOffers(targetDeliveryRequest);
+    verify(telemetryServiceSpy, atLeast(2)).getTelemetry();
+    verify(telemetryServiceSpy, times(2))
+      .addTelemetry(
+        any(TargetDeliveryRequest.class),
+        any(TimingTool.class),
+        any(TargetDeliveryResponse.class));
     assertEquals(1, telemetryServiceSpy.getTelemetry().getEntries().size());
   }
 
@@ -504,8 +537,8 @@ class TelemetryServiceTest {
   }
 
   /**
-   * Test to verify telemetry entry mode is set up correctly
-   *
+   * Test to verify  telemetryEntry has correct executionMode
+   * For ODD & status 200 it should be local
    * @throws NoSuchFieldException
    */
   @Test
@@ -541,6 +574,12 @@ class TelemetryServiceTest {
     assertEquals(ExecutionMode.LOCAL, telemetryEntry.getMode());
   }
 
+
+  /**
+   * Test to verify  telemetryEntry has correct executionMode
+   * For hybrid & status 200 we should  have  mode as local
+   * @throws NoSuchFieldException
+   */
   @Test
   void testExecutionModeHybridWhenStatusOK() throws NoSuchFieldException {
     setup(true, DecisioningMethod.HYBRID, "testExecutionModeHybridWhenStatusOK");
@@ -574,6 +613,11 @@ class TelemetryServiceTest {
     assertEquals(ExecutionMode.LOCAL, telemetryEntry.getMode());
   }
 
+  /**
+   * Test to verify  telemetryEntry has correct executionMode
+   * With partial content 206 status & hybrid our mode should be edge
+   * @throws NoSuchFieldException
+   */
   @Test
   void testExecutionModeHybridWithPartialContent() throws NoSuchFieldException {
     setup(true, DecisioningMethod.HYBRID, "testExecutionModeHybridWithPartialContent");
@@ -607,6 +651,11 @@ class TelemetryServiceTest {
     assertEquals(ExecutionMode.EDGE, telemetryEntry.getMode());
   }
 
+  /**
+   * Test to verify  telemetryEntry has correct executionMode
+   * For partial content & ODD it should be edge
+   * @throws NoSuchFieldException
+   */
   @Test
   void testExecutionModeOnDeviceWithPartialContent() throws NoSuchFieldException {
     setup(true, DecisioningMethod.ON_DEVICE, "testExecutionModeOnDeviceWithPartialContent");
