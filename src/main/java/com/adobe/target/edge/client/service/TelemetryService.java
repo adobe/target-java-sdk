@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public final class TelemetryService {
+public class TelemetryService {
 
   private final ClientConfig clientConfig;
   private final ConcurrentLinkedQueue<TelemetryEntry> storedTelemetries =
