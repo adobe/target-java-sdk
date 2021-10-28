@@ -142,8 +142,8 @@ class TelemetryServiceTest {
 
   /**
    * First call is for location hint, it goes directly inside executeRequestAsync(). Telemetry
-   * Service gets called. second time telemetry data gets added in OnDeviceDecisioningService &
-   * third time inside targetService.executeNotificationAsync()
+   * Service gets called second time inside OnDeviceDecisioningService & third time inside
+   * targetService.executeNotificationAsync()
    *
    * @throws NoSuchFieldException
    * @throws IOException
@@ -496,7 +496,7 @@ class TelemetryServiceTest {
   }
 
   /**
-   * Verifying all telemetry features which gets added for server side decisioning
+   * Checking all telemetryEntry features which gets added for server side decisioning
    *
    * @throws NoSuchFieldException
    */
