@@ -140,6 +140,14 @@ class TelemetryServiceTest {
         mock(ClusterLocator.class));
   }
 
+  /**
+   * First call is for location hint, it goes directly inside executeRequestAsync(). Telemetry
+   * Service gets called. second time telemetry data gets added in OnDeviceDecisioningService &
+   * third time inside targetService.executeNotificationAsync()
+   *
+   * @throws NoSuchFieldException
+   * @throws IOException
+   */
   @Test
   void testTelemetryForODD() throws NoSuchFieldException, IOException {
     setup(true, DecisioningMethod.ON_DEVICE, "testTelemetryForODD");
@@ -163,6 +171,12 @@ class TelemetryServiceTest {
             any(TargetDeliveryResponse.class));
   }
 
+  /**
+   * This test is executed on-device & resulted in Hybrid request.
+   *
+   * @throws NoSuchFieldException
+   * @throws IOException
+   */
   @Test
   void testTelemetryForHybrid() throws NoSuchFieldException, IOException {
     setup(true, DecisioningMethod.HYBRID, "testTelemetryForHybrid");
@@ -186,6 +200,12 @@ class TelemetryServiceTest {
             any(TargetDeliveryResponse.class));
   }
 
+  /**
+   * Test case to call get offers for server side, in first request we capture the telemetry & in
+   * next call we send it with any getOffers() call or sendNotifications() call
+   *
+   * @throws NoSuchFieldException
+   */
   @Test
   void testTelemetryForServerSide() throws NoSuchFieldException {
     setup(true, DecisioningMethod.SERVER_SIDE, "testTelemetryForServerSide");
@@ -224,6 +244,52 @@ class TelemetryServiceTest {
     assertEquals(1, targetDeliveryResponse2.getRequest().getTelemetry().getEntries().size());
   }
 
+  /**
+   * Test case for server-side decisioning that calls getOffers() once and then sendNotifications()
+   * once. This is to verify (and document the use case) telemetry is being added to any request
+   * that goes to Delivery API, regardless of which method is being called on TargetClient by the
+   * user.
+   *
+   * @throws NoSuchFieldException
+   */
+  @Test
+  void testTelemetryForServerSideSendNotification() throws NoSuchFieldException {
+    setup(true, DecisioningMethod.SERVER_SIDE, "testTelemetryForServerSide");
+    Context context = getContext();
+    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
+    ExecuteRequest executeRequest = getMboxExecuteRequest();
+    String nonDefaultToken = "non-default-token";
+
+    TargetDeliveryRequest targetDeliveryRequest =
+        TargetDeliveryRequest.builder()
+            .context(context)
+            .prefetch(prefetchRequest)
+            .execute(executeRequest)
+            .property(new Property().token(nonDefaultToken))
+            .decisioningMethod(DecisioningMethod.SERVER_SIDE)
+            .build();
+
+    TargetDeliveryResponse targetDeliveryResponse1 =
+        targetJavaClient.getOffers(targetDeliveryRequest);
+    assertNull(targetDeliveryResponse1.getRequest().getTelemetry());
+
+    targetJavaClient.sendNotifications(targetDeliveryRequest);
+
+    verify(telemetryServiceSpy, atLeast(2)).getTelemetry();
+    verify(telemetryServiceSpy, times(2))
+        .addTelemetry(
+            any(TargetDeliveryRequest.class),
+            any(TimingTool.class),
+            any(TargetDeliveryResponse.class));
+    assertEquals(1, telemetryServiceSpy.getTelemetry().getEntries().size());
+  }
+
+  /**
+   * Capturing telemetry features added to telemetry in execute call
+   *
+   * @throws NoSuchFieldException
+   * @throws IOException
+   */
   @Test
   void testTelemetrySentOnExecute() throws NoSuchFieldException, IOException {
     setup(true, DecisioningMethod.ON_DEVICE, "testTelemetrySentOnExecute");
@@ -301,6 +367,12 @@ class TelemetryServiceTest {
     assertEquals(telemetryEntry.getFeatures().getDecisioningMethod(), "on-device");
   }
 
+  /**
+   * No telemetry is not enabled we shouldn't capture any telemetry data
+   *
+   * @throws NoSuchFieldException
+   * @throws IOException
+   */
   @Test
   void testTelemetryNotSentPrefetch() throws NoSuchFieldException, IOException {
     setup(false, DecisioningMethod.ON_DEVICE, "testTelemetryNotSentPrefetch");
@@ -323,6 +395,12 @@ class TelemetryServiceTest {
     verify(targetServiceMock, never()).executeNotificationAsync(any());
   }
 
+  /**
+   * No telemetry is not enabled we shouldn't capture any telemetry data
+   *
+   * @throws NoSuchFieldException
+   * @throws IOException
+   */
   @Test
   void testTelemetryNotSentExecute() throws NoSuchFieldException, IOException {
     setup(false, DecisioningMethod.ON_DEVICE, "testTelemetryNotSentExecute");
@@ -379,6 +457,11 @@ class TelemetryServiceTest {
     }
   }
 
+  /**
+   * Verifying all telemetry features which gets added for server side decisioning
+   *
+   * @throws NoSuchFieldException
+   */
   @Test
   void testAddTelemetryForServerSide() throws NoSuchFieldException {
     setup(true, DecisioningMethod.SERVER_SIDE, "testAddTelemetryForServerSide");
@@ -420,6 +503,11 @@ class TelemetryServiceTest {
         telemetryEntry.getFeatures().getDecisioningMethod());
   }
 
+  /**
+   * Test to verify telemetry entry mode is set up correctly
+   *
+   * @throws NoSuchFieldException
+   */
   @Test
   void testExecutionModeOnDeviceWhenStatusOK() throws NoSuchFieldException {
     setup(true, DecisioningMethod.ON_DEVICE, "testExecutionModeOnDeviceWhenStatusOK");
@@ -550,6 +638,11 @@ class TelemetryServiceTest {
     assertEquals(ExecutionMode.EDGE, telemetry.getEntries().get(1).getMode());
   }
 
+  /**
+   * Verify if telemetry data is added correctly
+   *
+   * @throws NoSuchFieldException
+   */
   @Test
   void testAddTelemetry() throws NoSuchFieldException {
     setup(true, DecisioningMethod.SERVER_SIDE, "testAddTelemetry");
