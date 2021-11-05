@@ -280,16 +280,21 @@ public class TargetTestDeliveryRequestUtils {
   static ResponseWrapper<DeliveryResponse> getTestDeliveryResponse(
       DeliveryResponse deliveryResponse) {
     RawResponse rawResponse = getRawTestResponse();
-    return new ResponseWrapper<>(200, 0, new BasicResponse(rawResponse, deliveryResponse));
+    ResponseWrapper<DeliveryResponse> responseWrapper = new ResponseWrapper<>();
+    responseWrapper.setParsingTime(200);
+    responseWrapper.setResponseSize(119);
+    responseWrapper.setHttpResponse(new BasicResponse<>(rawResponse, deliveryResponse));
+    return responseWrapper;
   }
 
   public static ResponseWrapper<DeliveryResponse> getTestDeliveryResponseFailure(
       String errorMessage, String ogBody) {
     RawResponse rawResponse = getRawTestResponse();
-
-    ResponseWrapper<DeliveryResponse> responseWrapper =
-        new ResponseWrapper<>(
-            180, 0, new BasicResponse(rawResponse, ogBody, new RuntimeException(errorMessage)));
+    ResponseWrapper<DeliveryResponse> responseWrapper = new ResponseWrapper<>();
+    responseWrapper.setParsingTime(200);
+    responseWrapper.setResponseSize(0);
+    responseWrapper.setHttpResponse(
+        new BasicResponse<>(rawResponse, ogBody, new RuntimeException(errorMessage)));
     return responseWrapper;
   }
 

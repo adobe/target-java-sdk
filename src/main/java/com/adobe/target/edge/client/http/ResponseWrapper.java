@@ -21,12 +21,6 @@ public final class ResponseWrapper<R> {
 
   private HttpResponse<R> httpResponse;
 
-  public ResponseWrapper(double parsingTime, long responseSize, HttpResponse<R> httpResponse) {
-    this.parsingTime = parsingTime;
-    this.responseSize = responseSize;
-    this.httpResponse = httpResponse;
-  }
-
   public ResponseWrapper() {}
 
   public double getParsingTime() {
