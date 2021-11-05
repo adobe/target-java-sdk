@@ -47,7 +47,6 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
-import com.adobe.target.edge.client.http.ResponseWrapper;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
@@ -67,7 +66,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -108,12 +106,12 @@ class TelemetryServiceTest {
         targetService.getClass().getDeclaredField("targetHttpClient"),
         defaultTargetHttpClient);
     Mockito.lenient()
-        .doReturn(CompletableFuture.completedFuture(getTestDeliveryResponse().getHttpResponse()))
+        .doReturn(CompletableFuture.completedFuture(getTestDeliveryResponse()))
         .when(defaultTargetHttpClient)
         .executeAsync(
             any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
     Mockito.lenient()
-        .doReturn(getTestDeliveryResponse().getHttpResponse())
+        .doReturn(getTestDeliveryResponse())
         .when(defaultTargetHttpClient)
         .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
     localService = new OnDeviceDecisioningService(clientConfig, targetService, telemetryServiceSpy);
@@ -173,10 +171,12 @@ class TelemetryServiceTest {
             any(TimingTool.class),
             any(TargetDeliveryResponse.class));
     verify(telemetryServiceSpy, times(2))
-      .addTelemetry(
-        any(TargetDeliveryRequest.class),
-        any(TimingTool.class),
-        any(TargetDeliveryResponse.class), any(), any());
+        .addTelemetry(
+            any(TargetDeliveryRequest.class),
+            any(TimingTool.class),
+            any(TargetDeliveryResponse.class),
+            any(Double.class),
+            any(Long.class));
   }
 
   /**
@@ -201,11 +201,18 @@ class TelemetryServiceTest {
     targetJavaClient.getOffers(targetDeliveryRequest);
 
     verify(telemetryServiceSpy, times(2)).getTelemetry();
-    verify(telemetryServiceSpy, times(3))
+    verify(telemetryServiceSpy, times(1))
         .addTelemetry(
             any(TargetDeliveryRequest.class),
             any(TimingTool.class),
             any(TargetDeliveryResponse.class));
+    verify(telemetryServiceSpy, times(2))
+        .addTelemetry(
+            any(TargetDeliveryRequest.class),
+            any(TimingTool.class),
+            any(TargetDeliveryResponse.class),
+            any(Double.class),
+            any(Long.class));
   }
 
   /**
@@ -244,7 +251,9 @@ class TelemetryServiceTest {
         .addTelemetry(
             any(TargetDeliveryRequest.class),
             any(TimingTool.class),
-            any(TargetDeliveryResponse.class));
+            any(TargetDeliveryResponse.class),
+            any(Double.class),
+            any(Long.class));
     assertEquals(1, telemetryServiceSpy.getTelemetry().getEntries().size());
     assertNotNull(targetDeliveryResponse2);
     assertNotNull(targetDeliveryResponse2.getRequest());
@@ -288,7 +297,9 @@ class TelemetryServiceTest {
         .addTelemetry(
             any(TargetDeliveryRequest.class),
             any(TimingTool.class),
-            any(TargetDeliveryResponse.class));
+            any(TargetDeliveryResponse.class),
+            any(Double.class),
+            any(Long.class));
     assertEquals(1, telemetryServiceSpy.getTelemetry().getEntries().size());
   }
 
@@ -321,7 +332,9 @@ class TelemetryServiceTest {
         .addTelemetry(
             any(TargetDeliveryRequest.class),
             any(TimingTool.class),
-            any(TargetDeliveryResponse.class));
+            any(TargetDeliveryResponse.class),
+            any(Double.class),
+            any(Long.class));
     assertEquals(1, telemetryServiceSpy.getTelemetry().getEntries().size());
   }
 

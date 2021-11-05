@@ -15,7 +15,6 @@ import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.T
 
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.ClientProxyConfig;
-import com.adobe.target.edge.client.service.TelemetryService;
 import com.adobe.target.edge.client.utils.TimingTool;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -32,7 +31,6 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
 
   private UnirestInstance unirestInstance = Unirest.spawnInstance();
   private ObjectMapper serializer = new JacksonObjectMapper();
-  private TelemetryService telemetryService;
 
   public DefaultTargetHttpClient(ClientConfig clientConfig) {
     unirestInstance

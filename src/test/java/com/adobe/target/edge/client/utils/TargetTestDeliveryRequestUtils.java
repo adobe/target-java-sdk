@@ -18,6 +18,7 @@ import com.adobe.experiencecloud.ecid.visitor.CustomerState;
 import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.entities.TargetDeliveryRequestTest;
+import com.adobe.target.edge.client.http.ResponseWrapper;
 import com.adobe.target.edge.client.model.TargetCookie;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningEvaluator;
@@ -259,7 +260,7 @@ public class TargetTestDeliveryRequestUtils {
     };
   }
 
-  public static HttpResponse<DeliveryResponse> getTestDeliveryResponse() {
+  public static ResponseWrapper<DeliveryResponse> getTestDeliveryResponse() {
     DeliveryResponse deliveryResponse =
         new DeliveryResponse() {
 
@@ -276,18 +277,20 @@ public class TargetTestDeliveryRequestUtils {
     return getTestDeliveryResponse(deliveryResponse);
   }
 
-  static HttpResponse<DeliveryResponse> getTestDeliveryResponse(DeliveryResponse deliveryResponse) {
+  static ResponseWrapper<DeliveryResponse> getTestDeliveryResponse(
+      DeliveryResponse deliveryResponse) {
     RawResponse rawResponse = getRawTestResponse();
-    return (HttpResponse<DeliveryResponse>) new BasicResponse(rawResponse, deliveryResponse);
+    return new ResponseWrapper<>(200, 0, new BasicResponse(rawResponse, deliveryResponse));
   }
 
-  public static HttpResponse<DeliveryResponse> getTestDeliveryResponseFailure(
+  public static ResponseWrapper<DeliveryResponse> getTestDeliveryResponseFailure(
       String errorMessage, String ogBody) {
     RawResponse rawResponse = getRawTestResponse();
 
-    HttpResponse<DeliveryResponse> basicResponse =
-        new BasicResponse(rawResponse, ogBody, new RuntimeException(errorMessage));
-    return basicResponse;
+    ResponseWrapper<DeliveryResponse> responseWrapper =
+        new ResponseWrapper<>(
+            180, 0, new BasicResponse(rawResponse, ogBody, new RuntimeException(errorMessage)));
+    return responseWrapper;
   }
 
   public static RuleLoader getTestRuleLoaderFromFile(final String fileName) throws IOException {
