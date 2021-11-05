@@ -60,12 +60,12 @@ public class TelemetryService {
       long responseSize) {
     TelemetryEntry telemetryEntry =
         createTelemetryEntry(
-            deliveryRequest,
-            targetDeliveryResponse,
-            timer.timeEnd(TIMING_EXECUTE_REQUEST),
-            parsingTime,
-            responseSize);
+            deliveryRequest, targetDeliveryResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
     if (telemetryEntry != null) {
+      telemetryEntry.setParsing(parsingTime);
+      TelemetryRequest telemetryRequest = new TelemetryRequest();
+      telemetryRequest.setResponseSize(responseSize);
+      telemetryEntry.setRequest(telemetryRequest);
       storedTelemetries.add(telemetryEntry);
     }
   }
@@ -97,33 +97,6 @@ public class TelemetryService {
         .mode(executionMode)
         .features(telemetryFeatures)
         .execution(executionTime)
-        .timestamp(System.currentTimeMillis());
-  }
-
-  private TelemetryEntry createTelemetryEntry(
-      TargetDeliveryRequest targetDeliveryRequest,
-      TargetDeliveryResponse targetDeliveryResponse,
-      double executionTime,
-      double parsingTime,
-      long responseSize) {
-    if (!clientConfig.isTelemetryEnabled()) {
-      return null;
-    }
-
-    TelemetryFeatures telemetryFeatures = buildTelemetryFeatures(targetDeliveryRequest);
-
-    int status = targetDeliveryResponse.getStatus();
-    ExecutionMode executionMode = getMode(targetDeliveryRequest, status);
-
-    TelemetryRequest telemetryRequest = new TelemetryRequest();
-    telemetryRequest.setResponseSize(responseSize);
-    return new TelemetryEntry()
-        .requestId(targetDeliveryResponse.getResponse().getRequestId())
-        .mode(executionMode)
-        .features(telemetryFeatures)
-        .execution(executionTime)
-        .parsing(parsingTime)
-        .request(telemetryRequest)
         .timestamp(System.currentTimeMillis());
   }
 
