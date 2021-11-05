@@ -18,8 +18,10 @@ import com.adobe.target.edge.client.ClientProxyConfig;
 import com.adobe.target.edge.client.utils.TimingTool;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import kong.unirest.HttpResponse;
 import kong.unirest.ObjectMapper;
+import kong.unirest.RawResponse;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestInstance;
 import org.slf4j.Logger;
@@ -91,9 +93,10 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
                 rawResponse -> {
                   TimingTool timer = new TimingTool();
                   timer.timeStart(TIMING_EXECUTE_REQUEST);
-                  R responseBody =
-                      getObjectMapper().readValue(rawResponse.getContentAsString(), responseClass);
+                  String rawResponseContent = rawResponse.getContentAsString();
+                  R responseBody = getObjectMapper().readValue(rawResponseContent, responseClass);
                   responseWrapper.setParsingTime(timer.timeEnd(TIMING_EXECUTE_REQUEST));
+                  responseWrapper.setResponseSize(rawResponseContent.length());
                   return responseBody;
                 });
     responseWrapper.setHttpResponse((HttpResponse<R>) httpResponse);
@@ -111,15 +114,7 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
         .post(url)
         .queryString(queryParams)
         .body(request)
-        .asObjectAsync(
-            rawResponse -> {
-              TimingTool timer = new TimingTool();
-              timer.timeStart(TIMING_EXECUTE_REQUEST);
-              R responseBody =
-                  getObjectMapper().readValue(rawResponse.getContentAsString(), responseClass);
-              responseWrapper.setParsingTime(timer.timeEnd(TIMING_EXECUTE_REQUEST));
-              return responseBody;
-            })
+        .asObjectAsync(getRawResponseFunction(responseClass, responseWrapper))
         .thenApply(
             httpResponse -> {
               responseWrapper.setHttpResponse(httpResponse);
@@ -128,6 +123,19 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
             });
 
     return completableFutureResponseWrapper;
+  }
+
+  private <R> Function<RawResponse, R> getRawResponseFunction(
+      Class<R> responseClass, ResponseWrapper<R> responseWrapper) {
+    return rawResponse -> {
+      TimingTool timer = new TimingTool();
+      timer.timeStart(TIMING_EXECUTE_REQUEST);
+      String rawResponseContent = rawResponse.getContentAsString();
+      R responseBody = getObjectMapper().readValue(rawResponseContent, responseClass);
+      responseWrapper.setParsingTime(timer.timeEnd(TIMING_EXECUTE_REQUEST));
+      responseWrapper.setResponseSize(rawResponseContent.length());
+      return responseBody;
+    };
   }
 
   @Override

@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface TargetHttpClient extends AutoCloseable {
 
-  <T, R> ResponseWrapper execute(
+  <T, R> ResponseWrapper<R> execute(
       Map<String, Object> queryParams, String url, T request, Class<R> response);
 
   <T, R> CompletableFuture<ResponseWrapper<R>> executeAsync(

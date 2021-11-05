@@ -70,7 +70,7 @@ public class DefaultTargetService implements TargetService {
       deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
     }
 
-    ResponseWrapper response = callDeliveryApi(deliveryRequest);
+    ResponseWrapper<DeliveryResponse> response = callDeliveryApi(deliveryRequest);
 
     targetDeliveryResponse = getTargetDeliveryResponse(deliveryRequest, response.getHttpResponse());
 

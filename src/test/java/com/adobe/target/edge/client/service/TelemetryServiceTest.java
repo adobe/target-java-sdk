@@ -74,8 +74,7 @@ class TelemetryServiceTest {
 
   private static final String TEST_ORG_ID = "0DD934B85278256B0A490D44@AdobeOrg";
 
-  @Mock
-   private DefaultTargetHttpClient defaultTargetHttpClient;
+  @Mock private DefaultTargetHttpClient defaultTargetHttpClient;
 
   private TargetClient targetJavaClient;
   private ClientConfig clientConfig;
