@@ -28,23 +28,23 @@ public class TargetHttpClientLoggingDecorator implements TargetHttpClient {
   }
 
   @Override
-  public <T, R> HttpResponse<R> execute(
+  public <T, R> ResponseWrapper<R> execute(
       Map<String, Object> queryParams, String url, T request, Class<R> response) {
     logger.debug("Request: Url:{} QueryParams:{} RequestBody:{}", url, queryParams, request);
-    HttpResponse<R> execute = delegate.execute(queryParams, url, request, response);
-    logResponse(execute);
+    ResponseWrapper<R> execute = delegate.execute(queryParams, url, request, response);
+    logResponse(execute.getHttpResponse());
     return execute;
   }
 
   @Override
-  public <T, R> CompletableFuture<HttpResponse<R>> executeAsync(
+  public <T, R> CompletableFuture<ResponseWrapper<R>> executeAsync(
       Map<String, Object> queryParams, String url, T request, Class<R> response) {
     logger.debug("AsyncRequest: Url:{} QueryParams:{} RequestBody:{}", url, queryParams, request);
-    CompletableFuture<HttpResponse<R>> executeAsync =
+    CompletableFuture<ResponseWrapper<R>> executeAsync =
         delegate.executeAsync(queryParams, url, request, response);
     executeAsync.thenAccept(
-        execute -> {
-          logResponse(execute);
+        responseWrapper -> {
+          logResponse(responseWrapper.getHttpResponse());
         });
     return executeAsync;
   }

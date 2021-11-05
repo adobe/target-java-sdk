@@ -47,6 +47,7 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
+import com.adobe.target.edge.client.http.ResponseWrapper;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
@@ -66,6 +67,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -74,7 +76,8 @@ class TelemetryServiceTest {
 
   private static final String TEST_ORG_ID = "0DD934B85278256B0A490D44@AdobeOrg";
 
-  @Mock private DefaultTargetHttpClient defaultTargetHttpClient;
+  @Mock
+   private DefaultTargetHttpClient defaultTargetHttpClient;
 
   private TargetClient targetJavaClient;
   private ClientConfig clientConfig;
@@ -105,12 +108,12 @@ class TelemetryServiceTest {
         targetService.getClass().getDeclaredField("targetHttpClient"),
         defaultTargetHttpClient);
     Mockito.lenient()
-        .doReturn(CompletableFuture.completedFuture(getTestDeliveryResponse()))
+        .doReturn(CompletableFuture.completedFuture(getTestDeliveryResponse().getHttpResponse()))
         .when(defaultTargetHttpClient)
         .executeAsync(
             any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
     Mockito.lenient()
-        .doReturn(getTestDeliveryResponse())
+        .doReturn(getTestDeliveryResponse().getHttpResponse())
         .when(defaultTargetHttpClient)
         .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
     localService = new OnDeviceDecisioningService(clientConfig, targetService, telemetryServiceSpy);
@@ -164,11 +167,16 @@ class TelemetryServiceTest {
     targetJavaClient.getOffers(targetDeliveryRequest);
 
     verify(telemetryServiceSpy, times(2)).getTelemetry();
-    verify(telemetryServiceSpy, times(3))
+    verify(telemetryServiceSpy, times(1))
         .addTelemetry(
             any(TargetDeliveryRequest.class),
             any(TimingTool.class),
             any(TargetDeliveryResponse.class));
+    verify(telemetryServiceSpy, times(2))
+      .addTelemetry(
+        any(TargetDeliveryRequest.class),
+        any(TimingTool.class),
+        any(TargetDeliveryResponse.class), any(), any());
   }
 
   /**

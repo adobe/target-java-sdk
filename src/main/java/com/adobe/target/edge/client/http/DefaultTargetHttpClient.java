@@ -11,8 +11,12 @@
  */
 package com.adobe.target.edge.client.http;
 
+import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.TIMING_EXECUTE_REQUEST;
+
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.ClientProxyConfig;
+import com.adobe.target.edge.client.service.TelemetryService;
+import com.adobe.target.edge.client.utils.TimingTool;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import kong.unirest.HttpResponse;
@@ -28,6 +32,7 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
 
   private UnirestInstance unirestInstance = Unirest.spawnInstance();
   private ObjectMapper serializer = new JacksonObjectMapper();
+  private TelemetryService telemetryService;
 
   public DefaultTargetHttpClient(ClientConfig clientConfig) {
     unirestInstance
@@ -75,15 +80,56 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
   }
 
   @Override
-  public <T, R> HttpResponse<R> execute(
-      Map<String, Object> queryParams, String url, T request, Class<R> response) {
-    return unirestInstance.post(url).queryString(queryParams).body(request).asObject(response);
+  public <T, R> ResponseWrapper<R> execute(
+      Map<String, Object> queryParams, String url, T request, Class<R> responseClass) {
+    ResponseWrapper<R> responseWrapper = new ResponseWrapper<>();
+
+    HttpResponse<Object> httpResponse =
+        unirestInstance
+            .post(url)
+            .queryString(queryParams)
+            .body(request)
+            .asObject(
+                rawResponse -> {
+                  TimingTool timer = new TimingTool();
+                  timer.timeStart(TIMING_EXECUTE_REQUEST);
+                  R responseBody =
+                      getObjectMapper().readValue(rawResponse.getContentAsString(), responseClass);
+                  responseWrapper.setParsingTime(timer.timeEnd(TIMING_EXECUTE_REQUEST));
+                  return responseBody;
+                });
+    responseWrapper.setHttpResponse((HttpResponse<R>) httpResponse);
+    return responseWrapper;
   }
 
   @Override
-  public <T, R> CompletableFuture<HttpResponse<R>> executeAsync(
-      Map<String, Object> queryParams, String url, T request, Class<R> response) {
-    return unirestInstance.post(url).queryString(queryParams).body(request).asObjectAsync(response);
+  public <T, R> CompletableFuture<ResponseWrapper<R>> executeAsync(
+      Map<String, Object> queryParams, String url, T request, Class<R> responseClass) {
+    ResponseWrapper<R> responseWrapper = new ResponseWrapper<>();
+    CompletableFuture<ResponseWrapper<R>> completableFutureResponseWrapper =
+        new CompletableFuture<>();
+
+    unirestInstance
+        .post(url)
+        .queryString(queryParams)
+        .body(request)
+        .asObjectAsync(
+            rawResponse -> {
+              TimingTool timer = new TimingTool();
+              timer.timeStart(TIMING_EXECUTE_REQUEST);
+              R responseBody =
+                  getObjectMapper().readValue(rawResponse.getContentAsString(), responseClass);
+              responseWrapper.setParsingTime(timer.timeEnd(TIMING_EXECUTE_REQUEST));
+              return responseBody;
+            })
+        .thenApply(
+            httpResponse -> {
+              responseWrapper.setHttpResponse(httpResponse);
+              completableFutureResponseWrapper.complete(responseWrapper);
+              return completableFutureResponseWrapper;
+            });
+
+    return completableFutureResponseWrapper;
   }
 
   @Override

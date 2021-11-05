@@ -13,14 +13,13 @@ package com.adobe.target.edge.client.http;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import kong.unirest.HttpResponse;
 
 public interface TargetHttpClient extends AutoCloseable {
 
-  <T, R> HttpResponse<R> execute(
+  <T, R> ResponseWrapper execute(
       Map<String, Object> queryParams, String url, T request, Class<R> response);
 
-  <T, R> CompletableFuture<HttpResponse<R>> executeAsync(
+  <T, R> CompletableFuture<ResponseWrapper<R>> executeAsync(
       Map<String, Object> queryParams, String url, T request, Class<R> response);
 
   void addDefaultHeader(String key, String value);

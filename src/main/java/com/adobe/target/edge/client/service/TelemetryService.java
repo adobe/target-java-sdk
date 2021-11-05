@@ -19,6 +19,7 @@ import com.adobe.target.delivery.v1.model.PrefetchRequest;
 import com.adobe.target.delivery.v1.model.Telemetry;
 import com.adobe.target.delivery.v1.model.TelemetryEntry;
 import com.adobe.target.delivery.v1.model.TelemetryFeatures;
+import com.adobe.target.delivery.v1.model.TelemetryRequest;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
@@ -51,6 +52,24 @@ public class TelemetryService {
     }
   }
 
+  public void addTelemetry(
+      TargetDeliveryRequest deliveryRequest,
+      TimingTool timer,
+      TargetDeliveryResponse targetDeliveryResponse,
+      double parsingTime,
+      long responseSize) {
+    TelemetryEntry telemetryEntry =
+        createTelemetryEntry(
+            deliveryRequest,
+            targetDeliveryResponse,
+            timer.timeEnd(TIMING_EXECUTE_REQUEST),
+            parsingTime,
+            responseSize);
+    if (telemetryEntry != null) {
+      storedTelemetries.add(telemetryEntry);
+    }
+  }
+
   public Telemetry getTelemetry() {
     List<TelemetryEntry> telemetryEntryList = new ArrayList<>();
     TelemetryEntry telemetryEntry;
@@ -78,6 +97,33 @@ public class TelemetryService {
         .mode(executionMode)
         .features(telemetryFeatures)
         .execution(executionTime)
+        .timestamp(System.currentTimeMillis());
+  }
+
+  private TelemetryEntry createTelemetryEntry(
+      TargetDeliveryRequest targetDeliveryRequest,
+      TargetDeliveryResponse targetDeliveryResponse,
+      double executionTime,
+      double parsingTime,
+      long responseSize) {
+    if (!clientConfig.isTelemetryEnabled()) {
+      return null;
+    }
+
+    TelemetryFeatures telemetryFeatures = buildTelemetryFeatures(targetDeliveryRequest);
+
+    int status = targetDeliveryResponse.getStatus();
+    ExecutionMode executionMode = getMode(targetDeliveryRequest, status);
+
+    TelemetryRequest telemetryRequest = new TelemetryRequest();
+    telemetryRequest.setResponseSize(responseSize);
+    return new TelemetryEntry()
+        .requestId(targetDeliveryResponse.getResponse().getRequestId())
+        .mode(executionMode)
+        .features(telemetryFeatures)
+        .execution(executionTime)
+        .parsing(parsingTime)
+        .request(telemetryRequest)
         .timestamp(System.currentTimeMillis());
   }
 
