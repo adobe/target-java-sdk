@@ -96,15 +96,8 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
             .queryString(queryParams)
             .body(request)
             .asObject(
-                rawResponse -> {
-                  TimingTool timer = new TimingTool();
-                  timer.timeStart(TIMING_EXECUTE_REQUEST);
-                  String rawResponseContent = rawResponse.getContentAsString();
-                  R responseBody = getObjectMapper().readValue(rawResponseContent, responseClass);
-                  responseWrapper.setParsingTime(timer.timeEnd(TIMING_EXECUTE_REQUEST));
-                  responseWrapper.setResponseSize(rawResponseContent.length());
-                  return responseBody;
-                });
+                (Function<RawResponse, Object>)
+                    getRawResponseFunction(responseClass, responseWrapper));
     responseWrapper.setHttpResponse((HttpResponse<R>) httpResponse);
     return responseWrapper;
   }
