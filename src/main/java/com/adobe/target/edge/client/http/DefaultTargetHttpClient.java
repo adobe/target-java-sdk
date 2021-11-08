@@ -16,13 +16,17 @@ import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.T
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.ClientProxyConfig;
 import com.adobe.target.edge.client.utils.TimingTool;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import kong.unirest.HttpResponse;
 import kong.unirest.ObjectMapper;
 import kong.unirest.RawResponse;
 import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
 import kong.unirest.UnirestInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +34,8 @@ import org.slf4j.LoggerFactory;
 public class DefaultTargetHttpClient implements TargetHttpClient {
 
   private static final Logger logger = LoggerFactory.getLogger(DefaultTargetHttpClient.class);
+  private static final Pattern CHARSET_PATTERN =
+      Pattern.compile("(?i)\\bcharset=\\s*\"?([^\\s;\"]*)");
 
   private UnirestInstance unirestInstance = Unirest.spawnInstance();
   private ObjectMapper serializer = new JacksonObjectMapper();
@@ -130,12 +136,39 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
     return rawResponse -> {
       TimingTool timer = new TimingTool();
       timer.timeStart(TIMING_EXECUTE_REQUEST);
-      String rawResponseContent = rawResponse.getContentAsString();
+      byte[] responseAsByte = rawResponse.getContentAsBytes();
+      String rawResponseContent;
+      try {
+        rawResponseContent = new String(responseAsByte, getCharSet(rawResponse));
+      } catch (UnsupportedEncodingException e) {
+        throw new UnirestException(e);
+      }
       R responseBody = getObjectMapper().readValue(rawResponseContent, responseClass);
       responseWrapper.setParsingTime(timer.timeEnd(TIMING_EXECUTE_REQUEST));
-      responseWrapper.setResponseSize(rawResponseContent.length());
+      responseWrapper.setResponseSize(responseAsByte.length);
       return responseBody;
     };
+  }
+
+  protected String getCharSet(RawResponse rawResponse) {
+    String contentType = rawResponse.getContentType();
+    String responseCharset = getCharsetFromContentType(contentType);
+    if (responseCharset != null && !responseCharset.trim().equals("")) {
+      return responseCharset;
+    }
+    return rawResponse.getConfig().getDefaultResponseEncoding();
+  }
+
+  private String getCharsetFromContentType(String contentType) {
+    if (contentType == null) {
+      return null;
+    }
+
+    Matcher m = CHARSET_PATTERN.matcher(contentType);
+    if (m.find()) {
+      return m.group(1).trim().toUpperCase();
+    }
+    return null;
   }
 
   @Override
