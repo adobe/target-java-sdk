@@ -24,6 +24,7 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
+import com.adobe.target.edge.client.utils.MathUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ public class TelemetryService {
   private final ConcurrentLinkedQueue<TelemetryEntry> storedTelemetries =
       new ConcurrentLinkedQueue<>();
   private static final int STATUS_OK = 200;
+  private static final int DECIMAL_PLACE = 2;
 
   public TelemetryService(ClientConfig clientConfig) {
     this.clientConfig = clientConfig;
@@ -96,7 +98,7 @@ public class TelemetryService {
         .requestId(targetDeliveryResponse.getResponse().getRequestId())
         .mode(executionMode)
         .features(telemetryFeatures)
-        .execution(executionTime)
+        .execution(MathUtils.roundDouble(executionTime, DECIMAL_PLACE))
         .timestamp(System.currentTimeMillis());
   }
 

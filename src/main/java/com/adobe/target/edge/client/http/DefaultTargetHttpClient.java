@@ -15,6 +15,7 @@ import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.T
 
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.ClientProxyConfig;
+import com.adobe.target.edge.client.utils.MathUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
@@ -39,6 +40,7 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
 
   private UnirestInstance unirestInstance = Unirest.spawnInstance();
   private ObjectMapper serializer = new JacksonObjectMapper();
+  private static final int DECIMAL_PLACE = 2;
 
   public DefaultTargetHttpClient(ClientConfig clientConfig) {
     unirestInstance
@@ -137,7 +139,8 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
         throw new UnirestException(e);
       }
       R responseBody = getObjectMapper().readValue(rawResponseContent, responseClass);
-      responseWrapper.setParsingTime(timer.timeEnd(TIMING_EXECUTE_REQUEST));
+      double parsingTime = timer.timeEnd(TIMING_EXECUTE_REQUEST);
+      responseWrapper.setParsingTime(MathUtils.roundDouble(parsingTime, DECIMAL_PLACE));
       responseWrapper.setResponseSize(responseAsByte.length);
       return responseBody;
     };
