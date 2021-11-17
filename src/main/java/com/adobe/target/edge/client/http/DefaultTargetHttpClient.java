@@ -16,6 +16,7 @@ import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.T
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.ClientProxyConfig;
 import com.adobe.target.edge.client.utils.MathUtils;
+import com.adobe.target.edge.client.utils.StringUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
 
   private UnirestInstance unirestInstance = Unirest.spawnInstance();
   private ObjectMapper serializer = new JacksonObjectMapper();
-  private static final int DECIMAL_PLACE = 2;
+  private static final int DECIMAL_PLACES = 2;
 
   public DefaultTargetHttpClient(ClientConfig clientConfig) {
     unirestInstance
@@ -116,14 +117,16 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
         .queryString(queryParams)
         .body(request)
         .asObjectAsync(getRawResponseFunction(responseClass, responseWrapper))
-        .thenApply(
-            httpResponse -> {
-              responseWrapper.setHttpResponse(httpResponse);
-              completableFutureResponseWrapper.complete(responseWrapper);
-              return completableFutureResponseWrapper;
-            });
-
+        .thenApply(getCompletableFutureFunction(responseWrapper, completableFutureResponseWrapper));
     return completableFutureResponseWrapper;
+  }
+
+  private <R> Function<HttpResponse<R>, CompletableFuture<ResponseWrapper<R>>> getCompletableFutureFunction(ResponseWrapper<R> responseWrapper, CompletableFuture<ResponseWrapper<R>> completableFutureResponseWrapper) {
+    return httpResponse -> {
+      responseWrapper.setHttpResponse(httpResponse);
+      completableFutureResponseWrapper.complete(responseWrapper);
+      return completableFutureResponseWrapper;
+    };
   }
 
   private <R> Function<RawResponse, R> getRawResponseFunction(
@@ -140,7 +143,7 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
       }
       R responseBody = getObjectMapper().readValue(rawResponseContent, responseClass);
       double parsingTime = timer.timeEnd(TIMING_EXECUTE_REQUEST);
-      responseWrapper.setParsingTime(MathUtils.roundDouble(parsingTime, DECIMAL_PLACE));
+      responseWrapper.setParsingTime(MathUtils.roundDouble(parsingTime, DECIMAL_PLACES));
       responseWrapper.setResponseSize(responseAsByte.length);
       return responseBody;
     };
@@ -149,7 +152,7 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
   protected String getCharSet(RawResponse rawResponse) {
     String contentType = rawResponse.getContentType();
     String responseCharset = getCharsetFromContentType(contentType);
-    if (responseCharset != null && !responseCharset.trim().equals("")) {
+    if (StringUtils.isNotEmpty(responseCharset)) {
       return responseCharset;
     }
     return rawResponse.getConfig().getDefaultResponseEncoding();
