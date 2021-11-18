@@ -11,28 +11,28 @@
  */
 package com.adobe.target.edge.client.service;
 
+import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.TIMING_EXECUTE_REQUEST;
+import static com.adobe.target.edge.client.utils.TargetConstants.SDK_VERSION;
+import static org.apache.http.HttpStatus.SC_OK;
+
 import com.adobe.target.delivery.v1.model.DeliveryResponse;
 import com.adobe.target.delivery.v1.model.Telemetry;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
 import com.adobe.target.edge.client.http.ResponseStatus;
+import com.adobe.target.edge.client.http.ResponseWrapper;
 import com.adobe.target.edge.client.http.TargetHttpClient;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.utils.CookieUtils;
 import com.adobe.target.edge.client.utils.StringUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
-import kong.unirest.HttpResponse;
-import kong.unirest.UnirestParsingException;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-
-import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.TIMING_EXECUTE_REQUEST;
-import static com.adobe.target.edge.client.utils.TargetConstants.SDK_VERSION;
-import static org.apache.http.HttpStatus.SC_OK;
+import kong.unirest.HttpResponse;
+import kong.unirest.UnirestParsingException;
 
 public class DefaultTargetService implements TargetService {
 
@@ -69,11 +69,19 @@ public class DefaultTargetService implements TargetService {
     if (!telemetry.getEntries().isEmpty()) {
       deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
     }
-    HttpResponse<DeliveryResponse> response = callDeliveryApi(deliveryRequest);
-    targetDeliveryResponse = getTargetDeliveryResponse(deliveryRequest, response);
+
+    ResponseWrapper<DeliveryResponse> response = callDeliveryApi(deliveryRequest);
+
+    targetDeliveryResponse = getTargetDeliveryResponse(deliveryRequest, response.getHttpResponse());
 
     /* capture Telemetry information once original request's response is received */
-    telemetryService.addTelemetry(deliveryRequest, timer, targetDeliveryResponse);
+
+    telemetryService.addTelemetry(
+        deliveryRequest,
+        timer,
+        targetDeliveryResponse,
+        response.getParsingTime(),
+        response.getResponseSize());
 
     return targetDeliveryResponse;
   }
@@ -88,13 +96,18 @@ public class DefaultTargetService implements TargetService {
     if (!telemetry.getEntries().isEmpty()) {
       deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
     }
-    CompletableFuture<HttpResponse<DeliveryResponse>> responseCompletableFuture =
+    CompletableFuture<ResponseWrapper<DeliveryResponse>> responseCompletableFuture =
         callDeliveryApiAsync(deliveryRequest);
     return responseCompletableFuture.thenApply(
         response -> {
           TargetDeliveryResponse targetDeliveryResponse =
-              getTargetDeliveryResponse(deliveryRequest, response);
-          telemetryService.addTelemetry(deliveryRequest, timer, targetDeliveryResponse);
+              getTargetDeliveryResponse(deliveryRequest, response.getHttpResponse());
+          telemetryService.addTelemetry(
+              deliveryRequest,
+              timer,
+              targetDeliveryResponse,
+              response.getParsingTime(),
+              response.getResponseSize());
           return targetDeliveryResponse;
         });
   }
@@ -109,11 +122,17 @@ public class DefaultTargetService implements TargetService {
     if (!telemetry.getEntries().isEmpty()) {
       deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
     }
-    HttpResponse<DeliveryResponse> response = callDeliveryApi(deliveryRequest);
-    targetDeliveryResponse = getTargetDeliveryResponse(deliveryRequest, response);
-    telemetryService.addTelemetry(deliveryRequest, timer, targetDeliveryResponse);
+    ResponseWrapper response = callDeliveryApi(deliveryRequest);
+    targetDeliveryResponse = getTargetDeliveryResponse(deliveryRequest, response.getHttpResponse());
+    telemetryService.addTelemetry(
+        deliveryRequest,
+        timer,
+        targetDeliveryResponse,
+        response.getParsingTime(),
+        response.getResponseSize());
 
-    return new ResponseStatus(response.getStatus(), response.getStatusText());
+    return new ResponseStatus(
+        response.getHttpResponse().getStatus(), response.getHttpResponse().getStatusText());
   }
 
   @Override
@@ -125,14 +144,20 @@ public class DefaultTargetService implements TargetService {
     if (!telemetry.getEntries().isEmpty()) {
       deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
     }
-    CompletableFuture<HttpResponse<DeliveryResponse>> responseCompletableFuture =
+    CompletableFuture<ResponseWrapper<DeliveryResponse>> responseCompletableFuture =
         callDeliveryApiAsync(deliveryRequest);
     return responseCompletableFuture.thenApply(
         response -> {
           TargetDeliveryResponse targetDeliveryResponse =
-              getTargetDeliveryResponse(deliveryRequest, response);
-          telemetryService.addTelemetry(deliveryRequest, timer, targetDeliveryResponse);
-          return new ResponseStatus(response.getStatus(), response.getStatusText());
+              getTargetDeliveryResponse(deliveryRequest, response.getHttpResponse());
+          telemetryService.addTelemetry(
+              deliveryRequest,
+              timer,
+              targetDeliveryResponse,
+              response.getParsingTime(),
+              response.getResponseSize());
+          return new ResponseStatus(
+              response.getHttpResponse().getStatus(), response.getHttpResponse().getStatusText());
         });
   }
 
@@ -189,7 +214,7 @@ public class DefaultTargetService implements TargetService {
     return stickyLocationHint;
   }
 
-  private HttpResponse<DeliveryResponse> callDeliveryApi(TargetDeliveryRequest deliveryRequest) {
+  private ResponseWrapper<DeliveryResponse> callDeliveryApi(TargetDeliveryRequest deliveryRequest) {
     String url = clientConfig.getUrl(getBestLocationHint(deliveryRequest));
     return targetHttpClient.execute(
         getQueryParams(deliveryRequest),
@@ -198,7 +223,7 @@ public class DefaultTargetService implements TargetService {
         DeliveryResponse.class);
   }
 
-  private CompletableFuture<HttpResponse<DeliveryResponse>> callDeliveryApiAsync(
+  private CompletableFuture<ResponseWrapper<DeliveryResponse>> callDeliveryApiAsync(
       TargetDeliveryRequest deliveryRequest) {
     String url = clientConfig.getUrl(getBestLocationHint(deliveryRequest));
     return targetHttpClient.executeAsync(

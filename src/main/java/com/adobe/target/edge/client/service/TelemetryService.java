@@ -19,21 +19,24 @@ import com.adobe.target.delivery.v1.model.PrefetchRequest;
 import com.adobe.target.delivery.v1.model.Telemetry;
 import com.adobe.target.delivery.v1.model.TelemetryEntry;
 import com.adobe.target.delivery.v1.model.TelemetryFeatures;
+import com.adobe.target.delivery.v1.model.TelemetryRequest;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
+import com.adobe.target.edge.client.utils.MathUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import kong.unirest.HttpStatus;
 
 public class TelemetryService {
 
   private final ClientConfig clientConfig;
   private final ConcurrentLinkedQueue<TelemetryEntry> storedTelemetries =
       new ConcurrentLinkedQueue<>();
-  private static final int STATUS_OK = 200;
+  private static final int DECIMAL_PLACES = 2;
 
   public TelemetryService(ClientConfig clientConfig) {
     this.clientConfig = clientConfig;
@@ -49,6 +52,25 @@ public class TelemetryService {
     if (telemetryEntry != null) {
       storedTelemetries.add(telemetryEntry);
     }
+  }
+
+  public void addTelemetry(
+      TargetDeliveryRequest deliveryRequest,
+      TimingTool timer,
+      TargetDeliveryResponse targetDeliveryResponse,
+      double parsingTime,
+      long responseSize) {
+    TelemetryEntry telemetryEntry =
+        createTelemetryEntry(
+            deliveryRequest, targetDeliveryResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
+    if (telemetryEntry == null) {
+      return;
+    }
+    telemetryEntry.setParsing(parsingTime);
+    TelemetryRequest telemetryRequest = new TelemetryRequest();
+    telemetryRequest.setResponseSize(responseSize);
+    telemetryEntry.setRequest(telemetryRequest);
+    storedTelemetries.add(telemetryEntry);
   }
 
   public Telemetry getTelemetry() {
@@ -77,7 +99,7 @@ public class TelemetryService {
         .requestId(targetDeliveryResponse.getResponse().getRequestId())
         .mode(executionMode)
         .features(telemetryFeatures)
-        .execution(executionTime)
+        .execution(MathUtils.roundDouble(executionTime, DECIMAL_PLACES))
         .timestamp(System.currentTimeMillis());
   }
 
@@ -144,7 +166,7 @@ public class TelemetryService {
 
   private ExecutionMode getMode(TargetDeliveryRequest request, int status) {
 
-    if (status == STATUS_OK
+    if (status == HttpStatus.OK
         && (getDecisioningMethod(request).equals(DecisioningMethod.ON_DEVICE)
             || getDecisioningMethod(request).equals(DecisioningMethod.HYBRID))) {
       return ExecutionMode.LOCAL;
