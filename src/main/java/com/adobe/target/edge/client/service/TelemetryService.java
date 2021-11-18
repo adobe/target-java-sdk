@@ -26,11 +26,10 @@ import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.utils.MathUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
-import kong.unirest.HttpStatus;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import kong.unirest.HttpStatus;
 
 public class TelemetryService {
 
@@ -64,12 +63,14 @@ public class TelemetryService {
     TelemetryEntry telemetryEntry =
         createTelemetryEntry(
             deliveryRequest, targetDeliveryResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
-    if (telemetryEntry == null) { return; }
-      telemetryEntry.setParsing(parsingTime);
-      TelemetryRequest telemetryRequest = new TelemetryRequest();
-      telemetryRequest.setResponseSize(responseSize);
-      telemetryEntry.setRequest(telemetryRequest);
-      storedTelemetries.add(telemetryEntry);
+    if (telemetryEntry == null) {
+      return;
+    }
+    telemetryEntry.setParsing(parsingTime);
+    TelemetryRequest telemetryRequest = new TelemetryRequest();
+    telemetryRequest.setResponseSize(responseSize);
+    telemetryEntry.setRequest(telemetryRequest);
+    storedTelemetries.add(telemetryEntry);
   }
 
   public Telemetry getTelemetry() {

@@ -121,7 +121,10 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
     return completableFutureResponseWrapper;
   }
 
-  private <R> Function<HttpResponse<R>, CompletableFuture<ResponseWrapper<R>>> getCompletableFutureFunction(ResponseWrapper<R> responseWrapper, CompletableFuture<ResponseWrapper<R>> completableFutureResponseWrapper) {
+  private <R>
+      Function<HttpResponse<R>, CompletableFuture<ResponseWrapper<R>>> getCompletableFutureFunction(
+          ResponseWrapper<R> responseWrapper,
+          CompletableFuture<ResponseWrapper<R>> completableFutureResponseWrapper) {
     return httpResponse -> {
       responseWrapper.setHttpResponse(httpResponse);
       completableFutureResponseWrapper.complete(responseWrapper);
