@@ -50,8 +50,7 @@ public class DefaultRuleLoader implements RuleLoader {
   private int retries = 0;
   private int numFetches = 0;
   private Date lastFetch = null;
-  private static final int DECIMAL_PLACES = 2;
-  public static final ConcurrentLinkedQueue<Long> artifactDownloadTimeStore =
+  public static final ConcurrentLinkedQueue<Double> artifactDownloadTimeStore =
       new ConcurrentLinkedQueue<>();
 
   public DefaultRuleLoader() {}
@@ -236,10 +235,9 @@ public class DefaultRuleLoader implements RuleLoader {
       TimingTool timer = new TimingTool();
       timer.timeStart(TIMING_EXECUTE_REQUEST);
       HttpResponse<OnDeviceDecisioningRuleSet> response = executeRequest(request);
-      long artifactDownloadTime =
-          ((long) MathUtils.roundDouble(timer.timeEnd(TIMING_EXECUTE_REQUEST), DECIMAL_PLACES));
-      artifactDownloadTimeStore.add(artifactDownloadTime);
-
+      double artifactDownloadTime = timer.timeEnd(TIMING_EXECUTE_REQUEST);
+      double artifactDownloadTimeRounded = MathUtils.roundDouble(artifactDownloadTime, 2);
+      artifactDownloadTimeStore.add(artifactDownloadTimeRounded);
       if (response.getStatus() != 200) {
         if (response.getStatus() == 304) {
           // Not updated, skip

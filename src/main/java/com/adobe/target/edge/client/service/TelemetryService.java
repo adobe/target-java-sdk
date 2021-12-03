@@ -53,9 +53,7 @@ public class TelemetryService {
     if (telemetryEntry == null) {
       return;
     }
-    TelemetryRequest telemetryRequest = new TelemetryRequest();
-    telemetryRequest.setDownload(DefaultRuleLoader.artifactDownloadTimeStore.poll());
-    telemetryEntry.setRequest(telemetryRequest);
+    telemetryEntry.setExecution(DefaultRuleLoader.artifactDownloadTimeStore.poll());
     storedTelemetries.add(telemetryEntry);
   }
 
