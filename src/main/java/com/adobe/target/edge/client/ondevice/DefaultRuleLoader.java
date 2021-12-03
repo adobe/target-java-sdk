@@ -11,6 +11,8 @@
  */
 package com.adobe.target.edge.client.ondevice;
 
+import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.TIMING_EXECUTE_REQUEST;
+
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.ClientProxyConfig;
 import com.adobe.target.edge.client.exception.TargetClientException;
@@ -18,10 +20,13 @@ import com.adobe.target.edge.client.exception.TargetExceptionHandler;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningHandler;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
+import com.adobe.target.edge.client.utils.MathUtils;
+import com.adobe.target.edge.client.utils.TimingTool;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import kong.unirest.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +50,9 @@ public class DefaultRuleLoader implements RuleLoader {
   private int retries = 0;
   private int numFetches = 0;
   private Date lastFetch = null;
+  private static final int DECIMAL_PLACES = 2;
+  public static final ConcurrentLinkedQueue<Long> artifactDownloadTimeStore =
+      new ConcurrentLinkedQueue<>();
 
   public DefaultRuleLoader() {}
 
@@ -225,7 +233,13 @@ public class DefaultRuleLoader implements RuleLoader {
     try {
       TargetExceptionHandler handler = clientConfig.getExceptionHandler();
       GetRequest request = generateRequest(clientConfig);
+      TimingTool timer = new TimingTool();
+      timer.timeStart(TIMING_EXECUTE_REQUEST);
       HttpResponse<OnDeviceDecisioningRuleSet> response = executeRequest(request);
+      long artifactDownloadTime =
+          ((long) MathUtils.roundDouble(timer.timeEnd(TIMING_EXECUTE_REQUEST), DECIMAL_PLACES));
+      artifactDownloadTimeStore.add(artifactDownloadTime);
+
       if (response.getStatus() != 200) {
         if (response.getStatus() == 304) {
           // Not updated, skip

@@ -24,6 +24,7 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
+import com.adobe.target.edge.client.ondevice.DefaultRuleLoader;
 import com.adobe.target.edge.client.utils.MathUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
 import java.util.ArrayList;
@@ -49,9 +50,13 @@ public class TelemetryService {
     TelemetryEntry telemetryEntry =
         createTelemetryEntry(
             deliveryRequest, targetDeliveryResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
-    if (telemetryEntry != null) {
-      storedTelemetries.add(telemetryEntry);
+    if (telemetryEntry == null) {
+      return;
     }
+    TelemetryRequest telemetryRequest = new TelemetryRequest();
+    telemetryRequest.setDownload(DefaultRuleLoader.artifactDownloadTimeStore.poll());
+    telemetryEntry.setRequest(telemetryRequest);
+    storedTelemetries.add(telemetryEntry);
   }
 
   public void addTelemetry(
