@@ -381,8 +381,6 @@ class TelemetryServiceTest {
     TelemetryEntry telemetryEntry = telemetry.getEntries().get(1);
 
     assertTrue(telemetryEntry.getTimestamp() > timestamp);
-    assertTrue(telemetryEntry.getExecution() > 0);
-    assertTrue(telemetryEntry.getRequestId().length() > 0);
     assertEquals(telemetryEntry.getFeatures().getDecisioningMethod(), "on-device");
   }
   /**
@@ -420,8 +418,6 @@ class TelemetryServiceTest {
     TelemetryEntry telemetryEntry = telemetry.getEntries().get(1);
 
     assertTrue(telemetryEntry.getTimestamp() > timestamp);
-    assertTrue(telemetryEntry.getExecution() > 0);
-    assertTrue(telemetryEntry.getRequestId().length() > 0);
     assertEquals(telemetryEntry.getFeatures().getDecisioningMethod(), "on-device");
   }
 
@@ -754,5 +750,45 @@ class TelemetryServiceTest {
     telemetryServiceSpy.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
 
     assertEquals(1, telemetryServiceSpy.getTelemetry().getEntries().size());
+  }
+
+  @Test
+  void testTelemetryArtifactFetchWithODD() throws NoSuchFieldException, IOException {
+    setup(true, DecisioningMethod.ON_DEVICE, "testTelemetryArtifactFetchWithODD");
+
+    long timestamp = System.currentTimeMillis();
+    TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
+    NotificationService notificationService =
+        new NotificationService(targetServiceMock, clientConfig, clusterLocator);
+    FieldSetter.setField(
+        localService,
+        localService.getClass().getDeclaredField("notificationService"),
+        notificationService);
+    fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
+    TargetDeliveryRequest targetDeliveryRequest =
+        TargetDeliveryRequest.builder()
+            .context(new Context().channel(ChannelType.WEB))
+            .execute(
+                new ExecuteRequest().addMboxesItem(new MboxRequest().index(0).name("allmatches")))
+            .prefetch(
+                new PrefetchRequest()
+                    .addMboxesItem(new MboxRequest().index(0).name("TEST_PREFETCH")))
+            .decisioningMethod(DecisioningMethod.ON_DEVICE)
+            .build();
+    targetJavaClient.getOffers(targetDeliveryRequest);
+
+    ArgumentCaptor<TargetDeliveryRequest> captor =
+        ArgumentCaptor.forClass(TargetDeliveryRequest.class);
+
+    verify(targetServiceMock, timeout(1000)).executeNotificationAsync(captor.capture());
+
+    Telemetry telemetry = telemetryServiceSpy.getTelemetry();
+
+    assertNotNull(telemetry);
+
+    assertEquals(telemetry.getEntries().size(), 2);
+    TelemetryEntry telemetryEntry = telemetry.getEntries().get(0);
+
+    assertTrue(telemetryEntry.getExecution() > 0);
   }
 }
