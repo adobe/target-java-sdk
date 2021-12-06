@@ -51,6 +51,7 @@ import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.ondevice.ClusterLocator;
+import com.adobe.target.edge.client.ondevice.DefaultRuleLoader;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningDetailsExecutor;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.utils.TimingTool;
@@ -95,6 +96,9 @@ class TelemetryServiceTest {
             .build();
 
     telemetryServiceSpy = spy(new TelemetryService(clientConfig));
+    if (telemetryEnabled && decisioningMethod.equals(DecisioningMethod.ON_DEVICE)) {
+      DefaultRuleLoader.artifactDownloadTimeStore.add(1893.0);
+    }
     DefaultTargetService targetService =
         new DefaultTargetService(clientConfig, telemetryServiceSpy);
     clusterLocator = new ClusterLocator();
@@ -377,8 +381,8 @@ class TelemetryServiceTest {
 
     assertNotNull(telemetry);
 
-    assertEquals(telemetry.getEntries().size(), 2);
-    TelemetryEntry telemetryEntry = telemetry.getEntries().get(1);
+    assertEquals(3, telemetry.getEntries().size());
+    TelemetryEntry telemetryEntry = telemetry.getEntries().get(2);
 
     assertTrue(telemetryEntry.getTimestamp() > timestamp);
     assertEquals(telemetryEntry.getFeatures().getDecisioningMethod(), "on-device");
@@ -415,7 +419,7 @@ class TelemetryServiceTest {
 
     Telemetry telemetry = telemetryServiceSpy.getTelemetry();
     assertNotNull(telemetry);
-    TelemetryEntry telemetryEntry = telemetry.getEntries().get(1);
+    TelemetryEntry telemetryEntry = telemetry.getEntries().get(2);
 
     assertTrue(telemetryEntry.getTimestamp() > timestamp);
     assertEquals(telemetryEntry.getFeatures().getDecisioningMethod(), "on-device");
@@ -588,9 +592,8 @@ class TelemetryServiceTest {
     TargetDeliveryResponse targetDeliveryResponse =
         new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 200, "test call");
     targetDeliveryResponse.getResponse().setRequestId("testID");
-
     telemetryServiceSpy.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
-    TelemetryEntry telemetryEntry = telemetryServiceSpy.getTelemetry().getEntries().get(1);
+    TelemetryEntry telemetryEntry = telemetryServiceSpy.getTelemetry().getEntries().get(2);
     assert telemetryEntry != null;
     assertEquals(ExecutionMode.LOCAL, telemetryEntry.getMode());
   }
@@ -707,7 +710,7 @@ class TelemetryServiceTest {
     telemetryServiceSpy.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
     Telemetry telemetry = telemetryServiceSpy.getTelemetry();
 
-    assertEquals(ExecutionMode.EDGE, telemetry.getEntries().get(1).getMode());
+    assertEquals(ExecutionMode.EDGE, telemetry.getEntries().get(2).getMode());
   }
 
   /**
@@ -750,45 +753,5 @@ class TelemetryServiceTest {
     telemetryServiceSpy.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
 
     assertEquals(1, telemetryServiceSpy.getTelemetry().getEntries().size());
-  }
-
-  @Test
-  void testTelemetryArtifactFetchWithODD() throws NoSuchFieldException, IOException {
-    setup(true, DecisioningMethod.ON_DEVICE, "testTelemetryArtifactFetchWithODD");
-
-    long timestamp = System.currentTimeMillis();
-    TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
-    NotificationService notificationService =
-        new NotificationService(targetServiceMock, clientConfig, clusterLocator);
-    FieldSetter.setField(
-        localService,
-        localService.getClass().getDeclaredField("notificationService"),
-        notificationService);
-    fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
-    TargetDeliveryRequest targetDeliveryRequest =
-        TargetDeliveryRequest.builder()
-            .context(new Context().channel(ChannelType.WEB))
-            .execute(
-                new ExecuteRequest().addMboxesItem(new MboxRequest().index(0).name("allmatches")))
-            .prefetch(
-                new PrefetchRequest()
-                    .addMboxesItem(new MboxRequest().index(0).name("TEST_PREFETCH")))
-            .decisioningMethod(DecisioningMethod.ON_DEVICE)
-            .build();
-    targetJavaClient.getOffers(targetDeliveryRequest);
-
-    ArgumentCaptor<TargetDeliveryRequest> captor =
-        ArgumentCaptor.forClass(TargetDeliveryRequest.class);
-
-    verify(targetServiceMock, timeout(1000)).executeNotificationAsync(captor.capture());
-
-    Telemetry telemetry = telemetryServiceSpy.getTelemetry();
-
-    assertNotNull(telemetry);
-
-    assertEquals(telemetry.getEntries().size(), 2);
-    TelemetryEntry telemetryEntry = telemetry.getEntries().get(0);
-
-    assertTrue(telemetryEntry.getExecution() > 0);
   }
 }

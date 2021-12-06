@@ -47,13 +47,24 @@ public class TelemetryService {
       TargetDeliveryRequest deliveryRequest,
       TimingTool timer,
       TargetDeliveryResponse targetDeliveryResponse) {
+    if (!DefaultRuleLoader.artifactDownloadTimeStore.isEmpty()
+        && clientConfig.isOnDeviceDecisioningEnabled()) {
+      addArtifactEntryToTelemetry();
+    }
     TelemetryEntry telemetryEntry =
         createTelemetryEntry(
             deliveryRequest, targetDeliveryResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
     if (telemetryEntry == null) {
       return;
     }
+    storedTelemetries.add(telemetryEntry);
+  }
+
+  private void addArtifactEntryToTelemetry() {
+    TelemetryEntry telemetryEntry = new TelemetryEntry();
     telemetryEntry.setExecution(DefaultRuleLoader.artifactDownloadTimeStore.poll());
+    telemetryEntry.setRequestId("ArtifactDownload");
+    telemetryEntry.setTimestamp(System.currentTimeMillis());
     storedTelemetries.add(telemetryEntry);
   }
 
