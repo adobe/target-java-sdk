@@ -120,7 +120,6 @@ public class DefaultRuleLoader implements RuleLoader {
     }
     this.clientConfig = clientConfig;
     this.telemetryService = telemetryService;
-
     this.scheduleTimer(0);
   }
 
@@ -133,7 +132,7 @@ public class DefaultRuleLoader implements RuleLoader {
   }
 
   public void refresh() {
-    this.loadRules(this.clientConfig, this.telemetryService);
+    this.loadRules(this.clientConfig);
     this.scheduleTimer(getPollingInterval());
   }
 
@@ -156,7 +155,7 @@ public class DefaultRuleLoader implements RuleLoader {
         new TimerTask() {
           @Override
           public void run() {
-            boolean success = DefaultRuleLoader.this.loadRules(clientConfig, telemetryService);
+            boolean success = DefaultRuleLoader.this.loadRules(clientConfig);
             OnDeviceDecisioningHandler handler = clientConfig.getOnDeviceDecisioningHandler();
             if (!success && DefaultRuleLoader.this.latestRules == null) {
               // retry if initial rules file download fails
@@ -230,7 +229,7 @@ public class DefaultRuleLoader implements RuleLoader {
   }
 
   // For unit test mocking
-  public boolean loadRules(ClientConfig clientConfig, TelemetryService telemetryService) {
+  protected boolean loadRules(ClientConfig clientConfig) {
     try {
       TargetExceptionHandler handler = clientConfig.getExceptionHandler();
       GetRequest request = generateRequest(clientConfig);
