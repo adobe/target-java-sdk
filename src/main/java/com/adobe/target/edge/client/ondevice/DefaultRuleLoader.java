@@ -20,13 +20,13 @@ import com.adobe.target.edge.client.exception.TargetExceptionHandler;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningHandler;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
+import com.adobe.target.edge.client.service.TelemetryService;
 import com.adobe.target.edge.client.utils.MathUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import kong.unirest.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +42,7 @@ public class DefaultRuleLoader implements RuleLoader {
   private OnDeviceDecisioningRuleSet latestRules;
   private String lastETag;
   private ClientConfig clientConfig;
+  private TelemetryService telemetryService;
 
   private UnirestInstance unirestInstance = Unirest.spawnInstance();
   private Timer timer = new Timer(this.getClass().getCanonicalName());
@@ -50,8 +51,6 @@ public class DefaultRuleLoader implements RuleLoader {
   private int retries = 0;
   private int numFetches = 0;
   private Date lastFetch = null;
-  public static final ConcurrentLinkedQueue<Double> artifactDownloadTimeStore =
-      new ConcurrentLinkedQueue<>();
 
   public DefaultRuleLoader() {}
 
@@ -61,7 +60,8 @@ public class DefaultRuleLoader implements RuleLoader {
   }
 
   @Override
-  public synchronized void start(final ClientConfig clientConfig) {
+  public synchronized void start(
+      final ClientConfig clientConfig, TelemetryService telemetryService) {
     if (!clientConfig.isOnDeviceDecisioningEnabled()) {
       return;
     }
@@ -119,6 +119,8 @@ public class DefaultRuleLoader implements RuleLoader {
       }
     }
     this.clientConfig = clientConfig;
+    this.telemetryService = telemetryService;
+
     this.scheduleTimer(0);
   }
 
@@ -131,7 +133,7 @@ public class DefaultRuleLoader implements RuleLoader {
   }
 
   public void refresh() {
-    this.loadRules(this.clientConfig);
+    this.loadRules(this.clientConfig, this.telemetryService);
     this.scheduleTimer(getPollingInterval());
   }
 
@@ -154,7 +156,7 @@ public class DefaultRuleLoader implements RuleLoader {
         new TimerTask() {
           @Override
           public void run() {
-            boolean success = DefaultRuleLoader.this.loadRules(clientConfig);
+            boolean success = DefaultRuleLoader.this.loadRules(clientConfig, telemetryService);
             OnDeviceDecisioningHandler handler = clientConfig.getOnDeviceDecisioningHandler();
             if (!success && DefaultRuleLoader.this.latestRules == null) {
               // retry if initial rules file download fails
@@ -228,7 +230,7 @@ public class DefaultRuleLoader implements RuleLoader {
   }
 
   // For unit test mocking
-  protected boolean loadRules(ClientConfig clientConfig) {
+  public boolean loadRules(ClientConfig clientConfig, TelemetryService telemetryService) {
     try {
       TargetExceptionHandler handler = clientConfig.getExceptionHandler();
       GetRequest request = generateRequest(clientConfig);
@@ -237,7 +239,7 @@ public class DefaultRuleLoader implements RuleLoader {
       HttpResponse<OnDeviceDecisioningRuleSet> response = executeRequest(request);
       double artifactDownloadTime = timer.timeEnd(TIMING_EXECUTE_REQUEST);
       double artifactDownloadTimeRounded = MathUtils.roundDouble(artifactDownloadTime, 2);
-      artifactDownloadTimeStore.add(artifactDownloadTimeRounded);
+      this.telemetryService.addTelemetry(artifactDownloadTimeRounded);
       if (response.getStatus() != 200) {
         if (response.getStatus() == 304) {
           // Not updated, skip

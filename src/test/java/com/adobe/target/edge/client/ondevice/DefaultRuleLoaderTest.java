@@ -21,6 +21,7 @@ import com.adobe.target.edge.client.exception.TargetExceptionHandler;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningHandler;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
+import com.adobe.target.edge.client.service.TelemetryService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -53,6 +54,7 @@ class DefaultRuleLoaderTest {
   private TargetExceptionHandler exceptionHandler;
   private OnDeviceDecisioningHandler executionHandler;
   private ClientConfig clientConfig;
+  private TelemetryService telemetryService;
 
   @BeforeEach
   void init() {
@@ -83,6 +85,7 @@ class DefaultRuleLoaderTest {
             .exceptionHandler(exceptionHandler)
             .onDeviceDecisioningHandler(executionHandler)
             .build();
+    telemetryService = new TelemetryService(clientConfig);
   }
 
   static HttpResponse<OnDeviceDecisioningRuleSet> getTestResponse(
@@ -184,7 +187,7 @@ class DefaultRuleLoaderTest {
         .when(defaultRuleLoader)
         .executeRequest(any());
 
-    defaultRuleLoader.start(clientConfig);
+    defaultRuleLoader.start(clientConfig, telemetryService);
     verify(defaultRuleLoader, timeout(1000)).setLatestRules(any(OnDeviceDecisioningRuleSet.class));
     verify(defaultRuleLoader, timeout(1000)).setLatestETag(eq(etag));
     verify(executionHandler, timeout(1000)).onDeviceDecisioningReady();
@@ -196,7 +199,7 @@ class DefaultRuleLoaderTest {
 
     // do it again, make sure starting works again after a stop
     reset(executionHandler);
-    defaultRuleLoader.start(clientConfig);
+    defaultRuleLoader.start(clientConfig, telemetryService);
     verify(defaultRuleLoader, timeout(1000)).setLatestRules(any(OnDeviceDecisioningRuleSet.class));
     verify(defaultRuleLoader, timeout(1000)).setLatestETag(eq(etag));
     verify(executionHandler, timeout(1000)).onDeviceDecisioningReady();
@@ -225,7 +228,7 @@ class DefaultRuleLoaderTest {
         .when(defaultRuleLoader)
         .executeRequest(any());
 
-    defaultRuleLoader.start(clientConfig);
+    defaultRuleLoader.start(clientConfig, telemetryService);
     verify(exceptionHandler, timeout(1000)).handleException(any(TargetClientException.class));
     verify(executionHandler, never()).onDeviceDecisioningReady();
     verify(executionHandler, never()).artifactDownloadSucceeded(any());
@@ -245,7 +248,7 @@ class DefaultRuleLoaderTest {
         .when(defaultRuleLoader)
         .executeRequest(any());
 
-    defaultRuleLoader.start(clientConfig);
+    defaultRuleLoader.start(clientConfig, telemetryService);
     verify(exceptionHandler, timeout(1000)).handleException(any(TargetClientException.class));
     verify(executionHandler, never()).onDeviceDecisioningReady();
     verify(executionHandler, never()).artifactDownloadSucceeded(any());
@@ -264,7 +267,7 @@ class DefaultRuleLoaderTest {
         .when(defaultRuleLoader)
         .executeRequest(any());
 
-    defaultRuleLoader.start(clientConfig);
+    defaultRuleLoader.start(clientConfig, telemetryService);
     verify(exceptionHandler, timeout(1000)).handleException(any(TargetClientException.class));
     verify(executionHandler, never()).onDeviceDecisioningReady();
     verify(executionHandler, never()).artifactDownloadSucceeded(any());
@@ -292,7 +295,7 @@ class DefaultRuleLoaderTest {
             .onDeviceArtifactPayload(TEST_RULE_SET.getBytes(StandardCharsets.UTF_8))
             .build();
 
-    defaultRuleLoader.start(payloadClientConfig);
+    defaultRuleLoader.start(payloadClientConfig, telemetryService);
     verify(defaultRuleLoader, timeout(1000)).setLatestRules(any(OnDeviceDecisioningRuleSet.class));
     verify(executionHandler, timeout(1000)).onDeviceDecisioningReady();
     verify(executionHandler, never()).artifactDownloadSucceeded(any());
@@ -322,7 +325,7 @@ class DefaultRuleLoaderTest {
             .defaultPropertyToken(propertyToken)
             .build();
 
-    defaultRuleLoader.start(clientConfig);
+    defaultRuleLoader.start(clientConfig, telemetryService);
     String artifactUrl = defaultRuleLoader.getLocation();
     assertEquals(
         "https://assets.adobetarget.com/client123/production/v1/a4d17d78-cb39-6171-b12d-a222a62ebe49/rules.json",
@@ -345,7 +348,7 @@ class DefaultRuleLoaderTest {
             .client(CLIENT_CODE)
             .build();
 
-    defaultRuleLoader.start(clientConfig);
+    defaultRuleLoader.start(clientConfig, telemetryService);
     String artifactUrl = defaultRuleLoader.getLocation();
     assertEquals("https://assets.adobetarget.com/client123/production/v1/rules.json", artifactUrl);
     defaultRuleLoader.stop();
