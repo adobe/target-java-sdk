@@ -13,11 +13,12 @@ package com.adobe.target.edge.client.ondevice;
 
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
+import com.adobe.target.edge.client.service.TelemetryService;
 import java.util.Date;
 
 public interface RuleLoader {
 
-  void start(ClientConfig clientConfig);
+  void start(ClientConfig clientConfig, TelemetryService telemetryService);
 
   void stop();
 

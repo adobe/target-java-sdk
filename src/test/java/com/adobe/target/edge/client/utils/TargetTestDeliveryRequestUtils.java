@@ -25,6 +25,7 @@ import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningEvaluator;
 import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.ondevice.RuleLoader;
 import com.adobe.target.edge.client.ondevice.collator.ParamsCollator;
+import com.adobe.target.edge.client.service.TelemetryService;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -320,7 +321,7 @@ public class TargetTestDeliveryRequestUtils {
   public static RuleLoader getTestRuleLoader(final String ruleSet) {
     return new RuleLoader() {
       @Override
-      public void start(ClientConfig clientConfig) {}
+      public void start(ClientConfig clientConfig, TelemetryService telemetryService) {}
 
       @Override
       public void stop() {}

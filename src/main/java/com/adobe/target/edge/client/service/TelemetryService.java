@@ -24,7 +24,6 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
-import com.adobe.target.edge.client.ondevice.DefaultRuleLoader;
 import com.adobe.target.edge.client.utils.MathUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
 import java.util.ArrayList;
@@ -47,10 +46,6 @@ public class TelemetryService {
       TargetDeliveryRequest deliveryRequest,
       TimingTool timer,
       TargetDeliveryResponse targetDeliveryResponse) {
-    if (!DefaultRuleLoader.artifactDownloadTimeStore.isEmpty()
-        && clientConfig.isOnDeviceDecisioningEnabled()) {
-      addArtifactEntryToTelemetry();
-    }
     TelemetryEntry telemetryEntry =
         createTelemetryEntry(
             deliveryRequest, targetDeliveryResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
@@ -60,9 +55,9 @@ public class TelemetryService {
     storedTelemetries.add(telemetryEntry);
   }
 
-  private void addArtifactEntryToTelemetry() {
+  public void addTelemetry(Double artifactDownloadTime) {
     TelemetryEntry telemetryEntry = new TelemetryEntry();
-    telemetryEntry.setExecution(DefaultRuleLoader.artifactDownloadTimeStore.poll());
+    telemetryEntry.setExecution(artifactDownloadTime);
     telemetryEntry.setRequestId("ArtifactDownload");
     telemetryEntry.setTimestamp(System.currentTimeMillis());
     storedTelemetries.add(telemetryEntry);
