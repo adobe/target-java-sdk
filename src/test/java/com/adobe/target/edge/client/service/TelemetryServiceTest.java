@@ -151,7 +151,7 @@ class TelemetryServiceTest {
   @Test
   void testTelemetryForODD() throws NoSuchFieldException, IOException {
     setup(true, DecisioningMethod.ON_DEVICE, "testTelemetryForODD");
-    telemetryServiceSpy.addTelemetry(0.124);
+
     fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
     TargetDeliveryRequest targetDeliveryRequest =
         TargetDeliveryRequest.builder()
@@ -187,6 +187,7 @@ class TelemetryServiceTest {
   @Test
   void testTelemetryForHybrid() throws NoSuchFieldException, IOException {
     setup(true, DecisioningMethod.HYBRID, "testTelemetryForHybrid");
+
     fileRuleLoader("DECISIONING_PAYLOAD_ALL_MATCHES.json", localService);
     TargetDeliveryRequest targetDeliveryRequest =
         TargetDeliveryRequest.builder()
@@ -345,7 +346,7 @@ class TelemetryServiceTest {
   @Test
   void testTelemetrySentOnExecute() throws NoSuchFieldException, IOException {
     setup(true, DecisioningMethod.ON_DEVICE, "testTelemetrySentOnExecute");
-    telemetryServiceSpy.addTelemetry(0.124);
+
     long timestamp = System.currentTimeMillis();
     TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
     NotificationService notificationService =
@@ -366,6 +367,7 @@ class TelemetryServiceTest {
             .decisioningMethod(DecisioningMethod.ON_DEVICE)
             .build();
     targetJavaClient.getOffers(targetDeliveryRequest);
+
     ArgumentCaptor<TargetDeliveryRequest> captor =
         ArgumentCaptor.forClass(TargetDeliveryRequest.class);
 
@@ -375,10 +377,12 @@ class TelemetryServiceTest {
 
     assertNotNull(telemetry);
 
-    assertEquals(3, telemetry.getEntries().size());
-    TelemetryEntry telemetryEntry = telemetry.getEntries().get(2);
+    assertEquals(telemetry.getEntries().size(), 2);
+    TelemetryEntry telemetryEntry = telemetry.getEntries().get(1);
 
     assertTrue(telemetryEntry.getTimestamp() > timestamp);
+    assertTrue(telemetryEntry.getExecution() > 0);
+    assertTrue(telemetryEntry.getRequestId().length() > 0);
     assertEquals(telemetryEntry.getFeatures().getDecisioningMethod(), "on-device");
   }
   /**
@@ -390,7 +394,6 @@ class TelemetryServiceTest {
   @Test
   void testTelemetrySentOnPrefetch() throws NoSuchFieldException, IOException {
     setup(true, DecisioningMethod.ON_DEVICE, "testTelemetrySentOnPrefetch");
-    telemetryServiceSpy.addTelemetry(0.124);
     long timestamp = System.currentTimeMillis();
     TargetService targetServiceMock = mock(TargetService.class, RETURNS_DEFAULTS);
     NotificationService notificationService =
@@ -414,9 +417,11 @@ class TelemetryServiceTest {
 
     Telemetry telemetry = telemetryServiceSpy.getTelemetry();
     assertNotNull(telemetry);
-    TelemetryEntry telemetryEntry = telemetry.getEntries().get(2);
+    TelemetryEntry telemetryEntry = telemetry.getEntries().get(1);
 
     assertTrue(telemetryEntry.getTimestamp() > timestamp);
+    assertTrue(telemetryEntry.getExecution() > 0);
+    assertTrue(telemetryEntry.getRequestId().length() > 0);
     assertEquals(telemetryEntry.getFeatures().getDecisioningMethod(), "on-device");
   }
 
@@ -587,6 +592,7 @@ class TelemetryServiceTest {
     TargetDeliveryResponse targetDeliveryResponse =
         new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 200, "test call");
     targetDeliveryResponse.getResponse().setRequestId("testID");
+
     telemetryServiceSpy.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
     TelemetryEntry telemetryEntry = telemetryServiceSpy.getTelemetry().getEntries().get(1);
     assert telemetryEntry != null;
@@ -680,8 +686,6 @@ class TelemetryServiceTest {
   @Test
   void testExecutionModeOnDeviceWithPartialContent() throws NoSuchFieldException {
     setup(true, DecisioningMethod.ON_DEVICE, "testExecutionModeOnDeviceWithPartialContent");
-
-    telemetryServiceSpy.addTelemetry(0.124);
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
 
@@ -707,7 +711,7 @@ class TelemetryServiceTest {
     telemetryServiceSpy.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
     Telemetry telemetry = telemetryServiceSpy.getTelemetry();
 
-    assertEquals(ExecutionMode.EDGE, telemetry.getEntries().get(2).getMode());
+    assertEquals(ExecutionMode.EDGE, telemetry.getEntries().get(1).getMode());
   }
 
   /**

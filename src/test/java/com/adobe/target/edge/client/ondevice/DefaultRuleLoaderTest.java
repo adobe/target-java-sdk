@@ -85,7 +85,8 @@ class DefaultRuleLoaderTest {
             .exceptionHandler(exceptionHandler)
             .onDeviceDecisioningHandler(executionHandler)
             .build();
-    telemetryService = new TelemetryService(clientConfig);
+
+    telemetryService = spy(new TelemetryService(clientConfig));
   }
 
   static HttpResponse<OnDeviceDecisioningRuleSet> getTestResponse(
@@ -351,6 +352,22 @@ class DefaultRuleLoaderTest {
     defaultRuleLoader.start(clientConfig, telemetryService);
     String artifactUrl = defaultRuleLoader.getLocation();
     assertEquals("https://assets.adobetarget.com/client123/production/v1/rules.json", artifactUrl);
+    defaultRuleLoader.stop();
+  }
+
+  @Test
+  void testGetArtifactoryWithTelemetry() {
+    DefaultRuleLoader defaultRuleLoader = mock(DefaultRuleLoader.class, CALLS_REAL_METHODS);
+
+    String etag = "5b1cf3c050e1a0d16934922bf19ba6ea";
+    Mockito.doReturn(null).when(defaultRuleLoader).generateRequest(any(ClientConfig.class));
+    Mockito.doReturn(getTestResponse(TEST_RULE_SET, etag, HttpStatus.SC_OK))
+        .when(defaultRuleLoader)
+        .executeRequest(any());
+
+    defaultRuleLoader.start(clientConfig, telemetryService);
+    verify(telemetryService, timeout(1000)).addTelemetry(any());
+    assertEquals(1, telemetryService.getTelemetry().getEntries().size());
     defaultRuleLoader.stop();
   }
 }
