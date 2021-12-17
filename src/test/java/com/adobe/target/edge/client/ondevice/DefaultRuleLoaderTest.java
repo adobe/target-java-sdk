@@ -356,7 +356,7 @@ class DefaultRuleLoaderTest {
   }
 
   @Test
-  void testGetArtifactoryWithTelemetry() {
+  void testGetArtifactWithTelemetry() {
     DefaultRuleLoader defaultRuleLoader = mock(DefaultRuleLoader.class, CALLS_REAL_METHODS);
 
     String etag = "5b1cf3c050e1a0d16934922bf19ba6ea";
