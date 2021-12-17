@@ -49,9 +49,18 @@ public class TelemetryService {
     TelemetryEntry telemetryEntry =
         createTelemetryEntry(
             deliveryRequest, targetDeliveryResponse, timer.timeEnd(TIMING_EXECUTE_REQUEST));
-    if (telemetryEntry != null) {
-      storedTelemetries.add(telemetryEntry);
+    if (telemetryEntry == null) {
+      return;
     }
+    storedTelemetries.add(telemetryEntry);
+  }
+
+  public void addTelemetry(Double artifactDownloadTime) {
+    TelemetryEntry telemetryEntry = new TelemetryEntry();
+    telemetryEntry.setExecution(artifactDownloadTime);
+    telemetryEntry.setRequestId("ArtifactDownload");
+    telemetryEntry.setTimestamp(System.currentTimeMillis());
+    storedTelemetries.add(telemetryEntry);
   }
 
   public void addTelemetry(

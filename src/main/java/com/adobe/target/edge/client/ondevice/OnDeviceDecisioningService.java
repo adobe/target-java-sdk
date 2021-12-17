@@ -94,10 +94,10 @@ public class OnDeviceDecisioningService {
     this.clientConfig = clientConfig;
     OnDeviceDecisioningServicesManager.OnDeviceDecisioningServices services =
         OnDeviceDecisioningServicesManager.getInstance().getServices(clientConfig, targetService);
-    this.ruleLoader = services.getRuleLoader();
-    this.ruleLoader.start(clientConfig);
-    this.notificationService = services.getNotificationDeliveryService();
     this.telemetryService = telemetryService;
+    this.ruleLoader = services.getRuleLoader();
+    this.ruleLoader.start(clientConfig, telemetryService);
+    this.notificationService = services.getNotificationDeliveryService();
     this.clusterLocator = services.getClusterLocator();
     this.clusterLocator.start(clientConfig, targetService);
     this.decisionHandler = new OnDeviceDecisioningDetailsExecutor(clientConfig, mapper);

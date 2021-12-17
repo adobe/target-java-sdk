@@ -11,6 +11,8 @@
  */
 package com.adobe.target.edge.client.ondevice;
 
+import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.TIMING_EXECUTE_REQUEST;
+
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.ClientProxyConfig;
 import com.adobe.target.edge.client.exception.TargetClientException;
@@ -18,6 +20,9 @@ import com.adobe.target.edge.client.exception.TargetExceptionHandler;
 import com.adobe.target.edge.client.http.JacksonObjectMapper;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningHandler;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningRuleSet;
+import com.adobe.target.edge.client.service.TelemetryService;
+import com.adobe.target.edge.client.utils.MathUtils;
+import com.adobe.target.edge.client.utils.TimingTool;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Timer;
@@ -37,6 +42,7 @@ public class DefaultRuleLoader implements RuleLoader {
   private OnDeviceDecisioningRuleSet latestRules;
   private String lastETag;
   private ClientConfig clientConfig;
+  private TelemetryService telemetryService;
 
   private UnirestInstance unirestInstance = Unirest.spawnInstance();
   private Timer timer = new Timer(this.getClass().getCanonicalName());
@@ -54,7 +60,8 @@ public class DefaultRuleLoader implements RuleLoader {
   }
 
   @Override
-  public synchronized void start(final ClientConfig clientConfig) {
+  public synchronized void start(
+      final ClientConfig clientConfig, TelemetryService telemetryService) {
     if (!clientConfig.isOnDeviceDecisioningEnabled()) {
       return;
     }
@@ -112,6 +119,7 @@ public class DefaultRuleLoader implements RuleLoader {
       }
     }
     this.clientConfig = clientConfig;
+    this.telemetryService = telemetryService;
     this.scheduleTimer(0);
   }
 
@@ -225,7 +233,12 @@ public class DefaultRuleLoader implements RuleLoader {
     try {
       TargetExceptionHandler handler = clientConfig.getExceptionHandler();
       GetRequest request = generateRequest(clientConfig);
+      TimingTool timer = new TimingTool();
+      timer.timeStart(TIMING_EXECUTE_REQUEST);
       HttpResponse<OnDeviceDecisioningRuleSet> response = executeRequest(request);
+      double artifactDownloadTime = timer.timeEnd(TIMING_EXECUTE_REQUEST);
+      double artifactDownloadTimeRounded = MathUtils.roundDouble(artifactDownloadTime, 2);
+      this.telemetryService.addTelemetry(artifactDownloadTimeRounded);
       if (response.getStatus() != 200) {
         if (response.getStatus() == 304) {
           // Not updated, skip
