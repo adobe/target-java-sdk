@@ -116,6 +116,47 @@ public class DefaultTargetServiceTest {
             any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
   }
 
+  /**
+   * executeNotification(args) method also calls private method callDeliveryApi(), we can check if
+   * the targetHttpClient inside callDeliveryApi() is called within the method.
+   */
+  @Test
+  public void testExecuteNotification() {
+
+    ResponseWrapper<DeliveryResponse> mockedResponseWrapper = getTestDeliveryResponse();
+    getMockedTelemetry();
+    Mockito.lenient()
+        .doReturn(mockedResponseWrapper)
+        .when(targetHttpClient)
+        .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
+
+    TargetDeliveryRequest targetDeliveryRequestMock = getDeliveryRequest();
+    targetService.executeNotification(targetDeliveryRequestMock);
+
+    verify(targetHttpClient, times(1))
+        .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
+  }
+
+  /**
+   * executeNotificationAsync(args) method also calls private method callDeliveryApiAsync(), we can
+   * check if the targetHttpClient inside callDeliveryApiAsync() is called within the method.
+   */
+  @Test
+  public void testExecuteNotificationAsync() {
+    getMockedTelemetry();
+    Mockito.lenient()
+        .doReturn(CompletableFuture.completedFuture(getTestDeliveryResponse()))
+        .when(targetHttpClient)
+        .executeAsync(
+            any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
+
+    targetService.executeNotificationAsync(getDeliveryRequest());
+
+    verify(targetHttpClient, times(1))
+        .executeAsync(
+            any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
+  }
+
   private void getMockedTelemetry() {
     Telemetry telemetryMock = new Telemetry();
     TelemetryEntry telemetryEntryMock = new TelemetryEntry();
