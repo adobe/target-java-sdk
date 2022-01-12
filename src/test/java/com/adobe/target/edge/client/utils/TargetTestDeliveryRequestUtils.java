@@ -192,7 +192,7 @@ public class TargetTestDeliveryRequestUtils {
     return Arrays.asList(prefetchMboxResponse);
   }
 
-  static RawResponse getRawTestResponse() {
+  public static RawResponse getRawTestResponse() {
     return new RawResponse() {
       @Override
       public int getStatus() {
@@ -216,7 +216,7 @@ public class TargetTestDeliveryRequestUtils {
 
       @Override
       public byte[] getContentAsBytes() {
-        return new byte[0];
+        return "{\"msg\":\"success\"}".getBytes();
       }
 
       @Override
@@ -241,7 +241,7 @@ public class TargetTestDeliveryRequestUtils {
 
       @Override
       public String getContentType() {
-        return null;
+        return "application/json;charset=UTF-8";
       }
 
       @Override

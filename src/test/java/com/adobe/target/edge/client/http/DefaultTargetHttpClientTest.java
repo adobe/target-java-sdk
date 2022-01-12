@@ -14,13 +14,27 @@ package com.adobe.target.edge.client.http;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
 
+import com.adobe.target.delivery.v1.model.DeliveryRequest;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.ClientProxyConfig;
+import com.adobe.target.edge.client.utils.MockRawResponse;
+import com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import kong.unirest.HttpResponse;
 import kong.unirest.Proxy;
+import kong.unirest.RawResponse;
 import kong.unirest.UnirestInstance;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
+import org.mockito.internal.util.reflection.FieldSetter;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -76,5 +90,81 @@ public class DefaultTargetHttpClientTest {
     assertEquals(PROXY_USERNAME, unirestProxy.getUsername());
     assertEquals(PROXY_PASSWORD, unirestProxy.getPassword());
     targetClient.close();
+  }
+
+  @Test
+  void testExecute() throws NoSuchFieldException {
+    ClientConfig clientConfig =
+        ClientConfig.builder().organizationId(TEST_ORG_ID).telemetryEnabled(false).build();
+    DefaultTargetHttpClient defaultTargetHttpClient = new DefaultTargetHttpClient(clientConfig);
+    UnirestInstance unirestInstance =
+        Mockito.mock(UnirestInstance.class, Mockito.RETURNS_DEEP_STUBS);
+    FieldSetter.setField(
+        defaultTargetHttpClient,
+        defaultTargetHttpClient.getClass().getDeclaredField("unirestInstance"),
+        unirestInstance);
+
+    Map<String, Object> queryParams = new HashMap<>();
+    String url = "/url";
+    DeliveryRequest deliveryRequest = new DeliveryRequest();
+    HttpResponse<Object> mockHttpResponse = Mockito.mock(HttpResponse.class);
+    when(unirestInstance
+            .post(eq(url))
+            .queryString(eq(queryParams))
+            .body(eq(deliveryRequest))
+            .asObject(ArgumentMatchers.<Function<RawResponse, Object>>any()))
+        .thenAnswer(
+            invocation -> {
+              RawResponse rawResponse = TargetTestDeliveryRequestUtils.getRawTestResponse();
+              Function<RawResponse, Object> function =
+                  (Function<RawResponse, Object>) invocation.getArguments()[0];
+              function.apply(rawResponse);
+              return mockHttpResponse;
+            });
+
+    ResponseWrapper<MockRawResponse> responseWrapper =
+        defaultTargetHttpClient.execute(queryParams, url, deliveryRequest, MockRawResponse.class);
+    assertNotNull(responseWrapper);
+    assertEquals(mockHttpResponse, responseWrapper.getHttpResponse());
+  }
+
+  @Test
+  void testExecuteAsync() throws NoSuchFieldException {
+    ClientConfig clientConfig =
+        ClientConfig.builder().organizationId(TEST_ORG_ID).telemetryEnabled(false).build();
+    DefaultTargetHttpClient defaultTargetHttpClient = new DefaultTargetHttpClient(clientConfig);
+    UnirestInstance unirestInstance =
+        Mockito.mock(UnirestInstance.class, Mockito.RETURNS_DEEP_STUBS);
+    FieldSetter.setField(
+        defaultTargetHttpClient,
+        defaultTargetHttpClient.getClass().getDeclaredField("unirestInstance"),
+        unirestInstance);
+
+    Map<String, Object> queryParams = new HashMap<>();
+    String url = "/testUrl";
+    DeliveryRequest deliveryRequest = new DeliveryRequest();
+
+    when(unirestInstance
+            .post(eq(url))
+            .queryString(eq(queryParams))
+            .body(eq(deliveryRequest))
+            .asObjectAsync(ArgumentMatchers.<Function<RawResponse, Object>>any())
+            .thenApply(
+                ArgumentMatchers
+                    .<Function<HttpResponse<Object>, CompletableFuture<ResponseWrapper<Object>>>>
+                        any()))
+        .thenAnswer(
+            invocation -> {
+              HttpResponse httpResponse = Mockito.mock(HttpResponse.class);
+              Function<HttpResponse, Object> function =
+                  (Function<HttpResponse, Object>) invocation.getArguments()[0];
+              function.apply(httpResponse);
+              return null;
+            });
+
+    CompletableFuture<ResponseWrapper<MockRawResponse>> completableFuture =
+        defaultTargetHttpClient.executeAsync(
+            queryParams, url, deliveryRequest, MockRawResponse.class);
+    assertNotNull(completableFuture);
   }
 }
