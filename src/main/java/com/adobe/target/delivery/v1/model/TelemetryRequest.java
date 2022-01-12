@@ -19,21 +19,21 @@ import java.util.Objects;
 /** Telemetry Request */
 public class TelemetryRequest {
   @JsonProperty("dns")
-  private Long dns;
+  private Double dns;
 
   @JsonProperty("tls")
-  private Long tls;
+  private Double tls;
 
   @JsonProperty("timeToFirstByte")
-  private Long timeToFirstByte;
+  private Double timeToFirstByte;
 
   @JsonProperty("download")
-  private Long download;
+  private Double download;
 
   @JsonProperty("responseSize")
   private Long responseSize;
 
-  public TelemetryRequest dns(Long dns) {
+  public TelemetryRequest dns(Double dns) {
     this.dns = dns;
     return this;
   }
@@ -43,15 +43,15 @@ public class TelemetryRequest {
    *
    * @return dns
    */
-  public Long getDns() {
+  public Double getDns() {
     return dns;
   }
 
-  public void setDns(Long dns) {
+  public void setDns(Double dns) {
     this.dns = dns;
   }
 
-  public TelemetryRequest tls(Long tls) {
+  public TelemetryRequest tls(Double tls) {
     this.tls = tls;
     return this;
   }
@@ -61,15 +61,15 @@ public class TelemetryRequest {
    *
    * @return tls
    */
-  public Long getTls() {
+  public Double getTls() {
     return tls;
   }
 
-  public void setTls(Long tls) {
+  public void setTls(Double tls) {
     this.tls = tls;
   }
 
-  public TelemetryRequest timeToFirstByte(Long timeToFirstByte) {
+  public TelemetryRequest timeToFirstByte(Double timeToFirstByte) {
     this.timeToFirstByte = timeToFirstByte;
     return this;
   }
@@ -79,15 +79,15 @@ public class TelemetryRequest {
    *
    * @return timeToFirstByte
    */
-  public Long getTimeToFirstByte() {
+  public Double getTimeToFirstByte() {
     return timeToFirstByte;
   }
 
-  public void setTimeToFirstByte(Long timeToFirstByte) {
+  public void setTimeToFirstByte(Double timeToFirstByte) {
     this.timeToFirstByte = timeToFirstByte;
   }
 
-  public TelemetryRequest download(Long download) {
+  public TelemetryRequest download(Double download) {
     this.download = download;
     return this;
   }
@@ -97,11 +97,11 @@ public class TelemetryRequest {
    *
    * @return download
    */
-  public Long getDownload() {
+  public Double getDownload() {
     return download;
   }
 
-  public void setDownload(Long download) {
+  public void setDownload(Double download) {
     this.download = download;
   }
 
