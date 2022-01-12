@@ -39,6 +39,9 @@ public class TelemetryEntry {
   @JsonProperty("request")
   private TelemetryRequest request;
 
+  @JsonProperty("telemetryServerToken")
+  private String telemetryServerToken;
+
   public TelemetryEntry requestId(String requestId) {
     this.requestId = requestId;
     return this;
@@ -165,6 +168,24 @@ public class TelemetryEntry {
     this.request = request;
   }
 
+  public TelemetryEntry telemetryServerToken(String telemetryServerToken) {
+    this.telemetryServerToken = telemetryServerToken;
+    return this;
+  }
+
+  /**
+   * Encoded data with telemetry collected from previous request to Delivery API
+   *
+   * @return telemetryServerToken
+   */
+  public String getTelemetryServerToken() {
+    return telemetryServerToken;
+  }
+
+  public void setTelemetryServerToken(String telemetryServerToken) {
+    this.telemetryServerToken = telemetryServerToken;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -180,12 +201,14 @@ public class TelemetryEntry {
         && Objects.equals(this.execution, telemetryEntry.execution)
         && Objects.equals(this.parsing, telemetryEntry.parsing)
         && Objects.equals(this.features, telemetryEntry.features)
-        && Objects.equals(this.request, telemetryEntry.request);
+        && Objects.equals(this.request, telemetryEntry.request)
+        && Objects.equals(this.telemetryServerToken, telemetryEntry.telemetryServerToken);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(requestId, timestamp, mode, execution, parsing, features, request);
+    return Objects.hash(
+        requestId, timestamp, mode, execution, parsing, features, request, telemetryServerToken);
   }
 
   @Override
@@ -199,6 +222,9 @@ public class TelemetryEntry {
     sb.append("    parsing: ").append(toIndentedString(parsing)).append("\n");
     sb.append("    features: ").append(toIndentedString(features)).append("\n");
     sb.append("    request: ").append(toIndentedString(request)).append("\n");
+    sb.append("    telemetryServerToken: ")
+        .append(toIndentedString(telemetryServerToken))
+        .append("\n");
     sb.append("}");
     return sb.toString();
   }

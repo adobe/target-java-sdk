@@ -47,6 +47,9 @@ public class DeliveryResponse {
   @JsonProperty("notifications")
   private List<NotificationResponse> notifications = new ArrayList<>();
 
+  @JsonProperty("telemetryServerToken")
+  private String telemetryServerToken;
+
   public DeliveryResponse status(Integer status) {
     this.status = status;
     return this;
@@ -201,6 +204,24 @@ public class DeliveryResponse {
     this.notifications = notifications;
   }
 
+  public DeliveryResponse telemetryServerToken(String telemetryServerToken) {
+    this.telemetryServerToken = telemetryServerToken;
+    return this;
+  }
+
+  /**
+   * Encoded data with request telemetry collected from Delivery API
+   *
+   * @return telemetryServerToken
+   */
+  public String getTelemetryServerToken() {
+    return telemetryServerToken;
+  }
+
+  public void setTelemetryServerToken(String telemetryServerToken) {
+    this.telemetryServerToken = telemetryServerToken;
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {
@@ -217,12 +238,22 @@ public class DeliveryResponse {
         && Objects.equals(this.edgeHost, deliveryResponse.edgeHost)
         && Objects.equals(this.execute, deliveryResponse.execute)
         && Objects.equals(this.prefetch, deliveryResponse.prefetch)
-        && Objects.equals(this.notifications, deliveryResponse.notifications);
+        && Objects.equals(this.notifications, deliveryResponse.notifications)
+        && Objects.equals(this.telemetryServerToken, deliveryResponse.telemetryServerToken);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(status, requestId, id, client, edgeHost, execute, prefetch, notifications);
+    return Objects.hash(
+        status,
+        requestId,
+        id,
+        client,
+        edgeHost,
+        execute,
+        prefetch,
+        notifications,
+        telemetryServerToken);
   }
 
   @Override
@@ -237,6 +268,9 @@ public class DeliveryResponse {
     sb.append("    execute: ").append(toIndentedString(execute)).append("\n");
     sb.append("    prefetch: ").append(toIndentedString(prefetch)).append("\n");
     sb.append("    notifications: ").append(toIndentedString(notifications)).append("\n");
+    sb.append("    telemetryServerToken: ")
+        .append(toIndentedString(telemetryServerToken))
+        .append("\n");
     sb.append("}");
     return sb.toString();
   }
