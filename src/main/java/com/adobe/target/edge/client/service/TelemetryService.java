@@ -106,6 +106,7 @@ public class TelemetryService {
 
     return new TelemetryEntry()
         .requestId(targetDeliveryResponse.getResponse().getRequestId())
+        .telemetryServerToken(targetDeliveryResponse.getResponse().getTelemetryServerToken())
         .mode(executionMode)
         .features(telemetryFeatures)
         .execution(MathUtils.roundDouble(executionTime, DECIMAL_PLACES))

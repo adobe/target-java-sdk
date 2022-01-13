@@ -546,6 +546,7 @@ class TelemetryServiceTest {
     TargetDeliveryResponse targetDeliveryResponse =
         new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 200, "test call");
     targetDeliveryResponse.getResponse().setRequestId("testID");
+    targetDeliveryResponse.getResponse().setTelemetryServerToken("testServerToken2022");
     telemetryServiceSpy.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
     TelemetryEntry telemetryEntry = telemetryServiceSpy.getTelemetry().getEntries().get(0);
     assertNotNull(telemetryEntry);
@@ -555,6 +556,7 @@ class TelemetryServiceTest {
     assertEquals(true, telemetryEntry.getFeatures().getPrefetchPageLoad());
     assertEquals(3, telemetryEntry.getFeatures().getPrefetchMboxCount());
     assertEquals("testID", telemetryEntry.getRequestId());
+    assertEquals("testServerToken2022", telemetryEntry.getTelemetryServerToken());
     assertEquals(ExecutionMode.EDGE, telemetryEntry.getMode());
     assertEquals(
         DecisioningMethod.SERVER_SIDE.toString(),
