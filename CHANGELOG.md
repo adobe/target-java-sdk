@@ -3,9 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [2.2.0] - 2022-01-24
 ### Changed
-- Added telemetry feature.
+- Added SDK telemetry data collection.
 - Improved unit tests coverage
-- Refactored ODD code
+- Refactored On-Device Decisioning code
 
 ## [2.1.6] - 2021-10-04
 ### Changed
