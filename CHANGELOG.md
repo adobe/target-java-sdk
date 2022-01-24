@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.2.0] - 2022-01-24
+### Changed
+- Added telemetry feature.
+- Improved unit tests coverage
+- Refactored ODD code
+
 ## [2.1.6] - 2021-10-04
 ### Changed
 - Improved logging for exceptions.
