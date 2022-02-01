@@ -13,7 +13,6 @@ package com.adobe.target.edge.client.service;
 
 import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.TIMING_EXECUTE_REQUEST;
 import static com.adobe.target.edge.client.utils.TargetConstants.SDK_VERSION;
-import static org.apache.http.HttpStatus.SC_NO_CONTENT;
 import static org.apache.http.HttpStatus.SC_OK;
 
 import com.adobe.target.delivery.v1.model.DeliveryResponse;
@@ -115,9 +114,9 @@ public class DefaultTargetService implements TargetService {
 
   @Override
   public ResponseStatus executeNotification(TargetDeliveryRequest deliveryRequest) {
-
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
+    NotificationService.setBeaconToFalse(deliveryRequest.getDeliveryRequest());
     TargetDeliveryResponse targetDeliveryResponse;
     Telemetry telemetry = telemetryService.getTelemetry();
     if (!telemetry.getEntries().isEmpty()) {
@@ -141,6 +140,7 @@ public class DefaultTargetService implements TargetService {
       TargetDeliveryRequest deliveryRequest) {
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
+    NotificationService.setBeaconToFalse(deliveryRequest.getDeliveryRequest());
     Telemetry telemetry = telemetryService.getTelemetry();
     if (!telemetry.getEntries().isEmpty()) {
       deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
@@ -179,9 +179,7 @@ public class DefaultTargetService implements TargetService {
 
   private DeliveryResponse retrieveDeliveryResponse(HttpResponse<DeliveryResponse> response) {
     DeliveryResponse deliveryResponse = response.getBody();
-    /* We expect an empty response body and 204 status code when request includes
-    Context.beacon=true */
-    if (deliveryResponse == null && response.getStatus() != SC_NO_CONTENT) {
+    if (deliveryResponse == null) {
       Optional<UnirestParsingException> parsingError = response.getParsingError();
 
       throw new RuntimeException(

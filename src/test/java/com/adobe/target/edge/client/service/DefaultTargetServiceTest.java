@@ -15,6 +15,7 @@ import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.
 import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getMboxExecuteLocalRequest;
 import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getMboxPrefetchLocalRequest;
 import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getTestDeliveryResponse;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -41,6 +42,7 @@ import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.internal.util.reflection.FieldSetter;
@@ -135,6 +137,56 @@ public class DefaultTargetServiceTest {
 
     verify(targetHttpClient, times(1))
         .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
+  }
+
+  /**
+   * If a user sends a notifications request with Context.beacon = true, we should always set it to
+   * false for them. Beacon does not make sense to use with a server-side SDK.
+   */
+  @Test
+  public void testExecuteNotificationWithBeaconTrue() {
+
+    ResponseWrapper<DeliveryResponse> mockedResponseWrapper = getTestDeliveryResponse();
+    getMockedTelemetry();
+    Mockito.lenient()
+        .doReturn(mockedResponseWrapper)
+        .when(targetHttpClient)
+        .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
+
+    TargetDeliveryRequest targetDeliveryRequestMock = getDeliveryRequest();
+    targetDeliveryRequestMock.getDeliveryRequest().getContext().setBeacon(Boolean.valueOf(true));
+    targetService.executeNotification(targetDeliveryRequestMock);
+
+    ArgumentCaptor<DeliveryRequest> captor = ArgumentCaptor.forClass(DeliveryRequest.class);
+
+    verify(targetHttpClient, times(1))
+        .execute(any(Map.class), any(String.class), captor.capture(), any(Class.class));
+    assertFalse(captor.getValue().getContext().getBeacon());
+  }
+
+  /**
+   * If a user sends a notifications request with Context.beacon = null, we should set it to false
+   * to avoid NPE. Beacon does not make sense to use with a server-side SDK.
+   */
+  @Test
+  public void testExecuteNotificationWithBeaconNull() {
+
+    ResponseWrapper<DeliveryResponse> mockedResponseWrapper = getTestDeliveryResponse();
+    getMockedTelemetry();
+    Mockito.lenient()
+        .doReturn(mockedResponseWrapper)
+        .when(targetHttpClient)
+        .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
+
+    TargetDeliveryRequest targetDeliveryRequestMock = getDeliveryRequest();
+    targetDeliveryRequestMock.getDeliveryRequest().getContext().setBeacon(null);
+    targetService.executeNotification(targetDeliveryRequestMock);
+
+    ArgumentCaptor<DeliveryRequest> captor = ArgumentCaptor.forClass(DeliveryRequest.class);
+
+    verify(targetHttpClient, times(1))
+        .execute(any(Map.class), any(String.class), captor.capture(), any(Class.class));
+    assertFalse(captor.getValue().getContext().getBeacon());
   }
 
   /**

@@ -307,24 +307,23 @@ class TelemetryServiceTest {
   }
 
   /**
-   * Test case for calling sendNotifications() with Context.beacon = true. In this case Delivery API
-   * will return a response with status code 204 (no content) and a null response body.  Since
-   * response body is null we will not collect telemetry in this case.
+   * Test case for calling sendNotifications() and getting an http timeout. In this case Delivery
+   * API will return a null response body, and the SDK will throw a RuntimeException, and not
+   * collect telemetry.
    *
    * @throws NoSuchFieldException
    */
   @Test
-  void testTelemetryForServerSideSendNotificationWithBeacon() throws NoSuchFieldException {
+  void testTelemetryForServerSideSendNotificationNullResponse() throws NoSuchFieldException {
     setup(
         true,
         DecisioningMethod.SERVER_SIDE,
-        "testTelemetryForServerSideSendNotificationWithBeacon");
+        "testTelemetryForServerSideSendNotificationNullResponse");
     Mockito.lenient()
         .doReturn(getNoContentDeliveryResponse())
         .when(defaultTargetHttpClient)
         .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
     Context context = getContext();
-    context.setBeacon(true);
 
     List<Notification> notifications = new ArrayList<>();
     Notification notification =
@@ -339,16 +338,18 @@ class TelemetryServiceTest {
     TargetDeliveryRequest targetDeliveryRequest =
         TargetDeliveryRequest.builder().context(context).notifications(notifications).build();
 
-    targetJavaClient.sendNotifications(targetDeliveryRequest);
+    try {
+      targetJavaClient.sendNotifications(targetDeliveryRequest);
+    } catch (RuntimeException e) {
+    }
 
-    verify(telemetryServiceSpy, times(1))
+    verify(telemetryServiceSpy, never())
         .addTelemetry(
             any(TargetDeliveryRequest.class),
             any(TimingTool.class),
             any(TargetDeliveryResponse.class),
             any(Double.class),
             any(Long.class));
-    assertEquals(0, telemetryServiceSpy.getTelemetry().getEntries().size());
   }
 
   /**

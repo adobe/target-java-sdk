@@ -262,7 +262,7 @@ public class TargetTestDeliveryRequestUtils {
   }
 
   public static ResponseWrapper<DeliveryResponse> getNoContentDeliveryResponse() {
-    RawResponse rawResponse = getRawTestResponse(HttpStatus.SC_NO_CONTENT);
+    RawResponse rawResponse = getRawTestResponse(HttpStatus.SC_GATEWAY_TIMEOUT);
     ResponseWrapper<DeliveryResponse> responseWrapper = new ResponseWrapper<>();
     responseWrapper.setHttpResponse(new BasicResponse<>(rawResponse, null));
     return responseWrapper;
