@@ -15,6 +15,7 @@ import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.T
 import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.fileRuleLoader;
 import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getContext;
 import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getMboxExecuteRequest;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getNoContentDeliveryResponse;
 import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getPrefetchViewsRequest;
 import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getTestDeliveryResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -38,7 +39,9 @@ import com.adobe.target.delivery.v1.model.DeliveryResponse;
 import com.adobe.target.delivery.v1.model.ExecuteRequest;
 import com.adobe.target.delivery.v1.model.ExecutionMode;
 import com.adobe.target.delivery.v1.model.MboxRequest;
+import com.adobe.target.delivery.v1.model.MetricType;
 import com.adobe.target.delivery.v1.model.Notification;
+import com.adobe.target.delivery.v1.model.NotificationMbox;
 import com.adobe.target.delivery.v1.model.PrefetchRequest;
 import com.adobe.target.delivery.v1.model.Property;
 import com.adobe.target.delivery.v1.model.Telemetry;
@@ -56,6 +59,7 @@ import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.utils.TimingTool;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -300,6 +304,51 @@ class TelemetryServiceTest {
             any(Double.class),
             any(Long.class));
     assertEquals(1, telemetryServiceSpy.getTelemetry().getEntries().size());
+  }
+
+  /**
+   * Test case for calling sendNotifications() with Context.beacon = true. In this case Delivery API
+   * will return a response with status code 204 (no content) and a null response body.  Since
+   * response body is null we will not collect telemetry in this case.
+   *
+   * @throws NoSuchFieldException
+   */
+  @Test
+  void testTelemetryForServerSideSendNotificationWithBeacon() throws NoSuchFieldException {
+    setup(
+        true,
+        DecisioningMethod.SERVER_SIDE,
+        "testTelemetryForServerSideSendNotificationWithBeacon");
+    Mockito.lenient()
+        .doReturn(getNoContentDeliveryResponse())
+        .when(defaultTargetHttpClient)
+        .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
+    Context context = getContext();
+    context.setBeacon(true);
+
+    List<Notification> notifications = new ArrayList<>();
+    Notification notification =
+        new Notification()
+            .id("12345")
+            .impressionId("12345")
+            .mbox(new NotificationMbox().name("test-mbox").state("11111"))
+            .type(MetricType.DISPLAY)
+            .timestamp(System.currentTimeMillis());
+    notifications.add(notification);
+
+    TargetDeliveryRequest targetDeliveryRequest =
+        TargetDeliveryRequest.builder().context(context).notifications(notifications).build();
+
+    targetJavaClient.sendNotifications(targetDeliveryRequest);
+
+    verify(telemetryServiceSpy, times(1))
+        .addTelemetry(
+            any(TargetDeliveryRequest.class),
+            any(TimingTool.class),
+            any(TargetDeliveryResponse.class),
+            any(Double.class),
+            any(Long.class));
+    assertEquals(0, telemetryServiceSpy.getTelemetry().getEntries().size());
   }
 
   /**

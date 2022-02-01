@@ -95,7 +95,7 @@ public class TelemetryService {
       TargetDeliveryRequest targetDeliveryRequest,
       TargetDeliveryResponse targetDeliveryResponse,
       double executionTime) {
-    if (!clientConfig.isTelemetryEnabled()) {
+    if (!clientConfig.isTelemetryEnabled() || targetDeliveryResponse.getResponse() == null) {
       return null;
     }
 
