@@ -154,7 +154,7 @@ public class DefaultTargetServiceTest {
         .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
 
     TargetDeliveryRequest targetDeliveryRequestMock = getDeliveryRequest();
-    targetDeliveryRequestMock.getDeliveryRequest().getContext().setBeacon(Boolean.valueOf(true));
+    targetDeliveryRequestMock.getDeliveryRequest().getContext().setBeacon(true);
     targetService.executeNotification(targetDeliveryRequestMock);
 
     ArgumentCaptor<DeliveryRequest> captor = ArgumentCaptor.forClass(DeliveryRequest.class);

@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEFAULTS;
 import static org.mockito.Mockito.atLeast;
@@ -338,10 +339,7 @@ class TelemetryServiceTest {
     TargetDeliveryRequest targetDeliveryRequest =
         TargetDeliveryRequest.builder().context(context).notifications(notifications).build();
 
-    try {
-      targetJavaClient.sendNotifications(targetDeliveryRequest);
-    } catch (RuntimeException e) {
-    }
+    assertThrows(RuntimeException.class, () -> targetJavaClient.sendNotifications(targetDeliveryRequest));
 
     verify(telemetryServiceSpy, never())
         .addTelemetry(

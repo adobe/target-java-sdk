@@ -79,7 +79,7 @@ public class NotificationService {
 
   public static void setBeaconToFalse(DeliveryRequest deliveryRequest) {
     Context context = deliveryRequest.getContext();
-    if (context != null && context.getBeacon() != Boolean.valueOf(false)) {
+    if (context.getBeacon() == null || context.getBeacon()) {
       context.setBeacon(false);
     }
   }
