@@ -114,9 +114,9 @@ public class DefaultTargetService implements TargetService {
 
   @Override
   public ResponseStatus executeNotification(TargetDeliveryRequest deliveryRequest) {
-
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
+    NotificationService.setBeaconToFalse(deliveryRequest.getDeliveryRequest());
     TargetDeliveryResponse targetDeliveryResponse;
     Telemetry telemetry = telemetryService.getTelemetry();
     if (!telemetry.getEntries().isEmpty()) {
@@ -140,6 +140,7 @@ public class DefaultTargetService implements TargetService {
       TargetDeliveryRequest deliveryRequest) {
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
+    NotificationService.setBeaconToFalse(deliveryRequest.getDeliveryRequest());
     Telemetry telemetry = telemetryService.getTelemetry();
     if (!telemetry.getEntries().isEmpty()) {
       deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);

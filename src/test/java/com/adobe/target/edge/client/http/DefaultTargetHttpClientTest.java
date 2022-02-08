@@ -30,6 +30,7 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Proxy;
 import kong.unirest.RawResponse;
 import kong.unirest.UnirestInstance;
+import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -115,7 +116,8 @@ public class DefaultTargetHttpClientTest {
             .asObject(ArgumentMatchers.<Function<RawResponse, Object>>any()))
         .thenAnswer(
             invocation -> {
-              RawResponse rawResponse = TargetTestDeliveryRequestUtils.getRawTestResponse();
+              RawResponse rawResponse =
+                  TargetTestDeliveryRequestUtils.getRawTestResponse(HttpStatus.SC_OK);
               Function<RawResponse, Object> function =
                   (Function<RawResponse, Object>) invocation.getArguments()[0];
               function.apply(rawResponse);

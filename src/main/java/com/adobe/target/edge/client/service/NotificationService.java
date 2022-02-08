@@ -11,6 +11,7 @@
  */
 package com.adobe.target.edge.client.service;
 
+import com.adobe.target.delivery.v1.model.Context;
 import com.adobe.target.delivery.v1.model.DeliveryRequest;
 import com.adobe.target.delivery.v1.model.Notification;
 import com.adobe.target.edge.client.ClientConfig;
@@ -48,6 +49,7 @@ public class NotificationService {
       return;
     }
     DeliveryRequest deliveryRequest = targetDeliveryRequest.getDeliveryRequest();
+    setBeaconToFalse(deliveryRequest);
     String locationHint =
         targetDeliveryRequest.getLocationHint() != null
             ? targetDeliveryRequest.getLocationHint()
@@ -73,5 +75,12 @@ public class NotificationService {
             .trace(deliveryRequest.getTrace())
             .build();
     this.sendNotification(notificationRequest);
+  }
+
+  public static void setBeaconToFalse(DeliveryRequest deliveryRequest) {
+    Context context = deliveryRequest.getContext();
+    if (context.getBeacon() == null || context.getBeacon()) {
+      context.setBeacon(false);
+    }
   }
 }

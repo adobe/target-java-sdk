@@ -15,11 +15,13 @@ import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.T
 import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.fileRuleLoader;
 import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getContext;
 import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getMboxExecuteRequest;
+import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getNoContentDeliveryResponse;
 import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getPrefetchViewsRequest;
 import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getTestDeliveryResponse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEFAULTS;
@@ -38,7 +40,9 @@ import com.adobe.target.delivery.v1.model.DeliveryResponse;
 import com.adobe.target.delivery.v1.model.ExecuteRequest;
 import com.adobe.target.delivery.v1.model.ExecutionMode;
 import com.adobe.target.delivery.v1.model.MboxRequest;
+import com.adobe.target.delivery.v1.model.MetricType;
 import com.adobe.target.delivery.v1.model.Notification;
+import com.adobe.target.delivery.v1.model.NotificationMbox;
 import com.adobe.target.delivery.v1.model.PrefetchRequest;
 import com.adobe.target.delivery.v1.model.Property;
 import com.adobe.target.delivery.v1.model.Telemetry;
@@ -56,6 +60,7 @@ import com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService;
 import com.adobe.target.edge.client.utils.TimingTool;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -300,6 +305,50 @@ class TelemetryServiceTest {
             any(Double.class),
             any(Long.class));
     assertEquals(1, telemetryServiceSpy.getTelemetry().getEntries().size());
+  }
+
+  /**
+   * Test case for calling sendNotifications() and getting an http timeout. In this case Delivery
+   * API will return a null response body, and the SDK will throw a RuntimeException, and not
+   * collect telemetry.
+   *
+   * @throws NoSuchFieldException
+   */
+  @Test
+  void testTelemetryForServerSideSendNotificationNullResponse() throws NoSuchFieldException {
+    setup(
+        true,
+        DecisioningMethod.SERVER_SIDE,
+        "testTelemetryForServerSideSendNotificationNullResponse");
+    Mockito.lenient()
+        .doReturn(getNoContentDeliveryResponse())
+        .when(defaultTargetHttpClient)
+        .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
+    Context context = getContext();
+
+    List<Notification> notifications = new ArrayList<>();
+    Notification notification =
+        new Notification()
+            .id("12345")
+            .impressionId("12345")
+            .mbox(new NotificationMbox().name("test-mbox").state("11111"))
+            .type(MetricType.DISPLAY)
+            .timestamp(System.currentTimeMillis());
+    notifications.add(notification);
+
+    TargetDeliveryRequest targetDeliveryRequest =
+        TargetDeliveryRequest.builder().context(context).notifications(notifications).build();
+
+    assertThrows(
+        RuntimeException.class, () -> targetJavaClient.sendNotifications(targetDeliveryRequest));
+
+    verify(telemetryServiceSpy, never())
+        .addTelemetry(
+            any(TargetDeliveryRequest.class),
+            any(TimingTool.class),
+            any(TargetDeliveryResponse.class),
+            any(Double.class),
+            any(Long.class));
   }
 
   /**

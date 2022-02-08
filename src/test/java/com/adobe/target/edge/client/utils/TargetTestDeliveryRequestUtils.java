@@ -192,11 +192,11 @@ public class TargetTestDeliveryRequestUtils {
     return Arrays.asList(prefetchMboxResponse);
   }
 
-  public static RawResponse getRawTestResponse() {
+  public static RawResponse getRawTestResponse(int statusCode) {
     return new RawResponse() {
       @Override
       public int getStatus() {
-        return HttpStatus.SC_OK;
+        return statusCode;
       }
 
       @Override
@@ -261,6 +261,13 @@ public class TargetTestDeliveryRequestUtils {
     };
   }
 
+  public static ResponseWrapper<DeliveryResponse> getNoContentDeliveryResponse() {
+    RawResponse rawResponse = getRawTestResponse(HttpStatus.SC_GATEWAY_TIMEOUT);
+    ResponseWrapper<DeliveryResponse> responseWrapper = new ResponseWrapper<>();
+    responseWrapper.setHttpResponse(new BasicResponse<>(rawResponse, null));
+    return responseWrapper;
+  }
+
   public static ResponseWrapper<DeliveryResponse> getTestDeliveryResponse() {
     DeliveryResponse deliveryResponse =
         new DeliveryResponse() {
@@ -280,7 +287,7 @@ public class TargetTestDeliveryRequestUtils {
 
   static ResponseWrapper<DeliveryResponse> getTestDeliveryResponse(
       DeliveryResponse deliveryResponse) {
-    RawResponse rawResponse = getRawTestResponse();
+    RawResponse rawResponse = getRawTestResponse(HttpStatus.SC_OK);
     ResponseWrapper<DeliveryResponse> responseWrapper = new ResponseWrapper<>();
     responseWrapper.setParsingTime(200);
     responseWrapper.setResponseSize(119);
@@ -290,7 +297,7 @@ public class TargetTestDeliveryRequestUtils {
 
   public static ResponseWrapper<DeliveryResponse> getTestDeliveryResponseFailure(
       String errorMessage, String ogBody) {
-    RawResponse rawResponse = getRawTestResponse();
+    RawResponse rawResponse = getRawTestResponse(HttpStatus.SC_BAD_REQUEST);
     ResponseWrapper<DeliveryResponse> responseWrapper = new ResponseWrapper<>();
     responseWrapper.setParsingTime(200);
     responseWrapper.setResponseSize(0);
