@@ -591,6 +591,7 @@ class TelemetryServiceTest {
 
     DeliveryResponse deliveryResponse = new DeliveryResponse();
     deliveryResponse.setClient("SUMMIT_TEST2021");
+    deliveryResponse.setEdgeHost("mboxedge35.tt.omtrdc.net");
 
     TargetDeliveryResponse targetDeliveryResponse =
         new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 200, "test call");
@@ -657,8 +658,8 @@ class TelemetryServiceTest {
    * @throws NoSuchFieldException
    */
   @Test
-  void testExecutionModeHybridWhenStatusOK() throws NoSuchFieldException {
-    setup(true, DecisioningMethod.HYBRID, "testExecutionModeHybridWhenStatusOK");
+  void testExecutionModeHybridWithNotALlLocal() throws NoSuchFieldException {
+    setup(true, DecisioningMethod.HYBRID, "testExecutionModeHybridWithNotALlLocal");
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
 
@@ -678,6 +679,7 @@ class TelemetryServiceTest {
 
     DeliveryResponse deliveryResponse = new DeliveryResponse();
     deliveryResponse.setClient("SUMMIT_TEST2021");
+    deliveryResponse.setEdgeHost("mboxedge35.tt.omtrdc.net");
 
     TargetDeliveryResponse targetDeliveryResponse =
         new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 200, "test call");
@@ -686,7 +688,7 @@ class TelemetryServiceTest {
     telemetryServiceSpy.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
     TelemetryEntry telemetryEntry = telemetryServiceSpy.getTelemetry().getEntries().get(1);
     assert telemetryEntry != null;
-    assertEquals(ExecutionMode.LOCAL, telemetryEntry.getMode());
+    assertEquals(ExecutionMode.EDGE, telemetryEntry.getMode());
   }
 
   /**
@@ -696,20 +698,18 @@ class TelemetryServiceTest {
    * @throws NoSuchFieldException
    */
   @Test
-  void testExecutionModeHybridWithPartialContent() throws NoSuchFieldException {
-    setup(true, DecisioningMethod.HYBRID, "testExecutionModeHybridWithPartialContent");
+  void testExecutionModeHybridWithAllLocal() throws NoSuchFieldException {
+    setup(true, DecisioningMethod.HYBRID, "testExecutionModeHybridWithAllLocal");
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
 
     Context context = getContext();
-    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
     ExecuteRequest executeRequest = getMboxExecuteRequest();
     String nonDefaultToken = "non-default-token";
 
     TargetDeliveryRequest targetDeliveryRequest =
         TargetDeliveryRequest.builder()
             .context(context)
-            .prefetch(prefetchRequest)
             .execute(executeRequest)
             .property(new Property().token(nonDefaultToken))
             .decisioningMethod(DecisioningMethod.HYBRID)
@@ -717,15 +717,16 @@ class TelemetryServiceTest {
 
     DeliveryResponse deliveryResponse = new DeliveryResponse();
     deliveryResponse.setClient("SUMMIT_TEST2021");
+    deliveryResponse.setEdgeHost(null);
 
     TargetDeliveryResponse targetDeliveryResponse =
-        new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 206, "test call");
+        new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 200, "test call");
     targetDeliveryResponse.getResponse().setRequestId("testID");
 
     telemetryServiceSpy.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
     TelemetryEntry telemetryEntry = telemetryServiceSpy.getTelemetry().getEntries().get(1);
     assert telemetryEntry != null;
-    assertEquals(ExecutionMode.EDGE, telemetryEntry.getMode());
+    assertEquals(ExecutionMode.LOCAL, telemetryEntry.getMode());
   }
 
   /**
@@ -754,6 +755,7 @@ class TelemetryServiceTest {
 
     DeliveryResponse deliveryResponse = new DeliveryResponse();
     deliveryResponse.setClient("SUMMIT_TEST2021");
+    deliveryResponse.setEdgeHost(null);
 
     TargetDeliveryResponse targetDeliveryResponse =
         new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 206, "test call");
@@ -762,7 +764,39 @@ class TelemetryServiceTest {
     telemetryServiceSpy.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
     Telemetry telemetry = telemetryServiceSpy.getTelemetry();
 
-    assertEquals(ExecutionMode.EDGE, telemetry.getEntries().get(1).getMode());
+    assertEquals(ExecutionMode.LOCAL, telemetry.getEntries().get(1).getMode());
+  }
+
+  @Test
+  void testExecutionModeServerSide() throws NoSuchFieldException {
+    setup(true, DecisioningMethod.SERVER_SIDE, "testExecutionModeServerSide");
+    TimingTool timer = new TimingTool();
+    timer.timeStart(TIMING_EXECUTE_REQUEST);
+
+    Context context = getContext();
+    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
+    ExecuteRequest executeRequest = getMboxExecuteRequest();
+
+    TargetDeliveryRequest targetDeliveryRequest =
+        TargetDeliveryRequest.builder()
+            .context(context)
+            .prefetch(prefetchRequest)
+            .execute(executeRequest)
+            .decisioningMethod(DecisioningMethod.SERVER_SIDE)
+            .build();
+
+    DeliveryResponse deliveryResponse = new DeliveryResponse();
+    deliveryResponse.setClient("SUMMIT_TEST2021");
+    deliveryResponse.setEdgeHost("mboxedge35.tt.omtrdc.net");
+
+    TargetDeliveryResponse targetDeliveryResponse =
+        new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 200, "test call");
+    targetDeliveryResponse.getResponse().setRequestId("testID");
+
+    telemetryServiceSpy.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
+    Telemetry telemetry = telemetryServiceSpy.getTelemetry();
+
+    assertEquals(ExecutionMode.EDGE, telemetry.getEntries().get(0).getMode());
   }
 
   /**

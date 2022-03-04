@@ -25,11 +25,11 @@ import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.utils.MathUtils;
+import com.adobe.target.edge.client.utils.StringUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import kong.unirest.HttpStatus;
 
 public class TelemetryService {
 
@@ -101,8 +101,7 @@ public class TelemetryService {
 
     TelemetryFeatures telemetryFeatures = buildTelemetryFeatures(targetDeliveryRequest);
 
-    int status = targetDeliveryResponse.getStatus();
-    ExecutionMode executionMode = getMode(targetDeliveryRequest, status);
+    ExecutionMode executionMode = getMode(targetDeliveryResponse);
 
     return new TelemetryEntry()
         .requestId(targetDeliveryResponse.getResponse().getRequestId())
@@ -174,14 +173,12 @@ public class TelemetryService {
     return prefetchViewCount;
   }
 
-  private ExecutionMode getMode(TargetDeliveryRequest request, int status) {
+  private ExecutionMode getMode(TargetDeliveryResponse targetDeliveryResponse) {
 
-    if (status == HttpStatus.OK
-        && (getDecisioningMethod(request).equals(DecisioningMethod.ON_DEVICE)
-            || getDecisioningMethod(request).equals(DecisioningMethod.HYBRID))) {
-      return ExecutionMode.LOCAL;
+    if (StringUtils.isNotEmpty(targetDeliveryResponse.getResponse().getEdgeHost())) {
+      return ExecutionMode.EDGE;
     }
-    return ExecutionMode.EDGE;
+    return ExecutionMode.LOCAL;
   }
 
   private TelemetryFeatures buildTelemetryFeatures(TargetDeliveryRequest targetDeliveryRequest) {
