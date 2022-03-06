@@ -174,11 +174,9 @@ public class TelemetryService {
   }
 
   private ExecutionMode getMode(TargetDeliveryResponse targetDeliveryResponse) {
-
-    if (StringUtils.isNotEmpty(targetDeliveryResponse.getResponse().getEdgeHost())) {
-      return ExecutionMode.EDGE;
-    }
-    return ExecutionMode.LOCAL;
+    return StringUtils.isNotEmpty(targetDeliveryResponse.getResponse().getEdgeHost())
+        ? ExecutionMode.EDGE
+        : ExecutionMode.LOCAL;
   }
 
   private TelemetryFeatures buildTelemetryFeatures(TargetDeliveryRequest targetDeliveryRequest) {

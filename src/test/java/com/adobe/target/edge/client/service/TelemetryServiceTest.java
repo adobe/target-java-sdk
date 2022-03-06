@@ -658,7 +658,7 @@ class TelemetryServiceTest {
    * @throws NoSuchFieldException
    */
   @Test
-  void testExecutionModeHybridWithNotALlLocal() throws NoSuchFieldException {
+  void testExecutionModeForHybridWithNotAllLocal() throws NoSuchFieldException {
     setup(true, DecisioningMethod.HYBRID, "testExecutionModeHybridWithNotALlLocal");
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
@@ -698,7 +698,7 @@ class TelemetryServiceTest {
    * @throws NoSuchFieldException
    */
   @Test
-  void testExecutionModeHybridWithAllLocal() throws NoSuchFieldException {
+  void testExecutionModeForHybridWithAllLocal() throws NoSuchFieldException {
     setup(true, DecisioningMethod.HYBRID, "testExecutionModeHybridWithAllLocal");
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
@@ -768,7 +768,7 @@ class TelemetryServiceTest {
   }
 
   @Test
-  void testExecutionModeServerSide() throws NoSuchFieldException {
+  void testExecutionModeForServerSide() throws NoSuchFieldException {
     setup(true, DecisioningMethod.SERVER_SIDE, "testExecutionModeServerSide");
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
