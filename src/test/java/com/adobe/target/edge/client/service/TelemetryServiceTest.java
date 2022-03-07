@@ -619,7 +619,7 @@ class TelemetryServiceTest {
    * @throws NoSuchFieldException
    */
   @Test
-  void testExecutionModeOnDeviceWhenStatusOK() throws NoSuchFieldException {
+  void testExecutionModeForOnDevice() throws NoSuchFieldException {
     setup(true, DecisioningMethod.ON_DEVICE, "testExecutionModeOnDeviceWhenStatusOK");
     TimingTool timer = new TimingTool();
     timer.timeStart(TIMING_EXECUTE_REQUEST);
@@ -727,44 +727,6 @@ class TelemetryServiceTest {
     TelemetryEntry telemetryEntry = telemetryServiceSpy.getTelemetry().getEntries().get(1);
     assert telemetryEntry != null;
     assertEquals(ExecutionMode.LOCAL, telemetryEntry.getMode());
-  }
-
-  /**
-   * Test to verify telemetryEntry has correct executionMode For partial content & ODD it should be
-   * edge
-   *
-   * @throws NoSuchFieldException
-   */
-  @Test
-  void testExecutionModeOnDeviceWithPartialContent() throws NoSuchFieldException {
-    setup(true, DecisioningMethod.ON_DEVICE, "testExecutionModeOnDeviceWithPartialContent");
-    TimingTool timer = new TimingTool();
-    timer.timeStart(TIMING_EXECUTE_REQUEST);
-
-    Context context = getContext();
-    PrefetchRequest prefetchRequest = getPrefetchViewsRequest();
-    ExecuteRequest executeRequest = getMboxExecuteRequest();
-
-    TargetDeliveryRequest targetDeliveryRequest =
-        TargetDeliveryRequest.builder()
-            .context(context)
-            .prefetch(prefetchRequest)
-            .execute(executeRequest)
-            .decisioningMethod(DecisioningMethod.ON_DEVICE)
-            .build();
-
-    DeliveryResponse deliveryResponse = new DeliveryResponse();
-    deliveryResponse.setClient("SUMMIT_TEST2021");
-    deliveryResponse.setEdgeHost(null);
-
-    TargetDeliveryResponse targetDeliveryResponse =
-        new TargetDeliveryResponse(targetDeliveryRequest, deliveryResponse, 206, "test call");
-    targetDeliveryResponse.getResponse().setRequestId("testID");
-
-    telemetryServiceSpy.addTelemetry(targetDeliveryRequest, timer, targetDeliveryResponse);
-    Telemetry telemetry = telemetryServiceSpy.getTelemetry();
-
-    assertEquals(ExecutionMode.LOCAL, telemetry.getEntries().get(1).getMode());
   }
 
   @Test
