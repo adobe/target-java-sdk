@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Always use context.beacon=false for sendNotifications() calls.
 
 
+
 ## [2.2.0] - 2022-01-24
 ### Added
 - Added SDK telemetry data collection.
