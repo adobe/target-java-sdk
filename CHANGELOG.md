@@ -1,8 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.2.1] - 2022-03-10
+### Fixed
+- Fixed incorrect logic for execution mode calculation.
+- Always use context.beacon=false for server side.
+
+
 ## [2.2.0] - 2022-01-24
-### Changed
+### Added
 - Added SDK telemetry data collection.
 - Improved unit tests coverage
 - Refactored On-Device Decisioning code
