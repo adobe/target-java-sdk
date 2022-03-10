@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 ## [2.2.1] - 2022-03-10
 ### Fixed
 - Fixed incorrect logic for execution mode calculation.
-- Set context.beacon=false for server side.
+- Always use context.beacon=false for server side.
 
 
 ## [2.2.0] - 2022-01-24
