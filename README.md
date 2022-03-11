@@ -19,14 +19,14 @@ Analytics.
 
 To get started with Target Java SDK, just add it as a dependency in `gradle` as:
 ```groovy
-compile 'com.adobe.target:target-java-sdk:2.0.0'
+implementation 'com.adobe.target:target-java-sdk:2.2.1'
 ```
 or `maven` as:
 ```xml
 <dependency>
     <groupId>com.adobe.target</groupId>
     <artifactId>target-java-sdk</artifactId>
-    <version>2.0.0 </version>
+    <version>2.2.1 </version>
 </dependency>
 ```
 
