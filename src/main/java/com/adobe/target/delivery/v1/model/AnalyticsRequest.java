@@ -73,7 +73,7 @@ public class AnalyticsRequest {
   }
 
   /**
-   * tracking server
+   * tracking server domain (should not include http://)
    *
    * @return trackingServer
    */
@@ -91,7 +91,7 @@ public class AnalyticsRequest {
   }
 
   /**
-   * secure tracking server
+   * secure tracking server domain (should not include https://)
    *
    * @return trackingServerSecure
    */
