@@ -13,6 +13,7 @@ package com.adobe.target.edge.client.ondevice.collator;
 
 import static java.util.stream.Collectors.toList;
 
+import com.adobe.target.delivery.v1.model.ClientHints;
 import com.adobe.target.delivery.v1.model.Context;
 import com.adobe.target.delivery.v1.model.RequestDetails;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
@@ -96,9 +97,10 @@ public class UserParamsCollator implements ParamsCollator {
       TargetDeliveryRequest deliveryRequest, RequestDetails requestDetails) {
     Map<String, Object> user = new HashMap<>();
     String userAgent = extractUserAgent(deliveryRequest);
+    ClientHints clientHints = extractClientHints(deliveryRequest);
     user.put(USER_BROWSER_TYPE, parseBrowserType(userAgent));
-    user.put(USER_PLATFORM, parseBrowserPlatform(userAgent));
-    user.put(USER_BROWSER_VERSION, parseBrowserVersion(userAgent));
+    user.put(USER_PLATFORM, parseBrowserPlatform(userAgent, clientHints));
+    user.put(USER_BROWSER_VERSION, parseBrowserVersion(userAgent, clientHints));
     return user;
   }
 
@@ -114,30 +116,36 @@ public class UserParamsCollator implements ParamsCollator {
         .orElse(UNKNOWN);
   }
 
-  private static String parseBrowserPlatform(String userAgent) {
-    if (StringUtils.isEmpty(userAgent)) {
-      return UNKNOWN;
-    }
-
-    return BROWSER_PLATFORMS_MAPPING.entrySet().stream()
+  private static String parseBrowserPlatform(String userAgent, ClientHints clientHints) {
+    if(clientHints !=null && StringUtils.isNotEmpty(clientHints.getPlatform())) {
+      return clientHints.getPlatform();
+    } else if(StringUtils.isNotEmpty(userAgent)) {
+      return BROWSER_PLATFORMS_MAPPING.entrySet().stream()
         .filter(it -> userAgent.contains(it.getKey()))
         .findFirst()
         .map(Map.Entry::getValue)
         .orElse(UNKNOWN);
-  }
-
-  private String parseBrowserVersion(String userAgent) {
-    List<Pattern> patterns = BROWSER_VERSION_PATTERNS.get(parseBrowserType(userAgent));
-    if (patterns == null) {
+    } else {
       return UNKNOWN;
     }
+  }
 
-    return getMainAndCompatibilitySections(userAgent).stream()
+  private String parseBrowserVersion(String userAgent, ClientHints clientHints) {
+    List<Pattern> patterns = BROWSER_VERSION_PATTERNS.get(parseBrowserType(userAgent));
+    if(clientHints !=null && StringUtils.isNotEmpty(clientHints.getBrowserUAWithFullVersion())){
+      return clientHints.getBrowserUAWithFullVersion();
+    } else if (clientHints !=null && StringUtils.isNotEmpty(clientHints.getBrowserUAWithMajorVersion())) {
+      return clientHints.getBrowserUAWithMajorVersion();
+    } else if (patterns !=null) {
+      return getMainAndCompatibilitySections(userAgent).stream()
         .map(section -> findBrowserVersion(section, patterns))
         .filter(Optional::isPresent)
         .map(Optional::get)
         .findFirst()
         .orElse(UNKNOWN);
+    } else {
+      return UNKNOWN;
+    }
   }
 
   private String extractUserAgent(TargetDeliveryRequest deliveryRequest) {
@@ -150,6 +158,14 @@ public class UserParamsCollator implements ParamsCollator {
       return null;
     }
     return userAgent;
+  }
+
+  private ClientHints extractClientHints(TargetDeliveryRequest deliveryRequest) {
+    Context context = deliveryRequest.getDeliveryRequest().getContext();
+    if (context == null) {
+      return null;
+    }
+    return context.getClientHints();
   }
 
   private static List<Pattern> compilePatterns(String... patterns) {
