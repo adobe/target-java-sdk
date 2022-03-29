@@ -12,7 +12,9 @@
 package com.adobe.target.edge.client.ondevice.collator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+import com.adobe.target.delivery.v1.model.ClientHints;
 import com.adobe.target.delivery.v1.model.Context;
 import com.adobe.target.delivery.v1.model.ExecuteRequest;
 import com.adobe.target.delivery.v1.model.RequestDetails;
@@ -74,10 +76,100 @@ public class UserParamsCollatorTest {
     assertEquals("linux", result.get(UserParamsCollator.USER_PLATFORM));
   }
 
+  @Test
+  public void testClientHintsBrowserUAFullVersionInChrome() {
+    ClientHints clientHints = new ClientHints();
+    clientHints.setMobile(true);
+    clientHints.setPlatform("macOS");
+    clientHints.setArchitecture("x86");
+    clientHints.setPlatformVersion("11.3.1");
+    clientHints.setBrowserUAWithFullVersion("\" Not A;Brand\";v=\"99.0.0.0\", \"Chromium\";v=\"99.0.4844.83\", \"Google Chrome\";v=\"99.0.4844.83\"");
+    String userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.109 Safari/537.36";
+
+    TargetDeliveryRequest request = requestWithClientHintsAndUA(clientHints, userAgent);
+    Map<String, Object> result = collator.collateParams(request, pageLoad);
+    assertEquals("chrome", result.get(UserParamsCollator.USER_BROWSER_TYPE));
+    assertEquals("mac", result.get(UserParamsCollator.USER_PLATFORM));
+    assertEquals("99", result.get(UserParamsCollator.USER_BROWSER_VERSION));
+  }
+
+  @Test
+  public void testClientHintsBrowserUAMajorVersionInChrome() {
+    ClientHints clientHints = new ClientHints();
+    clientHints.setMobile(true);
+    clientHints.setPlatform("macOS");
+    clientHints.setArchitecture("x86");
+    clientHints.setPlatformVersion("11.3.1");
+    clientHints.setBrowserUAWithMajorVersion("\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"99\", \"Google Chrome\";v=\"99\"");
+    String userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.109 Safari/537.36";
+
+    TargetDeliveryRequest request = requestWithClientHintsAndUA(clientHints, userAgent);
+    Map<String, Object> result = collator.collateParams(request, pageLoad);
+    assertEquals("chrome", result.get(UserParamsCollator.USER_BROWSER_TYPE));
+    assertEquals("mac", result.get(UserParamsCollator.USER_PLATFORM));
+    assertEquals("99", result.get(UserParamsCollator.USER_BROWSER_VERSION));
+  }
+
+  @Test
+  public void testClientHintsInEdge() {
+    ClientHints clientHints = new ClientHints();
+    clientHints.setMobile(true);
+    clientHints.setPlatform("Windows");
+    clientHints.setArchitecture("x86");
+    clientHints.setPlatformVersion("11.3.1");
+    clientHints.setBrowserUAWithFullVersion("\" Not A;Brand\";v=\"99.0.0.0\", \"Chromium\";v=\"99.0.1150.46\", \"Microsoft Edge\";v=\"102.0.1150.46\"");
+    String userAgent = "";
+
+    TargetDeliveryRequest request = requestWithClientHintsAndUA(clientHints, userAgent);
+    Map<String, Object> result = collator.collateParams(request, pageLoad);
+    assertEquals("windows", result.get(UserParamsCollator.USER_PLATFORM));
+    assertEquals("102", result.get(UserParamsCollator.USER_BROWSER_VERSION));
+  }
+
+  @Test
+  public void testBrowserVersionFromWhenClientHintAbsent() {
+    ClientHints clientHints = new ClientHints();
+    clientHints.setMobile(true);
+    clientHints.setPlatform("macOS");
+    clientHints.setArchitecture("x86");
+    clientHints.setPlatformVersion("11.3.1");
+    String userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.109 Safari/537.36";
+
+    TargetDeliveryRequest request = requestWithClientHintsAndUA(clientHints, userAgent);
+    Map<String, Object> result = collator.collateParams(request, pageLoad);
+    assertEquals("chrome", result.get(UserParamsCollator.USER_BROWSER_TYPE));
+    assertEquals("mac", result.get(UserParamsCollator.USER_PLATFORM));
+    assertEquals("98", result.get(UserParamsCollator.USER_BROWSER_VERSION));
+  }
+
+  @Test
+  public void testClientHintsPrecedenceOverUserAgent() {
+    ClientHints clientHints = new ClientHints();
+    clientHints.setMobile(true);
+    clientHints.setPlatform("macOS");
+    clientHints.setArchitecture("x86");
+    clientHints.setPlatformVersion("11.3.1");
+    clientHints.setBrowserUAWithFullVersion("\" Not A;Brand\";v=\"99.0.0.0\", \"Chromium\";v=\"99.0.4844.83\", \"Google Chrome\";v=\"99.0.4844.83\"");
+    String userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.109 Safari/537.36";
+
+    TargetDeliveryRequest request = requestWithClientHintsAndUA(clientHints, userAgent);
+    Map<String, Object> result = collator.collateParams(request, pageLoad);
+    assertEquals("chrome", result.get(UserParamsCollator.USER_BROWSER_TYPE));
+    assertEquals("mac", result.get(UserParamsCollator.USER_PLATFORM));
+    assertNotEquals("98", result.get(UserParamsCollator.USER_BROWSER_VERSION));
+  }
+
   private TargetDeliveryRequest requestWithUserAgent(String userAgent) {
     return TargetDeliveryRequest.builder()
         .execute(new ExecuteRequest().pageLoad(pageLoad))
         .context(new Context().userAgent(userAgent))
         .build();
+  }
+
+  private TargetDeliveryRequest requestWithClientHintsAndUA(ClientHints clientHints, String userAgent) {
+    return TargetDeliveryRequest.builder()
+      .execute(new ExecuteRequest().pageLoad(pageLoad))
+      .context(new Context().clientHints(clientHints).userAgent(userAgent))
+      .build();
   }
 }

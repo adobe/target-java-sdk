@@ -57,7 +57,7 @@ public class UserParamsCollator implements ParamsCollator {
                           && !browser.contains("Chrome")
                           && !browser.contains("OPR")
                           && !browser.contains("CriOS"));
-              put("edge", browser -> browser.contains("Edge/"));
+              put("edge", browser -> browser.contains("Edge/") || browser.contains("Edge"));
             }
           });
   private static final Map<String, String> BROWSER_PLATFORMS_MAPPING =
@@ -67,6 +67,7 @@ public class UserParamsCollator implements ParamsCollator {
               put("Windows", "windows");
               put("Macintosh", "mac");
               put("Mac OS", "mac");
+              put("macOS", "mac");
               put("Linux", "linux");
             }
           });
@@ -74,7 +75,7 @@ public class UserParamsCollator implements ParamsCollator {
       Collections.unmodifiableMap(
           new HashMap<String, List<Pattern>>() {
             {
-              put("chrome", compilePatterns("chrome/(\\d+)", "crios/(\\d+)"));
+              put("chrome", compilePatterns("chrome/(\\d+)", "crios/(\\d+)", "Chrome\";v=\"(\\d+)"));
               put("firefox", compilePatterns("firefox/(\\d+)"));
               put("ie", compilePatterns("msie\\s(\\d+)", "rv:(\\d+)"));
               put(
@@ -84,7 +85,7 @@ public class UserParamsCollator implements ParamsCollator {
               put("ipad", compilePatterns("version/(\\d+)"));
               put("iphone", compilePatterns("version/(\\d+)"));
               put("safari", compilePatterns("version/(\\d+)"));
-              put("edge", compilePatterns("edge/(\\d+)"));
+              put("edge", compilePatterns("edge/(\\d+)", "Edge\";v=\"(\\d+)"));
             }
           });
   private static final int BROWSER_VERSION_PATTERN_GROUP_INDEX = 1;
@@ -104,50 +105,57 @@ public class UserParamsCollator implements ParamsCollator {
     return user;
   }
 
-  private String parseBrowserType(String userAgent) {
-    if (StringUtils.isEmpty(userAgent)) {
+  private String parseBrowserType(String browserType) {
+    if (StringUtils.isEmpty(browserType)) {
       return UNKNOWN;
     }
 
     return BROWSER_TYPE_MATCHER.entrySet().stream()
-        .filter(browserType -> browserType.getValue().test(userAgent))
+        .filter(browserTypeMap -> browserTypeMap.getValue().test(browserType))
         .findFirst()
         .map(Map.Entry::getKey)
         .orElse(UNKNOWN);
   }
 
   private static String parseBrowserPlatform(String userAgent, ClientHints clientHints) {
+    String browserPlatform;
     if(clientHints !=null && StringUtils.isNotEmpty(clientHints.getPlatform())) {
-      return clientHints.getPlatform();
+      browserPlatform = clientHints.getPlatform();
     } else if(StringUtils.isNotEmpty(userAgent)) {
-      return BROWSER_PLATFORMS_MAPPING.entrySet().stream()
-        .filter(it -> userAgent.contains(it.getKey()))
-        .findFirst()
-        .map(Map.Entry::getValue)
-        .orElse(UNKNOWN);
+      browserPlatform = userAgent;
     } else {
       return UNKNOWN;
     }
+    return BROWSER_PLATFORMS_MAPPING.entrySet().stream()
+      .filter(it -> browserPlatform.contains(it.getKey()))
+      .findFirst()
+      .map(Map.Entry::getValue)
+      .orElse(UNKNOWN);
   }
 
   private String parseBrowserVersion(String userAgent, ClientHints clientHints) {
-    List<Pattern> patterns = BROWSER_VERSION_PATTERNS.get(parseBrowserType(userAgent));
-    if(clientHints !=null && StringUtils.isNotEmpty(clientHints.getBrowserUAWithFullVersion())){
-      return clientHints.getBrowserUAWithFullVersion();
-    } else if (clientHints !=null && StringUtils.isNotEmpty(clientHints.getBrowserUAWithMajorVersion())) {
-      return clientHints.getBrowserUAWithMajorVersion();
-    } else if (patterns !=null) {
-      return getMainAndCompatibilitySections(userAgent).stream()
-        .map(section -> findBrowserVersion(section, patterns))
-        .filter(Optional::isPresent)
-        .map(Optional::get)
-        .findFirst()
-        .orElse(UNKNOWN);
+    List<Pattern> patterns;
+    String browserVersion;
+    if (clientHints != null && StringUtils.isNotEmpty(clientHints.getBrowserUAWithFullVersion())) {
+      patterns = BROWSER_VERSION_PATTERNS.get(parseBrowserType(clientHints.getBrowserUAWithFullVersion()));
+      browserVersion = clientHints.getBrowserUAWithFullVersion();
+    } else if (clientHints != null && StringUtils.isNotEmpty(clientHints.getBrowserUAWithMajorVersion())) {
+      patterns = BROWSER_VERSION_PATTERNS.get(parseBrowserType(clientHints.getBrowserUAWithMajorVersion()));
+      browserVersion = clientHints.getBrowserUAWithMajorVersion();
     } else {
+      patterns = BROWSER_VERSION_PATTERNS.get(parseBrowserType(userAgent));
+      browserVersion = userAgent;
+    }
+    if(patterns == null) {
       return UNKNOWN;
     }
+    return getMainAndCompatibilitySections(browserVersion).stream()
+      .map(section -> findBrowserVersion(section, patterns))
+      .filter(Optional::isPresent)
+      .map(Optional::get)
+      .findFirst()
+      .orElse(UNKNOWN);
   }
-
   private String extractUserAgent(TargetDeliveryRequest deliveryRequest) {
     Context context = deliveryRequest.getDeliveryRequest().getContext();
     if (context == null) {
