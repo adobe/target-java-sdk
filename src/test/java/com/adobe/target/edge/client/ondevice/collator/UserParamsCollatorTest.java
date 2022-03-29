@@ -83,8 +83,10 @@ public class UserParamsCollatorTest {
     clientHints.setPlatform("macOS");
     clientHints.setArchitecture("x86");
     clientHints.setPlatformVersion("11.3.1");
-    clientHints.setBrowserUAWithFullVersion("\" Not A;Brand\";v=\"99.0.0.0\", \"Chromium\";v=\"99.0.4844.83\", \"Google Chrome\";v=\"99.0.4844.83\"");
-    String userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.109 Safari/537.36";
+    clientHints.setBrowserUAWithFullVersion(
+        "\" Not A;Brand\";v=\"99.0.0.0\", \"Chromium\";v=\"99.0.4844.83\", \"Google Chrome\";v=\"99.0.4844.83\"");
+    String userAgent =
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.109 Safari/537.36";
 
     TargetDeliveryRequest request = requestWithClientHintsAndUA(clientHints, userAgent);
     Map<String, Object> result = collator.collateParams(request, pageLoad);
@@ -100,8 +102,10 @@ public class UserParamsCollatorTest {
     clientHints.setPlatform("macOS");
     clientHints.setArchitecture("x86");
     clientHints.setPlatformVersion("11.3.1");
-    clientHints.setBrowserUAWithMajorVersion("\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"99\", \"Google Chrome\";v=\"99\"");
-    String userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.109 Safari/537.36";
+    clientHints.setBrowserUAWithMajorVersion(
+        "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"99\", \"Google Chrome\";v=\"99\"");
+    String userAgent =
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.109 Safari/537.36";
 
     TargetDeliveryRequest request = requestWithClientHintsAndUA(clientHints, userAgent);
     Map<String, Object> result = collator.collateParams(request, pageLoad);
@@ -117,7 +121,8 @@ public class UserParamsCollatorTest {
     clientHints.setPlatform("Windows");
     clientHints.setArchitecture("x86");
     clientHints.setPlatformVersion("11.3.1");
-    clientHints.setBrowserUAWithFullVersion("\" Not A;Brand\";v=\"99.0.0.0\", \"Chromium\";v=\"99.0.1150.46\", \"Microsoft Edge\";v=\"102.0.1150.46\"");
+    clientHints.setBrowserUAWithFullVersion(
+        "\" Not A;Brand\";v=\"99.0.0.0\", \"Chromium\";v=\"99.0.1150.46\", \"Microsoft Edge\";v=\"102.0.1150.46\"");
     String userAgent = "";
 
     TargetDeliveryRequest request = requestWithClientHintsAndUA(clientHints, userAgent);
@@ -133,7 +138,8 @@ public class UserParamsCollatorTest {
     clientHints.setPlatform("macOS");
     clientHints.setArchitecture("x86");
     clientHints.setPlatformVersion("11.3.1");
-    String userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.109 Safari/537.36";
+    String userAgent =
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.109 Safari/537.36";
 
     TargetDeliveryRequest request = requestWithClientHintsAndUA(clientHints, userAgent);
     Map<String, Object> result = collator.collateParams(request, pageLoad);
@@ -149,8 +155,10 @@ public class UserParamsCollatorTest {
     clientHints.setPlatform("macOS");
     clientHints.setArchitecture("x86");
     clientHints.setPlatformVersion("11.3.1");
-    clientHints.setBrowserUAWithFullVersion("\" Not A;Brand\";v=\"99.0.0.0\", \"Chromium\";v=\"99.0.4844.83\", \"Google Chrome\";v=\"99.0.4844.83\"");
-    String userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.109 Safari/537.36";
+    clientHints.setBrowserUAWithFullVersion(
+        "\" Not A;Brand\";v=\"99.0.0.0\", \"Chromium\";v=\"99.0.4844.83\", \"Google Chrome\";v=\"99.0.4844.83\"");
+    String userAgent =
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.109 Safari/537.36";
 
     TargetDeliveryRequest request = requestWithClientHintsAndUA(clientHints, userAgent);
     Map<String, Object> result = collator.collateParams(request, pageLoad);
@@ -166,10 +174,11 @@ public class UserParamsCollatorTest {
         .build();
   }
 
-  private TargetDeliveryRequest requestWithClientHintsAndUA(ClientHints clientHints, String userAgent) {
+  private TargetDeliveryRequest requestWithClientHintsAndUA(
+      ClientHints clientHints, String userAgent) {
     return TargetDeliveryRequest.builder()
-      .execute(new ExecuteRequest().pageLoad(pageLoad))
-      .context(new Context().clientHints(clientHints).userAgent(userAgent))
-      .build();
+        .execute(new ExecuteRequest().pageLoad(pageLoad))
+        .context(new Context().clientHints(clientHints).userAgent(userAgent))
+        .build();
   }
 }
