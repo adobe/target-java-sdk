@@ -1,12 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.2.2] - 2022-03-30
+### Fixed
+- Updated ECID-service dependency to fix parsing expiry values from AMCV cookie
+- Add ClientHints to Delivery API model in preparation for ClientHints support
+
 ## [2.2.1] - 2022-03-10
 ### Fixed
 - Fixed incorrect logic for execution mode calculation.
 - Always use context.beacon=false for sendNotifications() calls.
-
-
 
 ## [2.2.0] - 2022-01-24
 ### Added
