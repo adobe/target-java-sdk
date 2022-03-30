@@ -132,7 +132,7 @@ signing {
 }
 
 dependencies {
-    api "com.adobe.experiencecloud.ecid:ecid-service:1.0.2"
+    api "com.adobe.experiencecloud.ecid:ecid-service:1.0.3"
     implementation "org.slf4j:slf4j-api:1.7.30"
     implementation "com.fasterxml.jackson.core:jackson-annotations:2.11.3"
     implementation "com.fasterxml.jackson.core:jackson-core:2.11.3"
