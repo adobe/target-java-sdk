@@ -126,7 +126,7 @@ public class View {
   }
 
   /**
-   * Click track metrics for the current view.
+   * Click track metrics associated with the current view.
    *
    * @return metrics
    */
