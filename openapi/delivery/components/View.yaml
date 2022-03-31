@@ -26,7 +26,7 @@ View:
     metrics:
       type: array
       description: |
-        Click track metrics for the current view.
+        Click track metrics associated with the current view.
       items:
         $ref: "./Metric.yaml#/Metric"
     analytics:
