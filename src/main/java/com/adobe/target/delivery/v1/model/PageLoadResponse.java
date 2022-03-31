@@ -82,12 +82,12 @@ public class PageLoadResponse {
 
   /**
    * Click track metrics. Note that click metrics for selectors set with views will not be included
-   * here. In case the same activity is serving content for selectors both assinged to a view and
-   * selectors without any views, and having click track metrics that are not assotiated with any
-   * view within the activity, then: * in case of a prefetch only request, these metrics (tokens)
-   * will be set in the Prefetch response&#39;s metrics. * in case of an execute only request, the
-   * metrics will be set in the page load response&#39;s metrics. * in case of a request, with both,
-   * execute and prefetch, metrics will be set in the page load response&#39;s metrics only.
+   * here. If the same activity is serving content for selectors on a view and selectors
+   * unassociated with views, and having click track metrics not associated with any view within the
+   * activity, then: * in case of a prefetch-only request, these metrics (tokens) will be set in the
+   * prefetch response&#39;s metrics. * in case of an execute-only request, the metrics will be set
+   * in the pageLoad response&#39;s metrics. * in case of a request, with both execute and prefetch,
+   * the metrics will be set in the pageLoad response&#39;s metrics only.
    *
    * @return metrics
    */

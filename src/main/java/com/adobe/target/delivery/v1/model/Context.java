@@ -51,6 +51,9 @@ public class Context {
   @JsonProperty("userAgent")
   private String userAgent;
 
+  @JsonProperty("clientHints")
+  private ClientHints clientHints;
+
   @JsonProperty("beacon")
   private Boolean beacon = false;
 
@@ -234,6 +237,24 @@ public class Context {
     this.userAgent = userAgent;
   }
 
+  public Context clientHints(ClientHints clientHints) {
+    this.clientHints = clientHints;
+    return this;
+  }
+
+  /**
+   * Get clientHints
+   *
+   * @return clientHints
+   */
+  public ClientHints getClientHints() {
+    return clientHints;
+  }
+
+  public void setClientHints(ClientHints clientHints) {
+    this.clientHints = clientHints;
+  }
+
   public Context beacon(Boolean beacon) {
     this.beacon = beacon;
     return this;
@@ -272,6 +293,7 @@ public class Context {
         && Objects.equals(this.geo, context.geo)
         && Objects.equals(this.timeOffsetInMinutes, context.timeOffsetInMinutes)
         && Objects.equals(this.userAgent, context.userAgent)
+        && Objects.equals(this.clientHints, context.clientHints)
         && Objects.equals(this.beacon, context.beacon);
   }
 
@@ -288,6 +310,7 @@ public class Context {
         geo,
         timeOffsetInMinutes,
         userAgent,
+        clientHints,
         beacon);
   }
 
@@ -307,6 +330,7 @@ public class Context {
         .append(toIndentedString(timeOffsetInMinutes))
         .append("\n");
     sb.append("    userAgent: ").append(toIndentedString(userAgent)).append("\n");
+    sb.append("    clientHints: ").append(toIndentedString(clientHints)).append("\n");
     sb.append("    beacon: ").append(toIndentedString(beacon)).append("\n");
     sb.append("}");
     return sb.toString();

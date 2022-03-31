@@ -18,7 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/** The object that will return the prefetched content based on the request, active activites etc */
+/**
+ * The object that will return the prefetched content based on the request, active activities etc
+ */
 public class PrefetchResponse {
   @JsonProperty("views")
   private List<View> views = new ArrayList<>();
@@ -117,14 +119,13 @@ public class PrefetchResponse {
   }
 
   /**
-   * The click track metrics that are not assigned to a view but are present in activites that have
-   * views, except in case the same activity is serving content for selectors both assinged to a
-   * view and selectors without any views, and having click track metrics that are not assotiated
-   * with any view within the activity, then: * in case of a prefetch only request, these metrics
-   * (tokens) will be set in the prefetch response&#39;s metrics. * in case of an execute only
-   * request, the metrics will be set in the page load response&#39;s metrics. * in case of a
-   * request, with both, execute and prefetch, metrics will be set in the page load response&#39;s
-   * metrics only.
+   * Click track metrics that are not assigned with a view but are present in activities that have
+   * views. If the same activity is serving content for selectors on a view and selectors
+   * unassociated with views, and having click track metrics not associated with any view within the
+   * activity, then: * in case of a prefetch-only request, these metrics (tokens) will be set in the
+   * prefetch response&#39;s metrics. * in case of an execute-only request, the metrics will be set
+   * in the pageLoad response&#39;s metrics. * in case of a request, with both execute and prefetch,
+   * the metrics will be set in the pageLoad response&#39;s metrics only.
    *
    * @return metrics
    */
