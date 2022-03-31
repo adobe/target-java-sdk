@@ -60,7 +60,7 @@ public class UserParamsCollator implements ParamsCollator {
               put("edge", browser -> browser.contains("Edge/") || browser.contains("Edge"));
             }
           });
-  private static final Map<String, String> BROWSER_PLATFORMS_MAPPING =
+  private static final Map<String, String> PLATFORMS_MAPPING =
       Collections.unmodifiableMap(
           new LinkedHashMap<String, String>() {
             {
@@ -102,7 +102,7 @@ public class UserParamsCollator implements ParamsCollator {
     String userAgent = extractUserAgent(deliveryRequest);
     ClientHints clientHints = extractClientHints(deliveryRequest);
     user.put(USER_BROWSER_TYPE, parseBrowserType(userAgent));
-    user.put(USER_PLATFORM, parseBrowserPlatform(userAgent, clientHints));
+    user.put(USER_PLATFORM, parsePlatform(userAgent, clientHints));
     user.put(USER_BROWSER_VERSION, parseBrowserVersion(userAgent, clientHints));
     return user;
   }
@@ -119,17 +119,17 @@ public class UserParamsCollator implements ParamsCollator {
         .orElse(UNKNOWN);
   }
 
-  private static String parseBrowserPlatform(String userAgent, ClientHints clientHints) {
-    String browserPlatform;
+  private static String parsePlatform(String userAgent, ClientHints clientHints) {
+    String platform;
     if (clientHints != null && StringUtils.isNotEmpty(clientHints.getPlatform())) {
-      browserPlatform = clientHints.getPlatform();
+      platform = clientHints.getPlatform();
     } else if (StringUtils.isNotEmpty(userAgent)) {
-      browserPlatform = userAgent;
+      platform = userAgent;
     } else {
       return UNKNOWN;
     }
-    return BROWSER_PLATFORMS_MAPPING.entrySet().stream()
-        .filter(it -> browserPlatform.contains(it.getKey()))
+    return PLATFORMS_MAPPING.entrySet().stream()
+        .filter(it -> platform.contains(it.getKey()))
         .findFirst()
         .map(Map.Entry::getValue)
         .orElse(UNKNOWN);
@@ -177,10 +177,7 @@ public class UserParamsCollator implements ParamsCollator {
 
   private ClientHints extractClientHints(TargetDeliveryRequest deliveryRequest) {
     Context context = deliveryRequest.getDeliveryRequest().getContext();
-    if (context == null) {
-      return null;
-    }
-    return context.getClientHints();
+    return context != null ? context.getClientHints() : null;
   }
 
   private static List<Pattern> compilePatterns(String... patterns) {
