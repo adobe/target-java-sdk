@@ -102,11 +102,10 @@ public class UserParamsCollator implements ParamsCollator {
     String userAgent = extractUserAgent(deliveryRequest);
     ClientHints clientHints = extractClientHints(deliveryRequest);
     String browserInfo = getBrowserInfo(userAgent, clientHints);
-    user.put(USER_BROWSER_TYPE, parseBrowserType(browserInfo));
+    String browserType = parseBrowserType(browserInfo);
+    user.put(USER_BROWSER_TYPE, browserType);
     user.put(USER_PLATFORM, parsePlatform(userAgent, clientHints));
-    user.put(
-        USER_BROWSER_VERSION,
-        parseBrowserVersion(browserInfo, (String) user.get(USER_BROWSER_TYPE)));
+    user.put(USER_BROWSER_VERSION, parseBrowserVersion(browserInfo, browserType));
     return user;
   }
 
