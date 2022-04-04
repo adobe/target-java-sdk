@@ -78,7 +78,7 @@ public class UserParamsCollator implements ParamsCollator {
               put(
                   "chrome",
                   compilePatterns("chrome/(\\d+)", "crios/(\\d+)", "Chrome\";v=\"(\\d+)"));
-              put("firefox", compilePatterns("firefox/(\\d+)"));
+              put("firefox", compilePatterns("firefox/(\\d+)", "Firefox\";v=\"(\\d+)"));
               put("ie", compilePatterns("msie\\s(\\d+)", "rv:(\\d+)"));
               put(
                   "opera",
@@ -86,7 +86,7 @@ public class UserParamsCollator implements ParamsCollator {
                       "version/(\\d+)", "opera/(\\d+)", "opera\\s*(\\d+)", "OPR/(\\d+)"));
               put("ipad", compilePatterns("version/(\\d+)"));
               put("iphone", compilePatterns("version/(\\d+)"));
-              put("safari", compilePatterns("version/(\\d+)"));
+              put("safari", compilePatterns("version/(\\d+)", "Safari\";v=\"(\\d+)"));
               put("edge", compilePatterns("edge/(\\d+)", "Edge\";v=\"(\\d+)"));
             }
           });
