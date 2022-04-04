@@ -57,7 +57,7 @@ public class UserParamsCollator implements ParamsCollator {
                           && !browser.contains("Chrome")
                           && !browser.contains("OPR")
                           && !browser.contains("CriOS"));
-              put("edge", browser -> browser.contains("Edge/") || browser.contains("Edge"));
+              put("edge", browser -> browser.contains("Edge"));
             }
           });
   private static final Map<String, String> PLATFORMS_MAPPING =
@@ -101,22 +101,37 @@ public class UserParamsCollator implements ParamsCollator {
     Map<String, Object> user = new HashMap<>();
     String userAgent = extractUserAgent(deliveryRequest);
     ClientHints clientHints = extractClientHints(deliveryRequest);
-    user.put(USER_BROWSER_TYPE, parseBrowserType(userAgent));
+    String browserInfo = getBrowserInfo(userAgent, clientHints);
+    user.put(USER_BROWSER_TYPE, parseBrowserType(browserInfo));
     user.put(USER_PLATFORM, parsePlatform(userAgent, clientHints));
-    user.put(USER_BROWSER_VERSION, parseBrowserVersion(userAgent, clientHints));
+    user.put(
+        USER_BROWSER_VERSION,
+        parseBrowserVersion(browserInfo, (String) user.get(USER_BROWSER_TYPE)));
     return user;
   }
 
-  private String parseBrowserType(String browserType) {
-    if (StringUtils.isEmpty(browserType)) {
+  private String parseBrowserType(String browserInfo) {
+    if (StringUtils.isEmpty(browserInfo)) {
       return UNKNOWN;
     }
 
     return BROWSER_TYPE_MATCHER.entrySet().stream()
-        .filter(browserTypeMap -> browserTypeMap.getValue().test(browserType))
+        .filter(browserType -> browserType.getValue().test(browserInfo))
         .findFirst()
         .map(Map.Entry::getKey)
         .orElse(UNKNOWN);
+  }
+
+  private String getBrowserInfo(String userAgent, ClientHints clientHints) {
+    String browserInfo = userAgent;
+    if (clientHints != null) {
+      if (StringUtils.isNotEmpty(clientHints.getBrowserUAWithFullVersion())) {
+        browserInfo = clientHints.getBrowserUAWithFullVersion();
+      } else if (StringUtils.isNotEmpty(clientHints.getBrowserUAWithMajorVersion())) {
+        browserInfo = clientHints.getBrowserUAWithMajorVersion();
+      }
+    }
+    return browserInfo;
   }
 
   private static String parsePlatform(String userAgent, ClientHints clientHints) {
@@ -135,27 +150,13 @@ public class UserParamsCollator implements ParamsCollator {
         .orElse(UNKNOWN);
   }
 
-  private String parseBrowserVersion(String userAgent, ClientHints clientHints) {
-    List<Pattern> patterns;
-    String browserVersion;
-    if (clientHints != null && StringUtils.isNotEmpty(clientHints.getBrowserUAWithFullVersion())) {
-      patterns =
-          BROWSER_VERSION_PATTERNS.get(parseBrowserType(clientHints.getBrowserUAWithFullVersion()));
-      browserVersion = clientHints.getBrowserUAWithFullVersion();
-    } else if (clientHints != null
-        && StringUtils.isNotEmpty(clientHints.getBrowserUAWithMajorVersion())) {
-      patterns =
-          BROWSER_VERSION_PATTERNS.get(
-              parseBrowserType(clientHints.getBrowserUAWithMajorVersion()));
-      browserVersion = clientHints.getBrowserUAWithMajorVersion();
-    } else {
-      patterns = BROWSER_VERSION_PATTERNS.get(parseBrowserType(userAgent));
-      browserVersion = userAgent;
-    }
-    if (patterns == null) {
+  private String parseBrowserVersion(String browserInfo, String userBrowserType) {
+    List<Pattern> patterns = BROWSER_VERSION_PATTERNS.get(userBrowserType);
+    if (patterns == null || browserInfo == null) {
       return UNKNOWN;
     }
-    return getMainAndCompatibilitySections(browserVersion).stream()
+
+    return getMainAndCompatibilitySections(browserInfo).stream()
         .map(section -> findBrowserVersion(section, patterns))
         .filter(Optional::isPresent)
         .map(Optional::get)

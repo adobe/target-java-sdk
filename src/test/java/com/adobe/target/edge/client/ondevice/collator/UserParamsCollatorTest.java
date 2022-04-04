@@ -127,6 +127,7 @@ public class UserParamsCollatorTest {
 
     TargetDeliveryRequest request = requestWithClientHintsAndUA(clientHints, userAgent);
     Map<String, Object> result = collator.collateParams(request, pageLoad);
+    assertEquals("edge", result.get(UserParamsCollator.USER_BROWSER_TYPE));
     assertEquals("windows", result.get(UserParamsCollator.USER_PLATFORM));
     assertEquals("102", result.get(UserParamsCollator.USER_BROWSER_VERSION));
   }
