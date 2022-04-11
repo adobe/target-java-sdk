@@ -149,25 +149,6 @@ public class UserParamsCollatorTest {
     assertEquals("98", result.get(UserParamsCollator.USER_BROWSER_VERSION));
   }
 
-  @Test
-  public void testClientHintsPrecedenceOverUserAgent() {
-    ClientHints clientHints = new ClientHints();
-    clientHints.setMobile(true);
-    clientHints.setPlatform("macOS");
-    clientHints.setArchitecture("x86");
-    clientHints.setPlatformVersion("11.3.1");
-    clientHints.setBrowserUAWithFullVersion(
-        "\" Not A;Brand\";v=\"99.0.0.0\", \"Chromium\";v=\"99.0.4844.83\", \"Google Chrome\";v=\"99.0.4844.83\"");
-    String userAgent =
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.109 Safari/537.36";
-
-    TargetDeliveryRequest request = requestWithClientHintsAndUA(clientHints, userAgent);
-    Map<String, Object> result = collator.collateParams(request, pageLoad);
-    assertEquals("chrome", result.get(UserParamsCollator.USER_BROWSER_TYPE));
-    assertEquals("mac", result.get(UserParamsCollator.USER_PLATFORM));
-    assertNotEquals("98", result.get(UserParamsCollator.USER_BROWSER_VERSION));
-  }
-
   private TargetDeliveryRequest requestWithUserAgent(String userAgent) {
     return TargetDeliveryRequest.builder()
         .execute(new ExecuteRequest().pageLoad(pageLoad))
