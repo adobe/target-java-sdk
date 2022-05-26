@@ -13,6 +13,7 @@ package com.adobe.target.edge.client.ondevice.collator;
 
 import static java.util.stream.Collectors.toList;
 
+import com.adobe.target.delivery.v1.model.ClientHints;
 import com.adobe.target.delivery.v1.model.Context;
 import com.adobe.target.delivery.v1.model.RequestDetails;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
@@ -56,16 +57,17 @@ public class UserParamsCollator implements ParamsCollator {
                           && !browser.contains("Chrome")
                           && !browser.contains("OPR")
                           && !browser.contains("CriOS"));
-              put("edge", browser -> browser.contains("Edge/"));
+              put("edge", browser -> browser.contains("Edge"));
             }
           });
-  private static final Map<String, String> BROWSER_PLATFORMS_MAPPING =
+  private static final Map<String, String> PLATFORMS_MAPPING =
       Collections.unmodifiableMap(
           new LinkedHashMap<String, String>() {
             {
               put("Windows", "windows");
               put("Macintosh", "mac");
               put("Mac OS", "mac");
+              put("macOS", "mac");
               put("Linux", "linux");
             }
           });
@@ -73,8 +75,10 @@ public class UserParamsCollator implements ParamsCollator {
       Collections.unmodifiableMap(
           new HashMap<String, List<Pattern>>() {
             {
-              put("chrome", compilePatterns("chrome/(\\d+)", "crios/(\\d+)"));
-              put("firefox", compilePatterns("firefox/(\\d+)"));
+              put(
+                  "chrome",
+                  compilePatterns("chrome/(\\d+)", "crios/(\\d+)", "Chrome\";v=\"(\\d+)"));
+              put("firefox", compilePatterns("firefox/(\\d+)", "Firefox\";v=\"(\\d+)"));
               put("ie", compilePatterns("msie\\s(\\d+)", "rv:(\\d+)"));
               put(
                   "opera",
@@ -82,8 +86,8 @@ public class UserParamsCollator implements ParamsCollator {
                       "version/(\\d+)", "opera/(\\d+)", "opera\\s*(\\d+)", "OPR/(\\d+)"));
               put("ipad", compilePatterns("version/(\\d+)"));
               put("iphone", compilePatterns("version/(\\d+)"));
-              put("safari", compilePatterns("version/(\\d+)"));
-              put("edge", compilePatterns("edge/(\\d+)"));
+              put("safari", compilePatterns("version/(\\d+)", "Safari\";v=\"(\\d+)"));
+              put("edge", compilePatterns("edge/(\\d+)", "Edge\";v=\"(\\d+)"));
             }
           });
   private static final int BROWSER_VERSION_PATTERN_GROUP_INDEX = 1;
@@ -96,43 +100,62 @@ public class UserParamsCollator implements ParamsCollator {
       TargetDeliveryRequest deliveryRequest, RequestDetails requestDetails) {
     Map<String, Object> user = new HashMap<>();
     String userAgent = extractUserAgent(deliveryRequest);
-    user.put(USER_BROWSER_TYPE, parseBrowserType(userAgent));
-    user.put(USER_PLATFORM, parseBrowserPlatform(userAgent));
-    user.put(USER_BROWSER_VERSION, parseBrowserVersion(userAgent));
+    ClientHints clientHints = extractClientHints(deliveryRequest);
+    String browserInfo = getBrowserInfo(userAgent, clientHints);
+    String browserType = parseBrowserType(browserInfo);
+    user.put(USER_BROWSER_TYPE, browserType);
+    user.put(USER_PLATFORM, parsePlatform(userAgent, clientHints));
+    user.put(USER_BROWSER_VERSION, parseBrowserVersion(browserInfo, browserType));
     return user;
   }
 
-  private String parseBrowserType(String userAgent) {
-    if (StringUtils.isEmpty(userAgent)) {
+  private String parseBrowserType(String browserInfo) {
+    if (StringUtils.isEmpty(browserInfo)) {
       return UNKNOWN;
     }
 
     return BROWSER_TYPE_MATCHER.entrySet().stream()
-        .filter(browserType -> browserType.getValue().test(userAgent))
+        .filter(browserType -> browserType.getValue().test(browserInfo))
         .findFirst()
         .map(Map.Entry::getKey)
         .orElse(UNKNOWN);
   }
 
-  private static String parseBrowserPlatform(String userAgent) {
-    if (StringUtils.isEmpty(userAgent)) {
+  private String getBrowserInfo(String userAgent, ClientHints clientHints) {
+    String browserInfo = userAgent;
+    if (clientHints != null) {
+      if (StringUtils.isNotEmpty(clientHints.getBrowserUAWithFullVersion())) {
+        browserInfo = clientHints.getBrowserUAWithFullVersion();
+      } else if (StringUtils.isNotEmpty(clientHints.getBrowserUAWithMajorVersion())) {
+        browserInfo = clientHints.getBrowserUAWithMajorVersion();
+      }
+    }
+    return browserInfo;
+  }
+
+  private static String parsePlatform(String userAgent, ClientHints clientHints) {
+    String platform;
+    if (clientHints != null && StringUtils.isNotEmpty(clientHints.getPlatform())) {
+      platform = clientHints.getPlatform();
+    } else if (StringUtils.isNotEmpty(userAgent)) {
+      platform = userAgent;
+    } else {
       return UNKNOWN;
     }
-
-    return BROWSER_PLATFORMS_MAPPING.entrySet().stream()
-        .filter(it -> userAgent.contains(it.getKey()))
+    return PLATFORMS_MAPPING.entrySet().stream()
+        .filter(it -> platform.contains(it.getKey()))
         .findFirst()
         .map(Map.Entry::getValue)
         .orElse(UNKNOWN);
   }
 
-  private String parseBrowserVersion(String userAgent) {
-    List<Pattern> patterns = BROWSER_VERSION_PATTERNS.get(parseBrowserType(userAgent));
-    if (patterns == null) {
+  private String parseBrowserVersion(String browserInfo, String userBrowserType) {
+    List<Pattern> patterns = BROWSER_VERSION_PATTERNS.get(userBrowserType);
+    if (patterns == null || browserInfo == null) {
       return UNKNOWN;
     }
 
-    return getMainAndCompatibilitySections(userAgent).stream()
+    return getMainAndCompatibilitySections(browserInfo).stream()
         .map(section -> findBrowserVersion(section, patterns))
         .filter(Optional::isPresent)
         .map(Optional::get)
@@ -150,6 +173,11 @@ public class UserParamsCollator implements ParamsCollator {
       return null;
     }
     return userAgent;
+  }
+
+  private ClientHints extractClientHints(TargetDeliveryRequest deliveryRequest) {
+    Context context = deliveryRequest.getDeliveryRequest().getContext();
+    return context != null ? context.getClientHints() : null;
   }
 
   private static List<Pattern> compilePatterns(String... patterns) {
