@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.3.0] - 2022-05-26
+### Added
+- Added ClientHints support
+
 ## [2.2.2] - 2022-03-30
 ### Fixed
 - Updated ECID-service dependency to fix parsing expiry values from AMCV cookie
