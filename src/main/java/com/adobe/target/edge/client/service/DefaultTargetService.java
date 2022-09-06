@@ -190,8 +190,7 @@ public class DefaultTargetService implements TargetService {
   }
 
   private void updateStickyLocationHint(DeliveryResponse deliveryResponse) {
-    if (!clientConfig.isOnDeviceDecisioningEnabled()
-        || StringUtils.isNotEmpty(stickyLocationHint)) {
+    if (StringUtils.isNotEmpty(stickyLocationHint)) {
       return;
     }
     if (deliveryResponse != null
