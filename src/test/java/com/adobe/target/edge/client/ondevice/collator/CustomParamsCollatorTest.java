@@ -45,22 +45,22 @@ public class CustomParamsCollatorTest {
   }
 
   @Test
-  public void testCustomDotNotation () {
+  public void testCustomDotNotation() {
     VisitorProvider.init("testOrgId");
     Map<String, String> params =
-      new HashMap<String, String>() {
-        {
-          put("foo", "bar");
-          put("BAZ", "BUZ");
-          put("dot.notation", "isConfusing");
-          put("first.second.third", "value");
-          put("first.second.wonky", "DONKEY");
-          put("this..should..be", "ignored");
-        }
-      };
+        new HashMap<String, String>() {
+          {
+            put("foo", "bar");
+            put("BAZ", "BUZ");
+            put("dot.notation", "isConfusing");
+            put("first.second.third", "value");
+            put("first.second.wonky", "DONKEY");
+            put("this..should..be", "ignored");
+          }
+        };
     RequestDetails pageLoad = new RequestDetails().parameters(params);
     TargetDeliveryRequest request =
-      TargetDeliveryRequest.builder().execute(new ExecuteRequest().pageLoad(pageLoad)).build();
+        TargetDeliveryRequest.builder().execute(new ExecuteRequest().pageLoad(pageLoad)).build();
     CustomParamsCollator collator = new CustomParamsCollator();
     Map<String, Object> result = collator.collateParams(request, pageLoad);
 

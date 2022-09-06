@@ -37,23 +37,24 @@ public class CustomParamsCollator implements ParamsCollator {
     }
   }
 
-  private Map<String, Object>  createNestedParametersFromDots(Map<String, Object> custom) {
-    Map<String, Object> result  = new HashMap<>();
-    custom.forEach((key, value) -> {
-      if (key.contains(".") & !key.contains("..")) {
-        String[] keys = key.split("\\.");
-        Map<String, Object> currentObj = result;
-        for (int i=0; i < keys.length - 1; i++) {
-          if (!currentObj.containsKey(keys[i])) {
-            currentObj.put(keys[i], new HashMap<String, Object>());
+  private Map<String, Object> createNestedParametersFromDots(Map<String, Object> custom) {
+    Map<String, Object> result = new HashMap<>();
+    custom.forEach(
+        (key, value) -> {
+          if (key.contains(".") & !key.contains("..")) {
+            String[] keys = key.split("\\.");
+            Map<String, Object> currentObj = result;
+            for (int i = 0; i < keys.length - 1; i++) {
+              if (!currentObj.containsKey(keys[i])) {
+                currentObj.put(keys[i], new HashMap<String, Object>());
+              }
+              currentObj = (Map<String, Object>) currentObj.get(keys[i]);
+            }
+            currentObj.put(keys[keys.length - 1], value);
+          } else {
+            result.put(key, value);
           }
-          currentObj = (Map<String, Object>) currentObj.get(keys[i]);
-        }
-        currentObj.put(keys[keys.length - 1], value);
-      } else {
-        result.put(key, value);
-      }
-    });
+        });
     return result;
   }
 }
