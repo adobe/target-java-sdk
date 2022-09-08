@@ -41,23 +41,24 @@ public class CustomParamsCollator implements ParamsCollator {
     Map<String, Object> result = new HashMap<>();
     custom.forEach(
         (key, value) -> {
-          if (key.contains(".")
-              && !key.contains("..")
-              && key.charAt(0) != '.'
-              && key.charAt(key.length() - 1) != '.') {
-            String[] keys = key.split("\\.");
-            Map<String, Object> currentObj = result;
-            for (int i = 0; i < keys.length - 1; i++) {
-              if (!currentObj.containsKey(keys[i])) {
-                currentObj.put(keys[i], new HashMap<String, Object>());
-              }
-              currentObj = (Map<String, Object>) currentObj.get(keys[i]);
-            }
-            currentObj.put(keys[keys.length - 1], value);
-          } else {
+          if (!key.contains(".")
+              || key.contains("..")
+              || key.charAt(0) == '.'
+              || key.charAt(key.length() - 1) == '.') {
             result.put(key, value);
+          } else {
+            addNestedKeyToParameters(result, key, value);
           }
         });
     return result;
+  }
+
+  private void addNestedKeyToParameters(Map<String, Object> custom, String key, Object value) {
+    String[] keys = key.split("\\.");
+    for (int i = 0; i < keys.length - 1; i++) {
+      custom.putIfAbsent(keys[i], new HashMap<String, Object>());
+      custom = (Map<String, Object>) custom.get(keys[i]);
+    }
+    custom.put(keys[keys.length - 1], value);
   }
 }
