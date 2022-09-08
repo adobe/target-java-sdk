@@ -56,6 +56,8 @@ public class CustomParamsCollatorTest {
             put("first.second.third", "value");
             put("first.second.wonky", "DONKEY");
             put("this..should..be", "ignored");
+            put(".something", "aaa");
+            put("=cranky .chicken.", "bbb");
           }
         };
     RequestDetails pageLoad = new RequestDetails().parameters(params);
@@ -75,5 +77,7 @@ public class CustomParamsCollatorTest {
     assertEquals("DONKEY", second.get("wonky"));
     assertEquals("donkey", second.get("wonky" + CustomParamsCollator.LOWER_CASE_POSTFIX));
     assertEquals("ignored", result.get("this..should..be"));
+    assertEquals("aaa", result.get(".something"));
+    assertEquals("bbb", result.get("=cranky .chicken."));
   }
 }

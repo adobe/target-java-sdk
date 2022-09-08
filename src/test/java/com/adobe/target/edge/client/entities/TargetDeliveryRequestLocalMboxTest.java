@@ -407,6 +407,42 @@ class TargetDeliveryRequestLocalMboxTest {
   }
 
   @Test
+  void testTargetDeliveryLocalRequestParamsWithDots() throws IOException, NoSuchFieldException {
+    fileRuleLoader("DECISIONING_PAYLOAD_PARAMS.json", localService);
+    TargetDeliveryRequest targetDeliveryRequest =
+        localDeliveryRequest(
+            "338e3c1e51f7416a8e1ccba4f81acea0.28_0", DecisioningMethod.ON_DEVICE, "redundant-mbox");
+    targetDeliveryRequest
+        .getDeliveryRequest()
+        .getPrefetch()
+        .getMboxes()
+        .get(0)
+        .setParameters(
+            new HashMap<String, String>() {
+              {
+                put("dot.notation.now.supported", "correct");
+                put("favorite.steely_dan.song", "Reelin' In the Years");
+              }
+            });
+    TargetDeliveryResponse targetDeliveryResponse =
+        targetJavaClient.getOffers(targetDeliveryRequest);
+    List<Option> prefetchOptions =
+        extractOptions(targetDeliveryRequest, targetDeliveryResponse, "redundant-mbox");
+    Map<String, Object> expectedContent =
+        new HashMap<String, Object>() {
+          {
+            put("did_this_work", true);
+            put("code_wizard", true);
+            put("experience", "C");
+          }
+        };
+    verifyJSONContent(
+        prefetchOptions,
+        expectedContent,
+        "Zhwxeqy1O2r9Ske1YDA9bJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==");
+  }
+
+  @Test
   void testTargetDeliveryLocalRequestParamsMismatch() throws IOException, NoSuchFieldException {
     fileRuleLoader("DECISIONING_PAYLOAD_PARAMS.json", localService);
     TargetDeliveryRequest targetDeliveryRequest =

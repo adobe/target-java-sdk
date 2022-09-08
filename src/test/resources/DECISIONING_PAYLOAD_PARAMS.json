@@ -131,6 +131,59 @@
             ],
             "metrics": []
           }
+        },
+        {
+          "ruleKey": "334717",
+          "activityId": "334717",
+          "meta": {
+            "activityId": 334717,
+            "activityType": "ab",
+            "experienceId": 2,
+            "locationName": "redundant-mbox",
+            "locationType": "mbox",
+            "locationId": 0,
+            "audienceIds": [
+              5452799
+            ],
+            "offerIds": [
+              632332
+            ]
+          },
+          "condition": {
+            "and": [
+              {
+                "==": [
+                  "correct",
+                  {
+                    "var": "mbox.dot.notation.now.supported"
+                  }
+                ]
+              },
+              {
+                "==": [
+                  "Reelin' In the Years",
+                  {
+                    "var": "mbox.favorite.steely_dan.song"
+                  }
+                ]
+              }
+            ]
+          },
+          "consequence": {
+            "name": "redundant-mbox",
+            "options": [
+              {
+                "type": "json",
+                "eventToken": "Zhwxeqy1O2r9Ske1YDA9bJNWHtnQtQrJfmRrQugEa2qCnQ9Y9OaLL2gsdrWQTvE54PwSz67rmXWmSnkXpSSS2Q==",
+                "content": {
+                  "did_this_work": true,
+                  "code_wizard": true,
+                  "experience": "C"
+                }
+              }
+            ],
+            "metrics": []
+          }
         }
       ]
     },

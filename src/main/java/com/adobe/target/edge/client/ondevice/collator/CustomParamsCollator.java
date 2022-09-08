@@ -41,7 +41,10 @@ public class CustomParamsCollator implements ParamsCollator {
     Map<String, Object> result = new HashMap<>();
     custom.forEach(
         (key, value) -> {
-          if (key.contains(".") & !key.contains("..")) {
+          if (key.contains(".")
+              && !key.contains("..")
+              && key.charAt(0) != '.'
+              && key.charAt(key.length() - 1) != '.') {
             String[] keys = key.split("\\.");
             Map<String, Object> currentObj = result;
             for (int i = 0; i < keys.length - 1; i++) {
