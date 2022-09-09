@@ -43,4 +43,41 @@ public class CustomParamsCollatorTest {
     assertEquals("BUZ", result.get("BAZ"));
     assertEquals("buz", result.get("BAZ" + CustomParamsCollator.LOWER_CASE_POSTFIX));
   }
+
+  @Test
+  public void testCustomDotNotation() {
+    VisitorProvider.init("testOrgId");
+    Map<String, String> params =
+        new HashMap<String, String>() {
+          {
+            put("foo", "bar");
+            put("BAZ", "BUZ");
+            put("dot.notation", "isConfusing");
+            put("first.second.third", "value");
+            put("first.second.wonky", "DONKEY");
+            put("this..should..be", "ignored");
+            put(".something", "aaa");
+            put("=cranky .chicken.", "bbb");
+          }
+        };
+    RequestDetails pageLoad = new RequestDetails().parameters(params);
+    TargetDeliveryRequest request =
+        TargetDeliveryRequest.builder().execute(new ExecuteRequest().pageLoad(pageLoad)).build();
+    CustomParamsCollator collator = new CustomParamsCollator();
+    Map<String, Object> result = collator.collateParams(request, pageLoad);
+
+    Map<String, Object> dot = (Map<String, Object>) result.get("dot");
+    assertEquals("isConfusing", dot.get("notation"));
+    assertEquals("isconfusing", dot.get("notation" + CustomParamsCollator.LOWER_CASE_POSTFIX));
+
+    Map<String, Object> first = (Map<String, Object>) result.get("first");
+    Map<String, Object> second = (Map<String, Object>) first.get("second");
+    assertEquals("value", second.get("third"));
+    assertEquals("value", second.get("third" + CustomParamsCollator.LOWER_CASE_POSTFIX));
+    assertEquals("DONKEY", second.get("wonky"));
+    assertEquals("donkey", second.get("wonky" + CustomParamsCollator.LOWER_CASE_POSTFIX));
+    assertEquals("ignored", result.get("this..should..be"));
+    assertEquals("aaa", result.get(".something"));
+    assertEquals("bbb", result.get("=cranky .chicken."));
+  }
 }

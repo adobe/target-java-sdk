@@ -23,6 +23,7 @@ public class CustomParamsCollator implements ParamsCollator {
       TargetDeliveryRequest deliveryRequest, RequestDetails requestDetails) {
     Map<String, Object> custom = new HashMap<>();
     addAllParameters(custom, requestDetails);
+    custom = createNestedParametersFromDots(custom);
     return custom;
   }
 
@@ -34,5 +35,30 @@ public class CustomParamsCollator implements ParamsCollator {
         params.forEach((key, value) -> custom.put(key + LOWER_CASE_POSTFIX, value.toLowerCase()));
       }
     }
+  }
+
+  private Map<String, Object> createNestedParametersFromDots(Map<String, Object> custom) {
+    Map<String, Object> result = new HashMap<>();
+    custom.forEach(
+        (key, value) -> {
+          if (key.contains(".")
+              && !key.contains("..")
+              && key.charAt(0) != '.'
+              && key.charAt(key.length() - 1) != '.') {
+            addNestedKeyToParameters(result, key, value);
+            return;
+          }
+          result.put(key, value);
+        });
+    return result;
+  }
+
+  private void addNestedKeyToParameters(Map<String, Object> custom, String key, Object value) {
+    String[] keys = key.split("\\.");
+    for (int i = 0; i < keys.length - 1; i++) {
+      custom.putIfAbsent(keys[i], new HashMap<String, Object>());
+      custom = (Map<String, Object>) custom.get(keys[i]);
+    }
+    custom.put(keys[keys.length - 1], value);
   }
 }

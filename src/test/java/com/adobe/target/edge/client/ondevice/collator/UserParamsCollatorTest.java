@@ -12,7 +12,6 @@
 package com.adobe.target.edge.client.ondevice.collator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import com.adobe.target.delivery.v1.model.ClientHints;
 import com.adobe.target.delivery.v1.model.Context;
