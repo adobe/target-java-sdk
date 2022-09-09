@@ -41,14 +41,14 @@ public class CustomParamsCollator implements ParamsCollator {
     Map<String, Object> result = new HashMap<>();
     custom.forEach(
         (key, value) -> {
-          if (!key.contains(".")
-              || key.contains("..")
-              || key.charAt(0) == '.'
-              || key.charAt(key.length() - 1) == '.') {
-            result.put(key, value);
-          } else {
+          if (key.contains(".")
+              && !key.contains("..")
+              && key.charAt(0) != '.'
+              && key.charAt(key.length() - 1) != '.') {
             addNestedKeyToParameters(result, key, value);
+            return;
           }
+          result.put(key, value);
         });
     return result;
   }
