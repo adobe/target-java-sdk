@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.3.1] - 2022-09-12
+### Fixed
+- Client custom Mbox parameters now correctly support dot notation
+- stickyLocationHint is updated regardless of Decisioning method
+
 ## [2.3.0] - 2022-05-26
 ### Added
 - Added ClientHints support
