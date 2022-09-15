@@ -15,5 +15,4 @@ public class TargetConstants {
 
   public static final String COOKIE_NAME = "mbox";
   public static final String CLUSTER_COOKIE_NAME = "mboxEdgeCluster";
-  public static final String SDK_VERSION = "2.3.1";
 }

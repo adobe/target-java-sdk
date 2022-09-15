@@ -12,7 +12,6 @@
 package com.adobe.target.edge.client.service;
 
 import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.TIMING_EXECUTE_REQUEST;
-import static com.adobe.target.edge.client.utils.TargetConstants.SDK_VERSION;
 import static org.apache.http.HttpStatus.SC_OK;
 
 import com.adobe.target.delivery.v1.model.DeliveryResponse;
@@ -27,9 +26,11 @@ import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.utils.CookieUtils;
 import com.adobe.target.edge.client.utils.StringUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import kong.unirest.HttpResponse;
 import kong.unirest.UnirestParsingException;
@@ -41,6 +42,7 @@ public class DefaultTargetService implements TargetService {
   public static final String SDK_VERSION_KEY = "X-EXC-SDK-Version";
   public static final String SESSION_ID = "sessionId";
   public static final String ORGANIZATION_ID = "imsOrgId";
+  public final String SDK_VERSION;
   private final TargetHttpClient targetHttpClient;
   private final ClientConfig clientConfig;
   private String stickyLocationHint;
@@ -53,6 +55,18 @@ public class DefaultTargetService implements TargetService {
     } else {
       this.targetHttpClient = targetHttpClient;
     }
+
+    Properties defaultProps = new Properties();
+    try {
+      InputStream in = getClass().getResourceAsStream("/gradle.properties");
+      BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+      defaultProps.load(reader);
+      in.close();
+    } catch (IOException e) {
+      System.out.println("unable to location gradle.properties file");
+    }
+
+    this.SDK_VERSION = defaultProps.getProperty("version");
     this.targetHttpClient.addDefaultHeader(SDK_USER_KEY, SDK_USER_VALUE);
     this.targetHttpClient.addDefaultHeader(SDK_VERSION_KEY, SDK_VERSION);
     this.clientConfig = clientConfig;

@@ -11,8 +11,6 @@ plugins {
 apply plugin: "java"
 apply plugin: "java-library"
 
-build.dependsOn spotlessApply
-
 defaultTasks "spotlessApply", "build"
 
 repositories {
@@ -41,6 +39,13 @@ task codegen(type: Exec) {
     workingDir "./codegeneration"
     commandLine "./codegen.sh"
 }
+
+ task copyProperties(type: Copy) {
+  from './gradle.properties'
+  into 'src/main/resources'
+}
+
+build.dependsOn spotlessApply, copyProperties
 
 compileJava {
     options.encoding = "UTF-8"
