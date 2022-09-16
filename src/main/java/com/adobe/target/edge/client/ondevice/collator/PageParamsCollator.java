@@ -112,11 +112,12 @@ public class PageParamsCollator implements ParamsCollator {
     if (host == null) {
       return "";
     }
-    if (host.toLowerCase().startsWith("www.")) {
+    String lowerCaseHost = host.toLowerCase();
+    if (lowerCaseHost.startsWith("www.")) {
+      lowerCaseHost = lowerCaseHost.substring(4);
       host = host.substring(4);
     }
-    String lowerCaseHost = host.toLowerCase();
-    InternetDomainName domain = InternetDomainName.from(host);
+    InternetDomainName domain = InternetDomainName.from(lowerCaseHost);
     if (!domain.hasPublicSuffix()) {
       return "";
     }
@@ -124,11 +125,8 @@ public class PageParamsCollator implements ParamsCollator {
     if (lowerCaseHost.indexOf(topPrivateDomain) == 0) {
       return "";
     }
-    String lowerCaseResult = lowerCaseHost.substring(0, lowerCaseHost.indexOf(topPrivateDomain) - 1);
-    if (lowerCaseHost.equals(host)) {
-      return lowerCaseResult;
-    }
-    return lowerCaseResult.toUpperCase();
+    int endIndex = lowerCaseHost.indexOf(topPrivateDomain) - 1;
+    return host.substring(0, endIndex);
   }
 
   private String strOrBlank(String str) {
