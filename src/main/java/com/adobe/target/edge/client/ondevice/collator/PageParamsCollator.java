@@ -112,6 +112,9 @@ public class PageParamsCollator implements ParamsCollator {
     if (host == null) {
       return "";
     }
+    if (host.toLowerCase().startsWith("www.")) {
+      host = host.substring(4);
+    }
     String lowerCaseHost = host.toLowerCase();
     InternetDomainName domain = InternetDomainName.from(host);
     if (!domain.hasPublicSuffix()) {

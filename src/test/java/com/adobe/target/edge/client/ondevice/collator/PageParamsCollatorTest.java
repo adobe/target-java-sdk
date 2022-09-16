@@ -44,8 +44,8 @@ public class PageParamsCollatorTest {
     assertEquals("/about/", result.get(PageParamsCollator.PAGE_PATH_LOWER));
     assertEquals("WWW.TARGET.ADOBE.COM", result.get(PageParamsCollator.PAGE_DOMAIN));
     assertEquals("www.target.adobe.com", result.get(PageParamsCollator.PAGE_DOMAIN_LOWER));
-    assertEquals("WWW.TARGET", result.get(PageParamsCollator.PAGE_SUBDOMAIN));
-    assertEquals("www.target", result.get(PageParamsCollator.PAGE_SUBDOMAIN_LOWER));
+    assertEquals("TARGET", result.get(PageParamsCollator.PAGE_SUBDOMAIN));
+    assertEquals("target", result.get(PageParamsCollator.PAGE_SUBDOMAIN_LOWER));
     assertEquals("COM", result.get(PageParamsCollator.PAGE_TOP_LEVEL_DOMAIN));
     assertEquals("com", result.get(PageParamsCollator.PAGE_TOP_LEVEL_DOMAIN_LOWER));
     assertEquals("foo=bar&name=JimmyG", result.get(PageParamsCollator.PAGE_QUERY));
@@ -67,7 +67,7 @@ public class PageParamsCollatorTest {
         .build();
     PageParamsCollator collator = new PageParamsCollator();
     Map<String, Object> result = collator.collateParams(request, pageLoad);
-    assertEquals("www", result.get(PageParamsCollator.PAGE_SUBDOMAIN));
+    assertEquals("", result.get(PageParamsCollator.PAGE_SUBDOMAIN));
     assertEquals("co.uk", result.get(PageParamsCollator.PAGE_TOP_LEVEL_DOMAIN));
 
     url = "https://test.co.uk";
@@ -97,7 +97,7 @@ public class PageParamsCollatorTest {
         .context(new Context().address(new Address().url(url)))
         .build();
     result = collator.collateParams(request, pageLoad);
-    assertEquals("www", result.get(PageParamsCollator.PAGE_SUBDOMAIN));
+    assertEquals("", result.get(PageParamsCollator.PAGE_SUBDOMAIN));
     assertEquals("ide.kyoto.jp", result.get(PageParamsCollator.PAGE_TOP_LEVEL_DOMAIN));
 
     url = "http://localhost:3000/";
