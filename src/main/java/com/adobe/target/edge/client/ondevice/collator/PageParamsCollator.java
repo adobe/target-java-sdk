@@ -122,11 +122,11 @@ public class PageParamsCollator implements ParamsCollator {
       return "";
     }
     String topPrivateDomain = domain.topPrivateDomain().toString();
-    if (lowerCaseHost.indexOf(topPrivateDomain) == 0) {
+    int endIndex = lowerCaseHost.indexOf(topPrivateDomain);
+    if (endIndex == 0) {
       return "";
     }
-    int endIndex = lowerCaseHost.indexOf(topPrivateDomain) - 1;
-    return host.substring(0, endIndex);
+    return host.substring(0, endIndex - 1);
   }
 
   private String strOrBlank(String str) {
