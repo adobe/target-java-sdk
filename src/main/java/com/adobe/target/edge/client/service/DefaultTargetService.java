@@ -42,7 +42,7 @@ public class DefaultTargetService implements TargetService {
   public static final String SDK_VERSION_KEY = "X-EXC-SDK-Version";
   public static final String SESSION_ID = "sessionId";
   public static final String ORGANIZATION_ID = "imsOrgId";
-  public final String SDK_VERSION;
+  private final String SDK_VERSION;
   private final TargetHttpClient targetHttpClient;
   private final ClientConfig clientConfig;
   private String stickyLocationHint;
@@ -63,12 +63,14 @@ public class DefaultTargetService implements TargetService {
       defaultProps.load(reader);
       in.close();
     } catch (IOException e) {
-      System.out.println("unable to location gradle.properties file");
+      System.out.println("Unable to determine Target SDK version");
     }
 
     this.SDK_VERSION = defaultProps.getProperty("version");
     this.targetHttpClient.addDefaultHeader(SDK_USER_KEY, SDK_USER_VALUE);
-    this.targetHttpClient.addDefaultHeader(SDK_VERSION_KEY, SDK_VERSION);
+    if (this.SDK_VERSION != null) {
+      this.targetHttpClient.addDefaultHeader(SDK_VERSION_KEY, SDK_VERSION);
+    }
     this.clientConfig = clientConfig;
     this.telemetryService = telemetryService;
   }
