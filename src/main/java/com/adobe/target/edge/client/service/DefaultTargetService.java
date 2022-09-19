@@ -34,6 +34,8 @@ import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import kong.unirest.HttpResponse;
 import kong.unirest.UnirestParsingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultTargetService implements TargetService {
 
@@ -42,11 +44,12 @@ public class DefaultTargetService implements TargetService {
   public static final String SDK_VERSION_KEY = "X-EXC-SDK-Version";
   public static final String SESSION_ID = "sessionId";
   public static final String ORGANIZATION_ID = "imsOrgId";
-  private final String SDK_VERSION;
+  private String SDK_VERSION;
   private final TargetHttpClient targetHttpClient;
   private final ClientConfig clientConfig;
   private String stickyLocationHint;
   private final TelemetryService telemetryService;
+  private static final Logger logger = LoggerFactory.getLogger(DefaultTargetHttpClient.class);
 
   public DefaultTargetService(ClientConfig clientConfig, TelemetryService telemetryService) {
     TargetHttpClient targetHttpClient = new DefaultTargetHttpClient(clientConfig);
@@ -56,10 +59,16 @@ public class DefaultTargetService implements TargetService {
       this.targetHttpClient = targetHttpClient;
     }
 
+    loadDefaultProperties();
+
+    this.clientConfig = clientConfig;
+    this.telemetryService = telemetryService;
+  }
+
+  private void loadDefaultProperties() {
     Properties defaultProps = new Properties();
     try {
       defaultProps.load(getClass().getResourceAsStream("/gradle.properties"));
-      in.close();
     } catch (IOException e) {
       logger.warn("Unable to load default SDK properties");
     }
@@ -69,8 +78,6 @@ public class DefaultTargetService implements TargetService {
     if (this.SDK_VERSION != null) {
       this.targetHttpClient.addDefaultHeader(SDK_VERSION_KEY, SDK_VERSION);
     }
-    this.clientConfig = clientConfig;
-    this.telemetryService = telemetryService;
   }
 
   @Override
