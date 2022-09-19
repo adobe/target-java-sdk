@@ -63,7 +63,7 @@ public class DefaultTargetService implements TargetService {
       defaultProps.load(reader);
       in.close();
     } catch (IOException e) {
-      System.out.println("Unable to determine Target SDK version");
+      logger.warn("Unable to load default SDK properties");
     }
 
     this.SDK_VERSION = defaultProps.getProperty("version");
