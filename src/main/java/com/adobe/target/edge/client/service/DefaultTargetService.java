@@ -58,9 +58,7 @@ public class DefaultTargetService implements TargetService {
 
     Properties defaultProps = new Properties();
     try {
-      InputStream in = getClass().getResourceAsStream("/gradle.properties");
-      BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-      defaultProps.load(reader);
+      defaultProps.load(getClass().getResourceAsStream("/gradle.properties"));
       in.close();
     } catch (IOException e) {
       logger.warn("Unable to load default SDK properties");
