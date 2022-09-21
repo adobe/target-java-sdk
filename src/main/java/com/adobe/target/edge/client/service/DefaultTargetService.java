@@ -60,6 +60,7 @@ public class DefaultTargetService implements TargetService {
     }
 
     loadDefaultProperties();
+    setDefaultHeaders();
 
     this.clientConfig = clientConfig;
     this.telemetryService = telemetryService;
@@ -74,6 +75,9 @@ public class DefaultTargetService implements TargetService {
     }
 
     this.SDK_VERSION = defaultProps.getProperty("version");
+  }
+
+  private void setDefaultHeaders() {
     this.targetHttpClient.addDefaultHeader(SDK_USER_KEY, SDK_USER_VALUE);
     if (this.SDK_VERSION != null) {
       this.targetHttpClient.addDefaultHeader(SDK_VERSION_KEY, SDK_VERSION);
