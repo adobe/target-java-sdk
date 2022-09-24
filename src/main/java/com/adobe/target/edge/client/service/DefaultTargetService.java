@@ -44,7 +44,7 @@ public class DefaultTargetService implements TargetService {
   public static final String SDK_VERSION_KEY = "X-EXC-SDK-Version";
   public static final String SESSION_ID = "sessionId";
   public static final String ORGANIZATION_ID = "imsOrgId";
-  private String SDK_VERSION;
+  private String sdkVersion;
   private final TargetHttpClient targetHttpClient;
   private final ClientConfig clientConfig;
   private String stickyLocationHint;
@@ -74,13 +74,13 @@ public class DefaultTargetService implements TargetService {
       logger.warn("Unable to load default SDK properties");
     }
 
-    this.SDK_VERSION = defaultProps.getProperty("version");
+    this.sdkVersion = defaultProps.getProperty("version");
   }
 
   private void setDefaultHeaders() {
     this.targetHttpClient.addDefaultHeader(SDK_USER_KEY, SDK_USER_VALUE);
-    if (this.SDK_VERSION != null) {
-      this.targetHttpClient.addDefaultHeader(SDK_VERSION_KEY, SDK_VERSION);
+    if (this.sdkVersion != null) {
+      this.targetHttpClient.addDefaultHeader(SDK_VERSION_KEY, this.sdkVersion);
     }
   }
 
