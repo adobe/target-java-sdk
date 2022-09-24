@@ -42,6 +42,13 @@ task codegen(type: Exec) {
     commandLine "./codegen.sh"
 }
 
+task copyProperties(type: Copy) {
+    from './gradle.properties'
+    into 'src/main/resources'
+}
+
+classes.dependsOn copyProperties
+
 compileJava {
     options.encoding = "UTF-8"
     sourceCompatibility = "1.8"

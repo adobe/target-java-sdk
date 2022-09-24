@@ -12,7 +12,6 @@
 package com.adobe.target.edge.client.service;
 
 import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.TIMING_EXECUTE_REQUEST;
-import static com.adobe.target.edge.client.utils.TargetConstants.SDK_VERSION;
 import static org.apache.http.HttpStatus.SC_OK;
 
 import com.adobe.target.delivery.v1.model.DeliveryResponse;
@@ -27,12 +26,16 @@ import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.utils.CookieUtils;
 import com.adobe.target.edge.client.utils.StringUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import kong.unirest.HttpResponse;
 import kong.unirest.UnirestParsingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultTargetService implements TargetService {
 
@@ -41,10 +44,12 @@ public class DefaultTargetService implements TargetService {
   public static final String SDK_VERSION_KEY = "X-EXC-SDK-Version";
   public static final String SESSION_ID = "sessionId";
   public static final String ORGANIZATION_ID = "imsOrgId";
+  private String sdkVersion;
   private final TargetHttpClient targetHttpClient;
   private final ClientConfig clientConfig;
   private String stickyLocationHint;
   private final TelemetryService telemetryService;
+  private static final Logger logger = LoggerFactory.getLogger(DefaultTargetHttpClient.class);
 
   public DefaultTargetService(ClientConfig clientConfig, TelemetryService telemetryService) {
     TargetHttpClient targetHttpClient = new DefaultTargetHttpClient(clientConfig);
@@ -53,10 +58,30 @@ public class DefaultTargetService implements TargetService {
     } else {
       this.targetHttpClient = targetHttpClient;
     }
-    this.targetHttpClient.addDefaultHeader(SDK_USER_KEY, SDK_USER_VALUE);
-    this.targetHttpClient.addDefaultHeader(SDK_VERSION_KEY, SDK_VERSION);
+
+    loadDefaultProperties();
+    setDefaultHeaders();
+
     this.clientConfig = clientConfig;
     this.telemetryService = telemetryService;
+  }
+
+  private void loadDefaultProperties() {
+    Properties defaultProps = new Properties();
+    try {
+      defaultProps.load(getClass().getResourceAsStream("/gradle.properties"));
+    } catch (IOException e) {
+      logger.warn("Unable to load default SDK properties");
+    }
+
+    this.sdkVersion = defaultProps.getProperty("version");
+  }
+
+  private void setDefaultHeaders() {
+    this.targetHttpClient.addDefaultHeader(SDK_USER_KEY, SDK_USER_VALUE);
+    if (this.sdkVersion != null) {
+      this.targetHttpClient.addDefaultHeader(SDK_VERSION_KEY, this.sdkVersion);
+    }
   }
 
   @Override
