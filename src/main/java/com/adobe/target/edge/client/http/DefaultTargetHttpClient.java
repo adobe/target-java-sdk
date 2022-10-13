@@ -62,6 +62,10 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
       unirestInstance.config().addInterceptor(clientConfig.getRequestInterceptor());
     }
 
+    if (clientConfig.getHttpClient() != null) {
+      unirestInstance.config().httpClient(clientConfig.getHttpClient());
+    }
+
     if (clientConfig.isProxyEnabled()) {
       ClientProxyConfig proxyConfig = clientConfig.getProxyConfig();
       if (proxyConfig.isAuthProxy()) {

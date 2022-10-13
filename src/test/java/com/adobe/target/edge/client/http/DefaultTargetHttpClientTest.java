@@ -22,15 +22,22 @@ import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.ClientProxyConfig;
 import com.adobe.target.edge.client.utils.MockRawResponse;
 import com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-import kong.unirest.HttpResponse;
-import kong.unirest.Proxy;
-import kong.unirest.RawResponse;
-import kong.unirest.UnirestInstance;
+import javax.net.ssl.SSLContext;
+import kong.unirest.*;
+import kong.unirest.apache.ApacheClient;
+import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -91,6 +98,20 @@ public class DefaultTargetHttpClientTest {
     assertEquals(PROXY_USERNAME, unirestProxy.getUsername());
     assertEquals(PROXY_PASSWORD, unirestProxy.getPassword());
     targetClient.close();
+  }
+
+  @Test
+  void testConfigSetWithSSLFactory() throws Exception {
+    SSLContext context = SSLContextBuilder.create().build();
+    SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(context);
+    CloseableHttpClient httpClient =
+        HttpClients.custom().setSSLSocketFactory(sslSocketFactory).build();
+    Config httpClientConfig = new Config();
+    Client unirestWrapper = new ApacheClient(httpClient, httpClientConfig);
+    ClientConfig clientConfig =
+        ClientConfig.builder().organizationId(TEST_ORG_ID).httpClient(unirestWrapper).build();
+    DefaultTargetHttpClient targetClient = new DefaultTargetHttpClient(clientConfig);
+    assertEquals(targetClient.getUnirestInstance().config().getClient(), unirestWrapper);
   }
 
   @Test
@@ -168,5 +189,29 @@ public class DefaultTargetHttpClientTest {
         defaultTargetHttpClient.executeAsync(
             queryParams, url, deliveryRequest, MockRawResponse.class);
     assertNotNull(completableFuture);
+  }
+
+  @Test
+  void testExecuteCustomHTTPClient() throws NoSuchFieldException, IOException {
+    CloseableHttpClient httpClient =
+        Mockito.mock(CloseableHttpClient.class, Mockito.RETURNS_DEEP_STUBS);
+    Config httpClientConfig = new Config();
+    Client unirestWrapper = new ApacheClient(httpClient, httpClientConfig);
+    ClientConfig clientConfig =
+        ClientConfig.builder().organizationId(TEST_ORG_ID).httpClient(unirestWrapper).build();
+    DefaultTargetHttpClient defaultTargetHttpClient = new DefaultTargetHttpClient(clientConfig);
+
+    FieldSetter.setField(
+      unirestWrapper,
+      unirestWrapper.getClass().getDeclaredField("client"),
+      httpClient);
+
+    Map<String, Object> queryParams = new HashMap<>();
+    String url = "/testUrl";
+    DeliveryRequest deliveryRequest = new DeliveryRequest();
+
+    when(httpClient.execute(Mockito.any(HttpHost.class), Mockito.any(org.apache.http.HttpRequest.class))).thenReturn(null);
+    defaultTargetHttpClient.execute(queryParams, url, deliveryRequest, MockRawResponse.class);
+    Mockito.verify(httpClient, Mockito.times(1)).execute(Mockito.any());
   }
 }

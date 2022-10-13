@@ -18,6 +18,7 @@ import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningHandler;
 import java.util.List;
 import java.util.Objects;
+import kong.unirest.Client;
 import org.apache.http.HttpRequestInterceptor;
 
 public class ClientConfig {
@@ -47,6 +48,7 @@ public class ClientConfig {
   private byte[] onDeviceArtifactPayload;
   private boolean telemetryEnabled;
   private List<String> onDeviceAllMatchingRulesMboxes;
+  private Client httpClient;
 
   public String getClient() {
     return client;
@@ -90,6 +92,10 @@ public class ClientConfig {
 
   public HttpRequestInterceptor getRequestInterceptor() {
     return requestInterceptor;
+  }
+
+  public Client getHttpClient() {
+    return httpClient;
   }
 
   public String getUrl(String locationHint) {
@@ -177,6 +183,7 @@ public class ClientConfig {
     private byte[] onDeviceArtifactPayload;
     private boolean telemetryEnabled = true;
     private List<String> onDeviceAllMatchingRulesMboxes;
+    private Client httpClient;
 
     private ClientConfigBuilder() {}
 
@@ -294,6 +301,11 @@ public class ClientConfig {
       return this;
     }
 
+    public ClientConfigBuilder httpClient(Client httpClient) {
+      this.httpClient = httpClient;
+      return this;
+    }
+
     public ClientConfig build() {
       ClientConfig clientConfig = new ClientConfig();
       Objects.requireNonNull(organizationId, "organization id cannot be null");
@@ -323,6 +335,7 @@ public class ClientConfig {
       clientConfig.onDeviceArtifactPayload = this.onDeviceArtifactPayload;
       clientConfig.onDeviceAllMatchingRulesMboxes = this.onDeviceAllMatchingRulesMboxes;
       clientConfig.telemetryEnabled = this.telemetryEnabled;
+      clientConfig.httpClient = this.httpClient;
       return clientConfig;
     }
   }
