@@ -18,8 +18,8 @@ import com.adobe.target.edge.client.model.DecisioningMethod;
 import com.adobe.target.edge.client.model.ondevice.OnDeviceDecisioningHandler;
 import java.util.List;
 import java.util.Objects;
-import kong.unirest.Client;
 import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.client.HttpClient;
 
 public class ClientConfig {
 
@@ -48,7 +48,7 @@ public class ClientConfig {
   private byte[] onDeviceArtifactPayload;
   private boolean telemetryEnabled;
   private List<String> onDeviceAllMatchingRulesMboxes;
-  private Client httpClient;
+  private HttpClient httpClient;
 
   public String getClient() {
     return client;
@@ -94,7 +94,7 @@ public class ClientConfig {
     return requestInterceptor;
   }
 
-  public Client getHttpClient() {
+  public HttpClient getHttpClient() {
     return httpClient;
   }
 
@@ -183,7 +183,7 @@ public class ClientConfig {
     private byte[] onDeviceArtifactPayload;
     private boolean telemetryEnabled = true;
     private List<String> onDeviceAllMatchingRulesMboxes;
-    private Client httpClient;
+    private HttpClient httpClient;
 
     private ClientConfigBuilder() {}
 
@@ -301,7 +301,7 @@ public class ClientConfig {
       return this;
     }
 
-    public ClientConfigBuilder httpClient(Client httpClient) {
+    public ClientConfigBuilder httpClient(HttpClient httpClient) {
       this.httpClient = httpClient;
       return this;
     }
