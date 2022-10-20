@@ -14,6 +14,7 @@ package com.adobe.target.edge.client.ondevice.collator;
 import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.model.TargetDeliveryRequest;
 import com.adobe.target.edge.client.utils.StringUtils;
+import com.google.common.net.InternetDomainName;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -95,26 +96,37 @@ public class PageParamsCollator implements ParamsCollator {
     if (host == null) {
       return "";
     }
-    int idx = host.lastIndexOf('.');
-    if (idx >= 0 && host.length() > 1) {
-      return host.substring(idx + 1);
+    String lowerCaseHost = host.toLowerCase();
+    InternetDomainName publicSuffix = InternetDomainName.from(host).publicSuffix();
+    if (publicSuffix == null) {
+      return "";
     }
-    return host;
+    String lowerCaseResult = publicSuffix.toString();
+    if (lowerCaseHost.equals(host)) {
+      return lowerCaseResult;
+    }
+    return lowerCaseResult.toUpperCase();
   }
 
   private String extractSubDomain(String host) {
-    // TODO: implement properly
     if (host == null) {
       return "";
     }
-    if (host.toLowerCase().startsWith("www.")) {
+    String lowerCaseHost = host.toLowerCase();
+    if (lowerCaseHost.startsWith("www.")) {
+      lowerCaseHost = lowerCaseHost.substring(4);
       host = host.substring(4);
     }
-    String[] parts = host.split("\\.");
-    if (parts.length < 3) {
+    InternetDomainName domain = InternetDomainName.from(lowerCaseHost);
+    if (!domain.hasPublicSuffix()) {
       return "";
     }
-    return parts[0];
+    String topPrivateDomain = domain.topPrivateDomain().toString();
+    int endIndex = lowerCaseHost.indexOf(topPrivateDomain);
+    if (endIndex == 0) {
+      return "";
+    }
+    return host.substring(0, endIndex - 1);
   }
 
   private String strOrBlank(String str) {

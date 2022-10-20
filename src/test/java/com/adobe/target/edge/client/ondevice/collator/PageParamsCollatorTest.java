@@ -53,4 +53,61 @@ public class PageParamsCollatorTest {
     assertEquals("Part1", result.get(PageParamsCollator.PAGE_FRAGMENT));
     assertEquals("part1", result.get(PageParamsCollator.PAGE_FRAGMENT_LOWER));
   }
+
+  @Test
+  public void testSubdomainAndTLDParse() {
+    VisitorProvider.init("testOrgId");
+    String url = "http://www.amazon.co.uk";
+
+    RequestDetails pageLoad = new RequestDetails();
+    TargetDeliveryRequest request =
+      TargetDeliveryRequest.builder()
+        .execute(new ExecuteRequest().pageLoad(pageLoad))
+        .context(new Context().address(new Address().url(url)))
+        .build();
+    PageParamsCollator collator = new PageParamsCollator();
+    Map<String, Object> result = collator.collateParams(request, pageLoad);
+    assertEquals("", result.get(PageParamsCollator.PAGE_SUBDOMAIN));
+    assertEquals("co.uk", result.get(PageParamsCollator.PAGE_TOP_LEVEL_DOMAIN));
+
+    url = "https://test.co.uk";
+    request =
+      TargetDeliveryRequest.builder()
+        .execute(new ExecuteRequest().pageLoad(pageLoad))
+        .context(new Context().address(new Address().url(url)))
+        .build();
+    result = collator.collateParams(request, pageLoad);
+    assertEquals("", result.get(PageParamsCollator.PAGE_SUBDOMAIN));
+    assertEquals("co.uk", result.get(PageParamsCollator.PAGE_TOP_LEVEL_DOMAIN));
+
+    url = "https://sub.test.co.uk";
+    request =
+      TargetDeliveryRequest.builder()
+        .execute(new ExecuteRequest().pageLoad(pageLoad))
+        .context(new Context().address(new Address().url(url)))
+        .build();
+    result = collator.collateParams(request, pageLoad);
+    assertEquals("sub", result.get(PageParamsCollator.PAGE_SUBDOMAIN));
+    assertEquals("co.uk", result.get(PageParamsCollator.PAGE_TOP_LEVEL_DOMAIN));
+
+    url = "https://www.town.ide.kyoto.jp/";
+    request =
+      TargetDeliveryRequest.builder()
+        .execute(new ExecuteRequest().pageLoad(pageLoad))
+        .context(new Context().address(new Address().url(url)))
+        .build();
+    result = collator.collateParams(request, pageLoad);
+    assertEquals("", result.get(PageParamsCollator.PAGE_SUBDOMAIN));
+    assertEquals("ide.kyoto.jp", result.get(PageParamsCollator.PAGE_TOP_LEVEL_DOMAIN));
+
+    url = "http://localhost:3000/";
+    request =
+      TargetDeliveryRequest.builder()
+        .execute(new ExecuteRequest().pageLoad(pageLoad))
+        .context(new Context().address(new Address().url(url)))
+        .build();
+    result = collator.collateParams(request, pageLoad);
+    assertEquals("", result.get(PageParamsCollator.PAGE_SUBDOMAIN));
+    assertEquals("", result.get(PageParamsCollator.PAGE_TOP_LEVEL_DOMAIN));
+  }
 }
