@@ -30,6 +30,7 @@ import kong.unirest.RawResponse;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
 import kong.unirest.UnirestInstance;
+import kong.unirest.apache.ApacheClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +76,12 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
       } else {
         unirestInstance.config().proxy(proxyConfig.getHost(), proxyConfig.getPort());
       }
+    }
+
+    if (clientConfig.getHttpClient() != null) {
+      unirestInstance
+          .config()
+          .httpClient(new ApacheClient(clientConfig.getHttpClient(), unirestInstance.config()));
     }
   }
 

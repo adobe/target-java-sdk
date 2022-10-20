@@ -26,11 +26,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-import kong.unirest.HttpResponse;
-import kong.unirest.Proxy;
-import kong.unirest.RawResponse;
-import kong.unirest.UnirestInstance;
+import javax.net.ssl.SSLContext;
+import kong.unirest.*;
 import org.apache.http.HttpStatus;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -91,6 +93,18 @@ public class DefaultTargetHttpClientTest {
     assertEquals(PROXY_USERNAME, unirestProxy.getUsername());
     assertEquals(PROXY_PASSWORD, unirestProxy.getPassword());
     targetClient.close();
+  }
+
+  @Test
+  void testConfigSetWithSSLFactory() throws Exception {
+    SSLContext context = SSLContextBuilder.create().build();
+    SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(context);
+    CloseableHttpClient httpClient =
+        HttpClients.custom().setSSLSocketFactory(sslSocketFactory).build();
+    ClientConfig clientConfig =
+        ClientConfig.builder().organizationId(TEST_ORG_ID).httpClient(httpClient).build();
+    DefaultTargetHttpClient targetClient = new DefaultTargetHttpClient(clientConfig);
+    assertEquals(targetClient.getUnirestInstance().config().getClient().getClient(), httpClient);
   }
 
   @Test
