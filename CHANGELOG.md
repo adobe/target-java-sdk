@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Custom HTTP client support to Client configuration
 ### Fixed
-- Additional support for complex domain parsing
+- Additional support for complex domain parsing for on-device-decisioning
 - SDK version no longer set in source code
 
 ## [2.3.1] - 2022-09-12
