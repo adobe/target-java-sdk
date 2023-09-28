@@ -34,6 +34,9 @@ public class ClientConfig {
   private int connectTimeout;
   private int maxConnectionsPerHost;
   private int maxConnectionsTotal;
+  private long connectionTtlMs;
+  private int idleConnectionValidationMs;
+  private int evictIdleConnectionsAfterSecs;
   private boolean enableRetries;
   private boolean logRequests;
   private boolean logRequestStatus;
@@ -76,6 +79,18 @@ public class ClientConfig {
 
   public int getMaxConnectionsTotal() {
     return maxConnectionsTotal;
+  }
+
+  public long getConnectionTtlMs() {
+    return connectionTtlMs;
+  }
+
+  public int getIdleConnectionValidationMs() {
+    return idleConnectionValidationMs;
+  }
+
+  public int getEvictIdleConnectionsAfterSecs() {
+    return evictIdleConnectionsAfterSecs;
   }
 
   public boolean isEnabledRetries() {
@@ -169,6 +184,9 @@ public class ClientConfig {
     private int connectTimeout = 10000;
     private int maxConnectionsPerHost = 100;
     private int maxConnectionsTotal = 200;
+    private long connectionTtlMs = -1;
+    private int idleConnectionValidationMs = 1000;
+    private int evictIdleConnectionsAfterSecs = 20;
     private boolean enableRetries = true;
     private boolean logRequests = false;
     private boolean logRequestStatus = false;
@@ -187,120 +205,291 @@ public class ClientConfig {
 
     private ClientConfigBuilder() {}
 
+    /**
+     * Client Code
+     * @param client
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder client(String client) {
       this.client = client;
       return this;
     }
 
+    /**
+     * Organization ID
+     * @param organizationId
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder organizationId(String organizationId) {
       this.organizationId = organizationId;
       return this;
     }
 
+    /**
+     * Server Domain
+     * @param serverDomain
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder serverDomain(String serverDomain) {
       this.serverDomain = serverDomain;
       return this;
     }
 
+    /**
+     * Default Property Token
+     * @param defaultPropertyToken
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder defaultPropertyToken(String defaultPropertyToken) {
       this.defaultPropertyToken = defaultPropertyToken;
       return this;
     }
 
+    /**
+     * Secure (HTTPS) or not
+     * Default value is <b>true</b>
+     * @param secure
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder secure(boolean secure) {
       this.secure = secure;
       return this;
     }
 
+    /**
+     * Socket Timeout
+     * Default value is <b>10000</b>
+     * @param socketTimeout
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder socketTimeout(int socketTimeout) {
       this.socketTimeout = socketTimeout;
       return this;
     }
 
+    /**
+     * Connect Timeout
+     * Default value is <b>10000</b>
+     * @param connectTimeout
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder connectTimeout(int connectTimeout) {
       this.connectTimeout = connectTimeout;
       return this;
     }
 
+    /**
+     * Max Connections Per Host
+     * Default value is <b>100</b>
+     * @param maxConnectionsPerHost
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder maxConnectionsPerHost(int maxConnectionsPerHost) {
       this.maxConnectionsPerHost = maxConnectionsPerHost;
       return this;
     }
 
+    /**
+     * Max Connections Total
+     * Default value is <b>200</b>
+     * @param maxConnectionsTotal
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder maxConnectionsTotal(int maxConnectionsTotal) {
       this.maxConnectionsTotal = maxConnectionsTotal;
       return this;
     }
 
+    /**
+     * Total time to live (TTL) defines maximum life span of persistent connections regardless of their
+     * expiration setting. No persistent connection will be re-used past its TTL value.
+     * Default value is <b>-1</b> which means that connections will be kept alive indefinitely.
+     * @param connectionTtlMs
+     * @return ClientConfigBuilder
+     */
+    public ClientConfigBuilder connectionTtlMs(long connectionTtlMs) {
+      this.connectionTtlMs = connectionTtlMs;
+      return this;
+    }
+
+    /**
+     * Idle connection validation interval defines period of inactivity in milliseconds after which persistent
+     * connections must be re-validated prior to being leased to the consumer. Non-positive value effectively
+     * disables idle connection validation.
+     * Note: Only available for the Apache sync client
+     * Default value is <b>1000</b>
+     * @param idleConnectionValidationMs
+     * @return ClientConfigBuilder
+     */
+    public ClientConfigBuilder idleConnectionValidationMs(int idleConnectionValidationMs) {
+      this.idleConnectionValidationMs = idleConnectionValidationMs;
+      return this;
+    }
+
+    /**
+     * The time in seconds to evict idle connections from the connection pool.
+     * Default value is <b>20</b>
+     * @param evictIdleConnectionsAfterSecs
+     * @return ClientConfigBuilder
+     */
+    public ClientConfigBuilder evictIdleConnectionsAfterSecs(int evictIdleConnectionsAfterSecs) {
+      this.evictIdleConnectionsAfterSecs = evictIdleConnectionsAfterSecs;
+      return this;
+    }
+
+    /**
+     * Enable retries
+     * Default value is <b>true</b>
+     * @param enableRetries
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder enableRetries(boolean enableRetries) {
       this.enableRetries = enableRetries;
       return this;
     }
 
+    /**
+     * Log requests
+     * Default value is <b>false</b>
+     * @param logRequests
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder logRequests(boolean logRequests) {
       this.logRequests = logRequests;
       return this;
     }
 
+    /**
+     * Telemetry Enabled
+     * Default value is <b>true</b>
+     * @param telemetryEnabled
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder telemetryEnabled(boolean telemetryEnabled) {
       this.telemetryEnabled = telemetryEnabled;
       return this;
     }
 
+    /**
+     * Log request status
+     * Default value is <b>false</b>
+     * @param logRequestStatus
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder logRequestStatus(boolean logRequestStatus) {
       this.logRequestStatus = logRequestStatus;
       return this;
     }
 
-    public void requestInterceptor(HttpRequestInterceptor requestInterceptor) {
+    /**
+     * Request Interceptor
+     * @param requestInterceptor
+     * @return ClientConfigBuilder
+     */
+    public ClientConfigBuilder requestInterceptor(HttpRequestInterceptor requestInterceptor) {
       this.requestInterceptor = requestInterceptor;
+      return this;
     }
 
+    /**
+     * Proxy Configuration
+     * @param proxyConfig
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder proxyConfig(ClientProxyConfig proxyConfig) {
       this.proxyConfig = proxyConfig;
       return this;
     }
 
+    /**
+     * Exception Handler
+     * @param handler
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder exceptionHandler(TargetExceptionHandler handler) {
       this.exceptionHandler = handler;
       return this;
     }
 
+    /**
+     * On Device Decisioning Handler
+     * @param handler
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder onDeviceDecisioningHandler(OnDeviceDecisioningHandler handler) {
       this.onDeviceDecisioningHandler = handler;
       return this;
     }
 
+    /**
+     * Default Decisioning Method
+     * Default value is <b>server-side</b>
+     * @param decisioningMethod
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder defaultDecisioningMethod(DecisioningMethod decisioningMethod) {
       this.defaultDecisioningMethod = decisioningMethod;
       return this;
     }
 
+    /**
+     * On Device Environment
+     * Default value is <b>production</b>
+     * @param environment
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder onDeviceEnvironment(String environment) {
       this.onDeviceEnvironment = environment;
       return this;
     }
 
+    /**
+     * On Device Config Hostname
+     * Default value is <b>assets.adobetarget.com</b>
+     * @param hostname
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder onDeviceConfigHostname(String hostname) {
       this.onDeviceConfigHostname = hostname;
       return this;
     }
 
+    /**
+     * On Device Decisioning Polling Interval in seconds
+     * Default value is <b>300</b>
+     * @param pollingInterval
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder onDeviceDecisioningPollingIntSecs(int pollingInterval) {
       this.onDeviceDecisioningPollingIntSecs = pollingInterval;
       return this;
     }
 
+    /**
+     * On Device Artifact Payload
+     * @param payload
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder onDeviceArtifactPayload(byte[] payload) {
       this.onDeviceArtifactPayload = payload;
       return this;
     }
 
+    /**
+     * On Device All Matching Rules Mboxes
+     * @param mboxes
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder onDeviceAllMatchingRulesMboxes(List<String> mboxes) {
       this.onDeviceAllMatchingRulesMboxes = mboxes;
       return this;
     }
 
+    /**
+     * HTTP Client
+     * @param httpClient
+     * @return ClientConfigBuilder
+     */
     public ClientConfigBuilder httpClient(HttpClient httpClient) {
       this.httpClient = httpClient;
       return this;
@@ -318,6 +507,9 @@ public class ClientConfig {
       clientConfig.socketTimeout = this.socketTimeout;
       clientConfig.enableRetries = this.enableRetries;
       clientConfig.maxConnectionsPerHost = this.maxConnectionsPerHost;
+      clientConfig.connectionTtlMs = this.connectionTtlMs;
+      clientConfig.idleConnectionValidationMs = this.idleConnectionValidationMs;
+      clientConfig.evictIdleConnectionsAfterSecs = this.evictIdleConnectionsAfterSecs;
       clientConfig.defaultUrl =
           clientConfig.protocol + client + "." + serverDomain + DELIVERY_PATH_SUFFIX;
       clientConfig.clusterUrlPrefix = clientConfig.protocol + CLUSTER_PREFIX;
