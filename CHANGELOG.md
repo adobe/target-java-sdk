@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.5.0] - 2022-09-29
+### Added
+- Expose new connection pool configuration options (`connectionTtlMs`, `idleConnectionValidationMs`, `evictIdleConnectionsAfterSecs`) 
+- Document configuration builder API
+### Fixed
+- Default idle connection validation reduced from `2` seconds to `1` second
+- Default idle connection eviction reduced from `30` seconds to `20` seconds
+- Fix `requestInterceptor` configuration builder
+
 ## [2.4.0] - 2022-10-25
 ### Added
 - Custom HTTP client support to Client configuration

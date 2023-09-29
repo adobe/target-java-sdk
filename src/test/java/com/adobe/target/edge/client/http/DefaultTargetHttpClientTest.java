@@ -28,10 +28,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import javax.net.ssl.SSLContext;
 import kong.unirest.*;
+import kong.unirest.apache.ApacheClient;
 import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -105,6 +108,22 @@ public class DefaultTargetHttpClientTest {
         ClientConfig.builder().organizationId(TEST_ORG_ID).httpClient(httpClient).build();
     DefaultTargetHttpClient targetClient = new DefaultTargetHttpClient(clientConfig);
     assertEquals(targetClient.getUnirestInstance().config().getClient().getClient(), httpClient);
+  }
+
+  @Test
+  void testConfigSetConnectionPoolParams() {
+    ClientConfig clientConfig =
+        ClientConfig.builder()
+          .organizationId(TEST_ORG_ID)
+          .connectionTtlMs(123)
+          .idleConnectionValidationMs(456)
+          .evictIdleConnectionsAfterSecs(78)
+          .build();
+    DefaultTargetHttpClient targetClient = new DefaultTargetHttpClient(clientConfig);
+    Config config = targetClient.getUnirestInstance().config();
+    assertEquals(config.getTTL(), 123);
+    assertEquals(clientConfig.getIdleConnectionValidationMs(), 456);
+    assertEquals(clientConfig.getEvictIdleConnectionsAfterSecs(), 78);
   }
 
   @Test

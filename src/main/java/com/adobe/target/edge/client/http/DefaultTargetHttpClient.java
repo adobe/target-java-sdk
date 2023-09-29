@@ -19,11 +19,14 @@ import com.adobe.target.edge.client.utils.MathUtils;
 import com.adobe.target.edge.client.utils.StringUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
 import java.io.UnsupportedEncodingException;
+import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import kong.unirest.Config;
 import kong.unirest.HttpResponse;
 import kong.unirest.ObjectMapper;
 import kong.unirest.RawResponse;
@@ -45,10 +48,12 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
   private static final int DECIMAL_PLACES = 2;
 
   public DefaultTargetHttpClient(ClientConfig clientConfig) {
-    unirestInstance
-        .config()
+    Config config = unirestInstance.config();
+
+    config
         .socketTimeout(clientConfig.getSocketTimeout())
         .connectTimeout(clientConfig.getConnectTimeout())
+        .connectionTTL(Duration.ofMillis(clientConfig.getConnectionTtlMs()))
         .concurrency(clientConfig.getMaxConnectionsTotal(), clientConfig.getMaxConnectionsPerHost())
         .automaticRetries(clientConfig.isEnabledRetries())
         .enableCookieManagement(false)
@@ -56,38 +61,33 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
         .setDefaultHeader("Accept", "application/json");
 
     if (clientConfig.isLogRequestStatus()) {
-      unirestInstance.config().instrumentWith(new TargetMetrics(new LoggingMetricConsumer()));
+      config.instrumentWith(new TargetMetrics(new LoggingMetricConsumer()));
     }
 
     if (clientConfig.getRequestInterceptor() != null) {
-      unirestInstance.config().addInterceptor(clientConfig.getRequestInterceptor());
+      config.addInterceptor(clientConfig.getRequestInterceptor());
     }
 
     if (clientConfig.isProxyEnabled()) {
       ClientProxyConfig proxyConfig = clientConfig.getProxyConfig();
       if (proxyConfig.isAuthProxy()) {
-        unirestInstance
-            .config()
-            .proxy(
+        config.proxy(
                 proxyConfig.getHost(),
                 proxyConfig.getPort(),
                 proxyConfig.getUsername(),
                 proxyConfig.getPassword());
       } else {
-        unirestInstance.config().proxy(proxyConfig.getHost(), proxyConfig.getPort());
+        config.proxy(proxyConfig.getHost(), proxyConfig.getPort());
       }
     }
 
     if (clientConfig.getHttpClient() != null) {
-      unirestInstance
-          .config()
-          .httpClient(new ApacheClient(clientConfig.getHttpClient(), unirestInstance.config()));
+      config.httpClient(new ApacheClient(clientConfig.getHttpClient(), config));
+    } else {
+      config.httpClient(ApacheClientFactory.initializeSyncClient(clientConfig, config));
     }
-  }
 
-  private ObjectMapper getObjectMapper() {
-    logger.debug("using json serializer: {}", serializer.getClass().getSimpleName());
-    return serializer;
+    config.asyncClient(ApacheClientFactory.initializeAsyncClient(clientConfig, config));
   }
 
   @Override
@@ -126,6 +126,11 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
         .asObjectAsync(getRawResponseFunction(responseClass, responseWrapper))
         .thenApply(getCompletableFutureFunction(responseWrapper, completableFutureResponseWrapper));
     return completableFutureResponseWrapper;
+  }
+
+  private ObjectMapper getObjectMapper() {
+    logger.debug("using json serializer: {}", serializer.getClass().getSimpleName());
+    return serializer;
   }
 
   private <R>
