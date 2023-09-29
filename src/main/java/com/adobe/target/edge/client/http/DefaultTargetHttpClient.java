@@ -26,7 +26,13 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import kong.unirest.*;
+import kong.unirest.Config;
+import kong.unirest.HttpResponse;
+import kong.unirest.ObjectMapper;
+import kong.unirest.RawResponse;
+import kong.unirest.Unirest;
+import kong.unirest.UnirestException;
+import kong.unirest.UnirestInstance;
 import kong.unirest.apache.ApacheClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,10 +84,10 @@ public class DefaultTargetHttpClient implements TargetHttpClient {
     if (clientConfig.getHttpClient() != null) {
       config.httpClient(new ApacheClient(clientConfig.getHttpClient(), config));
     } else {
-      config.httpClient(ApacheClientHelper.initializeClient(clientConfig, config));
+      config.httpClient(ApacheClientFactory.initializeSyncClient(clientConfig, config));
     }
 
-    config.asyncClient(ApacheAsyncClientHelper.initializeClient(clientConfig, config));
+    config.asyncClient(ApacheClientFactory.initializeAsyncClient(clientConfig, config));
   }
 
   @Override

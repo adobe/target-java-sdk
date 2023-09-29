@@ -12,15 +12,21 @@
 package com.adobe.target.edge.client.http;
 
 import com.adobe.target.edge.client.ClientConfig;
+import com.adobe.target.edge.client.exception.TargetClientException;
 import kong.unirest.Config;
 import kong.unirest.Proxy;
+import kong.unirest.apache.ApacheAsyncClient;
 import kong.unirest.apache.ApacheClient;
 import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.RedirectStrategy;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
@@ -30,17 +36,52 @@ import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.impl.nio.client.CloseableHttpAsyncClient;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
+import org.apache.http.impl.nio.reactor.DefaultConnectingIOReactor;
+import org.apache.http.nio.conn.NoopIOSessionStrategy;
+import org.apache.http.nio.conn.SchemeIOSessionStrategy;
+import org.apache.http.nio.conn.ssl.SSLIOSessionStrategy;
+import org.apache.http.protocol.HttpContext;
 
 import java.util.concurrent.TimeUnit;
 
-public class ApacheClientHelper {
-  public static ApacheClient initializeClient(ClientConfig clientConfig, Config config) {
+public class ApacheClientFactory {
+  static class ApacheNoRedirectStrategy implements RedirectStrategy {
+    @Override
+    public boolean isRedirected(HttpRequest request, HttpResponse response, HttpContext context) {
+      return false;
+    }
+
+    @Override
+    public HttpUriRequest getRedirect(HttpRequest request, HttpResponse response, HttpContext context) {
+      return null;
+    }
+  }
+
+  public static ApacheClient initializeSyncClient(ClientConfig clientConfig, Config config) {
     PoolingHttpClientConnectionManager manager = createConnectionManager(clientConfig, config);
     HttpClient newClient = createCustomClient(clientConfig, config, manager);
     return new ApacheClient(newClient, config, manager);
   }
 
-  static RequestConfig toRequestConfig(Config config) {
+  public static ApacheAsyncClient initializeAsyncClient(ClientConfig clientConfig, Config config) {
+    ApacheAsyncClient client;
+    try {
+      PoolingNHttpClientConnectionManager manager = createConnectionManager(config);
+      TargetAsyncIdleConnectionMonitorThread monitor = new TargetAsyncIdleConnectionMonitorThread(manager, clientConfig);
+      CloseableHttpAsyncClient asyncClient = createCustomClient(config, manager);
+      asyncClient.start();
+      monitor.tryStart();
+      client = new ApacheAsyncClient(asyncClient, config, manager, monitor);
+    } catch (Exception e) {
+      throw new TargetClientException("Error occurred while initializing ApacheAsyncClient", e);
+    }
+    return client;
+  }
+
+  private static RequestConfig toRequestConfig(Config config) {
     HttpHost proxy = toApacheProxy(config.getProxy());
     return RequestConfig.custom()
       .setConnectTimeout(config.getConnectionTimeout())
@@ -50,7 +91,7 @@ public class ApacheClientHelper {
       .build();
   }
 
-  static CredentialsProvider toApacheCreds(Proxy proxy) {
+  private static CredentialsProvider toApacheCreds(Proxy proxy) {
     if (proxy != null && proxy.isAuthenticated()) {
       CredentialsProvider proxyCredentials = new BasicCredentialsProvider();
       proxyCredentials.setCredentials(new AuthScope(proxy.getHost(), proxy.getPort()),
@@ -61,7 +102,7 @@ public class ApacheClientHelper {
   }
 
   private static PoolingHttpClientConnectionManager createConnectionManager(ClientConfig clientConfig, Config config) {
-    PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(createDefaultRegistry(),
+    PoolingHttpClientConnectionManager manager = new PoolingHttpClientConnectionManager(createDefaultSyncRegistry(),
       null, null, null,
       config.getTTL(), TimeUnit.MILLISECONDS);
 
@@ -84,7 +125,7 @@ public class ApacheClientHelper {
     return cb.build();
   }
 
-  private static Registry<ConnectionSocketFactory> createDefaultRegistry() {
+  private static Registry<ConnectionSocketFactory> createDefaultSyncRegistry() {
     return RegistryBuilder.<ConnectionSocketFactory>create()
       .register("http", PlainConnectionSocketFactory.getSocketFactory())
       .register("https", SSLConnectionSocketFactory.getSocketFactory())
@@ -115,5 +156,51 @@ public class ApacheClientHelper {
       cb.disableCookieManagement();
     }
     config.getInterceptor().stream().forEach(cb::addInterceptorFirst);
+  }
+
+  private static PoolingNHttpClientConnectionManager createConnectionManager(Config config) throws Exception {
+    PoolingNHttpClientConnectionManager manager = new PoolingNHttpClientConnectionManager(new DefaultConnectingIOReactor(),
+      null,
+      createDefaultAsyncRegistry(),
+      null,
+      null,
+      config.getTTL(), TimeUnit.MILLISECONDS);
+
+    manager.setMaxTotal(config.getMaxConnections());
+    manager.setDefaultMaxPerRoute(config.getMaxPerRoutes());
+
+    return manager;
+  }
+
+  private static CloseableHttpAsyncClient createCustomClient(Config config, PoolingNHttpClientConnectionManager manager) {
+    HttpAsyncClientBuilder ab = HttpAsyncClientBuilder.create()
+      .setDefaultRequestConfig(toRequestConfig(config))
+      .setConnectionManager(manager)
+      .setDefaultCredentialsProvider(toApacheCreds(config.getProxy()))
+      .useSystemProperties();
+
+    setOptions(ab, config);
+
+    return ab.build();
+  }
+
+  private static Registry<SchemeIOSessionStrategy> createDefaultAsyncRegistry() {
+    return RegistryBuilder.<SchemeIOSessionStrategy>create()
+      .register("http", NoopIOSessionStrategy.INSTANCE)
+      .register("https", SSLIOSessionStrategy.getDefaultStrategy())
+      .build();
+  }
+
+  private static void setOptions(HttpAsyncClientBuilder ab, Config config) {
+    if (config.useSystemProperties()) {
+      ab.useSystemProperties();
+    }
+    if (!config.getFollowRedirects()) {
+      ab.setRedirectStrategy(new ApacheNoRedirectStrategy());
+    }
+    if (!config.getEnabledCookieManagement()) {
+      ab.disableCookieManagement();
+    }
+    config.getInterceptor().forEach(ab::addInterceptorFirst);
   }
 }

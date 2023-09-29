@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [2.4.1] - 2022-09-29
+## [2.5.0] - 2022-09-29
 ### Added
 - Expose new connection pool configuration options (`connectionTtlMs`, `idleConnectionValidationMs`, `evictIdleConnectionsAfterSecs`) 
 - Document configuration builder API

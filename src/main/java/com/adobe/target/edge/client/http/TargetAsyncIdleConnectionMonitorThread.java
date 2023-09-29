@@ -20,13 +20,8 @@ import org.apache.http.impl.nio.conn.PoolingNHttpClientConnectionManager;
 public class TargetAsyncIdleConnectionMonitorThread extends AsyncIdleConnectionMonitorThread {
 
   public static final long CONNECTION_CHECK_INTERVAL_MS = 1000;
-  private PoolingNHttpClientConnectionManager connectionManager;
-  private long evictIdleConnectionsAfterSecs = 15;
-
-  public TargetAsyncIdleConnectionMonitorThread(PoolingNHttpClientConnectionManager connMgr) {
-    super(connMgr);
-    this.connectionManager = connMgr;
-  }
+  private final PoolingNHttpClientConnectionManager connectionManager;
+  private final long evictIdleConnectionsAfterSecs;
 
   public TargetAsyncIdleConnectionMonitorThread(PoolingNHttpClientConnectionManager connMgr, ClientConfig clientConfig) {
     super(connMgr);

@@ -34,7 +34,7 @@ public class ClientConfig {
   private int connectTimeout;
   private int maxConnectionsPerHost;
   private int maxConnectionsTotal;
-  private long connectionTtlMs;
+  private int connectionTtlMs;
   private int idleConnectionValidationMs;
   private int evictIdleConnectionsAfterSecs;
   private boolean enableRetries;
@@ -81,7 +81,7 @@ public class ClientConfig {
     return maxConnectionsTotal;
   }
 
-  public long getConnectionTtlMs() {
+  public int getConnectionTtlMs() {
     return connectionTtlMs;
   }
 
@@ -184,7 +184,7 @@ public class ClientConfig {
     private int connectTimeout = 10000;
     private int maxConnectionsPerHost = 100;
     private int maxConnectionsTotal = 200;
-    private long connectionTtlMs = -1;
+    private int connectionTtlMs = -1;
     private int idleConnectionValidationMs = 1000;
     private int evictIdleConnectionsAfterSecs = 20;
     private boolean enableRetries = true;
@@ -307,7 +307,7 @@ public class ClientConfig {
      * @param connectionTtlMs
      * @return ClientConfigBuilder
      */
-    public ClientConfigBuilder connectionTtlMs(long connectionTtlMs) {
+    public ClientConfigBuilder connectionTtlMs(int connectionTtlMs) {
       this.connectionTtlMs = connectionTtlMs;
       return this;
     }
