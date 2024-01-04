@@ -21,7 +21,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.adobe.target.delivery.v1.model.*;
+import com.adobe.target.delivery.v1.model.Context;
+import com.adobe.target.delivery.v1.model.DeliveryRequest;
+import com.adobe.target.delivery.v1.model.DeliveryResponse;
+import com.adobe.target.delivery.v1.model.ExecuteRequest;
+import com.adobe.target.delivery.v1.model.Geo;
+import com.adobe.target.delivery.v1.model.MetricType;
+import com.adobe.target.delivery.v1.model.Notification;
+import com.adobe.target.delivery.v1.model.PrefetchRequest;
+import com.adobe.target.delivery.v1.model.Telemetry;
+import com.adobe.target.delivery.v1.model.TelemetryEntry;
+import com.adobe.target.delivery.v1.model.VisitorId;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.ResponseWrapper;
