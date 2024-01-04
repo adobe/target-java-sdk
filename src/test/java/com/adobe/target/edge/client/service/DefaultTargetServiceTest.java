@@ -16,20 +16,12 @@ import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.
 import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getMboxPrefetchLocalRequest;
 import static com.adobe.target.edge.client.utils.TargetTestDeliveryRequestUtils.getTestDeliveryResponse;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.adobe.target.delivery.v1.model.Context;
-import com.adobe.target.delivery.v1.model.DeliveryRequest;
-import com.adobe.target.delivery.v1.model.DeliveryResponse;
-import com.adobe.target.delivery.v1.model.ExecuteRequest;
-import com.adobe.target.delivery.v1.model.MetricType;
-import com.adobe.target.delivery.v1.model.Notification;
-import com.adobe.target.delivery.v1.model.PrefetchRequest;
-import com.adobe.target.delivery.v1.model.Telemetry;
-import com.adobe.target.delivery.v1.model.TelemetryEntry;
-import com.adobe.target.delivery.v1.model.VisitorId;
+import com.adobe.target.delivery.v1.model.*;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.TargetClient;
 import com.adobe.target.edge.client.http.ResponseWrapper;
@@ -207,6 +199,36 @@ public class DefaultTargetServiceTest {
     verify(targetHttpClient, times(1))
         .executeAsync(
             any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
+  }
+
+  @Test
+  public void testContextCleanUpBeforeCallToDeliveryApi() {
+    Geo geo = new Geo();
+    geo.setStateCode("");
+    geo.setCity("");
+    geo.setCountryCode("");
+
+    Context context = new Context();
+    context.setGeo(geo);
+
+    ResponseWrapper<DeliveryResponse> mockedResponseWrapper = getTestDeliveryResponse();
+    getMockedTelemetry();
+    Mockito.lenient()
+      .doReturn(mockedResponseWrapper)
+      .when(targetHttpClient)
+      .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
+
+    TargetDeliveryRequest targetDeliveryRequestMock = getDeliveryRequest();
+    targetDeliveryRequestMock.getDeliveryRequest().setContext(context);
+    targetService.executeRequest(targetDeliveryRequestMock);
+
+    assertNull(targetDeliveryRequestMock.getDeliveryRequest().getContext().getGeo().getStateCode());
+    assertNull(targetDeliveryRequestMock.getDeliveryRequest().getContext().getGeo().getCity());
+    assertNull(targetDeliveryRequestMock.getDeliveryRequest().getContext().getGeo().getCountryCode());
+
+    verify(targetHttpClient, times(1))
+      .execute(any(Map.class), any(String.class), any(DeliveryRequest.class), any(Class.class));
+
   }
 
   private void getMockedTelemetry() {
