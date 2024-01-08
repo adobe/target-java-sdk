@@ -15,6 +15,7 @@ import static com.adobe.target.edge.client.ondevice.OnDeviceDecisioningService.T
 import static org.apache.http.HttpStatus.SC_OK;
 
 import com.adobe.target.delivery.v1.model.DeliveryResponse;
+import com.adobe.target.delivery.v1.model.Geo;
 import com.adobe.target.delivery.v1.model.Telemetry;
 import com.adobe.target.edge.client.ClientConfig;
 import com.adobe.target.edge.client.http.DefaultTargetHttpClient;
@@ -26,12 +27,14 @@ import com.adobe.target.edge.client.model.TargetDeliveryResponse;
 import com.adobe.target.edge.client.utils.CookieUtils;
 import com.adobe.target.edge.client.utils.StringUtils;
 import com.adobe.target.edge.client.utils.TimingTool;
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
+
 import kong.unirest.HttpResponse;
 import kong.unirest.UnirestParsingException;
 import org.slf4j.Logger;
@@ -94,7 +97,7 @@ public class DefaultTargetService implements TargetService {
     if (!telemetry.getEntries().isEmpty()) {
       deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
     }
-
+    cleanUpGeoContext(deliveryRequest);
     ResponseWrapper<DeliveryResponse> response = callDeliveryApi(deliveryRequest);
 
     targetDeliveryResponse = getTargetDeliveryResponse(deliveryRequest, response.getHttpResponse());
@@ -121,6 +124,7 @@ public class DefaultTargetService implements TargetService {
     if (!telemetry.getEntries().isEmpty()) {
       deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
     }
+    cleanUpGeoContext(deliveryRequest);
     CompletableFuture<ResponseWrapper<DeliveryResponse>> responseCompletableFuture =
         callDeliveryApiAsync(deliveryRequest);
     return responseCompletableFuture.thenApply(
@@ -147,6 +151,7 @@ public class DefaultTargetService implements TargetService {
     if (!telemetry.getEntries().isEmpty()) {
       deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
     }
+    cleanUpGeoContext(deliveryRequest);
     ResponseWrapper response = callDeliveryApi(deliveryRequest);
     targetDeliveryResponse = getTargetDeliveryResponse(deliveryRequest, response.getHttpResponse());
     telemetryService.addTelemetry(
@@ -170,6 +175,7 @@ public class DefaultTargetService implements TargetService {
     if (!telemetry.getEntries().isEmpty()) {
       deliveryRequest.getDeliveryRequest().setTelemetry(telemetry);
     }
+    cleanUpGeoContext(deliveryRequest);
     CompletableFuture<ResponseWrapper<DeliveryResponse>> responseCompletableFuture =
         callDeliveryApiAsync(deliveryRequest);
     return responseCompletableFuture.thenApply(
@@ -256,5 +262,25 @@ public class DefaultTargetService implements TargetService {
         url,
         deliveryRequest.getDeliveryRequest(),
         DeliveryResponse.class);
+  }
+
+  private void cleanUpGeoContext(TargetDeliveryRequest deliveryRequest) {
+    Geo geo = null;
+    if (deliveryRequest.getDeliveryRequest() != null
+        && deliveryRequest.getDeliveryRequest().getContext() != null) {
+      geo = deliveryRequest.getDeliveryRequest().getContext().getGeo();
+    }
+
+    if (geo != null) {
+      if (geo.getStateCode() != null && geo.getStateCode().isEmpty()) {
+        geo.setStateCode(null);
+      }
+      if (geo.getCity() != null && geo.getCity().isEmpty()) {
+        geo.setCity(null);
+      }
+      if (geo.getCountryCode() != null && geo.getCountryCode().isEmpty()) {
+        geo.setCountryCode(null);
+      }
+    }
   }
 }
