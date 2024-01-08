@@ -265,7 +265,11 @@ public class DefaultTargetService implements TargetService {
   }
 
   private void cleanUpGeoContext(TargetDeliveryRequest deliveryRequest) {
-    Geo geo = deliveryRequest.getDeliveryRequest().getContext().getGeo();
+    Geo geo = null;
+    if (deliveryRequest.getDeliveryRequest() != null
+        && deliveryRequest.getDeliveryRequest().getContext() != null) {
+      geo = deliveryRequest.getDeliveryRequest().getContext().getGeo();
+    }
 
     if (geo != null) {
       if (geo.getStateCode() != null && geo.getStateCode().isEmpty()) {
