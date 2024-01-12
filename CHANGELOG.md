@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.5.1] - 2024-01-12
+### Fixed
+- Fix geo context not being cleaned up
 ## [2.5.0] - 2022-09-29
 ### Added
 - Expose new connection pool configuration options (`connectionTtlMs`, `idleConnectionValidationMs`, `evictIdleConnectionsAfterSecs`) 
