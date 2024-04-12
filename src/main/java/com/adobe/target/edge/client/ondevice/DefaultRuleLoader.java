@@ -164,7 +164,7 @@ public class DefaultRuleLoader implements RuleLoader {
                 long retryDelay = DefaultRuleLoader.this.retries * 1000;
                 message =
                     String.format(
-                        "Download of local-decisioning rules failed, retying in %s ms", retryDelay);
+                        "Download of local-decisioning rules failed, retrying in %s ms", retryDelay);
                 logger.debug(message);
                 scheduleTimer(retryDelay);
               } else {
@@ -285,6 +285,7 @@ public class DefaultRuleLoader implements RuleLoader {
       if (handler != null) {
         handler.handleException(new TargetClientException(message, t));
       }
+      logger.error("Error while getting local-decisioning rule set", t.getCause());
       return false;
     }
   }
