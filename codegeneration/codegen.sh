@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Using custom openapi-generator fork based on version 5.2.0 due to the main version introducing breaking changes to our models
 rm -rf ./build ../src/main/java/com/adobe/target/delivery/v1
 mkdir ../src/main/java/com/adobe/target/delivery/v1
 git clone git@github.com:dcottingham/openapi-generator.git

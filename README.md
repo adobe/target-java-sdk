@@ -32,7 +32,7 @@ or `maven` as:
 
 ## Super Simple to Use
 
-Please take a look at our [documentation](https://adobetarget-sdks.gitbook.io/docs/sdk-reference-guides/java-sdk) to learn how to use the Java SDK.
+Please take a look at our [documentation](https://experienceleague.adobe.com/en/docs/target-dev/developer/server-side/java/overview) to learn how to use the Java SDK.
 
 ## Samples
 

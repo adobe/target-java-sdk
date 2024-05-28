@@ -164,7 +164,8 @@ public class DefaultRuleLoader implements RuleLoader {
                 long retryDelay = DefaultRuleLoader.this.retries * 1000;
                 message =
                     String.format(
-                        "Download of local-decisioning rules failed, retrying in %s ms", retryDelay);
+                        "Download of local-decisioning rules failed, retrying in %s ms",
+                        retryDelay);
                 logger.debug(message);
                 scheduleTimer(retryDelay);
               } else {
@@ -204,7 +205,6 @@ public class DefaultRuleLoader implements RuleLoader {
     return this.getLocalDecisioningUrl(this.clientConfig);
   }
 
-  // For unit test mocking
   protected GetRequest generateRequest(ClientConfig clientConfig) {
     GetRequest getRequest = unirestInstance.get(getLocalDecisioningUrl(clientConfig));
     if (this.lastETag != null) {
@@ -213,22 +213,18 @@ public class DefaultRuleLoader implements RuleLoader {
     return getRequest;
   }
 
-  // For unit test mocking
   protected HttpResponse<OnDeviceDecisioningRuleSet> executeRequest(GetRequest getRequest) {
     return getRequest.asObject(new GenericType<OnDeviceDecisioningRuleSet>() {});
   }
 
-  // For unit test mocking
   protected void setLatestRules(OnDeviceDecisioningRuleSet ruleSet) {
     this.latestRules = ruleSet;
   }
 
-  // For unit test mocking
   protected void setLatestETag(String etag) {
     this.lastETag = etag;
   }
 
-  // For unit test mocking
   protected boolean loadRules(ClientConfig clientConfig) {
     try {
       TargetExceptionHandler handler = clientConfig.getExceptionHandler();
