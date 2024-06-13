@@ -118,8 +118,9 @@ public class DefaultRuleLoader implements RuleLoader {
         } else {
           unirestInstance.config().proxy(proxyConfig.getHost(), proxyConfig.getPort());
         }
-        // Bypass proxy-level cache
-        unirestInstance.config().setDefaultHeader("Authorization", EMPTY_STRING);
+        if (clientConfig.shouldArtifactRequestBypassProxyCache()) {
+          unirestInstance.config().setDefaultHeader("Authorization", EMPTY_STRING);
+        }
       }
     }
     this.clientConfig = clientConfig;
