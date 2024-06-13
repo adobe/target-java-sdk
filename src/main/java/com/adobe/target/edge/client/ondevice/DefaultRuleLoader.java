@@ -39,6 +39,8 @@ public class DefaultRuleLoader implements RuleLoader {
 
   private static final int MAX_RETRIES = 10;
 
+  private static final String EMPTY_STRING = "";
+
   private OnDeviceDecisioningRuleSet latestRules;
   private String lastETag;
   private ClientConfig clientConfig;
@@ -116,6 +118,8 @@ public class DefaultRuleLoader implements RuleLoader {
         } else {
           unirestInstance.config().proxy(proxyConfig.getHost(), proxyConfig.getPort());
         }
+        // Bypass proxy-level cache
+        unirestInstance.config().setDefaultHeader("Authorization", EMPTY_STRING);
       }
     }
     this.clientConfig = clientConfig;

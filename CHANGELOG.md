@@ -1,6 +1,9 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.5.2] - 2024-06-13
+### Changed
+- (On Device Decisioning) When proxy is configured send empty Authorization header on artifact rules request to bypass proxy-level cache
 ## [2.5.1] - 2024-01-12
 ### Fixed
 - Fix geo context not being cleaned up
