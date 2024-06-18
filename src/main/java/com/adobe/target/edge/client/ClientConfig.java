@@ -52,6 +52,7 @@ public class ClientConfig {
   private boolean telemetryEnabled;
   private List<String> onDeviceAllMatchingRulesMboxes;
   private HttpClient httpClient;
+  private boolean shouldArtifactRequestBypassProxyCache;
 
   public String getClient() {
     return client;
@@ -172,6 +173,10 @@ public class ClientConfig {
     return telemetryEnabled;
   }
 
+  public boolean shouldArtifactRequestBypassProxyCache() {
+    return shouldArtifactRequestBypassProxyCache;
+  }
+
   public static final class ClientConfigBuilder {
     private static final String CLUSTER_PREFIX = "mboxedge";
     private static final String DELIVERY_PATH_SUFFIX = "/rest/v1/delivery";
@@ -202,11 +207,13 @@ public class ClientConfig {
     private boolean telemetryEnabled = true;
     private List<String> onDeviceAllMatchingRulesMboxes;
     private HttpClient httpClient;
+    private boolean shouldArtifactRequestBypassProxyCache = false;
 
     private ClientConfigBuilder() {}
 
     /**
      * Client Code
+     *
      * @param client
      * @return ClientConfigBuilder
      */
@@ -217,6 +224,7 @@ public class ClientConfig {
 
     /**
      * Organization ID
+     *
      * @param organizationId
      * @return ClientConfigBuilder
      */
@@ -227,6 +235,7 @@ public class ClientConfig {
 
     /**
      * Server Domain
+     *
      * @param serverDomain
      * @return ClientConfigBuilder
      */
@@ -237,6 +246,7 @@ public class ClientConfig {
 
     /**
      * Default Property Token
+     *
      * @param defaultPropertyToken
      * @return ClientConfigBuilder
      */
@@ -246,8 +256,8 @@ public class ClientConfig {
     }
 
     /**
-     * Secure (HTTPS) or not
-     * Default value is <b>true</b>
+     * Secure (HTTPS) or not Default value is <b>true</b>
+     *
      * @param secure
      * @return ClientConfigBuilder
      */
@@ -257,8 +267,8 @@ public class ClientConfig {
     }
 
     /**
-     * Socket Timeout
-     * Default value is <b>10000</b>
+     * Socket Timeout Default value is <b>10000</b>
+     *
      * @param socketTimeout
      * @return ClientConfigBuilder
      */
@@ -268,8 +278,8 @@ public class ClientConfig {
     }
 
     /**
-     * Connect Timeout
-     * Default value is <b>10000</b>
+     * Connect Timeout Default value is <b>10000</b>
+     *
      * @param connectTimeout
      * @return ClientConfigBuilder
      */
@@ -279,8 +289,8 @@ public class ClientConfig {
     }
 
     /**
-     * Max Connections Per Host
-     * Default value is <b>100</b>
+     * Max Connections Per Host Default value is <b>100</b>
+     *
      * @param maxConnectionsPerHost
      * @return ClientConfigBuilder
      */
@@ -290,8 +300,8 @@ public class ClientConfig {
     }
 
     /**
-     * Max Connections Total
-     * Default value is <b>200</b>
+     * Max Connections Total Default value is <b>200</b>
+     *
      * @param maxConnectionsTotal
      * @return ClientConfigBuilder
      */
@@ -301,9 +311,10 @@ public class ClientConfig {
     }
 
     /**
-     * Total time to live (TTL) defines maximum life span of persistent connections regardless of their
-     * expiration setting. No persistent connection will be re-used past its TTL value.
+     * Total time to live (TTL) defines maximum life span of persistent connections regardless of
+     * their expiration setting. No persistent connection will be re-used past its TTL value.
      * Default value is <b>-1</b> which means that connections will be kept alive indefinitely.
+     *
      * @param connectionTtlMs
      * @return ClientConfigBuilder
      */
@@ -313,11 +324,11 @@ public class ClientConfig {
     }
 
     /**
-     * Idle connection validation interval defines period of inactivity in milliseconds after which persistent
-     * connections must be re-validated prior to being leased to the consumer. Non-positive value effectively
-     * disables idle connection validation.
-     * Note: Only available for the Apache sync client
-     * Default value is <b>1000</b>
+     * Idle connection validation interval defines period of inactivity in milliseconds after which
+     * persistent connections must be re-validated prior to being leased to the consumer.
+     * Non-positive value effectively disables idle connection validation. Note: Only available for
+     * the Apache sync client Default value is <b>1000</b>
+     *
      * @param idleConnectionValidationMs
      * @return ClientConfigBuilder
      */
@@ -327,8 +338,9 @@ public class ClientConfig {
     }
 
     /**
-     * The time in seconds to evict idle connections from the connection pool.
-     * Default value is <b>20</b>
+     * The time in seconds to evict idle connections from the connection pool. Default value is
+     * <b>20</b>
+     *
      * @param evictIdleConnectionsAfterSecs
      * @return ClientConfigBuilder
      */
@@ -338,8 +350,8 @@ public class ClientConfig {
     }
 
     /**
-     * Enable retries
-     * Default value is <b>true</b>
+     * Enable retries Default value is <b>true</b>
+     *
      * @param enableRetries
      * @return ClientConfigBuilder
      */
@@ -349,8 +361,8 @@ public class ClientConfig {
     }
 
     /**
-     * Log requests
-     * Default value is <b>false</b>
+     * Log requests Default value is <b>false</b>
+     *
      * @param logRequests
      * @return ClientConfigBuilder
      */
@@ -360,8 +372,8 @@ public class ClientConfig {
     }
 
     /**
-     * Telemetry Enabled
-     * Default value is <b>true</b>
+     * Telemetry Enabled Default value is <b>true</b>
+     *
      * @param telemetryEnabled
      * @return ClientConfigBuilder
      */
@@ -371,8 +383,8 @@ public class ClientConfig {
     }
 
     /**
-     * Log request status
-     * Default value is <b>false</b>
+     * Log request status Default value is <b>false</b>
+     *
      * @param logRequestStatus
      * @return ClientConfigBuilder
      */
@@ -383,6 +395,7 @@ public class ClientConfig {
 
     /**
      * Request Interceptor
+     *
      * @param requestInterceptor
      * @return ClientConfigBuilder
      */
@@ -393,6 +406,7 @@ public class ClientConfig {
 
     /**
      * Proxy Configuration
+     *
      * @param proxyConfig
      * @return ClientConfigBuilder
      */
@@ -403,6 +417,7 @@ public class ClientConfig {
 
     /**
      * Exception Handler
+     *
      * @param handler
      * @return ClientConfigBuilder
      */
@@ -413,6 +428,7 @@ public class ClientConfig {
 
     /**
      * On Device Decisioning Handler
+     *
      * @param handler
      * @return ClientConfigBuilder
      */
@@ -422,8 +438,8 @@ public class ClientConfig {
     }
 
     /**
-     * Default Decisioning Method
-     * Default value is <b>server-side</b>
+     * Default Decisioning Method Default value is <b>server-side</b>
+     *
      * @param decisioningMethod
      * @return ClientConfigBuilder
      */
@@ -433,8 +449,8 @@ public class ClientConfig {
     }
 
     /**
-     * On Device Environment
-     * Default value is <b>production</b>
+     * On Device Environment Default value is <b>production</b>
+     *
      * @param environment
      * @return ClientConfigBuilder
      */
@@ -444,8 +460,8 @@ public class ClientConfig {
     }
 
     /**
-     * On Device Config Hostname
-     * Default value is <b>assets.adobetarget.com</b>
+     * On Device Config Hostname Default value is <b>assets.adobetarget.com</b>
+     *
      * @param hostname
      * @return ClientConfigBuilder
      */
@@ -455,8 +471,8 @@ public class ClientConfig {
     }
 
     /**
-     * On Device Decisioning Polling Interval in seconds
-     * Default value is <b>300</b>
+     * On Device Decisioning Polling Interval in seconds Default value is <b>300</b>
+     *
      * @param pollingInterval
      * @return ClientConfigBuilder
      */
@@ -467,6 +483,7 @@ public class ClientConfig {
 
     /**
      * On Device Artifact Payload
+     *
      * @param payload
      * @return ClientConfigBuilder
      */
@@ -477,6 +494,7 @@ public class ClientConfig {
 
     /**
      * On Device All Matching Rules Mboxes
+     *
      * @param mboxes
      * @return ClientConfigBuilder
      */
@@ -487,11 +505,25 @@ public class ClientConfig {
 
     /**
      * HTTP Client
+     *
      * @param httpClient
      * @return ClientConfigBuilder
      */
     public ClientConfigBuilder httpClient(HttpClient httpClient) {
       this.httpClient = httpClient;
+      return this;
+    }
+
+    /**
+     * On Device Decisioning - artifact request behind a proxy will include an empty Authorization
+     * header in order to bypass the proxy's internal cache
+     *
+     * @param shouldArtifactRequestBypassProxyCache
+     * @return ClientConfigBuilder
+     */
+    public ClientConfigBuilder shouldArtifactRequestBypassProxyCache(
+        boolean shouldArtifactRequestBypassProxyCache) {
+      this.shouldArtifactRequestBypassProxyCache = shouldArtifactRequestBypassProxyCache;
       return this;
     }
 
@@ -528,6 +560,8 @@ public class ClientConfig {
       clientConfig.onDeviceAllMatchingRulesMboxes = this.onDeviceAllMatchingRulesMboxes;
       clientConfig.telemetryEnabled = this.telemetryEnabled;
       clientConfig.httpClient = this.httpClient;
+      clientConfig.shouldArtifactRequestBypassProxyCache =
+          this.shouldArtifactRequestBypassProxyCache;
       return clientConfig;
     }
   }
