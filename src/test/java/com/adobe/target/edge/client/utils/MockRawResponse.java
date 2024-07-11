@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import kong.unirest.Config;
 import kong.unirest.Headers;
+import kong.unirest.HttpRequestSummary;
 import kong.unirest.HttpResponseSummary;
 import kong.unirest.RawResponse;
 
@@ -82,6 +83,11 @@ public class MockRawResponse implements RawResponse {
 
   @Override
   public HttpResponseSummary toSummary() {
+    return null;
+  }
+
+  @Override
+  public HttpRequestSummary getRequestSummary() {
     return null;
   }
 }
