@@ -43,7 +43,8 @@ The Adobe Target Java SDK Samples can be found [here](https://github.com/adobe/t
 Check out our [Contribution guidelines](.github/CONTRIBUTING.md) as well as [Code of Conduct](CODE_OF_CONDUCT.md) prior
 to contributing to Target Java SDK development.  
 1. To build the project: `./gradlew build`  
-2. To install `java-sdk` locally: `./gradle install`
+2. To install `java-sdk` locally: `./gradlew install`
+3. To run the unit tests locally: `./gradlew test`
 
 ## Delivery API Client generation
 
