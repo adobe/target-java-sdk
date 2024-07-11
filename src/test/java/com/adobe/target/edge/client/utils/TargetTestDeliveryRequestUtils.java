@@ -258,6 +258,11 @@ public class TargetTestDeliveryRequestUtils {
       public HttpResponseSummary toSummary() {
         return null;
       }
+
+      @Override
+      public HttpRequestSummary getRequestSummary() {
+        return null;
+      }
     };
   }
 

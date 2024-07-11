@@ -144,7 +144,7 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-annotations:2.11.3"
     implementation "com.fasterxml.jackson.core:jackson-core:2.11.3"
     implementation "com.fasterxml.jackson.core:jackson-databind:2.11.3"
-    implementation "com.konghq:unirest-java:3.11.02"
+    implementation "com.konghq:unirest-java:3.14.5"
     implementation "io.github.jamsesso:json-logic-java:1.0.5"
     implementation "com.google.guava:guava:16.0.1"
 

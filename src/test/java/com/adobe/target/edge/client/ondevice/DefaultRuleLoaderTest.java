@@ -175,6 +175,11 @@ class DefaultRuleLoaderTest {
       public Cookies getCookies() {
         return null;
       }
+
+      @Override
+      public HttpRequestSummary getRequestSummary() {
+        return null;
+      }
     };
   }
 
