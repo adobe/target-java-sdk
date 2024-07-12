@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [2.6.1] - 2024-07-12
+### Fixed
+- Upgraded dependencies to fix security vulnerabilities (log4j-log4j & commons-logging:commons-logging)
+
 ## [2.6.0] - 2024-06-13
 ### Added
 - (On Device Decisioning) Added new configuration option (`shouldArtifactRequestBypassProxyCache`).  When enabled and a proxy is configured, send empty Authorization header on artifact rules request to bypass proxy-level cache
